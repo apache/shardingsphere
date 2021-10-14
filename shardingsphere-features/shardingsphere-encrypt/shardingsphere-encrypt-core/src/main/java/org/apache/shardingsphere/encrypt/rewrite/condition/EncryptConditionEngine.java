@@ -161,6 +161,9 @@ public final class EncryptConditionEngine {
                 expressionSegments.add(each);
             }
         }
+        if (expressionSegments.isEmpty()) {
+        	return Optional.empty();
+        }
         return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(),
                 tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }

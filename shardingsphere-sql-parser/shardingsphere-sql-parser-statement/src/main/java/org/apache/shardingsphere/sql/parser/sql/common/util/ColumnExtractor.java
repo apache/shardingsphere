@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -52,6 +53,9 @@ public final class ColumnExtractor {
         }
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             result.add((ColumnSegment) ((InExpression) expression).getLeft());
+            if (((InExpression) expression).getRight() instanceof SubqueryExpressionSegment) {
+                result.addAll(extract(((SubqueryExpressionSegment) ((InExpression) expression).getRight()).getSubquery().getSelect().getWhere().get().getExpr()));
+            }
         }
         if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
             result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());

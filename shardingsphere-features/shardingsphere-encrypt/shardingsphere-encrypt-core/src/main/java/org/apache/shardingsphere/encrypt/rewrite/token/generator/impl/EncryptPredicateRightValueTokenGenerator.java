@@ -69,25 +69,28 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     private Collection<SQLToken> generateSQLTokens(final String schemaName, final Collection<EncryptCondition> encryptConditions) {
         Collection<SQLToken> result = new LinkedHashSet<>();
         for (EncryptCondition each : encryptConditions) {
-            result.add(generateSQLToken(schemaName, each));
+        	generateSQLToken(schemaName, each).ifPresent(result::add);
         }
         return result;
     }
     
-    private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
+    private Optional<SQLToken> generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
         int startIndex = encryptCondition.getStartIndex();
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(schemaName, encryptCondition, originalValues, startIndex)
-                : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
+                : Optional.of(generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex));
     }
     
-    private SQLToken generateSQLTokenForQueryWithCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
+    private Optional<SQLToken> generateSQLTokenForQueryWithCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
+        if (parameterMarkerIndexes.isEmpty()) {
+        	return Optional.empty();
+        }
         return encryptCondition instanceof EncryptInCondition
-                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
-                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
+                ? Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes))
+                : Optional.of(new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
