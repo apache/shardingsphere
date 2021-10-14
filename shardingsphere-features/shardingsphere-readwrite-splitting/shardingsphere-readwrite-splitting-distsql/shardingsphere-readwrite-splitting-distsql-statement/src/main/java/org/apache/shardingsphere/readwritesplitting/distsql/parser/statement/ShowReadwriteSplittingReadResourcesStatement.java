@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromS
 import java.util.Optional;
 
 /**
- * Show readwrite splitting read resources statement.
+ * Show readwrite-splitting read resources statement.
  */
 @RequiredArgsConstructor
 public final class ShowReadwriteSplittingReadResourcesStatement extends ShowDistSQLStatement implements FromSchemaAvailable {

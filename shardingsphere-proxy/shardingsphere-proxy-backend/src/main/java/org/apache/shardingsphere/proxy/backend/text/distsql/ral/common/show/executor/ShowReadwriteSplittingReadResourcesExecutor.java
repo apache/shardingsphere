@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Show instance executor.
+ * Show readwrite-splitting read resources executor.
  */
 @RequiredArgsConstructor
 public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractShowExecutor {
@@ -65,8 +65,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
                 new QueryHeader("", "", RESOURCE, RESOURCE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
-        );
+                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false));
     }
     
     @Override
