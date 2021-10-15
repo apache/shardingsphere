@@ -30,6 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>readwrite-splitting-example</module>
+        <module>readwrite-splitting-raw-jdbc-example</module>
+        <module>readwrite-splitting-spring-boot-jpa-example</module>
+        <module>readwrite-splitting-spring-boot-mybatis-example</module>
+        <module>readwrite-splitting-spring-namespace-jpa-example</module>
+        <module>readwrite-splitting-spring-namespace-mybatis-example</module>
     </modules>
 </project>
