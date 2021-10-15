@@ -21,4 +21,5 @@
     <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
     <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
     <show-instance sql-case-id="show-instance" />
+    <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
 </sql-parser-test-cases>
