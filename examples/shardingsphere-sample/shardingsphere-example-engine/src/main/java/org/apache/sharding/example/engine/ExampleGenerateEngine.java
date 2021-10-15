@@ -40,16 +40,20 @@ public final class ExampleGenerateEngine {
     
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-example"
             + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${feature}-example"
-            + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/java/org/apache/shardingsphere/example/${feature}/${framework}";
+            + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/java/org/apache/shardingsphere/example/${feature}/${framework?replace('-', '/')}";
 
-    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}";
     
+    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}${feature?cap_first}" +
+            "<#assign frameworkName=\"\">" +
+            "<#list framework?split(\"-\") as framework1>" +
+            "<#assign frameworkName=frameworkName + framework1?cap_first>" +
+            "</#list>${frameworkName}";
     private static final Map<String, String> TEMPLATE_MAP = new HashMap(4, 1);
     static {
         try {
             CONFIGURATION.setDirectoryForTemplateLoading(new File(ExampleGenerateEngine.class.getClassLoader().getResource("").getFile()));
             CONFIGURATION.setDefaultEncoding("UTF-8");
-            TEMPLATE_MAP.put("Configuration", "Configuration.ftl");
+            //TEMPLATE_MAP.put("Configuration", "Configuration.ftl");
             TEMPLATE_MAP.put("Example", "Example.ftl");
             TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
         } catch (IOException e) {
@@ -92,12 +96,12 @@ public final class ExampleGenerateEngine {
     
     public static void main(String[] args) {
         Yaml yaml = new Yaml();
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/datamodel.yaml");
+        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-jdbc/datamodel.yaml");
         Map<String, String> map = yaml.loadAs(in, Map.class);
         String fileName = processString(map, FILE_NAME_PREFIX);
         String outputPath = processString(map, OUTPUT_PATH);
         for (String key : TEMPLATE_MAP.keySet()) {
-            processFile(map, "/template/jdbc/" + TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
+            processFile(map, "/template/springboot-starter-jdbc/" + TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
         }
     }
 }

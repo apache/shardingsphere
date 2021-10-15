@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.jdbc;
+package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')};
 
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.example.core.api.entity.Address;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,8 +33,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+<#assign frameworkName="">
+<#list framework?split("-") as framework1>
+    <#assign frameworkName=frameworkName + framework1?cap_first>
+</#list>
+@Service
 @AllArgsConstructor
-public final class MemoryLocalShardingJdbcExampleService {
+public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}ExampleService {
     
     private final DataSource dataSource;
 
@@ -50,7 +56,7 @@ public final class MemoryLocalShardingJdbcExampleService {
             this.cleanEnvironment();
         }
     }
-    
+
     /**
      * Initialize the database test environment.
      * @throws SQLException
