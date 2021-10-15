@@ -79,9 +79,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), false, false, false, false));
             if (selectStatementContext.isContainsSubquery()) {
-                SubqueryExtractUtil.getSubqueryProjectionSegmentFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> result.addAll(generateSQLTokens(
-                        new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSubquery().getSelect(), 
-                                selectStatementContext.getSchemaName()), each.getAlias(), false, true, false, false)));
+                SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> result.addAll(generateSQLTokens(
+                        new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
+                                selectStatementContext.getSchemaName()), Optional.empty(), false, true, false, false)));
                 SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> result.addAll(generateSQLTokens(
                         new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSubquery().getSelect(), 
                                 selectStatementContext.getSchemaName()), each.getAlias(), false, true, true, false)));

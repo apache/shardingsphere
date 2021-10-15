@@ -85,7 +85,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
-        if (parameterMarkerIndexes.isEmpty()) {
+        if (indexValues.isEmpty() && parameterMarkerIndexes.isEmpty()) {
             return Optional.empty();
         }
         return encryptCondition instanceof EncryptInCondition

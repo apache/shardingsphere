@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -34,9 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Subquery extract utility class.
@@ -52,32 +53,32 @@ public final class SubqueryExtractUtil {
      */
     public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();
-        getSubquerySegmentsFromProjections(selectStatement.getProjections()).forEach(each -> result.add(each.getSubquery()));
-        getSubquerySegmentsFromTableSegment(selectStatement.getFrom()).forEach(each -> result.add(each.getSubquery()));
+        result.addAll(getSubquerySegmentsFromProjections(selectStatement.getProjections()));
+        result.addAll(getSubquerySegmentsFromTableSegment(selectStatement.getFrom()));
         if (selectStatement.getWhere().isPresent()) {
             result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
         }
         return result;
     }
-
+    
     /**
-     * Get subquery projections segment from projections.
+     * Get subquery segment from projections.
      *
      * @param projections ProjectionsSegment
-     * @return subquery projects segment collection
+     * @return subquery segment collection
      */
-    public static Collection<SubqueryProjectionSegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
+    public static Collection<SubquerySegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<SubqueryProjectionSegment> result = new LinkedList<>();
+        Collection<SubquerySegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
             if (!(each instanceof SubqueryProjectionSegment)) {
                 continue;
             }
-            SubqueryProjectionSegment subqueryProjectionSegment = (SubqueryProjectionSegment) each;
-            result.add(subqueryProjectionSegment);
-            result.addAll(getSubquerySegmentsFromProjections(subqueryProjectionSegment.getSubquery().getSelect().getProjections()));
+            SubquerySegment subquery = ((SubqueryProjectionSegment) each).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         return result;
     }
@@ -88,7 +89,7 @@ public final class SubqueryExtractUtil {
      * @param tableSegment TableSegment
      * @return subquery table segment collection
      */
-    public static Collection<SubqueryTableSegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
+    public static Collection<SubqueryTableSegment> getSubqueryTableSegmentsFromTableSegment(final TableSegment tableSegment) {
         if (null == tableSegment) {
             return Collections.emptyList();
         }
@@ -96,7 +97,30 @@ public final class SubqueryExtractUtil {
         if (tableSegment instanceof SubqueryTableSegment) {
             SubqueryTableSegment subqueryTableSegment = (SubqueryTableSegment) tableSegment;
             result.add(subqueryTableSegment);
-            result.addAll(getSubquerySegmentsFromTableSegment(subqueryTableSegment.getSubquery().getSelect().getFrom()));
+            result.addAll(getSubqueryTableSegmentsFromTableSegment(subqueryTableSegment.getSubquery().getSelect().getFrom()));
+        }
+        if (tableSegment instanceof JoinTableSegment) {
+            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
+            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery segment from tableSegment.
+     *
+     * @param tableSegment TableSegment
+     * @return subquery segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
+        if (null == tableSegment) {
+            return Collections.emptyList();
+        }
+        Collection<SubquerySegment> result = new LinkedList<>();
+        if (tableSegment instanceof SubqueryTableSegment) {
+            SubquerySegment subquery = ((SubqueryTableSegment) tableSegment).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         if (tableSegment instanceof JoinTableSegment) {
             result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
@@ -114,9 +138,9 @@ public final class SubqueryExtractUtil {
     public static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
-            result.add(subquery);
-            result.addAll(getSubquerySegments(subquery.getSelect()));
+            SubquerySegment subquerySegment = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
+            result.add(subquerySegment);
+            result.addAll(getSubquerySegments(subquerySegment.getSelect()));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {

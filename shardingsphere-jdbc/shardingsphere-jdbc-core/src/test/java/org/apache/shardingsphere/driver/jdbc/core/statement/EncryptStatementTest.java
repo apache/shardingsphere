@@ -86,7 +86,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(2, 1, "encryptValue", "plainValue");
+        assertResultSet(1, 1, "encryptValue", "plainValue");
     }
     
     @Test
