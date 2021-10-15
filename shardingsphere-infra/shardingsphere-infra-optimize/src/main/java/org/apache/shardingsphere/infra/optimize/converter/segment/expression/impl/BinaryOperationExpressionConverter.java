@@ -41,11 +41,17 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     static {
         register(SqlStdOperatorTable.EQUALS);
+        register(SqlStdOperatorTable.NOT_EQUALS);
         register(SqlStdOperatorTable.GREATER_THAN);
         register(SqlStdOperatorTable.GREATER_THAN_OR_EQUAL);
         register(SqlStdOperatorTable.LESS_THAN);
         register(SqlStdOperatorTable.LESS_THAN_OR_EQUAL);
+        register(SqlStdOperatorTable.OR);
         register(SqlStdOperatorTable.AND);
+        register(SqlStdOperatorTable.PLUS);
+        register(SqlStdOperatorTable.MINUS);
+        register(SqlStdOperatorTable.MULTIPLY);
+        register(SqlStdOperatorTable.DIVIDE);
     }
     
     private static void register(final SqlBinaryOperator sqlBinaryOperator) {

@@ -103,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleE
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableAliasRefListContext;
@@ -242,6 +243,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+        return new StringLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitString_(final String_Context ctx) {
         return new StringLiteralValue(ctx.getText());
     }
     

@@ -3,7 +3,7 @@ title = "XA两阶段事务"
 weight = 2
 +++
 
-`XAShardingSphereTransactionManager` 为A pache ShardingSphere 的分布式事务的 XA 实现类。
+`XAShardingSphereTransactionManager` 为 Apache ShardingSphere 的分布式事务的 XA 实现类。
 它主要负责对多数据源进行管理和适配，并且将相应事务的开启、提交和回滚操作委托给具体的 XA 事务管理器。
 
 ![XA事务实现原理](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design.png)

@@ -29,5 +29,6 @@ execute
     | clearHint
     | enableInstance
     | disableInstance
+    | showInstance
     ) SEMI?
     ;

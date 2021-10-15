@@ -89,7 +89,7 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
         }
         String sqlCommand = PostgreSQLCommand.valueOf(portal.getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
-        connectionContext.clearContext();
+        connectionContext.setUpdateCount(0);
         return result;
     }
     

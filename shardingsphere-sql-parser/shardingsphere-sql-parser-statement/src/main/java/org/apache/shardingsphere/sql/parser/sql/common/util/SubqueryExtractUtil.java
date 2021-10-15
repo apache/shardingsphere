@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
@@ -51,8 +52,8 @@ public final class SubqueryExtractUtil {
      */
     public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();
-        getSubqueryProjectionSegmentFromProjections(selectStatement.getProjections()).forEach(each -> result.add(each.getSubquery()));
-        getSubqueryTableSegmentsFromTableSegment(selectStatement.getFrom()).forEach(each -> result.add(each.getSubquery()));
+        getSubquerySegmentsFromProjections(selectStatement.getProjections()).forEach(each -> result.add(each.getSubquery()));
+        getSubquerySegmentsFromTableSegment(selectStatement.getFrom()).forEach(each -> result.add(each.getSubquery()));
         if (selectStatement.getWhere().isPresent()) {
             result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
         }
@@ -65,7 +66,7 @@ public final class SubqueryExtractUtil {
      * @param projections ProjectionsSegment
      * @return subquery projects segment collection
      */
-    public static Collection<SubqueryProjectionSegment> getSubqueryProjectionSegmentFromProjections(final ProjectionsSegment projections) {
+    public static Collection<SubqueryProjectionSegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
@@ -74,7 +75,9 @@ public final class SubqueryExtractUtil {
             if (!(each instanceof SubqueryProjectionSegment)) {
                 continue;
             }
-            result.add((SubqueryProjectionSegment) each);
+            SubqueryProjectionSegment subqueryProjectionSegment = (SubqueryProjectionSegment) each;
+            result.add(subqueryProjectionSegment);
+            result.addAll(getSubquerySegmentsFromProjections(subqueryProjectionSegment.getSubquery().getSelect().getProjections()));
         }
         return result;
     }
@@ -85,17 +88,19 @@ public final class SubqueryExtractUtil {
      * @param tableSegment TableSegment
      * @return subquery table segment collection
      */
-    public static Collection<SubqueryTableSegment> getSubqueryTableSegmentsFromTableSegment(final TableSegment tableSegment) {
+    public static Collection<SubqueryTableSegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
         if (null == tableSegment) {
             return Collections.emptyList();
         }
         Collection<SubqueryTableSegment> result = new LinkedList<>();
         if (tableSegment instanceof SubqueryTableSegment) {
-            result.add((SubqueryTableSegment) tableSegment);
+            SubqueryTableSegment subqueryTableSegment = (SubqueryTableSegment) tableSegment;
+            result.add(subqueryTableSegment);
+            result.addAll(getSubquerySegmentsFromTableSegment(subqueryTableSegment.getSubquery().getSelect().getFrom()));
         }
         if (tableSegment instanceof JoinTableSegment) {
-            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
-            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
+            result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
+            result.addAll(getSubquerySegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
         }
         return result;
     }
@@ -109,11 +114,9 @@ public final class SubqueryExtractUtil {
     public static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            result.add(((SubqueryExpressionSegment) expressionSegment).getSubquery());
-        }
-        if (expressionSegment instanceof InExpression) {
-            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getLeft()));
-            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getRight()));
+            SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
@@ -123,6 +126,14 @@ public final class SubqueryExtractUtil {
         if (expressionSegment instanceof BinaryOperationExpression) {
             result.addAll(getSubquerySegmentsFromExpression(((BinaryOperationExpression) expressionSegment).getLeft()));
             result.addAll(getSubquerySegmentsFromExpression(((BinaryOperationExpression) expressionSegment).getRight()));
+        }
+        if (expressionSegment instanceof InExpression) {
+            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getLeft()));
+            result.addAll(getSubquerySegmentsFromExpression(((InExpression) expressionSegment).getRight()));
+        }
+        if (expressionSegment instanceof BetweenExpression) {
+            result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getBetweenExpr()));
+            result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getAndExpr()));
         }
         return result;
     }

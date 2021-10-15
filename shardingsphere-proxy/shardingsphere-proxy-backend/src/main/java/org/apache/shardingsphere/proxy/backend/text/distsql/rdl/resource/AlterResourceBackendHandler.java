@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter resource backend handler.
  */
+@Slf4j
 public final class AlterResourceBackendHandler extends SchemaRequiredBackendHandler<AlterResourceStatement> {
     
     private final DatabaseType databaseType;
@@ -56,7 +60,12 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         checkSQLStatement(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigs = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         dataSourceConfigValidator.validate(dataSourceConfigs);
-        // TODO update meta data context in memory
+        try {
+            ProxyContext.getInstance().getContextManager().alterResource(schemaName, dataSourceConfigs);
+        } catch (final SQLException ex) {
+            log.error("Alter resource failed", ex);
+            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourceConfigs.keySet()));
+        }
         ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);

@@ -46,7 +46,7 @@ For full documentation & more details, visit: [https://shardingsphere.apache.org
 
 ## Contribution: 
 
-For guides on how to get started and setup your environment, contributor & committer guides, visit: [https://shardingsphere.apache.org/community/en/contribute/](https://shardingsphere.apache.org/document/current/en/)
+For guides on how to get started and setup your environment, contributor & committer guides, visit: [https://shardingsphere.apache.org/community/en/contribute/](https://shardingsphere.apache.org/community/en/contribute/)
 
 ## Community & Support:
 

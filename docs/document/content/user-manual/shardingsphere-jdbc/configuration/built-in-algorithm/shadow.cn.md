@@ -14,7 +14,7 @@ weight = 5
 | *属性名称*      | *数据类型* | *说明*  |
 | -------------- | --------- | ------- |
 | column         | String    | 匹配列 |
-| operation      | String    | SQL操作类型（insert, update, delete, select） |
+| operation      | String    | SQL操作类型（INSERT, UPDATE, DELETE, SELECT） |
 | regex          | String    | 匹配正则表达式 |
 
 ## 注解影子算法

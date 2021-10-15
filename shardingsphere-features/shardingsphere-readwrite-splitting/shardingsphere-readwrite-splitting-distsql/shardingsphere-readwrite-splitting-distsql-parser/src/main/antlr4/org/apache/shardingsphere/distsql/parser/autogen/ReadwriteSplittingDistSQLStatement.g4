@@ -29,5 +29,6 @@ execute
     | clearReadwriteSplittingHint
     | enableReadDataSource
     | disableReadDataSource
+    | showReadwriteSplittingReadResources
     ) SEMI?
     ;

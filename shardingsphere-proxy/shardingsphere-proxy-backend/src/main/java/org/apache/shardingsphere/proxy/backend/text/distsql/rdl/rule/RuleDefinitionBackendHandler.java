@@ -60,7 +60,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
-        // TODO update meta data context in memory
         persistRuleConfigurationChange(shardingSphereMetaData);
         return new UpdateResponseHeader(sqlStatement);
     }
