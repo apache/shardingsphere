@@ -27,13 +27,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Install plugin statement assert.
+ * Clone statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CloneStatementAssert {
     
     /**
-     * Assertclone statement is correct with expected clone statement test case.
+     * Assert clone statement is correct with expected clone statement test case.
      *
      * @param assertContext assert context
      * @param actual actual clone statement

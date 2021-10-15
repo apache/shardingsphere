@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
 /**
- * Expected clone.
+ * Expected instance.
  */
 @Getter
 public final class ExpectedInstance extends AbstractExpectedSQLSegment {
