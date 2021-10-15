@@ -69,7 +69,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     private Collection<SQLToken> generateSQLTokens(final String schemaName, final Collection<EncryptCondition> encryptConditions) {
         Collection<SQLToken> result = new LinkedHashSet<>();
         for (EncryptCondition each : encryptConditions) {
-        	generateSQLToken(schemaName, each).ifPresent(result::add);
+            generateSQLToken(schemaName, each).ifPresent(result::add);
         }
         return result;
     }
@@ -86,7 +86,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (parameterMarkerIndexes.isEmpty()) {
-        	return Optional.empty();
+            return Optional.empty();
         }
         return encryptCondition instanceof EncryptInCondition
                 ? Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes))

@@ -42,15 +42,15 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     
     private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE pwd = 'a' AND id = 1";
     
-    private static final String UPDATE_SQL = "UPDATE t_encrypt SET pwd ='f' WHERE pwd = 'a'";
+    private static final String UPDATE_SQL = "UPDATE t_encrypt SET pwd ='f' WHERE pwd = 'encryptValue'";
     
-    private static final String SELECT_SQL = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'a'";
+    private static final String SELECT_SQL = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'encryptValue'";
     
     private static final String SELECT_SQL_WITH_STAR = "SELECT * FROM t_encrypt WHERE pwd = 'a'";
     
     private static final String SELECT_SQL_WITH_PLAIN = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
-    private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
+    private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'encryptValue'";
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
@@ -86,7 +86,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(1, 5, "encryptValue", "b");
+        assertResultSet(2, 1, "encryptValue", "plainValue");
     }
     
     @Test

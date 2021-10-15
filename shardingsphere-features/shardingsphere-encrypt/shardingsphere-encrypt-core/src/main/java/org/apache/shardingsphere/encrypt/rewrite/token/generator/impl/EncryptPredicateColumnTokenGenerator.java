@@ -53,7 +53,8 @@ import lombok.Setter;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware, RewriteMetaDataAware {
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, 
+    QueryWithCipherColumnAware, RewriteMetaDataAware {
     
     private ShardingSphereSchema schema;
     
@@ -81,14 +82,14 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
-				int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
+                int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
                 if (queryWithCipherColumn && !rewriteMetaDataMap.isEmpty()) {
-            		Map<String, Optional<String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
-            		if (value != null && value.containsKey(column.getIdentifier().getValue())) {
-            			result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get())));
-            			continue;
-            		}
+                    Map<String, Optional<String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
+                    if (value != null && value.containsKey(column.getIdentifier().getValue())) {
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get())));
+                        continue;
+                    }
                 }
                 Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column);
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {

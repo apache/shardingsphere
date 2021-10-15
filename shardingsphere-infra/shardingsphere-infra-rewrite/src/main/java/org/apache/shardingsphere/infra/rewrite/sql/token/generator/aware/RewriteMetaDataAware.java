@@ -24,7 +24,7 @@ import java.util.Optional;
  * Rewrite meta data aware.
  */
 public interface RewriteMetaDataAware {
-	
+
     /**
      * Set rewrite meta data map.
      * 
