@@ -21,4 +21,5 @@
     <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
     <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
     <distsql-case id="show-instance" value="SHOW INSTANCE LIST" />
+    <distsql-case id="show-readwrite-splitting-read-resources" value="show readwrite_splitting read resources" />
 </sql-cases>

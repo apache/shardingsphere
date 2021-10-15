@@ -38,10 +38,24 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
     private final DataSource dataSource;
 
     /**
+     * Execute test.
+     *
+     * @throws SQLException
+     */
+    public void run() throws SQLException {
+        try {
+            this.initEnvironment();
+            this.processSuccess();
+        } finally {
+            this.cleanEnvironment();
+        }
+    }
+
+    /**
      * Initialize the database test environment.
      * @throws SQLException
      */
-    public void initEnvironment() throws SQLException {
+    private void initEnvironment() throws SQLException {
         String createOrderTableSql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         String createOrderItemTableSql = "CREATE TABLE IF NOT EXISTS t_order_item "
                 + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id))";
@@ -64,7 +78,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
         initAddressData(dataSource);
     }
     
-    public void processSuccess() throws SQLException {
+    private void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
@@ -73,7 +87,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
         System.out.println("-------------- Process Success Finish --------------");
     }
     
-    public void processFailure() throws SQLException {
+    private void processFailure() throws SQLException {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
@@ -148,7 +162,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
         }
     }
     
-    public void printData() throws SQLException {
+    private void printData() throws SQLException {
         System.out.println("---------------------------- Print Order Data -----------------------");
         for (Object each : this.getOrders()) {
             System.out.println(each);
@@ -214,7 +228,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
      * Restore the environment.
      * @throws SQLException
      */
-    public void cleanEnvironment() throws SQLException {
+    private void cleanEnvironment() throws SQLException {
         String dropOrderSql = "DROP TABLE t_order";
         String dropOrderItemSql = "DROP TABLE t_order_item";
         String dropAddressSql = "DROP TABLE t_address";

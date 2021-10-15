@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.jdbc;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-public final class MemoryLocalShardingJdbcExample {
+import java.util.Optional;
+
+/**
+ * Show readwrite-splitting read resources statement.
+ */
+@RequiredArgsConstructor
+public final class ShowReadwriteSplittingReadResourcesStatement extends ShowDistSQLStatement implements FromSchemaAvailable {
     
-    public static void main(String[] args) throws SQLException {
-        MemoryLocalShardingJdbcConfiguration shardingConfiguration = new MemoryLocalShardingJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
-        MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
-        exampleService.run();
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
     }
 }

@@ -26,11 +26,6 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
         ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration shardingConfiguration = new ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration();
         DataSource dataSource = shardingConfiguration.getDataSource();
         ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService exampleService = new ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService(dataSource);
-        try {
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
-        } finally {
-            exampleService.cleanEnvironment();
-        }
+        exampleService.run();
     }
 }

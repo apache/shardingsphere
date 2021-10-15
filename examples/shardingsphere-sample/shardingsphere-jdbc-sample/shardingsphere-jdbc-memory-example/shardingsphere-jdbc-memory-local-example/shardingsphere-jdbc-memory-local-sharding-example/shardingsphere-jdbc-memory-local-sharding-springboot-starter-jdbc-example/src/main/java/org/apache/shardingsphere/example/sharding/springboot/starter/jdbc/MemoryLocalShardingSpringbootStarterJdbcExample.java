@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.jdbc;
+package org.apache.shardingsphere.example.sharding.springboot.starter.jdbc;
 
-import javax.sql.DataSource;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
 import java.sql.SQLException;
 
-public final class MemoryLocalShardingJdbcExample {
+@SpringBootApplication
+public class MemoryLocalShardingSpringbootStarterJdbcExample {
     
     public static void main(String[] args) throws SQLException {
-        MemoryLocalShardingJdbcConfiguration shardingConfiguration = new MemoryLocalShardingJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
-        MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
-        exampleService.run();
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(MemoryLocalShardingSpringbootStarterJdbcExample.class, args)) {
+            MemoryLocalShardingSpringbootStarterJdbcExampleService exampleService = applicationContext.getBean(MemoryLocalShardingSpringbootStarterJdbcExampleService.class);
+            exampleService.run();
+        }
     }
 }

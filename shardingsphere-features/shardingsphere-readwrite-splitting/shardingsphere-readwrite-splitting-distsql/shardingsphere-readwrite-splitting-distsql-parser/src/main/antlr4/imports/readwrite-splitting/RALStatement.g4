@@ -39,6 +39,10 @@ disableReadDataSource
     : DISABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
     ;
 
+showReadwriteSplittingReadResources
+    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
+    ;
+
 sourceValue
     : IDENTIFIER
     ;

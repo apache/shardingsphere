@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.jdbc;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-public final class MemoryLocalShardingJdbcExample {
-    
-    public static void main(String[] args) throws SQLException {
-        MemoryLocalShardingJdbcConfiguration shardingConfiguration = new MemoryLocalShardingJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
-        MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
-        exampleService.run();
-    }
+/**
+ * Show readwrite-splitting read resources statement test case.
+ */
+public final class ShowReadwriteSplittingReadResourcesStatementTestCase extends SQLParserTestCase {
 }

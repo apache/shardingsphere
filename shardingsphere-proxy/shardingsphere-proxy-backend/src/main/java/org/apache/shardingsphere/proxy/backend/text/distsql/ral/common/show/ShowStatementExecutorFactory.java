@@ -23,7 +23,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 
 import java.sql.SQLException;
 
@@ -46,6 +48,9 @@ public final class ShowStatementExecutorFactory {
         }
         if (sqlStatement instanceof ShowVariableStatement) {
             return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);
+        }
+        if (sqlStatement instanceof ShowReadwriteSplittingReadResourcesStatement) {
+            return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
