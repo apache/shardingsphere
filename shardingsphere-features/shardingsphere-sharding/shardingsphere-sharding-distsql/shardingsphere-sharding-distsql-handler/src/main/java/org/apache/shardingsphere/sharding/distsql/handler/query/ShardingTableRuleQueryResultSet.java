@@ -94,13 +94,13 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         result.add(getDatabaseStrategyType(shardingTableRuleConfig));
         result.add(getDatabaseShardingColumn(shardingTableRuleConfig));
         Optional<ShardingStrategyConfiguration> databaseShardingStrategyConfig = getDatabaseShardingStrategy(shardingTableRuleConfig);
-        result.add(databaseShardingStrategyConfig.isPresent() ? getAlgorithmType(databaseShardingStrategyConfig.get()) : "");
-        result.add(databaseShardingStrategyConfig.isPresent() ? getAlgorithmProperties(databaseShardingStrategyConfig.get()) : "");
+        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getTableStrategyType(shardingTableRuleConfig.getTableShardingStrategy()));
         result.add(getTableShardingColumn(shardingTableRuleConfig.getTableShardingStrategy()));
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy());
-        result.add(tableShardingStrategyConfig.isPresent() ? getAlgorithmType(tableShardingStrategyConfig.get()) : "");
-        result.add(tableShardingStrategyConfig.isPresent() ? getAlgorithmProperties(tableShardingStrategyConfig.get()) : "");
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
@@ -119,8 +119,8 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         result.add(getTableStrategyType(shardingAutoTableRuleConfig.getShardingStrategy()));
         result.add(getTableShardingColumn(shardingAutoTableRuleConfig.getShardingStrategy()));
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy());
-        result.add(tableShardingStrategyConfig.isPresent() ? getAlgorithmType(tableShardingStrategyConfig.get()) : "");
-        result.add(tableShardingStrategyConfig.isPresent() ? getAlgorithmProperties(tableShardingStrategyConfig.get()) : "");
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
