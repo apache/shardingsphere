@@ -31,6 +31,5 @@
     
     <modules>
         <module>shardingsphere-jdbc-memory-example</module>
-        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-jdbc-example</module>
     </modules>
 </project>
