@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import java.util.Optional;
 
 /**
- * Expression projection.
+ * ParameterMarker projection.
  */
 @RequiredArgsConstructor
 @Getter
