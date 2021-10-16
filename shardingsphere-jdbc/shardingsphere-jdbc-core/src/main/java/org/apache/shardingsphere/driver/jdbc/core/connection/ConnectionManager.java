@@ -24,6 +24,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -31,7 +33,9 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import javax.sql.DataSource;
 import java.security.SecureRandom;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +46,7 @@ import java.util.Random;
 /**
  * Connection manager.
  */
-public final class ConnectionManager implements AutoCloseable {
+public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
     
     private final String schema;
     
@@ -92,15 +96,7 @@ public final class ConnectionManager implements AutoCloseable {
         return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
-    /**
-     * Get connections.
-     * 
-     * @param dataSourceName data source name
-     * @param connectionSize connection size
-     * @param connectionMode connection mode
-     * @return connection
-     * @throws SQLException SQL exception
-     */
+    @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = contextManager.getDataSourceMap(schema).get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
@@ -163,6 +159,20 @@ public final class ConnectionManager implements AutoCloseable {
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
+                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     /**

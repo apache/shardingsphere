@@ -68,7 +68,6 @@ public final class ConnectionManagerTest {
         assertThat(actual, is("ds"));
     }
     
-    
     @Test
     public void assertGetConnection() throws SQLException {
         assertThat(connectionManager.getConnection("ds"), is(connectionManager.getConnection("ds")));

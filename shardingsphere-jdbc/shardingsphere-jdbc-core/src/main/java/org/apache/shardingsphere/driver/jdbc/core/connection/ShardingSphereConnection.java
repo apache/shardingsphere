@@ -23,8 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.TransactionHolder;
@@ -35,12 +33,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * ShardingSphere connection.
  */
-public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
+public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final String schema;
@@ -73,12 +70,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-    }
-    
-    @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return connectionManager.getConnections(dataSourceName, connectionSize, connectionMode);
+        return connectionManager.getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     /**
@@ -88,20 +80,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
      */
     public boolean isHoldTransaction() {
         return connectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
-                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     @Override
