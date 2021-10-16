@@ -79,15 +79,9 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection()).getConnection("ds"), is(dataSource.getConnection()));
-    }
-    
-    @Test
     public void assertGetConnectionWithUsernameAndPassword() throws SQLException {
         DataSource dataSource = mockDataSource();
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnectionManager().getConnection("ds"), is(dataSource.getConnection()));
     }
     
     private DataSource mockDataSource() throws SQLException {

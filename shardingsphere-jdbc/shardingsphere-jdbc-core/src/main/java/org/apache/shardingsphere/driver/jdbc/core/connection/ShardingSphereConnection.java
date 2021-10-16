@@ -22,13 +22,11 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -60,17 +58,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.schema = schema;
         this.contextManager = contextManager;
         connectionManager = new ConnectionManager(schema, contextManager);
-    }
-    
-    /**
-     * Get connection.
-     *
-     * @param dataSourceName data source name
-     * @return connection
-     * @throws SQLException SQL exception
-     */
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        return connectionManager.getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     /**
@@ -217,7 +204,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return getConnection(connectionManager.getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
+        return connectionManager.getConnection(connectionManager.getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
     }
     
     @Override

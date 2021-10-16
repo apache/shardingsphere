@@ -57,7 +57,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public Connection getConnection() throws SQLException {
-        return connection.getConnection(getDataSourceName());
+        return connection.getConnectionManager().getConnection(getDataSourceName());
     }
     
     @Override

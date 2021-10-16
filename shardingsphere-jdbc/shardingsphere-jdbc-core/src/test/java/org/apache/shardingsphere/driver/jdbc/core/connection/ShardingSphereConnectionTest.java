@@ -87,7 +87,7 @@ public final class ShardingSphereConnectionTest {
     public void assertSetAutoCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
-        connection.getConnection("ds");
+        connection.getConnectionManager().getConnection("ds");
         connection.setAutoCommit(true);
         assertTrue(connection.getAutoCommit());
         verify(physicalConnection).setAutoCommit(true);
@@ -107,7 +107,7 @@ public final class ShardingSphereConnectionTest {
     public void assertCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
-        connection.getConnection("ds");
+        connection.getConnectionManager().getConnection("ds");
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
@@ -135,7 +135,7 @@ public final class ShardingSphereConnectionTest {
     public void assertRollbackWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
-        connection.getConnection("ds");
+        connection.getConnectionManager().getConnection("ds");
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
         connection.rollback();
@@ -173,14 +173,14 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertIsInvalid() throws SQLException {
-        connection.getConnection("ds");
+        connection.getConnectionManager().getConnection("ds");
         assertFalse(connection.isValid(0));
     }
     
     @Test
     public void assertSetReadOnly() throws SQLException {
         assertFalse(connection.isReadOnly());
-        Connection physicalConnection = connection.getConnection("ds");
+        Connection physicalConnection = connection.getConnectionManager().getConnection("ds");
         connection.setReadOnly(true);
         assertTrue(connection.isReadOnly());
         verify(physicalConnection).setReadOnly(true);
@@ -193,7 +193,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
-        Connection physicalConnection = connection.getConnection("ds");
+        Connection physicalConnection = connection.getConnectionManager().getConnection("ds");
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
@@ -202,7 +202,7 @@ public final class ShardingSphereConnectionTest {
     public void assertCreateArrayOf() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
         when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenReturn(physicalConnection);
-        connection.getConnection("ds");
+        connection.getConnectionManager().getConnection("ds");
         assertNull(connection.createArrayOf("int", null));
         verify(physicalConnection).createArrayOf("int", null);
     }
