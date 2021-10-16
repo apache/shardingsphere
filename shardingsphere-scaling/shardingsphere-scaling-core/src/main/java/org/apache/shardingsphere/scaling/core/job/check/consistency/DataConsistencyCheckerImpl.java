@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
@@ -41,6 +42,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,20 +65,29 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     @Override
     public Map<String, DataConsistencyCheckResult> countCheck() {
-        return jobContext.getTaskConfigs()
-                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
-                .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
+        try {
+            return jobContext.getTaskConfigs()
+                    .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
+                    .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, executor), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        } finally {
+            executor.shutdown();
+            executor.shutdownNow();
+        }
     }
     
-    private DataConsistencyCheckResult countCheck(final String table) {
+    private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
         ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
         ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
-            long sourceCount = count(sourceDataSource, table, sourceConfig.getDatabaseType());
-            long targetCount = count(targetDataSource, table, targetConfig.getDatabaseType());
+            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
+            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetConfig.getDatabaseType()));
+            long sourceCount = sourceFuture.get();
+            long targetCount = targetFuture.get();
             return new DataConsistencyCheckResult(sourceCount, targetCount);
-        } catch (final SQLException ex) {
+        } catch (final SQLException | InterruptedException | ExecutionException ex) {
             throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
         }
     }
