@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -156,7 +155,7 @@ public final class ShardingSphereConnectionTest {
     public void assertSetAutoCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(DistributedTransactionOperationType.COMMIT);
-        setConnectionTransaction(connectionTransaction);
+        mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(true);
         assertTrue(connection.getAutoCommit());
         verify(connectionTransaction).commit();
@@ -180,14 +179,14 @@ public final class ShardingSphereConnectionTest {
     public void assertCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
-        setConnectionTransaction(connectionTransaction);
+        final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
         verify(connectionTransaction).begin();
         connection.commit();
         assertFalse(TransactionHolder.isTransaction());
-        verify(connectionTransaction).commit();
+        verify(connectionManager).commit();
     }
     
     @Test
@@ -205,21 +204,24 @@ public final class ShardingSphereConnectionTest {
     public void assertRollbackWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
-        setConnectionTransaction(connectionTransaction);
+        final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
         assertTrue(TransactionHolder.isTransaction());
         verify(connectionTransaction).begin();
         connection.rollback();
         assertFalse(TransactionHolder.isTransaction());
-        verify(connectionTransaction).rollback();
+        verify(connectionManager).rollback();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setConnectionTransaction(final ConnectionTransaction connectionTransaction) {
-        Field field = connection.getClass().getDeclaredField("connectionTransaction");
+    private ConnectionManager mockConnectionManager(final ConnectionTransaction connectionTransaction) {
+        Field field = connection.getClass().getDeclaredField("connectionManager");
         field.setAccessible(true);
-        field.set(connection, connectionTransaction);
+        ConnectionManager result = mock(ConnectionManager.class);
+        when(result.getConnectionTransaction()).thenReturn(connectionTransaction);
+        field.set(connection, result);
+        return result;
     }
     
     @Test
@@ -267,14 +269,5 @@ public final class ShardingSphereConnectionTest {
     public void assertClose() throws SQLException {
         connection.close();
         assertTrue(connection.isClosed());
-        assertTrue(getCachedConnections().isEmpty());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Multimap<String, Connection> getCachedConnections() {
-        Field field = ShardingSphereConnection.class.getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        return (Multimap<String, Connection>) field.get(connection);
     }
 }

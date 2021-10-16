@@ -1,0 +1,261 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.driver.jdbc.core.connection;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import lombok.Getter;
+import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+
+import javax.sql.DataSource;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+/**
+ * Connection manager.
+ */
+public final class ConnectionManager implements AutoCloseable {
+    
+    private final String schema;
+    
+    private final ContextManager contextManager;
+    
+    private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
+    
+    @Getter
+    private final ConnectionTransaction connectionTransaction;
+    
+    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    
+    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    private final Random random = new SecureRandom();
+    
+    public ConnectionManager(final String schema, final ContextManager contextManager) {
+        this.schema = schema;
+        this.contextManager = contextManager;
+        connectionTransaction = createConnectionTransaction(schema, contextManager);
+    }
+    
+    private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
+        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
+                .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+    }
+    
+    /**
+     * Get random physical data source name.
+     *
+     * @return random physical data source name
+     */
+    public String getRandomPhysicalDataSourceName() {
+        Collection<String> datasourceNames = cachedConnections.isEmpty() ? contextManager.getDataSourceMap(schema).keySet() : cachedConnections.keySet();
+        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
+    }
+    
+    /**
+     * Get connection.
+     *
+     * @param dataSourceName data source name
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+    }
+    
+    /**
+     * Get connections.
+     * 
+     * @param dataSourceName data source name
+     * @param connectionSize connection size
+     * @param connectionMode connection mode
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        DataSource dataSource = contextManager.getDataSourceMap(schema).get(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+        Collection<Connection> connections;
+        synchronized (cachedConnections) {
+            connections = cachedConnections.get(dataSourceName);
+        }
+        List<Connection> result;
+        if (connections.size() >= connectionSize) {
+            result = new ArrayList<>(connections).subList(0, connectionSize);
+        } else if (!connections.isEmpty()) {
+            result = new ArrayList<>(connectionSize);
+            result.addAll(connections);
+            List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
+            result.addAll(newConnections);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, newConnections);
+            }
+        } else {
+            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, result);
+            }
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        if (1 == connectionSize) {
+            Connection connection = createConnection(dataSourceName, dataSource);
+            methodInvocationRecorder.replay(connection);
+            return Collections.singletonList(connection);
+        }
+        if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
+            return createConnections(dataSourceName, dataSource, connectionSize);
+        }
+        synchronized (dataSource) {
+            return createConnections(dataSourceName, dataSource, connectionSize);
+        }
+    }
+    
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        for (int i = 0; i < connectionSize; i++) {
+            try {
+                Connection connection = createConnection(dataSourceName, dataSource);
+                methodInvocationRecorder.replay(connection);
+                result.add(connection);
+            } catch (final SQLException ex) {
+                for (Connection each : result) {
+                    each.close();
+                }
+                throw new SQLException(String.format("Can not get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
+            }
+        }
+        return result;
+    }
+    
+    private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
+        return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
+    }
+    
+    /**
+     * Set auto commit.
+     * 
+     * @param autoCommit auto commit
+     * @throws SQLException SQL exception
+     */
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
+    }
+    
+    /**
+     * Commit.
+     * 
+     * @throws SQLException SQL exception
+     */
+    public void commit() throws SQLException {
+        if (connectionTransaction.isLocalTransaction()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
+        } else {
+            connectionTransaction.commit();
+        }
+    }
+    
+    /**
+     * Rollback.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void rollback() throws SQLException {
+        if (connectionTransaction.isLocalTransaction()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+        } else {
+            connectionTransaction.rollback();
+        }
+    }
+    
+    /**
+     * Get transaction isolation.
+     * 
+     * @return transaction isolation level
+     * @throws SQLException SQL exception
+     */
+    public Optional<Integer> getTransactionIsolation() throws SQLException {
+        return cachedConnections.values().isEmpty() ? Optional.empty() : Optional.of(cachedConnections.values().iterator().next().getTransactionIsolation());
+    }
+    
+    /**
+     * Set transaction isolation.
+     *
+     * @param level transaction isolation level
+     * @throws SQLException SQL exception
+     */
+    public void setTransactionIsolation(final int level) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
+    }
+    
+    /**
+     * Set read only.
+     *
+     * @param readOnly read only
+     * @throws SQLException SQL exception
+     */
+    public void setReadOnly(final boolean readOnly) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
+    }
+    
+    /**
+     * Whether connection valid.
+     * 
+     * @param timeout timeout
+     * @return connection valid or not
+     * @throws SQLException SQL exception
+     */
+    public boolean isValid(final int timeout) throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            if (!each.isValid(timeout)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        try {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
+        } finally {
+            cachedConnections.clear();
+        }
+    }
+}
