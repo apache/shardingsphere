@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -48,14 +49,12 @@ import java.util.Random;
  */
 public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
     
-    private final String schema;
-    
-    private final ContextManager contextManager;
-    
-    private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
+    private final Map<String, DataSource> dataSourceMap;
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
+    
+    private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
     
@@ -64,8 +63,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     private final Random random = new SecureRandom();
     
     public ConnectionManager(final String schema, final ContextManager contextManager) {
-        this.schema = schema;
-        this.contextManager = contextManager;
+        dataSourceMap = contextManager.getDataSourceMap(schema);
         connectionTransaction = createConnectionTransaction(schema, contextManager);
     }
     
@@ -81,7 +79,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        Collection<String> datasourceNames = cachedConnections.isEmpty() ? contextManager.getDataSourceMap(schema).keySet() : cachedConnections.keySet();
+        Collection<String> datasourceNames = cachedConnections.isEmpty() ? dataSourceMap.keySet() : cachedConnections.keySet();
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
@@ -98,7 +96,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = contextManager.getDataSourceMap(schema).get(dataSourceName);
+        DataSource dataSource = dataSourceMap.get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
