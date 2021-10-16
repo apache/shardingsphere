@@ -66,15 +66,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     }
     
     /**
-     * Get random physical data source name.
-     *
-     * @return random physical data source name
-     */
-    public String getRandomPhysicalDataSourceName() {
-        return connectionManager.getRandomPhysicalDataSourceName();
-    }
-    
-    /**
      * Get connection.
      *
      * @param dataSourceName data source name

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
@@ -35,7 +34,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -70,49 +68,6 @@ public final class ShardingSphereConnectionTest {
             connection.close();
             TransactionTypeHolder.clear();
         } catch (final SQLException ignored) {
-        }
-    }
-    
-    @Test
-    public void assertGetConnection() throws SQLException {
-        assertThat(connection.getConnection("ds"), is(connection.getConnection("ds")));
-    }
-    
-    @Test
-    public void assertGetConnectionsWhenAllInCache() throws SQLException {
-        Connection expected = connection.getConnection("ds");
-        List<Connection> actual = connection.getConnections("ds", 1, ConnectionMode.CONNECTION_STRICTLY);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(expected));
-    }
-    
-    @Test
-    public void assertGetConnectionsWhenEmptyCache() throws SQLException {
-        List<Connection> actual = connection.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual.size(), is(1));
-    }
-    
-    @Test
-    public void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
-        connection.getConnection("ds");
-        List<Connection> actual = connection.getConnections("ds", 3, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual.size(), is(3));
-    }
-    
-    @Test
-    public void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
-        connection.getConnection("ds");
-        List<Connection> actual = connection.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
-        assertThat(actual.size(), is(3));
-    }
-    
-    @Test
-    public void assertGetConnectionsWhenConnectionCreateFailed() throws SQLException {
-        when(connection.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection()).thenThrow(new SQLException());
-        try {
-            connection.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released!"));
         }
     }
     
