@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.component;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.component.ExpectedComponent;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected component.
+ * Uninstall component statement test case.
  */
 @Getter
-public final class ExpectedComponent extends AbstractExpectedIdentifierSQLSegment {
+public final class UninstallComponentStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "component")
+    private final List<ExpectedComponent> components = new LinkedList<>();
 }
