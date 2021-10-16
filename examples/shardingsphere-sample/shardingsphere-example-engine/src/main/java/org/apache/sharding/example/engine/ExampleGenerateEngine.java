@@ -48,14 +48,18 @@ public final class ExampleGenerateEngine {
             "<#list framework?split(\"-\") as framework1>" +
             "<#assign frameworkName=frameworkName + framework1?cap_first>" +
             "</#list>${frameworkName}";
-    private static final Map<String, String> TEMPLATE_MAP = new HashMap(4, 1);
+    private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap(4, 1);
+    
+    private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>(3, 1);
     static {
         try {
             CONFIGURATION.setDirectoryForTemplateLoading(new File(ExampleGenerateEngine.class.getClassLoader().getResource("").getFile()));
             CONFIGURATION.setDefaultEncoding("UTF-8");
-            //TEMPLATE_MAP.put("Configuration", "Configuration.ftl");
-            TEMPLATE_MAP.put("Example", "Example.ftl");
-            TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
+            RENAME_TEMPLATE_MAP.put("Repository", "Repository.ftl");
+            RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
+            RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
+            UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.ftl");
+            UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.ftl");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,12 +100,15 @@ public final class ExampleGenerateEngine {
     
     public static void main(String[] args) {
         Yaml yaml = new Yaml();
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-jdbc/datamodel.yaml");
+        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-jpa/datamodel.yaml");
         Map<String, String> map = yaml.loadAs(in, Map.class);
         String fileName = processString(map, FILE_NAME_PREFIX);
         String outputPath = processString(map, OUTPUT_PATH);
-        for (String key : TEMPLATE_MAP.keySet()) {
-            processFile(map, "/template/springboot-starter-jdbc/" + TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
+        for (String key : RENAME_TEMPLATE_MAP.keySet()) {
+            processFile(map, "/template/springboot-starter-jpa/" + RENAME_TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
+        }
+        for (String key : UN_NAME_TEMPLATE_MAP.keySet()) {
+            processFile(map, "/template/springboot-starter-jpa/" + UN_NAME_TEMPLATE_MAP.get(key), outputPath + "/" + key + ".java");
         }
     }
 }
