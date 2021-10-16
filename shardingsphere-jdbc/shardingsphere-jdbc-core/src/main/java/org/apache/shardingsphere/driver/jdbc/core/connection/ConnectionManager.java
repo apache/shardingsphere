@@ -74,6 +74,91 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     /**
+     * Set auto commit.
+     * 
+     * @param autoCommit auto commit
+     * @throws SQLException SQL exception
+     */
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
+    }
+    
+    /**
+     * Commit.
+     * 
+     * @throws SQLException SQL exception
+     */
+    public void commit() throws SQLException {
+        if (connectionTransaction.isLocalTransaction()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
+        } else {
+            connectionTransaction.commit();
+        }
+    }
+    
+    /**
+     * Rollback.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void rollback() throws SQLException {
+        if (connectionTransaction.isLocalTransaction()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+        } else {
+            connectionTransaction.rollback();
+        }
+    }
+    
+    /**
+     * Get transaction isolation.
+     * 
+     * @return transaction isolation level
+     * @throws SQLException SQL exception
+     */
+    public Optional<Integer> getTransactionIsolation() throws SQLException {
+        return cachedConnections.values().isEmpty() ? Optional.empty() : Optional.of(cachedConnections.values().iterator().next().getTransactionIsolation());
+    }
+    
+    /**
+     * Set transaction isolation.
+     *
+     * @param level transaction isolation level
+     * @throws SQLException SQL exception
+     */
+    public void setTransactionIsolation(final int level) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
+    }
+    
+    /**
+     * Set read only.
+     *
+     * @param readOnly read only
+     * @throws SQLException SQL exception
+     */
+    public void setReadOnly(final boolean readOnly) throws SQLException {
+        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
+    }
+    
+    /**
+     * Whether connection valid.
+     * 
+     * @param timeout timeout
+     * @return connection valid or not
+     * @throws SQLException SQL exception
+     */
+    public boolean isValid(final int timeout) throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            if (!each.isValid(timeout)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Get random physical data source name.
      *
      * @return random physical data source name
@@ -170,91 +255,6 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
                                                    final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-    
-    /**
-     * Set auto commit.
-     * 
-     * @param autoCommit auto commit
-     * @throws SQLException SQL exception
-     */
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
-    }
-    
-    /**
-     * Commit.
-     * 
-     * @throws SQLException SQL exception
-     */
-    public void commit() throws SQLException {
-        if (connectionTransaction.isLocalTransaction()) {
-            forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
-        } else {
-            connectionTransaction.commit();
-        }
-    }
-    
-    /**
-     * Rollback.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void rollback() throws SQLException {
-        if (connectionTransaction.isLocalTransaction()) {
-            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
-        } else {
-            connectionTransaction.rollback();
-        }
-    }
-    
-    /**
-     * Get transaction isolation.
-     * 
-     * @return transaction isolation level
-     * @throws SQLException SQL exception
-     */
-    public Optional<Integer> getTransactionIsolation() throws SQLException {
-        return cachedConnections.values().isEmpty() ? Optional.empty() : Optional.of(cachedConnections.values().iterator().next().getTransactionIsolation());
-    }
-    
-    /**
-     * Set transaction isolation.
-     *
-     * @param level transaction isolation level
-     * @throws SQLException SQL exception
-     */
-    public void setTransactionIsolation(final int level) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
-        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
-    }
-    
-    /**
-     * Set read only.
-     *
-     * @param readOnly read only
-     * @throws SQLException SQL exception
-     */
-    public void setReadOnly(final boolean readOnly) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
-        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
-    }
-    
-    /**
-     * Whether connection valid.
-     * 
-     * @param timeout timeout
-     * @return connection valid or not
-     * @throws SQLException SQL exception
-     */
-    public boolean isValid(final int timeout) throws SQLException {
-        for (Connection each : cachedConnections.values()) {
-            if (!each.isValid(timeout)) {
-                return false;
-            }
-        }
-        return true;
     }
     
     @Override
