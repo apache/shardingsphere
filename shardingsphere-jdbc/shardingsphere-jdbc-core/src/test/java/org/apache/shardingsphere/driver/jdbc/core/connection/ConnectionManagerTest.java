@@ -65,26 +65,28 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
+    public void assertGetRandomPhysicalDataSourceNameFromContextManager() throws SQLException {
+        connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         String actual = connectionManager.getRandomPhysicalDataSourceName();
         assertThat(actual, is("ds"));
     }
     
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
-        connectionManager.getConnection("ds");
+        connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         String actual = connectionManager.getRandomPhysicalDataSourceName();
         assertThat(actual, is("ds"));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        assertThat(connectionManager.getConnection("ds"), is(connectionManager.getConnection("ds")));
+        assertThat(connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY),
+                is(connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
     public void assertGetConnectionsWhenAllInCache() throws SQLException {
-        Connection expected = connectionManager.getConnection("ds");
+        Connection expected = connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         List<Connection> actual = connectionManager.getConnections("ds", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
@@ -98,14 +100,14 @@ public final class ConnectionManagerTest {
     
     @Test
     public void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
-        connectionManager.getConnection("ds");
+        connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         List<Connection> actual = connectionManager.getConnections("ds", 3, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     public void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
-        connectionManager.getConnection("ds");
+        connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         List<Connection> actual = connectionManager.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(3));
     }

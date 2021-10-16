@@ -46,6 +46,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String currentPhysicalDataSourceName;
     
+    private Connection currentPhysicalConnection;
+    
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
@@ -57,7 +59,10 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public Connection getConnection() throws SQLException {
-        return connection.getConnectionManager().getConnection(getDataSourceName());
+        if (null == currentPhysicalConnection) {
+            currentPhysicalConnection = connection.getConnectionManager().getRandomConnection();
+        } 
+        return currentPhysicalConnection;
     }
     
     @Override

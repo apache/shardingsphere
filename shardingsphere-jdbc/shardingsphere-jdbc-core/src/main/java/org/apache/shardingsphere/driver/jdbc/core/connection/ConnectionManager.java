@@ -84,14 +84,13 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     /**
-     * Get connection.
+     * Get random connection.
      *
-     * @param dataSourceName data source name
-     * @return connection
+     * @return random connection
      * @throws SQLException SQL exception
      */
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+    public Connection getRandomConnection() throws SQLException {
+        return getConnections(getRandomPhysicalDataSourceName(), 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override

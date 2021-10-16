@@ -204,7 +204,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return connectionManager.getConnection(connectionManager.getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
+        return connectionManager.getRandomConnection().createArrayOf(typeName, elements);
     }
     
     @Override
