@@ -74,19 +74,6 @@ public final class ShardingSphereConnectionTest {
     }
     
     @Test
-    public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
-        String actual = connection.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
-    }
-    
-    @Test
-    public void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
-        connection.getConnection("ds");
-        String actual = connection.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
-    }
-    
-    @Test
     public void assertGetConnection() throws SQLException {
         assertThat(connection.getConnection("ds"), is(connection.getConnection("ds")));
     }

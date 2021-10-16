@@ -48,6 +48,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @Getter
     private final ContextManager contextManager;
     
+    @Getter
     private final ConnectionManager connectionManager;
     
     private boolean autoCommit = true;
@@ -247,7 +248,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return getConnection(getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
+        return getConnection(connectionManager.getRandomPhysicalDataSourceName()).createArrayOf(typeName, elements);
     }
     
     @Override

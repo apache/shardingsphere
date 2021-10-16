@@ -231,7 +231,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getDataSourceName() {
         if (null == currentPhysicalDataSourceName) {
-            currentPhysicalDataSourceName = connection.getRandomPhysicalDataSourceName();
+            currentPhysicalDataSourceName = connection.getConnectionManager().getRandomPhysicalDataSourceName();
         }
         return currentPhysicalDataSourceName;
     }
