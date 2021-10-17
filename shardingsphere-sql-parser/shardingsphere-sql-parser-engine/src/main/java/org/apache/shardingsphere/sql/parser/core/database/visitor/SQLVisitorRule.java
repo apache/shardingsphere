@@ -264,6 +264,8 @@ public enum SQLVisitorRule {
     
     INSTALL("Install", SQLStatementType.DAL),
     
+    UNINSTALL("Uninstall", SQLStatementType.DAL),
+    
     FLUSH("Flush", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
