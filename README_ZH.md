@@ -115,40 +115,13 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 |               | 弹性伸缩       | SQL 防火墙（TODO） |                   |           |
 |               | 高可用        |                   |                   |           |
 
-## 如何构建
-
-### 构建 Apache ShardingSphere
-
-```bash
-./mvnw clean install -Prelease
-```
-
-构建产物：
-
-```
-shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip  # Apache ShardingSphere 的源码包
-shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz  # ShardingSphere-JDBC 的二进制包
-shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz  # ShardingSphere-Proxy 的二进制包
-shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz  # ShardingSphere-Scaling 的二进制包
-```
-
-### 构建ShardingSphere UI
-
-```bash
-git clone https://github.com/apache/shardingsphere-ui
-cd shardingsphere-ui
-./mvnw clean install -Prelease
-```
-
-构建产物：
-
-```
-shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz  # ShardingSphere-UI的二进制包
-```
-
 ## 线路规划
 
 ![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+
+## 如何构建 Apache ShardingSphere:
+
+查看 [Wiki](https://github.com/apache/shardingsphere/wiki) 详细了解如何构建 Apache ShardingSphere。
 
 ## 全景图
 

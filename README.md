@@ -112,11 +112,9 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
 
-## How to Build and Setup Your Local Dev Environment:
+## How to Build Apache ShardingSphere:
 
-### Build Apache ShardingSphere
-
-Check out our Wiki section for details on how to build ShardingSphere, the ShardingSphere-UI, and a full guide on how to get started and setup your local dev environment [at this link](https://github.com/apache/shardingsphere/wiki).
+Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for details on how to build Apache ShardingSphere and a full guide on how to get started and setup your local dev environment.
 
 ## Landscapes
 
@@ -126,4 +124,3 @@ Check out our Wiki section for details on how to build ShardingSphere, the Shard
 <br/><br/>
 Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>.
 </p>
-
