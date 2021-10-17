@@ -118,30 +118,13 @@ Architects can adjust the system architecture to the most applicable one to thei
 
 ## Solution
 
-### Distributed Database
-
-* Data Sharding
-* Readwrite-splitting
-* Distributed Transaction
-* Elastic Scale-out
-* Distributed Highly Available
-
-### Data Security
-
-* Data Encrypt
-* Row Authority (TODO)
-* SQL Audit (TODO)
-* SQL Firewall (TODO)
-
-### Database Gateway
-
-* Multi-model Databases supported
-* SQL Dialect Translate（TODO）
-
-### Stress Testing
-
-* Shadow Database
-* Observability (Tracing and Metrics)
+| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*              | *Stress Testing* |
+| -------------------- | ----------------------- | ---------------------| ------------------------------- | ---------------- |
+|                      | Data Sharding           | Data Encrypt         | Multi-model Databases Supported | Shadow Database  |
+|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)    | Observability    |
+|                      | Distributed Transaction | SQL Audit (TODO)     |                                 |                  |
+|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                 |                  |
+|                      | Highly Available        |                      |                                 |                  |
 
 ## Roadmap
 

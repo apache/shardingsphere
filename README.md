@@ -102,13 +102,13 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ### Solution
 
-|  *Distributed Database* |    *Data Security*   |    *Database Gateway* | *Stress Testing* |        
-| ----------------------- | ---------------------| ---------------------- | ---------------|
-| Data Sharding           | Data Encrypt         | Multi-model Databases supported | Shadow Database |
-| Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO) | Observability (Tracing & Metrics)|
-| Distributed Transaction | SQL Audit (TODO)     | Any                    
-| Elastic Scale-out       | SQL Firewall (TODO)  | Relatively High loss   |
-| Distributed Highly Available |                |                |
+| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*              | *Stress Testing* |
+| -------------------- | ----------------------- | ---------------------| ------------------------------- | ---------------- |
+|                      | Data Sharding           | Data Encrypt         | Multi-model Databases Supported | Shadow Database  |
+|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)    | Observability    |
+|                      | Distributed Transaction | SQL Audit (TODO)     |                                 |                  |
+|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                 |                  |
+|                      | Highly Available        |                      |                                 |                  |
 
 ### Roadmap
 
