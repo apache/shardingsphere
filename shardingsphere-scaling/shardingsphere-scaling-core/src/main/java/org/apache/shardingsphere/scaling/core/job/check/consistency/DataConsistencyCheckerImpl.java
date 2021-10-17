@@ -122,12 +122,23 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceConfig.getDatabaseType().getName());
         SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetConfig.getDatabaseType().getName());
         Map<String, Boolean> result = new HashMap<>();
-        for (String each : logicTableNames) {
-            Collection<String> columnNames = tablesColumnNamesMap.get(each);
-            Object sourceCalculateResult = sourceCalculator.dataCalculate(sourceConfig, each, columnNames);
-            Object targetCalculateResult = targetCalculator.dataCalculate(targetConfig, each, columnNames);
-            boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
-            result.put(each, calculateResultsEquals);
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
+        try {
+            for (String each : logicTableNames) {
+                Collection<String> columnNames = tablesColumnNamesMap.get(each);
+                Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceConfig, each, columnNames));
+                Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetConfig, each, columnNames));
+                Object sourceCalculateResult = sourceFuture.get();
+                Object targetCalculateResult = targetFuture.get();
+                boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
+                result.put(each, calculateResultsEquals);
+            }
+        } catch (final ExecutionException | InterruptedException ex) {
+            throw new DataCheckFailException("data check failed");
+        } finally {
+            executor.shutdown();
+            executor.shutdownNow();
         }
         return result;
     }
