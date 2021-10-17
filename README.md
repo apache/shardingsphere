@@ -112,7 +112,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ### Roadmap
 
-![](./docs/document/content/Read-Me-Pics/Read-me-roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
 
 ## How to Build and Setup Your Local Dev Environment:
 
