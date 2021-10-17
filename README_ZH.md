@@ -51,9 +51,9 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 :link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). 适合于技术问题咨询和新功能讨论；
 
-:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). 适合于在线交流和线上会议；
+:link: [Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). 适合于在线交流和线上会议；
 
-:link:	[Twitter](https://twitter.com/ShardingSphere). 随时了解 Apache ShardingSphere 信息。
+:link: [Twitter](https://twitter.com/ShardingSphere). 随时了解 Apache ShardingSphere 信息。
 
 ### ShardingSphere-JDBC
 

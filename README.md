@@ -51,15 +51,15 @@ For guides on how to get started and setup your environment, contributor & commi
 
 :link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). Best for: technical questions & support, requesting new features, proposing new features.
 
-:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
+:link: [Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
 
-:link:	[Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
+:link: [Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
 
 ## Status:
 
 :white_check_mark: Version 5.0.0-beta: released, stable enough & anyone can sign up :tada:
 
-:soon:	Version 5.0.0-RC1
+:soon: Version 5.0.0-RC1
 
 We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 

@@ -10,8 +10,8 @@ chapter = true
 ## Installation Procedure (For example, Mac)
 ## 1.The JDK installation
 - The following link is to obtain the installation package suitable for your environment (MAC select.dmg format).
--	https://www.oracle.com/java
-	![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
+- https://www.oracle.com/java
+ ![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
 - Install it directly after downloading
 ## 2.Set the environment variable
 ```shell
@@ -32,12 +32,12 @@ source ~/.zprofile
 ```
 ## 3.Idea Download and install
 - The following link provides an installation package suitable for your environment
-	https://www.jetbrains.com/idea/download/#section=mac
+ https://www.jetbrains.com/idea/download/#section=mac
 - Install it directly after downloading
 ## 4.Idea clone code
 - Enter Idea
 - Toolbar-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
-	![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
+ ![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
 - At the end of the wait, there is the latest code that has just been cloned
 ## 5.Compile the project
 ```shell
