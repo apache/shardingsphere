@@ -45,15 +45,15 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 ## 社区和支持:
 
-:link: [Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
+:link: [Mailing List](dev@shardingsphere.apache.org). 适合于 Apache 社区相关讨论和版本发布；
 
-:link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
+:link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). 适合于设计问题、缺陷报告或者开发相关；
 
-:link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). Best for: technical questions & support, requesting new features, proposing new features.
+:link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). 适合于技术问题咨询和新功能讨论；
 
-:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
+:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). 适合于在线交流和线上会议；
 
-:link:	[Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
+:link:	[Twitter](https://twitter.com/ShardingSphere). 随时了解 Apache ShardingSphere 信息。
 
 ### ShardingSphere-JDBC
 
