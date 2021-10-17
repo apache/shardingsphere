@@ -26,11 +26,9 @@ Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据
 
 `连接`、`增量`和`可插拔`是 Apache ShardingSphere 的核心概念。
 
-•	`连接`：通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
-
-•	`增量`：获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能；
-
-•	`可插拔`：项目采用微内核 + 三层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
+- `连接：`通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
+- `增量：`获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能；
+- `可插拔：`项目采用微内核 + 三层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
 
 ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
 
@@ -40,6 +38,22 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
 
 更多信息请参考：[https://shardingsphere.apache.org/document/current/cn/overview/](https://shardingsphere.apache.org/document/current/cn/overview/)
+
+## 参与贡献:
+
+搭建开发环境和贡献者指南，请参考：[https://shardingsphere.apache.org/community/cn/contribute/](https://shardingsphere.apache.org/community/cn/contribute/)
+
+## 社区和支持:
+
+:link: [Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
+
+:link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
+
+:link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). Best for: technical questions & support, requesting new features, proposing new features.
+
+:link:	[Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). Best for: instant communications and online meetings, sharing your applications.
+
+:link:	[Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
 
 ### ShardingSphere-JDBC
 

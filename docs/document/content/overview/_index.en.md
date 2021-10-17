@@ -18,15 +18,14 @@ chapter = true
 
 [![Contributors Over Time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
 
-Apache ShardingSphere is positioned as `Database Plus`, which aims to build criterion and ecosystem above multi-model databases.
-It focuses on how to reuse existing database, rather than creating a new database.
-ShardingSphere focuses on the upper layer of databases, pays more attention on cooperation between databases rather than database itself.
+Apache ShardingSphere is positioned as a Database Plus, and aims at building a new criterion and ecosystem above multi-model databases. 
+It focuses on how to reuse existing databases and their respective upper layer, rather than creating a new database.
 
-`Link`, `Enhance` and `Pluggable` is the core concepts of Apache ShardingSphere.
+The concepts at the core of the project are Link, Enhance and Pluggable.
 
-- `Link`：Flexible adaptation of database protocol, SQL dialect and database storage, it can link applications and multi-mode heterogeneous databases quickly;
-- `Enhance`：Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance（circuit breaker and access limitation and analyse (Qos and observability);
-- `Pluggable`：Use micro kernel and 3 layers pluggable mode, to make features and database ecosystem can be embedded flexibility. Developers can customize their ShardingSphere just like building blocks.
+- `Link:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly link applications and multi-mode heterogeneous databases quickly.
+- `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
+- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
