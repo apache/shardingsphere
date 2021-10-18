@@ -31,6 +31,7 @@ MySQL 需要开启 `binlog`，`binlog format` 为Row模式，且迁移时所使�
 +-----------------------------------------+---------------------------------------+
 | log_bin                                 | ON                                    |
 | binlog_format                           | ROW                                   |
+| binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
 
 +------------------------------------------------------------------------------+
@@ -68,7 +69,7 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 
 *** 注意 ***
 
-当前 source type 必须是 shardingSphereJdbc
+当前 source type 和 target type 必须是 shardingSphereJdbc
 
 示例：
 
