@@ -6,7 +6,7 @@ weight = 3
 ## Definition
 
 ```sql
-SHOW READWRITE_SPLITTING RULES [FROM schemaName]               
+SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 ```
 
 ## Description

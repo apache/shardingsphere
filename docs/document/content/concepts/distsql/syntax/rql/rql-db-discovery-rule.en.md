@@ -6,7 +6,7 @@ weight = 5
 ## Definition
 
 ```sql
-SHOW DB_DISCOVERY RULES [FROM schemaName]              
+SHOW DB_DISCOVERY RULES [FROM schemaName]
 ```
 
 ## Description

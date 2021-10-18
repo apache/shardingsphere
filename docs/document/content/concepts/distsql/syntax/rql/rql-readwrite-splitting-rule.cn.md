@@ -6,7 +6,7 @@ weight = 3
 ## 定义
 
 ```sql
-SHOW READWRITE_SPLITTING RULES [FROM schemaName]               
+SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 ```
 
 ## 说明
