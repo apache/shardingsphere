@@ -66,8 +66,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
         boolean isPostgreSQLIdentifierPacket = message instanceof PostgreSQLIdentifierPacket;
         if (isPostgreSQLIdentifierPacket) {
-            out.writeByte(((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
-            out.writeInt(0);
+            prepareMessageHeader(out, ((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
         }
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out);
         try {
@@ -80,14 +79,22 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, ex.getMessage())
                     .build();
             isPostgreSQLIdentifierPacket = true;
-            out.writeByte(errorResponsePacket.getIdentifier().getValue());
-            out.writeInt(0);
+            prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);
         } finally {
             if (isPostgreSQLIdentifierPacket) {
-                out.setInt(1, out.readableBytes() - MESSAGE_TYPE_LENGTH);
+                setMessageLength(out);
             }
         }
+    }
+    
+    private void prepareMessageHeader(final ByteBuf out, final char type) {
+        out.writeByte(type);
+        out.writeInt(0);
+    }
+    
+    private void setMessageLength(final ByteBuf out) {
+        out.setInt(1, out.readableBytes() - MESSAGE_TYPE_LENGTH);
     }
     
     @Override
