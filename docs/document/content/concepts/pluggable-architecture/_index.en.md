@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.9. </b>"
+pre = "<b>3.3. </b>"
 title = "Pluggable Architecture"
-weight = 9
+weight = 3
 chapter = true
 +++
 
