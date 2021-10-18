@@ -297,7 +297,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         CloneActionSegment result = new CloneActionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.cloneInstance()) {
             CloneInstanceContext cloneInstance = ctx.cloneInstance();
-            CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment();
+            CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment(cloneInstance.start.getStartIndex(), cloneInstance.stop.getStopIndex());
             cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
             cloneInstanceSegment.setHostName(((StringLiteralValue) visit(cloneInstance.hostName())).getValue());
             cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());

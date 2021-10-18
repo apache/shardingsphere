@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
@@ -25,14 +26,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 /**
  * Clone instance segment.
  */
+@RequiredArgsConstructor
 @ToString
 @Getter
 @Setter
 public class CloneInstanceSegment implements SQLSegment {
 
-    private int startIndex;
+    private final int startIndex;
 
-    private int stopIndex;
+    private final int stopIndex;
 
     private String userName;
 
