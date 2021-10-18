@@ -32,6 +32,7 @@ import java.util.List;
  * Command parse packet for PostgreSQL.
  */
 @Getter
+@ToString
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String statementId;

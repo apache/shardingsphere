@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Command query packet for PostgreSQL.
  */
 @Getter
+@ToString
 public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     
     private final String sql;
