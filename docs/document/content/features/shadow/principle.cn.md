@@ -40,14 +40,14 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ### DDL 语句
 
-仅支持影子算法。一般不会对 DDL 语句的压力测试。主要做为影子库环境的初始化或者影子表调整时执行。
+仅支持注解影子算法。一般不会对 DDL 语句的压力测试。主要做为影子库环境的初始化或者影子表调整时执行。
 
 影子判定会首先判断执行 SQL 是否包含注解，如果包含注解对影子规则中的注解影子算法依次判定。如果注解影子算法有任何一个判定成功。SQL 语句路由到影子库。
 没有 SQL 不包含注解或者注解影子算法判定不成功，路由到生产库。
 
 ## 影子算法
 
-影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)。
+影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)
 
 ## 使用案例
 
