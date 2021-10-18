@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.8. </b>"
-title = "Dist SQL"
-weight = 8
+pre = "<b>3.4. </b>"
+title = "DistSQL"
+weight = 4
 chapter = true
 +++
 
