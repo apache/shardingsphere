@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 
@@ -41,14 +42,15 @@ public final class CloneStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCloneStatement actual, final CloneStatementTestCase expected) {
         if (null != expected.getDataDirectory()) {
-            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneDir(), is(expected.getDataDirectory().getLocation()));
+            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneActionSegment().getCloneDir(), is(expected.getDataDirectory().getLocation()));
         }
         if (null != expected.getInstance()) {
-            assertThat(assertContext.getText("Actual instance hostname does not match: "), actual.getCloneInstance().getHostName(), is(expected.getInstance().getHostname()));
-            assertThat(assertContext.getText("Actual instance username does not match: "), actual.getCloneInstance().getUserName(), is(expected.getInstance().getUsername()));
-            assertThat(assertContext.getText("Actual instance port does not match: "), actual.getCloneInstance().getPort(), is(expected.getInstance().getPort()));
-            assertThat(assertContext.getText("Actual instance password does not match: "), actual.getCloneInstance().getPassword(), is(expected.getInstance().getPassword()));
-            assertThat(assertContext.getText("Actual instance SSL requirement does not match: "), actual.getCloneInstance().isSslRequired(), is(expected.getInstance().isSslRequired()));
+            CloneInstanceSegment instance = actual.getCloneActionSegment().getCloneInstance();
+            assertThat(assertContext.getText("Actual instance hostname does not match: "), instance.getHostName(), is(expected.getInstance().getHostname()));
+            assertThat(assertContext.getText("Actual instance username does not match: "), instance.getUserName(), is(expected.getInstance().getUsername()));
+            assertThat(assertContext.getText("Actual instance port does not match: "), instance.getPort(), is(expected.getInstance().getPort()));
+            assertThat(assertContext.getText("Actual instance password does not match: "), instance.getPassword(), is(expected.getInstance().getPassword()));
+            assertThat(assertContext.getText("Actual instance SSL requirement does not match: "), instance.isSslRequired(), is(expected.getInstance().isSslRequired()));
         }
     }
 }

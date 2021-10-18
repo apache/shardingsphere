@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * MySQL clone statement.
+ * Clone action segment.
  */
+@RequiredArgsConstructor
 @ToString
 @Getter
 @Setter
-public final class MySQLCloneStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public class CloneActionSegment implements SQLSegment {
 
-    private CloneActionSegment cloneActionSegment;
+    private final int startIndex;
 
+    private final int stopIndex;
+
+    private String cloneDir;
+
+    private CloneInstanceSegment cloneInstance;
 }
