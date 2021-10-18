@@ -11,4 +11,4 @@ weight = 3
 
 ## Unsupported Items
 
-* Do not support to scale tables without primary key.
+* Do not support to scale tables without primary key which must be single column.
