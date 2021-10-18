@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command termination packet for PostgreSQL.
  */
+@ToString
 public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComTerminationPacket(final PostgreSQLPacketPayload payload) {

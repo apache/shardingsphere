@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command sync packet for PostgreSQL.
  */
+@ToString
 public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComSyncPacket(final PostgreSQLPacketPayload payload) {
