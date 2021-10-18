@@ -93,14 +93,14 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
-            return Optional.ofNullable(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
+            return Optional.of(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
         }
         // TODO subquery
         return Optional.empty();
     }
 
     private ParameterMarkerProjection createProjection(final ParameterMarkerExpressionSegment projectionSegment) {
-        return projectionSegment.getAlias().isPresent() ? new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getAlias().get()) : null;
+        return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getAlias().orElse(null));
     }
     
     private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
