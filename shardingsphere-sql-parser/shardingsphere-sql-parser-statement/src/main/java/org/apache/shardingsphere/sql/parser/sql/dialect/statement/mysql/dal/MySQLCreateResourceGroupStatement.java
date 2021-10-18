@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.spring.boot.rule;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * YAML readwrite-splitting rule spring boot configuration.
+ * MySQL create resource group statement.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class YamlReadwriteSplittingRuleSpringBootConfiguration {
-    
-    private YamlReadwriteSplittingRuleConfiguration readwriteSplitting;
+@ToString
+public final class MySQLCreateResourceGroupStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+
+    private String name;
+
 }

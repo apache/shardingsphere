@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.group;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
 
 /**
- * Create readwrite-splitting rule statement.
+ * Expected group.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateReadwriteSplittingRuleStatement extends CreateRuleStatement {
-    
-    private final Collection<ReadwriteSplittingRuleSegment> rules;
+@Setter
+public final class ExpectedGroup extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
 }
