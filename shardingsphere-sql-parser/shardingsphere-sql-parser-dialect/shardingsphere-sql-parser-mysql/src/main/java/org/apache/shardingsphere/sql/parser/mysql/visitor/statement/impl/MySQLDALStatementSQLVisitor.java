@@ -76,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
@@ -128,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
@@ -590,6 +592,17 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitInstallComponent(final InstallComponentContext ctx) {
         MySQLInstallComponentStatement result = new MySQLInstallComponentStatement();
+        List<String> components = new LinkedList<>();
+        for (ComponentNameContext each : ctx.componentName()) {
+            components.add(((StringLiteralValue) visit(each.string_())).getValue());
+        }
+        result.getComponents().addAll(components);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitUninstallComponent(final UninstallComponentContext ctx) {
+        MySQLUninstallComponentStatement result = new MySQLUninstallComponentStatement();
         List<String> components = new LinkedList<>();
         for (ComponentNameContext each : ctx.componentName()) {
             components.add(((StringLiteralValue) visit(each.string_())).getValue());

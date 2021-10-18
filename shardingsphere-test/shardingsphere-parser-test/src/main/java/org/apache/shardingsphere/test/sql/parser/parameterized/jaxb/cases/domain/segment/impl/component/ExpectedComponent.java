@@ -18,16 +18,11 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.component;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
  * Expected component.
  */
 @Getter
-public final class ExpectedComponent extends AbstractExpectedSQLSegment {
-    
-    @XmlAttribute(name = "name")
-    private String name;
+public final class ExpectedComponent extends AbstractExpectedIdentifierSQLSegment {
 }

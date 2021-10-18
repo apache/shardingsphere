@@ -28,4 +28,11 @@
     <packaging>pom</packaging>
     <artifactId>shardingsphere-jdbc-memory-local-sharding-example</artifactId>
     <name>${project.artifactId}</name>
+    
+    <modules>
+        <module>shardingsphere-jdbc-memory-local-sharding-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-jpa-example</module>
+    </modules>
+    
 </project>

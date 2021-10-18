@@ -20,6 +20,16 @@
     {
       "name": "spring.shardingsphere.datasource",
       "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
     }
   ],
   "properties": [
@@ -36,9 +46,24 @@
       "description": "Customize shardingsphere properties."
     },
     {
-      "name": "spring.shardingsphere.mode",
-      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
-      "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration"
+      "name": "spring.shardingsphere.mode.type",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository.type",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository.props",
+      "type": "java.util.Properties",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.overwrite",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
     },
     {
       "name": "spring.shardingsphere.datasource.names",

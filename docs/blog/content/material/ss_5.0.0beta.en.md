@@ -8,7 +8,7 @@ As an Apache top-level project, ShardingSphere goes through community verificati
 
 ## Release Features:
 
-### 1.	Highlight Features
+### 1. Highlight Features
 
 #### DistSQL – A New SQL Type for a Distributed Database Ecosystem
 
@@ -49,14 +49,14 @@ Currently data sharding, Readwrite-splitting, data encryption, Shadow databases,
 
 Pluggable architecture’s improvement effectively evolves ShardingSphere into a distributed database ecosystem. The pluggable and extensible concepts provide a customized combinational database solution that can be built upon with Lego-like blocks. For example, traditional relational databases can be scaled out and encrypted at the same time, while distributed database solutions can be built independently.
 
-### 2.	New Features
+### 2. New Features
 
 #### New Open Observability
 
 ShardingSphere provides automated probes to effectively separate observability from the main functionality. This brings significant convenience for user-customized tracing, metrics, and logging. 
 OpenTracing, Jaeger, Zipkin based tracing probes and Prometheus Metrics probes, as well as a default logging implementation also have built-in implementations.
 
-### 3.	Enhancements
+### 3. Enhancements
 
 #### Enhanced Distributed Query Capability
 
@@ -105,66 +105,66 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 
 ### Other New Features:
 
-1.	New DistSQL for loading and presenting ShardingSphere’s configuration.
-2.	Support for join queries and sub-queries across different databased instances.
-3.	Data gateway is added to support heterogeneous databases.
-4.	Support create and modify user permission online or dynamically.
-5.	New automated probes module.
+1. New DistSQL for loading and presenting ShardingSphere’s configuration.
+2. Support for join queries and sub-queries across different databased instances.
+3. Data gateway is added to support heterogeneous databases.
+4. Support create and modify user permission online or dynamically.
+5. New automated probes module.
 
 ### API Changes:
 
-1.	API in read and write splitting module configuration changed to read-write-splitting.
-2.	API for ShardingProxy user permission configuration changed to Authority.
-3.	Using dataSourceClassName to optimize the dataSource configuration of ShardingJDBC.
-4.	Automated ShardingTable configuration strategy, provide standard built-in shard table.
-5.	Removed ShardingProxy acceptor-size configuration option.
-6.	Added built-in shard algorithm SPI so users can set up the shard algorithm through class name like in the version 4.x.
+1. API in read and write splitting module configuration changed to read-write-splitting.
+2. API for ShardingProxy user permission configuration changed to Authority.
+3. Using dataSourceClassName to optimize the dataSource configuration of ShardingJDBC.
+4. Automated ShardingTable configuration strategy, provide standard built-in shard table.
+5. Removed ShardingProxy acceptor-size configuration option.
+6. Added built-in shard algorithm SPI so users can set up the shard algorithm through class name like in the version 4.x.
 
 ### Enhancements:
 
-1.	Startup metadata loading performance has been significantly improved.
-2.	Greatly enhanced the parsing abilities for Oracle/SQLServer/PostgreSQL database.
-3.	Supporting initialization of the user permission MySQL/PostgreSQL/SQLServer/Oracle.
-4.	Supporting DDL language for data encryption.
-5.	When sharding and encryption are used together, SQL is supported for modifying the table named owner.
-6.	Using SELECT* to rewrite SQL, overwrite columns to add escape characters to avoid column conflicts with keywords.
-7.	Supporting PostgreSQL JSON/JSONB/ for pattern matching operator parsing.
-8.	Supporting MySQL/PostgreSQL CREATE/ALTER/DROP TABLESPACE.
-9.	Supporting PostgreSQL PREPARE, EXECUTE, DEALLOCATE.
-10.	Supporting PostgreSQL EXPLAIN.
-11.	Supporting PostgreSQL START/END TRANSACTION.
-12.	Supporting PostgreSQL ALTER/DROP INDEX.
-13.	Supporting PostgreSQL dialect CREATE TABLESPACE.
-14.	Supporting MySQL CREATE LOADABLE FUNCTION.
-15.	Supporting MySQL/PostgreSQL ALTER TABLE RENAME.
-16.	Supporting PostgreSQL protocol Close command.
+1. Startup metadata loading performance has been significantly improved.
+2. Greatly enhanced the parsing abilities for Oracle/SQLServer/PostgreSQL database.
+3. Supporting initialization of the user permission MySQL/PostgreSQL/SQLServer/Oracle.
+4. Supporting DDL language for data encryption.
+5. When sharding and encryption are used together, SQL is supported for modifying the table named owner.
+6. Using SELECT* to rewrite SQL, overwrite columns to add escape characters to avoid column conflicts with keywords.
+7. Supporting PostgreSQL JSON/JSONB/ for pattern matching operator parsing.
+8. Supporting MySQL/PostgreSQL CREATE/ALTER/DROP TABLESPACE.
+9. Supporting PostgreSQL PREPARE, EXECUTE, DEALLOCATE.
+10. Supporting PostgreSQL EXPLAIN.
+11. Supporting PostgreSQL START/END TRANSACTION.
+12. Supporting PostgreSQL ALTER/DROP INDEX.
+13. Supporting PostgreSQL dialect CREATE TABLESPACE.
+14. Supporting MySQL CREATE LOADABLE FUNCTION.
+15. Supporting MySQL/PostgreSQL ALTER TABLE RENAME.
+16. Supporting PostgreSQL protocol Close command.
 
 ### Changes:
 
-1.	New registry storage structure.
+1. New registry storage structure.
 2. Removed support for NACOS and Apollo's Configuration Centre.
 3. ShardingScaling introduces ElasticJob to handle migration tasks.
 4. Refactoring the storage and online update of the kernel metadata information.
 
 ### Bug fixes:
 
-1.	Fixed issue where SELECT * wildcard SQL could not be used for read/write separation.
-2.	The custom sharding algorithm did not match the configuration type and the class instance did not meet expectations issue is fixed.
-3.	Fixed the NoSuchTableException when executing DROP TABLE IF EXISTS.
-4.	Fixed UPDATE ... SET ... rewrite error.
-5.	Fixed CREATE/ALTER TABLE statement using foreign key to reference TABLE overwrite error.
-6.	Fixed the issue when querying subqueries in the temporal table field verification exception.
-7.	Fixed Oracle/SQL92 SELECT ... WHERE ... LIKE class cast exception.
-8.	Fixed MySQL SELECT EXISTS ... FROM ... parsing exception.
-9.	Fixed SHOW INDEX result exception.
-10.	Fixed the rewrite and merge result exception for SELECT... GROUP BY ...
-11.	Fixed the encryption and decryption error for CREATE TABLE rewrite.
-12.	Fixed issue with PostgreSQL Proxy reading text parameter values incorrectly.
-13.	Fixed PostgreSQL Proxy support for array objects.
-14.	Fixed ShardingProxy Datatype conversion issues.
-15.	PostgreSQL Proxy supports the use of the Numeric type.
-16.	Fixed the issue with incorrect Tag for PostgreSQL Proxy transactions related to Command Complete.
-17.	Fixed the issue that might return packets that were not expected by the client.
+1. Fixed issue where SELECT * wildcard SQL could not be used for read/write separation.
+2. The custom sharding algorithm did not match the configuration type and the class instance did not meet expectations issue is fixed.
+3. Fixed the NoSuchTableException when executing DROP TABLE IF EXISTS.
+4. Fixed UPDATE ... SET ... rewrite error.
+5. Fixed CREATE/ALTER TABLE statement using foreign key to reference TABLE overwrite error.
+6. Fixed the issue when querying subqueries in the temporal table field verification exception.
+7. Fixed Oracle/SQL92 SELECT ... WHERE ... LIKE class cast exception.
+8. Fixed MySQL SELECT EXISTS ... FROM ... parsing exception.
+9. Fixed SHOW INDEX result exception.
+10. Fixed the rewrite and merge result exception for SELECT... GROUP BY ...
+11. Fixed the encryption and decryption error for CREATE TABLE rewrite.
+12. Fixed issue with PostgreSQL Proxy reading text parameter values incorrectly.
+13. Fixed PostgreSQL Proxy support for array objects.
+14. Fixed ShardingProxy Datatype conversion issues.
+15. PostgreSQL Proxy supports the use of the Numeric type.
+16. Fixed the issue with incorrect Tag for PostgreSQL Proxy transactions related to Command Complete.
+17. Fixed the issue that might return packets that were not expected by the client.
 
 **Download Link:** <https://shardingsphere.apache.org/document/current/en/downloads/>
 

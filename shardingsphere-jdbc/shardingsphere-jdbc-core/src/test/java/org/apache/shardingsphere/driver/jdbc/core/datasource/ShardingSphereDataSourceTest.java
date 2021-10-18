@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
@@ -33,7 +34,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -79,15 +79,10 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection()).getConnection("ds"), is(dataSource.getConnection()));
-    }
-    
-    @Test
     public void assertGetConnectionWithUsernameAndPassword() throws SQLException {
         DataSource dataSource = mockDataSource();
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0),
+                is(dataSource.getConnection()));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -152,7 +147,7 @@ public final class ShardingSphereDataSourceTest {
     @Test
     public void assertCloseWithDataSourceNames() throws Exception {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
-        actual.close(Arrays.asList("ds"));
+        actual.close(Collections.singleton("ds"));
         Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
         assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
     }

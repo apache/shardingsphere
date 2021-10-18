@@ -25,7 +25,6 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
-						   
     <bean id="write_ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/write_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
@@ -41,29 +40,29 @@ weight = 6
         <!-- ...Omit specific configuration. -->
     </bean>
     
-	<bean id="write_ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="write_ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
-	
-	<bean id="read_ds1_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    
+    <bean id="read_ds1_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
     <bean id="read_ds1_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
-	
-	<!-- load balance algorithm configuration for readwrite-splitting -->
+    
+    <!-- load balance algorithm configuration for readwrite-splitting -->
     <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-	<!-- readwrite-splitting rule configuration -->
+    <!-- readwrite-splitting rule configuration -->
     <readwrite-splitting:rule id="readWriteSplittingRule">
         <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-		<readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+        <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
     </readwrite-splitting:rule>
     
-	<!-- sharding strategy configuration -->
-	<sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
+    <!-- sharding strategy configuration -->
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="inlineOrderTableStrategyAlgorithm" />
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_item_id" algorithm-ref="inlineOrderItemTableStrategyAlgorithm" />
 
@@ -114,8 +113,8 @@ weight = 6
         </encrypt:table>
     </encrypt:rule>
     
-	<!-- datasource configuration -->
-	<!-- the element data-source-names's value is all of the datasource name -->
+    <!-- datasource configuration -->
+    <!-- the element data-source-names's value is all of the datasource name -->
     <shardingsphere:data-source id="readQueryDataSource" data-source-names="write_ds0, read_ds0_0, read_ds0_1, write_ds1, read_ds1_0, read_ds1_1" 
         rule-refs="readWriteSplittingRule, shardingRule, encryptRule" >
         <props>
