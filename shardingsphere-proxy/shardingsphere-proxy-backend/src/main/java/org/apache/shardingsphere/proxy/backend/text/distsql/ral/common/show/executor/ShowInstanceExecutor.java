@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -76,9 +76,11 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private Collection<List<Object>> buildInstanceRows() {
-        LinkedList<Object> row = new LinkedList<>();
-        row.add(buildRow(ClusterInstance.getInstance().getId(), ENABLE));
-        return Collections.singletonList(row);
+        List<List<Object>> rows = new LinkedList<>();
+        // TODO port is not saved in metadata, add port after saving
+        String instanceId = String.join(DELIMITER, IpUtils.getIp(), " ");
+        rows.add(buildRow(instanceId, ENABLE));
+        return rows;
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService, final String status) {
