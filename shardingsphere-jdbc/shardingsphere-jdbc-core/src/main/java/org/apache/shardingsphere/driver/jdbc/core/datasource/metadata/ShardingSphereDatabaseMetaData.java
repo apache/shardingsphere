@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
@@ -27,47 +26,43 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * ShardingSphere database meta data.
  */
-@Getter
 public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private final ShardingSphereConnection connection;
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final Collection<String> datasourceNames;
-    
     private final DataSourcesMetaData dataSourcesMetaData;
     
-    private final Random random = new SecureRandom();
+    private String currentPhysicalDataSourceName;
     
-    private String currentDataSourceName;
+    private Connection currentPhysicalConnection;
     
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getCachedDatabaseMetaData());
+        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getRuleMetaData().getRules();
-        datasourceNames = connection.getDataSourceMap().keySet();
-        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchemaName()).getResource().getDataSourcesMetaData();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getRuleMetaData().getRules();
+        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getDataSourcesMetaData();
     }
     
     @Override
     public Connection getConnection() throws SQLException {
-        return connection.getConnection(getDataSourceName());
+        if (null == currentPhysicalConnection) {
+            currentPhysicalConnection = connection.getConnectionManager().getRandomConnection();
+        } 
+        return currentPhysicalConnection;
     }
     
     @Override
@@ -240,15 +235,10 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getDataSourceName() {
-        if (null == currentDataSourceName) {
-            currentDataSourceName = getRandomDataSourceName();
+        if (null == currentPhysicalDataSourceName) {
+            currentPhysicalDataSourceName = connection.getConnectionManager().getRandomPhysicalDataSourceName();
         }
-        return currentDataSourceName;
-    }
-    
-    private String getRandomDataSourceName() {
-        Collection<String> datasourceNames = connection.getCachedConnections().isEmpty() ? this.datasourceNames : connection.getCachedConnections().keySet();
-        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
+        return currentPhysicalDataSourceName;
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {

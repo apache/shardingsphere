@@ -70,9 +70,9 @@ psql -U ${your_user_name} -h ${your_host} -p 13308
 
 回答：请确保 `/${your_work_dir}/conf/config-xxx.yaml` 配置文件中指定的 PostgreSQL 数据库的 IP 可以被 Docker 容器内部访问到。
 
-问题3：如何使用后端数据库为 MySQL 的 ShardingSphere-Proxy？
+问题3：如何使用后端数据库为 MySQL/openGauss 的 ShardingSphere-Proxy？
 
-回答：将 `mysql-connector.jar` 所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
+回答：将 `mysql-connector.jar` 或 `opengauss-jdbc.jar` 所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
 
 问题4：如何使用自定义分片算法？
 

@@ -19,7 +19,7 @@ schemaName: empty_rules
 
 dataSources:
   encrypt_write_ds_0:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_1:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_2:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -46,7 +46,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_3:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -55,7 +55,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_4:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -64,7 +64,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_5:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -73,7 +73,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_6:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -82,7 +82,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_7:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -91,7 +91,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_8:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -100,7 +100,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_write_ds_9:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_write_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -109,7 +109,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_0:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -118,7 +118,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_1:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -127,7 +127,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_2:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -136,7 +136,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_3:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -145,7 +145,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_4:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -154,7 +154,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_5:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -163,7 +163,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_6:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -172,7 +172,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_7:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -181,7 +181,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_8:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -190,7 +190,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds_9:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/encrypt_read_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000
@@ -199,7 +199,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   rdl_test_0:
-    url: jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000

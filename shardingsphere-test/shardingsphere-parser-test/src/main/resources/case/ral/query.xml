@@ -19,4 +19,17 @@
 <sql-parser-test-cases>
     <show-scaling-list sql-case-id="show-scaling-list" />
     <show-scaling-check-algorithms sql-case-id="show-scaling-check-algorithms" />
+
+    <check-scaling sql-case-id="check-scaling">
+        <job-id>123</job-id>
+    </check-scaling>
+    
+    <check-scaling sql-case-id="check-scaling-with-type">
+        <job-id>123</job-id>
+        <type-strategy algorithm-name="DEFAULT">
+            <properties>
+                <property key="test-property" value="4"/>
+            </properties>
+        </type-strategy>
+    </check-scaling>
 </sql-parser-test-cases>

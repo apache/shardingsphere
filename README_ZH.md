@@ -4,30 +4,20 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
+[![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
+[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
+[![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
+[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
+[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
+[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
-**星评增长时间线**
-
-[![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)
-
-**贡献者增长时间线**
-
-[![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
-
-[![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
-[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
-[![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
-[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
-
-[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
-[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
-
-## 文档
-
-[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
+**星评增长时间线**                   |  **贡献者增长时间线**
+:---------------------------------:|:------------------------------------:
+[![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)  |  [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
 
 ## 概述
 
@@ -36,19 +26,39 @@ Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据
 
 `连接`、`增量`和`可插拔`是 Apache ShardingSphere 的核心概念。
 
-- `连接`：通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
-- `增量`：获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能；
-- `可插拔`：项目采用微内核 + 3 层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
+- `连接：`通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
+- `增量：`获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能；
+- `可插拔：`项目采用微内核 + 三层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
 
 ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
-欢迎通过[邮件列表](mailto:dev@shardingsphere.apache.org)参与讨论。
 
-![Overview](https://shardingsphere.apache.org/document/current/img/overview.cn.png)
+## 文档:
+
+[![EN d](https://img.shields.io/badge/document-English-blue.svg)](https://shardingsphere.apache.org/document/current/en/overview/)
+[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
+
+更多信息请参考：[https://shardingsphere.apache.org/document/current/cn/overview/](https://shardingsphere.apache.org/document/current/cn/overview/)
+
+## 参与贡献:
+
+搭建开发环境和贡献者指南，请参考：[https://shardingsphere.apache.org/community/cn/contribute/](https://shardingsphere.apache.org/community/cn/contribute/)
+
+## 社区和支持:
+
+:link: [Mailing List](dev@shardingsphere.apache.org). 适合于 Apache 社区相关讨论和版本发布；
+
+:link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). 适合于设计问题、缺陷报告或者开发相关；
+
+:link: [GitHub Discussions](https://github.com/apache/shardingsphere/discussions). 适合于技术问题咨询和新功能讨论；
+
+:link: [Slack channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg). 适合于在线交流和线上会议；
+
+:link: [Twitter](https://twitter.com/ShardingSphere). 随时了解 Apache ShardingSphere 信息。
+
+## 工作原理:
 
 Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能够独立部署，又支持混合部署配合使用的产品组成。
-它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
-
-关系型数据库当今依然占有巨大市场份额，是企业核心系统的基石，未来也难于撼动，我们更加注重在原有基础上提供增量，而非颠覆。
+它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
 
 ### ShardingSphere-JDBC
 
@@ -61,7 +71,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 * 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP 等。
 * 支持任意实现 JDBC 规范的数据库，目前支持 MySQL，Oracle，SQLServer，PostgreSQL 以及任何遵循 SQL92 标准的数据库。
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
+:link: 更多信息请参考[官方网站](https://shardingsphere.apache.org/document/current/cn/overview/#shardingsphere-jdbc)。
 
 ### ShardingSphere-Proxy
 
@@ -74,7 +84,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 * 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 服务端使用。
 * 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
+:link: 更多信息请参考[官方网站](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy)。
 
 |           | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
 | --------- | --------------------- | ---------------------- |
@@ -93,69 +103,25 @@ ShardingSphere-Proxy 提供静态入口以及异构语言的支持，独立于�
 Apache ShardingSphere 是多接入端共同组成的生态圈。
 通过混合使用 ShardingSphere-JDBC 和 ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
 
-![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
+:link: 更多信息请参考[官方网站](https://shardingsphere.apache.org/document/current/en/overview/#hybrid-architecture)。
 
 ## 解决方案
 
-### 分布式数据库
-
-* 数据分片
-* 读写分离
-* 分布式事务
-* 弹性伸缩
-* 分布式高可用
-
-### 数据安全
-
-* 数据加密
-* 行级权限（TODO）
-* SQL 审计（TODO）
-* SQL 防火墙（TODO）
-
-### 数据库网关
-
-* 异构数据库支持
-* SQL 方言转换（TODO）
-
-### 全链路压测
-
-* 影子库
-* 可观测性（分布式跟踪、指标度量）
-
-## 如何构建
-
-### 构建 Apache ShardingSphere
-
-```bash
-./mvnw clean install -Prelease
-```
-
-构建产物：
-
-```
-shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip  # Apache ShardingSphere 的源码包
-shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz  # ShardingSphere-JDBC 的二进制包
-shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz  # ShardingSphere-Proxy 的二进制包
-shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz  # ShardingSphere-Scaling 的二进制包
-```
-
-### 构建ShardingSphere UI
-
-```bash
-git clone https://github.com/apache/shardingsphere-ui
-cd shardingsphere-ui
-./mvnw clean install -Prelease
-```
-
-构建产物：
-
-```
-shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz  # ShardingSphere-UI的二进制包
-```
+| *解决方案/功能* |  *分布式数据库* | *数据安全*        | *数据库网关*        | *全链路压测* |
+| ------------- | ------------- | ----------------| ----------------- | ---------- |
+|               | 数据分片       | 数据加密          | 异构数据库支持       | 影子库     |
+|               | 读写分离       | 行级权限（TODO）   | SQL 方言转换（TODO）| 可观测性    |
+|               | 分布式事务     | SQL 审计（TODO）   |                   |           |
+|               | 弹性伸缩       | SQL 防火墙（TODO） |                   |           |
+|               | 高可用        |                   |                   |           |
 
 ## 线路规划
 
 ![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+
+## 如何构建 Apache ShardingSphere:
+
+查看 [Wiki](https://github.com/apache/shardingsphere/wiki) 详细了解如何构建 Apache ShardingSphere。
 
 ## 全景图
 

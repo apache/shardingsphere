@@ -25,7 +25,7 @@ Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据
 
 - `连接`：通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；
 - `增量`：获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能；
-- `可插拔`：项目采用微内核 + 3 层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
+- `可插拔`：项目采用微内核 + 三层可插拔模型，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。
 
 ShardingSphere 已于2020年4月16日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
 欢迎通过[邮件列表](mailto:dev@shardingsphere.apache.org)参与讨论。
@@ -73,7 +73,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
+目前提供 MySQL 和 PostgreSQL（兼容 openGauss 等基于 PostgreSQL 的数据库）版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
 
 * 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用。
 * 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
@@ -95,7 +95,7 @@ Database Mesh 的关注重点在于如何将分布式的数据访问应用与数
 | 数据库     | 任意                  | MySQL/PostgreSQL      | MySQL/PostgreSQL          |
 | 连接消耗数 | 高                    | 低                     | 高                        |
 | 异构语言   | 仅 Java               | 任意                   | 任意                      |
-| 性能       | 损耗低                | 损耗略高                | 损耗低                    |
+| 性能      | 损耗低                 | 损耗略高                | 损耗低                    |
 | 无中心化   | 是                    | 否                     | 是                        |
 | 静态入口   | 无                    | 有                     | 无                        |
 
@@ -111,30 +111,13 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 解决方案
 
-### 分布式数据库
-
-* 数据分片
-* 读写分离
-* 分布式事务
-* 弹性伸缩
-* 分布式高可用
-
-### 数据安全
-
-* 数据加密
-* 行级权限（TODO）
-* SQL 审计（TODO）
-* SQL 防火墙（TODO）
-
-### 数据库网关
-
-* 异构数据库支持
-* SQL 方言转换（TODO）
-
-### 全链路压测
-
-* 影子库
-* 可观测性（分布式跟踪、指标度量）
+| *解决方案/功能* |  *分布式数据库* | *数据安全*        | *数据库网关*        | *全链路压测* |
+| ------------- | ------------- | ----------------| ----------------- | ---------- |
+|               | 数据分片       | 数据加密          | 异构数据库支持       | 影子库     |
+|               | 读写分离       | 行级权限（TODO）   | SQL 方言转换（TODO）| 可观测性    |
+|               | 分布式事务     | SQL 审计（TODO）   |                   |           |
+|               | 弹性伸缩       | SQL 防火墙（TODO） |                   |           |
+|               | 高可用        |                   |                   |           |
 
 ## 线路规划
 

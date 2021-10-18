@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
@@ -54,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -216,6 +218,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof FlushStatement) {
+            return new FlushStatementContext((FlushStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

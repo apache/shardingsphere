@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -102,5 +103,20 @@ public final class AutoIntervalShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("sharding-seconds", "86400");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
+    }
+    
+    @Test
+    public void assertRangeDoShardingWithGreaterTenTables() {
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30");
+        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
+        shardingAlgorithm.init();
+        List<String> availableTargetNames = new LinkedList<>();
+        for (int i = 0; i < 32; i++) {
+            availableTargetNames.add("t_order_" + i);
+        }
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:00", "2020-01-01 00:00:10")));
+        assertThat(actual.size(), is(11));
     }
 }

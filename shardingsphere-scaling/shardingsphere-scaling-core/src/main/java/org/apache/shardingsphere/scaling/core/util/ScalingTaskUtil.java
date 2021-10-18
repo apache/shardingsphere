@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  * Scaling task util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ScalingTaskUtil {
     
     /**
@@ -76,6 +78,9 @@ public final class ScalingTaskUtil {
      * @return is finished
      */
     public static boolean allInventoryTasksFinished(final List<InventoryTask> inventoryTasks) {
+        if (inventoryTasks.isEmpty()) {
+            log.warn("inventoryTasks is empty");
+        }
         return inventoryTasks.stream().allMatch(each -> each.getProgress().getPosition() instanceof FinishedPosition);
     }
     

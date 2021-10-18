@@ -21,9 +21,11 @@ import java.io.Serializable;
 
 public class ShadowUser implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = -6711618386636677067L;
     
     private int userId;
+    
+    private int userType;
     
     private String userName;
     
@@ -33,21 +35,27 @@ public class ShadowUser implements Serializable {
     
     private String assistedQueryPwd;
     
-    private Boolean shadow;
-    
     public int getUserId() {
         return userId;
     }
     
-    public void setUserId(final int userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
+    }
+    
+    public int getUserType() {
+        return userType;
+    }
+    
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
     
     public String getUserName() {
         return userName;
     }
     
-    public void setUserName(final String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
     
@@ -55,7 +63,7 @@ public class ShadowUser implements Serializable {
         return userNamePlain;
     }
     
-    public void setUserNamePlain(final String userNamePlain) {
+    public void setUserNamePlain(String userNamePlain) {
         this.userNamePlain = userNamePlain;
     }
     
@@ -63,7 +71,7 @@ public class ShadowUser implements Serializable {
         return pwd;
     }
     
-    public void setPwd(final String pwd) {
+    public void setPwd(String pwd) {
         this.pwd = pwd;
     }
     
@@ -71,20 +79,13 @@ public class ShadowUser implements Serializable {
         return assistedQueryPwd;
     }
     
-    public void setAssistedQueryPwd(final String assistedQueryPwd) {
+    public void setAssistedQueryPwd(String assistedQueryPwd) {
         this.assistedQueryPwd = assistedQueryPwd;
-    }
-    
-    public Boolean isShadow() {
-        return shadow;
-    }
-    
-    public void setShadow(final Boolean shadow) {
-        this.shadow = shadow;
     }
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, user_name_plain: %s, pwd: %s, assisted_query_pwd: %s, shadow: %s", userId, userName, userNamePlain, pwd, assistedQueryPwd, shadow);
+        return String.format("user_id: %d, user_type: %d, user_name: %s, user_name_plain: %s, pwd: %s, assisted_query_pwd: %s", userId, userType, userName, userNamePlain, pwd,
+                assistedQueryPwd);
     }
 }

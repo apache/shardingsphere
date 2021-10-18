@@ -29,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskPr
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -100,6 +101,9 @@ public final class JobProgressYamlSwapper {
     }
     
     private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final YamlJobProgress.YamlInventory inventory) {
+        if (null == inventory) {
+            return new LinkedHashMap<>();
+        }
         Map<String, InventoryTaskProgress> result = new HashMap<>();
         result.putAll(Arrays.stream(inventory.getFinished()).collect(Collectors.toMap(each -> each, each -> new InventoryTaskProgress(new FinishedPosition()))));
         result.putAll(inventory.getUnfinished().entrySet().stream().collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
@@ -111,6 +115,9 @@ public final class JobProgressYamlSwapper {
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final String databaseType, final Map<String, YamlJobProgress.YamlIncremental> incremental) {
+        if (null == incremental) {
+            return new LinkedHashMap<>();
+        }
         return incremental.entrySet().stream().collect(Collectors.toMap(Entry::getKey, getIncrementalTaskProgressFunction(databaseType)));
     }
     

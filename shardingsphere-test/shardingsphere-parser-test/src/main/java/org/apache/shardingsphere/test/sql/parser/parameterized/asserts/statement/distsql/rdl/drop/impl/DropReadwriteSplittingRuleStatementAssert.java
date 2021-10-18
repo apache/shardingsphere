@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadWriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,19 +29,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop readwrite splitting rule statement assert.
+ * Drop readwrite-splitting rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropReadwriteSplittingRuleStatementAssert {
     
     /**
-     * Assert drop readwrite splitting rule statement is correct with expected parser result.
+     * Assert drop readwrite-splitting rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop readwrite splitting rule statement
-     * @param expected expected drop readwrite splitting rule statement test case
+     * @param actual actual drop readwrite-splitting rule statement
+     * @param expected expected drop readwrite-splitting rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadWriteSplittingRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadwriteSplittingRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

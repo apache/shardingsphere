@@ -8,18 +8,18 @@ weight = 1
 ### Pre-work
 
 1. Start the MySQL service
-2. Create MySQL database (refer to ShardingProxy data source configuration rules)
-3. Create a role or user with creation permission for ShardingProxy
+2. Create MySQL database (refer to ShardingSphere-Proxy data source configuration rules)
+3. Create a role or user with creation permission for ShardingSphere-Proxy
 4. Start Zookeeper service (for persistent configuration)
 
-### Start ShardingProxy
+### Start ShardingSphere-Proxy
 
-1. Add `mode` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingProxy)
-2. Start ShardingProxy ([Related introduction](/en/quick-start/shardingsphere-proxy-quick-start/))
+1. Add `mode` and `authentication` configurations to `server.yaml` (please refer to the example of ShardingSphere-Proxy)
+2. Start ShardingSphere-Proxy ([Related introduction](/en/quick-start/shardingsphere-proxy-quick-start/))
 
 ### Create a distributed database and sharding tables
 
-1. Connect to ShardingProxy
+1. Connect to ShardingSphere-Proxy
 2. Create a distributed database
 
 ```SQL

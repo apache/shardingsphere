@@ -247,7 +247,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
-        schemas.entrySet().forEach(entry -> metaDataPersistService.getSchemaMetaDataService().persist(entry.getKey(), entry.getValue()));
+        schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
     }
     
     @Override

@@ -48,6 +48,8 @@ chapter = true
 | 郭吉伟 | Technoboy-  |
 | 吴伟杰 | TeslaCN     |
 | 邱鹿   | Lucas-307   |
+| 钟红胜 | sandynz     |
+| 江龙滔 | RaigorJiang |
 
 ## 贡献者
 

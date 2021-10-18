@@ -262,6 +262,12 @@ public enum SQLVisitorRule {
     
     LOAD("Load", SQLStatementType.DAL),
     
+    INSTALL("Install", SQLStatementType.DAL),
+    
+    UNINSTALL("Uninstall", SQLStatementType.DAL),
+    
+    FLUSH("Flush", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
@@ -272,7 +278,19 @@ public enum SQLVisitorRule {
 
     XA("Xa", SQLStatementType.TCL),
     
-    ABORT("Abort", SQLStatementType.TCL);
+    ABORT("Abort", SQLStatementType.TCL),
+
+    CREATE_SCHEMA("CreateSchema", SQLStatementType.DDL),
+
+    ALTER_SCHEMA("AlterSchema", SQLStatementType.DDL),
+
+    DROP_SCHEMA("DropSchema", SQLStatementType.DDL),
+
+    CREATE_SERVICE("CreateService", SQLStatementType.DDL),
+
+    ALTER_SERVICE("AlterService", SQLStatementType.DDL),
+
+    DROP_SERVICE("DropService", SQLStatementType.DDL);
 
     private final String name;
     

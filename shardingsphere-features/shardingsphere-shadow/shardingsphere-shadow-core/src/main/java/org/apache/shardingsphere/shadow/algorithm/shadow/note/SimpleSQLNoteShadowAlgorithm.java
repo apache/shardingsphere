@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.note;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.shadow.api.shadow.column.ShadowOperationType;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
 

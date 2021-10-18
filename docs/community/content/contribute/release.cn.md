@@ -231,26 +231,13 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 将源码包、二进制包和ShardingSphere-Proxy可执行二进制包添加至SVN工作目录。
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
-**4. 生成文件签名**
-
-```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip > apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
-```
-
-**5. 提交Apache SVN**
+**4. 提交Apache SVN**
 
 ```shell
 svn add *
@@ -262,10 +249,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 **检查sha512哈希**
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
 ```
 
 **检查gpg签名**

@@ -31,13 +31,15 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SetVariableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -80,7 +82,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
-        return new DataSourceSegment(ctx.dataSourceName().getText(), url, hostName, port, dbName,
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostName, port, dbName,
                 ctx.user().getText(), null == ctx.password() ? "" : getPassword(ctx.password()),
                 null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
     }
@@ -92,6 +94,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
         return new SetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
+    }
+    
+    @Override
+    public ASTNode visitShowInstance(final ShowInstanceContext ctx) {
+        return new ShowInstanceStatement();
     }
     
     @Override
@@ -109,7 +116,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
-        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
+        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     
     @Override
@@ -124,12 +132,19 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        return new SetVariableStatement(ctx.variableName().getText(), ctx.variableValue().getText());
+        return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
     
     @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(ctx.variableName().getText());
+        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override

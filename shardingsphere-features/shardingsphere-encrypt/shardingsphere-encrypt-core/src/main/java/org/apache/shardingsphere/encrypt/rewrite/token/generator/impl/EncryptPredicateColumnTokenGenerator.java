@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLT
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -60,7 +61,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
-            || (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery());
+            || (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())
+            || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
     }
     
     @Override
@@ -105,6 +107,12 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         }
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()) {
             result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+        }
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
+            SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
+            if (selectStatementContext instanceof WhereAvailable && ((WhereAvailable) selectStatementContext).getWhere().isPresent()) {
+                result.add(((WhereAvailable) selectStatementContext).getWhere().get());
+            }
         }
         return result;
     }

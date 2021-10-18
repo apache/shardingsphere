@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.algorithm.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,15 +33,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class AlgorithmProvidedShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
-    
-    // fixme remove three fields when the api refactoring is complete
-    private final String column;
-    
-    private final List<String> sourceDataSourceNames;
-    
-    private final List<String> shadowDataSourceNames;
     
     private boolean enable;
     

@@ -9,7 +9,7 @@ chapter = true
 
 ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。
 它定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
+目前提供 MySQL 和 PostgreSQL（兼容 openGauss 等基于 PostgreSQL 的数据库）版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
 
 * 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用。
 * 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。

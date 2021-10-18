@@ -114,3 +114,23 @@ INSTANCE
 IP
     : I P
     ;
+
+IGNORE
+    : I G N O R E
+    ;
+
+SCHEMA
+    : S C H E M A
+    ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+TABLES
+    : T A B L E S
+    ;
+
+LIST
+    : L I S T
+    ;

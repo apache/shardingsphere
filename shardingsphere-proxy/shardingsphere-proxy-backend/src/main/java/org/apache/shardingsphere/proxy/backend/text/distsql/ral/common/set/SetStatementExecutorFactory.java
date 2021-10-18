@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 
 import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
@@ -50,7 +50,7 @@ public final class SetStatementExecutorFactory {
             return new SetReadwriteSplittingStatusExecutor((SetReadwriteSplittingStatusStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof SetInstanceStatusStatement) {
-            return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement, backendConnection);
+            return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -37,16 +39,20 @@ import java.util.Optional;
 /**
  * PostgreSQL connection context.
  */
+@Getter
 @Setter
 public final class PostgreSQLConnectionContext {
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, PostgreSQLPortal> portals = new LinkedHashMap<>();
     
-    @Getter
     private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
     
-    @Getter
     private long updateCount;
+    
+    private PostgreSQLCommandPacketType currentPacketType;
+    
+    private boolean errorOccurred;
     
     /**
      * Create a portal.
@@ -124,5 +130,7 @@ public final class PostgreSQLConnectionContext {
     public void clearContext() {
         pendingExecutors.clear();
         updateCount = 0;
+        currentPacketType = null;
+        errorOccurred = false;
     }
 }

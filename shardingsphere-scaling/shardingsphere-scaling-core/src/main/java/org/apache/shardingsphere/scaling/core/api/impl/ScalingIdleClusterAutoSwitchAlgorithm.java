@@ -32,7 +32,7 @@ import java.util.Properties;
 @Setter
 public final class ScalingIdleClusterAutoSwitchAlgorithm implements ScalingClusterAutoSwitchAlgorithm {
     
-    private static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
+    static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
     
     private Properties props = new Properties();
     

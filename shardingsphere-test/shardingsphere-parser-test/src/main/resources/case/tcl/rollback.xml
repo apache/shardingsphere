@@ -19,11 +19,11 @@
 <sql-parser-test-cases>
     <rollback sql-case-id="rollback" />
     <rollback sql-case-id="rollback_transaction" />
-    <rollback sql-case-id="rollbackWithName" />
-    <rollback sql-case-id="rollbackToSavepoint" />
-    <rollback sql-case-id="rollbackForce" />
-    <rollback sql-case-id="rollbackPrepare" />
+    <rollback sql-case-id="rollback_with_name" />
+    <rollback sql-case-id="rollback_to_savepoint" />
+    <rollback sql-case-id="rollback_force" />
+    <rollback sql-case-id="rollback_prepare" />
     <rollback sql-case-id="rollback_in_pg" />
-    <rollback sql-case-id="rollbackWorkForce" />
+    <rollback sql-case-id="rollback_work_force" />
     <rollback sql-case-id="abort" />
 </sql-parser-test-cases>

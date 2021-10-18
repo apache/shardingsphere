@@ -26,7 +26,7 @@ weight = 3
 | name        | String                                       | 表名称           |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表 |
 
-### 加密列规则配置
+## 加密列规则配置
 
 类名称：org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
 

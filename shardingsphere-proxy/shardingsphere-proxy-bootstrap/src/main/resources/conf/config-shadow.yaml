@@ -46,13 +46,57 @@
 #
 #rules:
 #- !SHADOW
-#  column: shadow
-#  sourceDataSourceNames:
-#   - ds
-#  shadowDataSourceNames:
-#   - shadow_ds
-#
-#
+#  enable: true
+#  dataSources:
+#    shadowDataSource:
+#      sourceDataSourceName: ds
+#      shadowDataSourceName: shadow_ds
+#  tables:
+#    t_order:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-select-match-algorithm
+#    t_order_item:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-update-match-algorithm
+#        - user-id-select-match-algorithm
+#    t_address:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-select-match-algorithm
+#        - simple-note-algorithm
+#  shadowAlgorithms:
+#    user-id-insert-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: insert
+#        column: user_id
+#        regex: "[1]"
+#    user-id-update-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: update
+#        column: user_id
+#        regex: "[1]"
+#    user-id-select-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: select
+#        column: user_id
+#        regex: "[1]"
+#    simple-note-algorithm:
+#      type: SIMPLE_NOTE
+#      props:
+#        shadow: true
+#        foo: bar
+
 ######################################################################################################
 #
 # If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
@@ -83,8 +127,53 @@
 #
 #rules:
 #- !SHADOW
-#  column: shadow
-#  sourceDataSourceNames:
-#   - ds
-#  shadowDataSourceNames:
-#   - shadow_ds
+#  enable: true
+#  dataSources:
+#    shadowDataSource:
+#      sourceDataSourceName: ds
+#      shadowDataSourceName: shadow_ds
+#  tables:
+#    t_order:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-select-match-algorithm
+#    t_order_item:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-update-match-algorithm
+#        - user-id-select-match-algorithm
+#    t_address:
+#      dataSourceNames:
+#        - shadowDataSource
+#      shadowAlgorithmNames:
+#        - user-id-insert-match-algorithm
+#        - user-id-select-match-algorithm
+#        - simple-note-algorithm
+#  shadowAlgorithms:
+#    user-id-insert-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: insert
+#        column: user_id
+#        regex: "[1]"
+#    user-id-update-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: update
+#        column: user_id
+#        regex: "[1]"
+#    user-id-select-match-algorithm:
+#      type: COLUMN_REGEX_MATCH
+#      props:
+#        operation: select
+#        column: user_id
+#        regex: "[1]"
+#    simple-note-algorithm:
+#      type: SIMPLE_NOTE
+#      props:
+#        shadow: true
+#        foo: bar

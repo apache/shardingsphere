@@ -70,7 +70,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().forEach(each -> {
+        shardingRuleConfig.getTables().forEach(each -> {
             if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
@@ -78,8 +78,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
-                .forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         return result;
     }
     
@@ -96,7 +95,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
-        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(key -> algorithmName.equalsIgnoreCase(key));
+        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(algorithmName::equalsIgnoreCase);
     }
     
     @Override

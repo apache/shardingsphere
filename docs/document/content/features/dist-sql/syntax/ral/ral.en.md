@@ -22,34 +22,39 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 ## Scaling
 
-| Statement                                          | Function                                                      | Example                                         |
-|:---------------------------------------------------|:--------------------------------------------------------------|:-----------------------------------------------|
-|show scaling list                                   | Query running list                                            | show scaling list                              |  
-|show scaling status xx                              | Query scaling status，xx：jobId                                | show scaling status 1234                       |  
-|start scaling xx                                    | Start scaling，xx：jobId                                       | start scaling 1234                             |  
-|stop scaling xx                                     | Stop scaling，xx：jobId                                        | stop scaling 1234                              |  
-|drop scaling xx                                     | Drop scaling，xx：jobId                                        | drop scaling 1234                              |  
-|reset scaling xx                                    | reset progress，xx：jobId                                      | reset scaling 1234                             |  
-|check scaling xx                                    | Data consistency check，xx：jobId                              | check scaling 1234                             |  
-|show scaling check algorithms                       | Show available consistency check algorithms                   | show scaling check algorithms                  |  
-|stop scaling source writing xx                      | The source ShardingSphere data source is discontinued         | stop scaling source writing 1234               |  
-|checkout scaling xx                                 | Switch to target ShardingSphere data source，xx：jobId         | checkout scaling 1234                          |  
+| Statement                                          | Function                                                           | Example                                         |
+|:---------------------------------------------------|:-------------------------------------------------------------------|:-----------------------------------------------|
+|show scaling list                                   | Query running list                                                 | show scaling list                              |  
+|show scaling status xx                              | Query scaling status, xx：jobId                                     | show scaling status 1234                       |  
+|start scaling xx                                    | Start scaling, xx：jobId                                            | start scaling 1234                             |  
+|stop scaling xx                                     | Stop scaling, xx：jobId                                             | stop scaling 1234                              |  
+|drop scaling xx                                     | Drop scaling, xx：jobId                                             | drop scaling 1234                              |  
+|reset scaling xx                                    | reset progress, xx：jobId                                           | reset scaling 1234                             |  
+|check scaling xx                                    | Data consistency check, xx：jobId                                   | check scaling 1234                             |  
+|show scaling check algorithms                       | Show available consistency check algorithms                         | show scaling check algorithms                  |  
+|stop scaling source writing xx                      | The source ShardingSphere data source is discontinued, xx：jobId     | stop scaling source writing 1234               |  
+|checkout scaling xx                                 | Switch to target ShardingSphere data source, xx：jobId               | checkout scaling 1234                          |  
 
 
 ## Circuit Breaker
 
 | Statement                                                         | Function                            | Example                                       |
 |:------------------------------------------------------------------|:------------------------------------|:----------------------------------------------|
-|[enable / disable] readwrite_splitting read xxx [from schema]      | Enable or disable read data source  | enable readwrite_splitting read xxx           |  
+|[enable / disable] readwrite_splitting read xxx [from schema]      | Enable or disable read data source  | enable readwrite_splitting read resource_0    |  
 |[enable / disable] instance IP=xxx, PORT=xxx                       | Enable or disable proxy instance    | disable instance IP=127.0.0.1, PORT=3307      |  
+|show instance list                                                 | Query proxy instance information    | show instance list                            |  
+|show readwrite_splitting read resources [from schema]              | Query all read resources status     | show readwrite_splitting read resources       |  
+
 
 ## Other
 
 | Statement                                          | Function                                                                             | Example                                       |
 |:---------------------------------------------------|:-------------------------------------------------------------------------------------|:----------------------------------------------|
 |set variable transaction_type = xx                  | Modify transaction_type of the current connection, supports LOCAL, XA, BASE          | set variable transaction_type = XA            |  
+|set variable agent_plugins_enabled = [true / false] | Set whether the agent plugins are enabled, the default value is false                | set variable agent_plugins_enabled = true     |  
 |show variable transaction_type                      | Query the transaction type of the current connection                                 | show variable transaction_type                |  
 |show variable cached_connections                    | Query the number of cached physical database connections in the current connection   | show variable cached_connections              |  
+|show variable agent_plugins_enabled                 | Query whether the agent plugin are enabled                                           | show variable agent_plugins_enabled           | 
 |preview SQL                                         | Preview the actual SQLs                                                              | preview select * from t_order                 |  
 
 ## Notice

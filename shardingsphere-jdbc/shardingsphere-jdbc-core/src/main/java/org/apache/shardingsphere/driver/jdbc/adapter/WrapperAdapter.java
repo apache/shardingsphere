@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.adapter.invocation.JdbcMethodInvocation;
+import lombok.Getter;
+import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Adapter for {@code java.sql.Wrapper}.
  */
+@Getter
 public abstract class WrapperAdapter implements Wrapper {
     
-    private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
+    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
     
     @SuppressWarnings("unchecked")
     @Override
@@ -44,27 +43,5 @@ public abstract class WrapperAdapter implements Wrapper {
     @Override
     public final boolean isWrapperFor(final Class<?> iface) {
         return iface.isInstance(this);
-    }
-    
-    /**
-     * record method invocation.
-     * 
-     * @param targetClass target class
-     * @param methodName method name
-     * @param argumentTypes argument types
-     * @param arguments arguments
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
-    }
-    
-    /**
-     * Replay methods invocation.
-     * 
-     * @param target target object
-     */
-    public final void replayMethodsInvocation(final Object target) {
-        jdbcMethodInvocations.forEach(each -> each.invoke(target));
     }
 }

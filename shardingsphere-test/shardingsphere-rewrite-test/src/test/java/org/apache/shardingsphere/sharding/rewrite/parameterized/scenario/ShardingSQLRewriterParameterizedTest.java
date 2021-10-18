@@ -93,6 +93,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.get("t_account")).thenReturn(accountTableMetaData);
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
+        when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
+        when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
         return result;
     }

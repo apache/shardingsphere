@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excu
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;

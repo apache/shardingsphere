@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYaml
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -39,16 +37,10 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowRuleConfiguration expectedConfiguration = createShadowRuleConfiguration();
+        ShadowRuleConfiguration expectedConfiguration = new ShadowRuleConfiguration();
+        expectedConfiguration.setEnable(true);
         YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
         assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
-        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
-        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
-        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
-    }
-    
-    private ShadowRuleConfiguration createShadowRuleConfiguration() {
-        return new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
     }
     
     @Test
@@ -56,16 +48,11 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
         YamlShadowRuleConfiguration expectedConfiguration = createYamlShadowRuleConfiguration();
         ShadowRuleConfiguration actualConfiguration = swapper.swapToObject(expectedConfiguration);
         assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
-        assertThat(actualConfiguration.getColumn(), is(expectedConfiguration.getColumn()));
-        assertThat(actualConfiguration.getSourceDataSourceNames(), is(expectedConfiguration.getSourceDataSourceNames()));
-        assertThat(actualConfiguration.getShadowDataSourceNames(), is(expectedConfiguration.getShadowDataSourceNames()));
     }
     
     private YamlShadowRuleConfiguration createYamlShadowRuleConfiguration() {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
-        result.setColumn("shadow");
-        result.setSourceDataSourceNames(Arrays.asList("ds", "ds1"));
-        result.setShadowDataSourceNames(Arrays.asList("shadow_ds", "shadow_ds1"));
+        result.setEnable(true);
         return result;
     }
 }

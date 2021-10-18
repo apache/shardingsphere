@@ -22,7 +22,7 @@ urlSource:
 poolProperty:
     "key"= ("value" | value)
     
-DROP RESOURCE dataSourceName [, dataSourceName] ...    
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 ```
 
 - Before adding resources, please confirm that a distributed database has been created, and execute the `use` command to successfully select a database
@@ -33,6 +33,7 @@ DROP RESOURCE dataSourceName [, dataSourceName] ...
 - `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution
 - `DROP RESOURCE` will only delete logical resources, not real data sources
 - Resources referenced by rules cannot be deleted
+- If the resource is only referenced by `single table rule`, and the user confirms that the restriction can be ignored, the optional parameter `ignore single tables` can be added to perform forced deletion
 
 ## Example
 
@@ -74,5 +75,6 @@ ALTER RESOURCE resource_0 (
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 )
 
-DROP RESOURCE resource_0, resource_1, resource_2, resource_3;
+DROP RESOURCE resource_0, resource_1;
+DROP RESOURCE resource_2, resource_3 ignore single tables;
 ```

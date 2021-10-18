@@ -97,10 +97,7 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName(), dataSource);
-        return createDataSource(dataSourceMap, rootConfig);
+        return createDataSource(dataSource, YamlEngine.unmarshal(yamlFile, YamlRootConfiguration.class));
     }
     
     /**
@@ -126,15 +123,18 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlBytes, YamlRootConfiguration.class);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName(), dataSource);
-        return createDataSource(dataSourceMap, rootConfig);
+        return createDataSource(dataSource, YamlEngine.unmarshal(yamlBytes, YamlRootConfiguration.class));
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
         ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
         Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
+    }
+    
+    private static DataSource createDataSource(final DataSource dataSource, final YamlRootConfiguration rootConfig) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName(), dataSource);
+        return createDataSource(dataSourceMap, rootConfig);
     }
 }

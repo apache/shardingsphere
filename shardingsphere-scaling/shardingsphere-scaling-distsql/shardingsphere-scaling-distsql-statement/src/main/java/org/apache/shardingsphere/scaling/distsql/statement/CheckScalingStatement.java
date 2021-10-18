@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
@@ -29,4 +30,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 public final class CheckScalingStatement extends QueryableRALStatement {
     
     private final long jobId;
+    
+    private final AlgorithmSegment typeStrategy;
 }

@@ -17,14 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * MySQL flush statement.
  */
+@Getter
+@Setter
 @ToString
-public final class MySQLFlushStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLFlushStatement extends FlushStatement implements MySQLStatement {
+    
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    
+    private boolean flushTable;
+    
 }

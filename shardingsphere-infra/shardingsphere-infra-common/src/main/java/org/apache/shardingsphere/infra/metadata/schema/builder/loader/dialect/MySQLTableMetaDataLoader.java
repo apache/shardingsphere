@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
-            dataTypes.putIfAbsent("JSON", -1);
+            appendDataTypes(dataTypes);
             preparedStatement.setString(1, connection.getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -84,6 +85,11 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
             }
         }
         return result;
+    }
+    
+    private void appendDataTypes(final Map<String, Integer> dataTypes) {
+        dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
+        dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
