@@ -27,3 +27,27 @@ There are lots of SPI extensions for Apache ShardingSphere now and increase cont
 **It is the design goal of Apache shardingsphere pluggable architecture to enable developers to customize their own unique systems just like building blocks.**
 
 ![Pluggable Platform](https://shardingsphere.apache.org/document/current/img/pluggable_platform.png)
+
+## Implementation
+
+The pluggable architecture of Apache ShardingSphere are composed by L1 Kernel Layer, L2 Feature Layer and L3 Ecosystem Layer.
+
+### L1 Kernel Layer
+
+An abstraction of basic capabilities of database. 
+All components are required and the specific implementation can be replaced by pluggable way.
+It includes query optimizer, distributed transaction engine, distributed execution engine, authority engine and scheduling engine.
+
+### L2 Feature Layer
+
+Used to provide enhanced capability. 
+All components are optional and can contain zero or multiple components. 
+Components isolate each other and multiple components can be used together superimposed.
+It includes data sharding, readwrite-splitting, database highly availability, data encryption, shadow database and so on.
+The user-defined feature can be fully customized and extended for the top-level interface defined by Apache ShardingSphere without changing kernel codes.
+
+### L3 Ecosystem Layer
+
+Used to integrate into the current database ecosystem.
+It includes database protocol, SQL parser and storage adapter. 
+
