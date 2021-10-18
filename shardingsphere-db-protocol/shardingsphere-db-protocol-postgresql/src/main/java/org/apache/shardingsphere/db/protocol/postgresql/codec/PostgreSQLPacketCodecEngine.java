@@ -83,7 +83,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             errorResponsePacket.write(payload);
         } finally {
             if (isPostgreSQLIdentifierPacket) {
-                setMessageLength(out);
+                updateMessageLength(out);
             }
         }
     }
@@ -93,7 +93,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         out.writeInt(0);
     }
     
-    private void setMessageLength(final ByteBuf out) {
+    private void updateMessageLength(final ByteBuf out) {
         out.setInt(1, out.readableBytes() - MESSAGE_TYPE_LENGTH);
     }
     
