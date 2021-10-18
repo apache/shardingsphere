@@ -15,7 +15,7 @@ route to production DB or shadow DB.
 
 Shadow rules include shadow data source mapping, shadow tables, and shadow algorithms.
 
-![规则](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
+![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
 
 **enable**：Shadow DB switch, The default value is `false`. Optional value `true`/`false`.
 
