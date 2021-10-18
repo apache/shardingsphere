@@ -54,7 +54,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     
     @Override
     public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
-        MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer());
+        MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex());
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
@@ -63,11 +63,17 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             payload.getByteBuf().resetWriterIndex();
             new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
         } finally {
-            out.writeMediumLE(payload.getByteBuf().readableBytes());
-            out.writeByte(message.getSequenceId());
-            out.writeBytes(payload.getByteBuf());
-            payload.close();
+            updateMessageHeader(out, message.getSequenceId());
         }
+    }
+    
+    private ByteBuf prepareMessageHeader(final ByteBuf out) {
+        return out.writeInt(0);
+    }
+    
+    private void updateMessageHeader(final ByteBuf byteBuf, final int sequenceId) {
+        byteBuf.setMediumLE(0, byteBuf.readableBytes() - PAYLOAD_LENGTH - SEQUENCE_LENGTH);
+        byteBuf.setByte(3, sequenceId);
     }
     
     @Override
