@@ -26,6 +26,7 @@ chapter = true
 | 杨翊            | KomachiSion             |
 | 张永伦          | tuohai666, zhangyonglun |
 | 秦金卫          | kimmking                |
+| 孟浩然          | menghaoranss            |
 
 ### 提交者
 
@@ -42,7 +43,6 @@ chapter = true
 | 蒋晓峰 | SteNicholas |
 | 岳令   | yue530tom   |
 | 肖宇   | yu199195    |
-| 孟浩然 | menghaoranss|
 | 陆敬尚 | jingshanglu |
 | 端正强 | strongduanmu|
 | 郭吉伟 | Technoboy-  |
@@ -53,14 +53,14 @@ chapter = true
 
 ## 贡献者
 
-您可以在ShardingSphere的贡献列表中找到全部的贡献者名单。
+您可以在 ShardingSphere 的贡献列表中找到全部的贡献者名单。
 
 - [shardingsphere](https://github.com/apache/shardingsphere/graphs/contributors)
 - [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
 
 ## 成为提交者
 
-ShardingSphere社区遵循[Apache社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
-当您积极参地与ShardingSphere社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
+ShardingSphere 社区遵循[Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
+当您积极参地与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
 您可以阅读[贡献者指南](/cn/contribute/contributor/)来参与社区，并通过[提交者指南](/cn/contribute/committer/)获取更多信息。
