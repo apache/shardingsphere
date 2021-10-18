@@ -6,8 +6,6 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 **Notices**
 
-- *Please do not use `dev` branch to run your example, example of `dev` branch is not released yet.*
-
 - *Please execute [initial script](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql) before you first run the example if using manual mode.*
 
 - *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, primary-replica example will query empty data from the replica.*
@@ -226,15 +224,16 @@ shardingsphere-example
 
 ## Available Examples
 
-| Example                                                                                                 | Description                                                                             |
-|---------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| [sharding](shardingsphere-jdbc-example/sharding-example)                                                | show how to use table sharding\database sharding\replica-query with ShardingSphere-JDBC |
-| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example)         | show how to use SpringBoot JPA with ShardingSphere-JDBC                                 |
-| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere-JDBC                             |
-| [governance](shardingsphere-jdbc-example/governance-example)                                            | show how to use ShardingSphere-JDBC governance                                          |
-| [transaction](shardingsphere-jdbc-example/transaction-example)                                          | show how to use ShardingSphere-JDBC transaction                                         |
-| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example)                                  | show how to use ShardingSphere-JDBC hint                                                |
-| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example)                         | show how to use ShardingSphere-JDBC encryption                                          |
+| Example                                                                                                 | Description                                                                  　　　　　　　　　　　　　　           |
+|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| [sharding](shardingsphere-jdbc-example/single-feature-example/sharding-example)                                                | show how to use table sharding\database sharding with ShardingSphere-JDBC               |
+| [readwrite-splitting](shardingsphere-jdbc-example/mixed-feature-example/sharding-readwrite-splitting-example)                  | show how to use ShardingSphere-JDBC readwrite-splitting                                 |
+| [springboot jpa](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-spring-boot-jpa-example)         | show how to use SpringBoot JPA with ShardingSphere-JDBC                                 |
+| [springboot mybatis](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere-JDBC                             |
+| [governance](shardingsphere-jdbc-example/single-feature-example/cluster-mode-example)                                          | show how to use ShardingSphere-JDBC governance                                          |
+| [transaction](shardingsphere-jdbc-example/single-feature-example/transaction-example)                                          | show how to use ShardingSphere-JDBC transaction                                         |
+| [hint](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-raw-jdbc-example)                          | show how to use ShardingSphere-JDBC hint                                                |
+| [encryption](shardingsphere-jdbc-example/single-feature-example/encrypt-example)                        | show how to use ShardingSphere-JDBC encryption                                          |
 | APM(Pending)                                                                                            | show how to use APM in ShardingSphere                                                   |
 | proxy(Pending)                                                                                          | show how to use ShardingSphere-Proxy                                                    |
 | [docker](./docker/docker-compose.md)                                                                    | show how to use docker to setup the environment for ShardingSphere                      |
