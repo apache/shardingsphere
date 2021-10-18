@@ -25,7 +25,7 @@ weight = 3
 
 * 列影子算法不支持 DDL 语句。
 * 列影子算法不支持范围值匹配操作，比如：子查询、BETWEEN、GROUP BY ... HAVING等；
-* 使用影子库功能+分库分表功能，部分特殊SQL不支持，请参考[SQL使用规范]( https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/)；
+* 使用影子库功能+分库分表功能，部分特殊SQL不支持，请参考[SQL使用规范](https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/)
 
 ## 列影子算法 DML 语句支持度列表
 
@@ -39,7 +39,7 @@ weight = 3
 | INSERT   | INSERT INTO table (column,...) VALUES (value,...),(value,...),... |  支持 |
 | INSERT   | INSERT INTO table (column,...) SELECT column1 from table1 where column1 = value1 |  不支持 |
 
-* SELECT，UPDATE，DELETE语句
+* SELECT/UPDATE/DELETE语句
 
 对 `WHERE` 条件中包含的字段和值进行判定
 
