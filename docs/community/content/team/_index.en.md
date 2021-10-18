@@ -26,6 +26,7 @@ chapter = true
 | Yang Yi             | KomachiSion             |
 | Yonglun Zhang       | tuohai666, zhangyonglun |
 | Kimm King           | kimmking                |
+| Haoran Meng         | menghaoranss            |
 
 ### Committers
 
@@ -42,7 +43,6 @@ chapter = true
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
 | Xiao Yu         | yu199195                |
-| Haoran Meng     | menghaoranss            |
 | Jingshang Lu    | jingshanglu             |
 | Zhengqiang Duan | strongduanmu            |
 | Jiwei Guo       | Technoboy-              |
