@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+org.apache.shardingsphere.example.sharding.raw.jdbc.hint.ModuloHintShardingAlgorithm

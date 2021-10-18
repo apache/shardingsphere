@@ -1,4 +1,4 @@
-/*
+package org.apache.shardingsphere.example.hint.raw.jdbc;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.hint.raw.jdbc;
-
-import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
+import org.apache.shardingsphere.infra.hint.HintManager;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -29,11 +28,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class HintRawExample {
+public final class ReadwriteSplittingHintRawExample {
 
-    private static final HintType TYPE = HintType.DATABASE_TABLES;
-//    private static final HintType TYPE = HintType.DATABASE_ONLY;
-//    private static final HintType TYPE = HintType.WRITE_ONLY;
+    private static final ShardingType TYPE = ShardingType.READWRITE_SPLITTING_HINT;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
@@ -45,19 +42,15 @@ public final class HintRawExample {
     
     private static DataSource getDataSource() throws IOException, SQLException {
         switch (TYPE) {
-            case DATABASE_TABLES:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-tables.yaml"));
-            case DATABASE_ONLY:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-only.yaml"));
-            case WRITE_ONLY:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-write-only.yaml"));
+            case READWRITE_SPLITTING_HINT:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting-hint.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
         }
     }
     
     private static File getFile(final String configFile) {
-        return new File(HintRawExample.class.getResource(configFile).getFile());
+        return new File(ReadwriteSplittingHintRawExample.class.getResource(configFile).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
@@ -78,14 +71,7 @@ public final class HintRawExample {
     
     private static void setHintValue(final HintManager hintManager) {
         switch (TYPE) {
-            case DATABASE_TABLES:
-                hintManager.addDatabaseShardingValue("t_order", 1L);
-                hintManager.addTableShardingValue("t_order", 1L);
-                return;
-            case DATABASE_ONLY:
-                hintManager.setDatabaseShardingValue(1L);
-                return;
-            case WRITE_ONLY:
+            case READWRITE_SPLITTING_HINT:
                 hintManager.setWriteRouteOnly();
                 return;
             default:
