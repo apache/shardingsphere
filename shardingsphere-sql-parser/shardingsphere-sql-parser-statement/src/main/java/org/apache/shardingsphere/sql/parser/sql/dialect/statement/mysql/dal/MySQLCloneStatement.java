@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
 
 /**
  * MySQL clone statement.

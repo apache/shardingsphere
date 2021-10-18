@@ -283,6 +283,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
 
+    @Override
     public ASTNode visitClone(final CloneContext ctx) {
         MySQLCloneStatement result = new MySQLCloneStatement();
         result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
