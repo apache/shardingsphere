@@ -15,39 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple;
+package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
 import java.util.Optional;
 
 /**
- * Parameter marker expression segment.
+ * ParameterMarker projection.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 @EqualsAndHashCode
-public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
+@ToString
+public final class ParameterMarkerProjection implements Projection {
+
     private final int parameterMarkerIndex;
 
-    @Setter
-    private AliasSegment alias;
+    private final String alias;
+
+    @Override
+    public String getExpression() {
+        return String.valueOf(parameterMarkerIndex);
+    }
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().orElse(String.valueOf(parameterMarkerIndex));
+    }
 
     @Override
     public Optional<String> getAlias() {
-        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+        return Optional.ofNullable(alias);
+    }
+
+    /**
+     * Get expression with alias.
+     *
+     * @return expression with alias
+     */
+    public String getExpressionWithAlias() {
+        return getExpression() + (null == alias ? "" : " AS " + alias);
     }
 }
