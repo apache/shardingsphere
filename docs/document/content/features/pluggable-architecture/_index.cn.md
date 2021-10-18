@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.10. </b>"
+pre = "<b>4.9. </b>"
 title = "可插拔架构"
-weight = 10
+weight = 9
 chapter = true
 +++
 
