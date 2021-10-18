@@ -60,7 +60,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            payload.getByteBuf().resetWriterIndex();
+            out.resetWriterIndex();
             new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
         } finally {
             updateMessageHeader(out, message.getSequenceId());
