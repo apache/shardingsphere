@@ -77,6 +77,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private Collection<List<Object>> buildInstanceRows() {
         List<List<Object>> rows = new LinkedList<>();
+        // TODO port is not saved in metadata, add port after saving
         String instanceId = String.join(DELIMITER, IpUtils.getIp(), " ");
         rows.add(buildRow(instanceId, ENABLE));
         return rows;
