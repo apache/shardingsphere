@@ -1,6 +1,6 @@
 +++
 pre = "<b>4.9.5. </b>"
-title = "性能测试(sysbench)"
+title = "性能测试（sysbench）"
 weight = 5
 +++
 
