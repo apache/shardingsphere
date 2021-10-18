@@ -1,5 +1,5 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>6.7. </b>"
 title = "SQL Checker"
 weight = 7
 chapter = true

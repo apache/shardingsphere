@@ -1,8 +1,9 @@
 +++
-pre = "<b>3. </b>"
-title = "Concepts & Features"
-weight = 3
+pre = "<b>4. </b>"
+title = "Features"
+weight = 4
 chapter = true
 +++
 
-This chapter describes concepts and features about Apache ShardingSphere. Please refer to [User manual](/en/user-manual/) for more details.
+This chapter describes features about Apache ShardingSphere. 
+Please refer to [User manual](/en/user-manual/) for more details.

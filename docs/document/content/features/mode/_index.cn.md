@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.9. </b>"
+pre = "<b>4.9. </b>"
 title = "mode模式"
 weight = 9
 chapter = true
