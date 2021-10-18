@@ -40,8 +40,11 @@ public final class ExampleGenerateEngine {
     
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-example"
             + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${feature}-example"
-            + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/java/org/apache/shardingsphere/example/${feature}/${framework?replace('-', '/')}";
+            + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/";
 
+    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/${feature}/${framework?replace('-', '/')}";
+    
+    private static final String RESOURCES_PATH = "resources";
     
     private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}${feature?cap_first}" +
             "<#assign frameworkName=\"\">" +
@@ -51,15 +54,25 @@ public final class ExampleGenerateEngine {
     private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap(4, 1);
     
     private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>(3, 1);
+    
+    private static final Map<String, String> RESOURCE_TEMPLATE_MAP = new HashMap<>(3, 1);
+    
     static {
         try {
             CONFIGURATION.setDirectoryForTemplateLoading(new File(ExampleGenerateEngine.class.getClassLoader().getResource("").getFile()));
             CONFIGURATION.setDefaultEncoding("UTF-8");
-            RENAME_TEMPLATE_MAP.put("Repository", "Repository.ftl");
+            
             RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
             RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
-            UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.ftl");
-            UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.ftl");
+            
+            UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
+            UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+            UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+            UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderRepository", "repository/OrderRepository.java");
+
+            RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+            RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+            RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,18 +111,30 @@ public final class ExampleGenerateEngine {
         return null;
     }
     
-    public static void main(String[] args) {
-        Yaml yaml = new Yaml();
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-jpa/datamodel.yaml");
-        Map<String, String> map = yaml.loadAs(in, Map.class);
-        String fileName = processString(map, FILE_NAME_PREFIX);
-        String outputPath = processString(map, OUTPUT_PATH);
+    private static void generateJavaCode(final Map<String, String> dataModel) {
+        String fileName = processString(dataModel, FILE_NAME_PREFIX);
+        String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String key : RENAME_TEMPLATE_MAP.keySet()) {
-            processFile(map, "/template/springboot-starter-jpa/" + RENAME_TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
+            processFile(dataModel, "/template/" + RENAME_TEMPLATE_MAP.get(key), outputPath + "/" + fileName + key + ".java");
         }
         for (String key : UN_NAME_TEMPLATE_MAP.keySet()) {
-            processFile(map, "/template/springboot-starter-jpa/" + UN_NAME_TEMPLATE_MAP.get(key), outputPath + "/" + key + ".java");
+            processFile(dataModel, "/template/" + key + ".ftl", outputPath + "/" + UN_NAME_TEMPLATE_MAP.get(key));
         }
+    }
+    
+    private static void generateResourcesFile(final Map<String, String> dataModel) {
+        String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
+        for (String key : RESOURCE_TEMPLATE_MAP.keySet()) {
+            processFile(dataModel, "/template/" + key + ".ftl", outputPath + "/" + RESOURCE_TEMPLATE_MAP.get(key));
+        }
+    }
+    
+    public static void main(String[] args) {
+        Yaml yaml = new Yaml();
+        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-mybatis/data-model.yaml");
+        Map<String, String> dataModel = yaml.loadAs(in, Map.class);
+        generateJavaCode(dataModel);
+        generateResourcesFile(dataModel);
     }
 }
 
