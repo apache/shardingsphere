@@ -18,6 +18,7 @@ package org.apache.shardingsphere.example.hint.raw.jdbc;/*
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
+import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 
 import javax.sql.DataSource;
@@ -29,7 +30,7 @@ import java.sql.Statement;
 
 public final class ReadwriteSplittingHintRawExample {
 
-    private static final HintType TYPE = HintType.WRITE_ONLY;
+    private static final ShardingType TYPE = ShardingType.READWRITE_SPLITTING_HINT;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
@@ -41,7 +42,7 @@ public final class ReadwriteSplittingHintRawExample {
     
     private static DataSource getDataSource() throws IOException, SQLException {
         switch (TYPE) {
-            case WRITE_ONLY:
+            case READWRITE_SPLITTING_HINT:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting-hint.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
@@ -70,7 +71,7 @@ public final class ReadwriteSplittingHintRawExample {
     
     private static void setHintValue(final HintManager hintManager) {
         switch (TYPE) {
-            case WRITE_ONLY:
+            case READWRITE_SPLITTING_HINT:
                 hintManager.setWriteRouteOnly();
                 return;
             default:
