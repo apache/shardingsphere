@@ -267,6 +267,8 @@ public enum SQLVisitorRule {
     UNINSTALL("Uninstall", SQLStatementType.DAL),
     
     FLUSH("Flush", SQLStatementType.DAL),
+
+    CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     
