@@ -42,6 +42,6 @@ public final class MySQLCreateResourceGroupStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
         assertNotNull("expected create resource group should be not null", expected.getGroup());
-        assertThat(actual.getName(), is(expected.getGroup().getName()));
+        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

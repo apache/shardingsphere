@@ -403,7 +403,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
         MySQLCreateResourceGroupStatement result = new MySQLCreateResourceGroupStatement();
-        result.setName(((IdentifierValue) visit(ctx.groupName())).getValue());
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
     

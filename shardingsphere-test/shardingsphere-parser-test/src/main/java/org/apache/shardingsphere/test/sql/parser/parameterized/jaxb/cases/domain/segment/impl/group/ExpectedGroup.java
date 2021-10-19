@@ -20,12 +20,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
 
 /**
  * Expected group.
  */
 @Getter
 @Setter
-public final class ExpectedGroup extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
+public final class ExpectedGroup extends AbstractExpectedIdentifierSQLSegment {
 }
