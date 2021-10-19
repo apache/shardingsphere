@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shadow.rule.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -37,42 +35,6 @@ import java.util.stream.Collectors;
 public final class ShadowRuleChecker {
     
     /**
-     * Check data sources mappings size.
-     *
-     * @param dataSources data sources mappings
-     */
-    public static void checkDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        Preconditions.checkState(!dataSources.isEmpty(), "No available shadow data sources mappings in shadow configuration.");
-    }
-    
-    /**
-     * Check shadow tables size.
-     *
-     * @param shadowTables shadow tables
-     */
-    public static void checkShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
-        Preconditions.checkState(!shadowTables.isEmpty(), "No available shadow tables in shadow configuration.");
-    }
-    
-    /**
-     * Check shadow table data sources.
-     *
-     * @param shadowTableDataSources shadow table sata sources
-     */
-    public static void checkShadowTableDataSources(final Collection<String> shadowTableDataSources) {
-        Preconditions.checkState(!shadowTableDataSources.isEmpty(), "No available shadow data sources in shadow table.");
-    }
-    
-    /**
-     * Check shadow algorithms size.
-     *
-     * @param shadowAlgorithms shadow algorithms
-     */
-    public static void checkShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        Preconditions.checkState(!shadowAlgorithms.isEmpty(), "No available shadow data algorithms in shadow configuration.");
-    }
-    
-    /**
      * Check table shadow algorithms.
      *
      * @param tableName table name
@@ -80,8 +42,11 @@ public final class ShadowRuleChecker {
      * @param shadowAlgorithms shadow algorithms
      */
     public static void checkTableShadowAlgorithms(final String tableName, final Collection<String> tableShadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        Preconditions.checkState(!tableShadowAlgorithmNames.isEmpty(), "No available shadow Algorithm configuration in shadow table `%s`.", tableName);
         checkTableColumnShadowAlgorithms(tableName, createTableShadowAlgorithms(tableShadowAlgorithmNames, shadowAlgorithms));
+    }
+    
+    private static Collection<ShadowAlgorithm> createTableShadowAlgorithms(final Collection<String> tableShadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+        return tableShadowAlgorithmNames.stream().map(shadowAlgorithms::get).filter(shadowAlgorithm -> !Objects.isNull(shadowAlgorithm)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private static void checkTableColumnShadowAlgorithms(final String tableName, final Collection<ShadowAlgorithm> tableShadowAlgorithms) {
@@ -120,9 +85,5 @@ public final class ShadowRuleChecker {
     private static void checkOperationCount(final ShadowOperationType shadowOperationType, final int operationCount, final String tableName) {
         Preconditions.checkState(operationCount <= 1, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.",
                 shadowOperationType.name(), tableName);
-    }
-    
-    private static Collection<ShadowAlgorithm> createTableShadowAlgorithms(final Collection<String> tableShadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        return tableShadowAlgorithmNames.stream().map(shadowAlgorithms::get).filter(shadowAlgorithm -> !Objects.isNull(shadowAlgorithm)).collect(Collectors.toCollection(LinkedList::new));
     }
 }
