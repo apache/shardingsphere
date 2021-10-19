@@ -33,5 +33,4 @@ public final class CreateResourceGroupStatementTestCase extends SQLParserTestCas
 
     @XmlElement
     private ExpectedGroup group;
-
 }
