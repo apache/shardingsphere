@@ -52,6 +52,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +92,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowRouteEngine.parseShadowColumnConditions();
-        assertThat(shadowColumnConditions.isPresent(), is(true));
+        assertTrue(shadowColumnConditions.isPresent());
         Collection<ShadowColumnCondition> shadowColumns = shadowColumnConditions.get();
         assertThat(shadowColumns.size(), is(1));
         Iterator<ShadowColumnCondition> iterator = shadowColumns.iterator();
@@ -100,7 +101,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         assertThat(userId.getTable(), is("t_order"));
         assertThat(userId.getValues().iterator().next(), is("1"));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
-        assertThat(sqlNotes.isPresent(), is(true));
+        assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
