@@ -34,13 +34,14 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereCon
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
 import java.util.Optional;
 
 /**
- * Select statement and SQL select converter.
+ * Select statement converter.
  */
-public final class SelectStatementConverter implements SQLStatementSQLNodeConverter<SelectStatement, SqlNode> {
+public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
     public SqlNode convertSQLNode(final SelectStatement selectStatement) {
@@ -65,18 +66,7 @@ public final class SelectStatementConverter implements SQLStatementSQLNodeConver
     
     @Override
     public SelectStatement convertSQLStatement(final SqlNode sqlNode) {
-//        Optional<ProjectionsSegment> projections = new DistinctConverter().convertSQLSegment(sqlNode.getSelectList());
-//        Preconditions.checkState(projections.isPresent());
-//        MySQLSelectStatement result = new MySQLSelectStatement();
-//        result.setProjections(projections.get());
-//        new TableConverter().convertSQLSegment(sqlNode.getFrom()).ifPresent(result::setFrom);
-//        new WhereConverter().convertSQLSegment(sqlNode.getWhere()).ifPresent(result::setWhere);
-//        new GroupByConverter().convertSQLSegment(sqlNode.getGroup()).ifPresent(result::setGroupBy);
-//        new HavingConverter().convertSQLSegment(sqlNode.getHaving()).ifPresent(result::setHaving);
-//        new OrderByConverter().convertSQLSegment(sqlNode.getOrderList()).ifPresent(result::setOrderBy);
-//        new OffsetConverter().convertSQLSegment(sqlNode.getOffset()).ifPresent(result::setLimit);
-//        new RowCountConverter().convertSQLSegment(sqlNode.getOffset()).ifPresent(result::setLimit);
-//        return result;
-        return null;
+        // TODO support sql node convert to sql statement 
+        return new MySQLSelectStatement();
     }
 }
