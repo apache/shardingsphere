@@ -18,6 +18,20 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
+import org.apache.calcite.config.CalciteConnectionProperty;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.parser.SqlParser.Config;
+import org.apache.calcite.sql.parser.impl.SqlParserImpl;
+import org.apache.calcite.util.Litmus;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
+import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -35,6 +49,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
+
+import static org.junit.Assert.assertTrue;
 
 @RequiredArgsConstructor
 public abstract class SQLParserParameterizedTest {
@@ -72,7 +88,43 @@ public abstract class SQLParserParameterizedTest {
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
     }
     
+    @Test
+    public void assertConvertToSQLNode() {
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(parseSQLStatement(databaseType, sql));
+        SqlNode expected = parseSqlNode(databaseType, sql);
+        assertTrue(actual.equalsDeep(expected, Litmus.THROW));
+    }
+    
+    @Test
+    public void assertConvertToSQLStatement() {
+        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(parseSqlNode(databaseType, sql));
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
+    }
+    
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
         return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType, true).parse(sql, false));
+    }
+    
+    @SneakyThrows(SqlParseException.class)
+    private SqlNode parseSqlNode(final String databaseType, final String sql) {
+        return SqlParser.create(sql, createConfig(DatabaseTypeRegistry.getActualDatabaseType(databaseType))).parseQuery();
+    }
+    
+    private Config createConfig(final DatabaseType databaseType) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createSQLDialectProperties(databaseType));
+        return SqlParser.config().withLex(connectionConfig.lex())
+                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH).withConformance(connectionConfig.conformance()).withParserFactory(SqlParserImpl.FACTORY);
+    }
+    
+    private Properties createSQLDialectProperties(final DatabaseType databaseType) {
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
+        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType, result));
+        return result;
     }
 }

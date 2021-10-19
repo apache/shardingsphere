@@ -24,7 +24,9 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -36,14 +38,22 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     public Optional<SqlNode> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
-        if (owner.isPresent()) {
-            return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
-        }
-        return Optional.of(new SqlIdentifier(columnName, SqlParserPos.ZERO));
+        SqlIdentifier sqlIdentifier = owner.map(optional 
+            -> new SqlIdentifier(Arrays.asList(optional.getIdentifier().getValue(), columnName), SqlParserPos.ZERO)).orElseGet(() -> new SqlIdentifier(columnName, SqlParserPos.ZERO));
+        return Optional.of(sqlIdentifier);
     }
     
     @Override
     public Optional<ColumnSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlIdentifier) {
+            ImmutableList<String> names = ((SqlIdentifier) sqlNode).names;
+            if (1 == names.size()) {
+                return Optional.of(new ColumnSegment(sqlNode.getParserPosition().getColumnNum() - 1, sqlNode.getParserPosition().getEndColumnNum() - 1, new IdentifierValue(names.get(0))));    
+            }
+            ColumnSegment columnSegment = new ColumnSegment(sqlNode.getParserPosition().getColumnNum(), sqlNode.getParserPosition().getEndColumnNum(), new IdentifierValue(names.get(1)));
+            columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue(names.get(0))));
+            return Optional.of(columnSegment);
+        }
         return Optional.empty();
     }
 }

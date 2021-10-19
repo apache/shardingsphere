@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
 import org.apache.calcite.sql.SqlJoin;
@@ -27,6 +26,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
@@ -47,8 +47,8 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final JoinTableSegment segment) {
-        SqlNode left = convertJoinedTable(segment.getLeft());
-        SqlNode right = convertJoinedTable(segment.getRight());
+        SqlNode left = new TableConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        SqlNode right = new TableConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
         Optional<SqlNode> condition = new ExpressionConverter().convertToSQLNode(segment.getCondition());
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         return Optional.of(
@@ -57,13 +57,24 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     
     @Override
     public Optional<JoinTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
-    }
-    
-    private SqlNode convertJoinedTable(final TableSegment segment) {
-        Optional<SqlNode> result = new TableConverter().convertToSQLNode(segment);
-        Preconditions.checkState(result.isPresent());
-        return result.get();
+        if (!(sqlNode instanceof SqlJoin)) {
+            return Optional.empty();
+        }
+        SqlJoin sqlJoin = (SqlJoin) sqlNode;
+        TableSegment left = new TableConverter().convertToSQLSegment(sqlJoin.getLeft()).orElseThrow(IllegalStateException::new);
+        TableSegment right = new TableConverter().convertToSQLSegment(sqlJoin.getRight()).orElseThrow(IllegalStateException::new);
+        Optional<ExpressionSegment> condition = new ExpressionConverter().convertToSQLSegment((sqlJoin).getCondition());
+        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
+        JoinTableSegment result = new JoinTableSegment();
+        result.setStartIndex(sqlNode.getParserPosition().getColumnNum());
+        result.setStartIndex(sqlNode.getParserPosition().getEndColumnNum());
+        result.setAlias(null);
+        result.setLeft(left);
+//        result.setJoinType(conditionType.getStringValue());
+        result.setRight(right);
+        result.setUsing(null);
+//        result.setCondition(condition);
+        return Optional.of(result);
     }
     
     private SqlLiteral convertJoinType(final String joinType) {
