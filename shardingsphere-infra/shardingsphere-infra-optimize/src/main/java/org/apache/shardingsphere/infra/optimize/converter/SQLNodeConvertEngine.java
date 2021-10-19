@@ -40,7 +40,7 @@ public final class SQLNodeConvertEngine {
      */
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementConverter().convertSQLNode((SelectStatement) statement);
+            return new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
         }
         throw new UnsupportedOperationException("Unsupported SQL node conversion.");
     }
@@ -53,7 +53,7 @@ public final class SQLNodeConvertEngine {
      */
     public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
-            return new SelectStatementConverter().convertSQLStatement(sqlNode);
+            return new SelectStatementConverter().convertToSQLStatement(sqlNode);
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }

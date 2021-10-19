@@ -71,7 +71,7 @@ public final class SQLNodeConvertParameterizedTest {
     }
     
     @Test
-    public void assertConvertSQLNode() {
+    public void assertConvertToSQLNode() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
@@ -80,7 +80,7 @@ public final class SQLNodeConvertParameterizedTest {
     }
     
     @Ignore
-    public void assertConvertSQLStatement() {
+    public void assertConvertToSQLStatement() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SQLStatement expected = parseSQLStatement(databaseType, sql);

@@ -33,7 +33,7 @@ public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode
      * @param sqlStatement SQL statement be to converted
      * @return converted SQL node
      */
-    T convertSQLNode(S sqlStatement);
+    T convertToSQLNode(S sqlStatement);
     
     /**
      * Convert SQL node to SQL statement.
@@ -41,5 +41,5 @@ public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode
      * @param sqlNode SQL node be to converted
      * @return converted SQL statement
      */
-    S convertSQLStatement(T sqlNode);
+    S convertToSQLStatement(T sqlNode);
 }

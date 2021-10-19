@@ -34,7 +34,7 @@ public final class SubqueryExpressionConverter implements SQLSegmentConverter<Su
         if (null == expression) {
             return Optional.empty();
         }
-        return Optional.of(new SelectStatementConverter().convertSQLNode(expression.getSubquery().getSelect()));
+        return Optional.of(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect()));
     }
     
     @Override
