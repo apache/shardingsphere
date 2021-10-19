@@ -46,7 +46,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -74,7 +75,7 @@ public final class SQLNodeConvertParameterizedTest {
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
         SqlNode actual = SQLStatementSQLNodeConvertEngine.convertSQLNode(parseSQLStatement(databaseType, sql));
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+        assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     
     @Test
@@ -83,7 +84,8 @@ public final class SQLNodeConvertParameterizedTest {
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SQLStatement expected = parseSQLStatement(databaseType, sql);
         SQLStatement actual = SQLStatementSQLNodeConvertEngine.convertSQLStatement(parseSqlNode(databaseType, sql));
-        assertEquals(expected, actual);
+        // TODO optimize assert logic
+        assertThat(actual.toString(), is(expected.toString()));
     }
     
     @SneakyThrows(SqlParseException.class)
