@@ -43,7 +43,7 @@ public final class AdvancedDistSQLBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final AdvancedDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof PreviewStatement) {
-            return new PrviewDistSQLBackendHandler((PreviewStatement) sqlStatement, backendConnection);
+            return new PreviewDistSQLBackendHandler((PreviewStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
