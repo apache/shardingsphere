@@ -9,4 +9,4 @@ Apache ShardingSphere provided a full functionality test engine.
 They define SQLs in XML files, engine run for each database independently.
 
 All test engines designed to modify the configuration files to execute all assertions without any **Java code** modification.
-The test engines does not depend on any third-party environment, ShardingSphere-Proxy and database used for testing are provided by docker image.
+It does not depend on any third-party environment, ShardingSphere-Proxy and database used for testing are provided by docker image.
