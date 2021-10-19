@@ -74,11 +74,11 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
         row.setCell(6, avg(row.getCell(7), row.getCell(5)));
     }
     
-    private BigInteger sum(Object num1, Object num2) {
+    private BigInteger sum(final Object num1, final Object num2) {
         return ((BigInteger) num1).add((BigInteger) num2);
     }
     
-    private BigInteger avg(Object sum, Object number) {
+    private BigInteger avg(final Object sum, final Object number) {
         return BigInteger.ZERO.equals(number) ? BigInteger.ZERO : ((BigInteger) sum).divide((BigInteger) number);
     }
 }
