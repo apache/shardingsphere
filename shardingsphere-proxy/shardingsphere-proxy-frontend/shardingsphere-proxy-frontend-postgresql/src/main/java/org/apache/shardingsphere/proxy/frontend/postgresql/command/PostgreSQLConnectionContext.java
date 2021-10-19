@@ -46,8 +46,6 @@ public final class PostgreSQLConnectionContext {
     
     private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
     
-    private long updateCount;
-    
     private PostgreSQLCommandPacketType currentPacketType;
     
     private boolean errorOccurred;
@@ -118,7 +116,6 @@ public final class PostgreSQLConnectionContext {
      */
     public void clearContext() {
         pendingExecutors.clear();
-        updateCount = 0;
         currentPacketType = null;
         errorOccurred = false;
     }

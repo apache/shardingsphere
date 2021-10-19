@@ -104,7 +104,7 @@ public final class PostgreSQLPortal {
      *
      * @return portal description packet
      */
-    public PostgreSQLPacket describePortal() {
+    public PostgreSQLPacket describe() {
         if (responseHeader instanceof QueryResponseHeader) {
             return createRowDescriptionPacket((QueryResponseHeader) responseHeader);
         }
@@ -126,6 +126,15 @@ public final class PostgreSQLPortal {
             result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
+    }
+    
+    /**
+     * Get update count.
+     * 
+     * @return update count
+     */
+    public long getUpdateCount() {
+        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0;
     }
     
     /**

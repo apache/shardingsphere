@@ -43,7 +43,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 // TODO Unsupported yet. Refer to https://github.com/apache/shardingsphere/issues/10814
                 return Collections.emptyList();
             case 'P':
-                return Collections.singletonList(connectionContext.getPortal(packet.getName()).describePortal());
+                return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
             default:
                 throw new UnsupportedOperationException("Unsupported describe type: " + packet.getType());
         }

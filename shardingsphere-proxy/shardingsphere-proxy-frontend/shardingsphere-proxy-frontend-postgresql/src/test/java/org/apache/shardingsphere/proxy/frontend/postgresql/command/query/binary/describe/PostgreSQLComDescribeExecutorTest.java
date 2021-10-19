@@ -58,7 +58,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Test
     public void assertDescribeEmptyStatement() {
         PostgreSQLNoDataPacket expected = mock(PostgreSQLNoDataPacket.class);
-        when(portal.describePortal()).thenReturn(expected);
+        when(portal.describe()).thenReturn(expected);
         Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));
@@ -67,7 +67,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Test
     public void assertDescribeRows() {
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
-        when(portal.describePortal()).thenReturn(expected);
+        when(portal.describe()).thenReturn(expected);
         PostgreSQLComDescribeExecutor describeExecutor = new PostgreSQLComDescribeExecutor(connectionContext, packet);
         Collection<DatabasePacket<?>> actual = describeExecutor.execute();
         assertThat(actual.size(), is(1));

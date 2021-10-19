@@ -53,7 +53,7 @@ public final class OpenGaussCommandExecutorFactory {
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final CommandPacket commandPacket,
                                               final BackendConnection backendConnection, final PostgreSQLConnectionContext connectionContext) throws SQLException {
-        return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindExecutor(connectionContext, (OpenGaussComBatchBindPacket) commandPacket, backendConnection)
+        return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindExecutor((OpenGaussComBatchBindPacket) commandPacket, backendConnection)
                 : PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, (PostgreSQLCommandPacket) commandPacket, backendConnection, connectionContext);
     }
 }
