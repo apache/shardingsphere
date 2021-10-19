@@ -21,13 +21,14 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collection;
 
 import static org.mockito.Mockito.mock;
 
-public class ShardingParameterRewriterBuilderTest {
+public final class ShardingParameterRewriterBuilderTest {
 
     @Test
     public void assertGetParameterRewriters() {
@@ -35,8 +36,8 @@ public class ShardingParameterRewriterBuilderTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         RouteContext routeContext = mock(RouteContext.class);
         ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(shardingRule, routeContext);
-        Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters(shardingSphereSchema);
-        assert !actual.isEmpty();
-        assert actual.size() == 2;
+        Collection<ParameterRewriter> result = shardingParameterRewriterBuilder.getParameterRewriters(shardingSphereSchema);
+        Assert.assertEquals(result.isEmpty(), false);
+        Assert.assertEquals(result.size(), 2);
     }
 }
