@@ -59,7 +59,6 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
                 } else {
                     memoryQueryResultRowMap.put(tableName, memoryResultSetRow);
                 }
-                
             }
         }
         return new LinkedList<>(memoryQueryResultRowMap.values());
