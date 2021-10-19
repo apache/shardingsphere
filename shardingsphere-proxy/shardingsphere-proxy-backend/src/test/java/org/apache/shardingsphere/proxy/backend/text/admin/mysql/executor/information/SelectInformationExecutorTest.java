@@ -176,7 +176,6 @@ public final class SelectInformationExecutorTest {
     @Test
     public void assertSelectSchemaAliasExecute() throws SQLException {
         final String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
-        DefaultSelectInformationExecutor selectExecutor = new DefaultSelectInformationExecutor(sql);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("sn", "demo_ds_0");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
@@ -184,6 +183,7 @@ public final class SelectInformationExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("demo_ds_0", getMetaData());
         metaDataMap.put("test", mock(ShardingSphereMetaData.class));
+        DefaultSelectInformationExecutor selectExecutor = new DefaultSelectInformationExecutor(sql);
         selectExecutor.execute(mock(BackendConnection.class));
         assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
         assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
