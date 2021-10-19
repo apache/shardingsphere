@@ -625,7 +625,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-readwrite-splitting-read-resources")
     private final List<ShowReadwriteSplittingReadResourcesStatementTestCase> showReadwriteSplittingReadResourcesStatementTestCases = new LinkedList<>();
     

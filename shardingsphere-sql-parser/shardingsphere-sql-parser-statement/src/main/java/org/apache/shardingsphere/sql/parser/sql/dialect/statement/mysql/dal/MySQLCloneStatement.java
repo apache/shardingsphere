@@ -34,5 +34,4 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 public final class MySQLCloneStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 
     private CloneActionSegment cloneActionSegment;
-
 }

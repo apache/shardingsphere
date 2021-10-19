@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 @ToString
 @Getter
 @Setter
-public class CloneActionSegment implements SQLSegment {
+public final class CloneActionSegment implements SQLSegment {
 
     private final int startIndex;
 
