@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneInstanceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ComponentNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLoadableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
@@ -89,10 +92,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
@@ -127,6 +132,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -277,6 +284,34 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
         MySQLInstallPluginStatement result = new MySQLInstallPluginStatement();
         result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitClone(final CloneContext ctx) {
+        MySQLCloneStatement result = new MySQLCloneStatement();
+        result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
+        return result;
+    }
+
+    @Override
+    public ASTNode visitCloneAction(final CloneActionContext ctx) {
+        CloneActionSegment result = new CloneActionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.cloneInstance()) {
+            CloneInstanceContext cloneInstance = ctx.cloneInstance();
+            CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment(cloneInstance.start.getStartIndex(), cloneInstance.stop.getStopIndex());
+            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
+            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(cloneInstance.hostName())).getValue());
+            cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());
+            cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.string_())).getValue());
+            if (null != ctx.SSL() && null == ctx.NO()) {
+                cloneInstanceSegment.setSslRequired(true);
+            }
+            result.setCloneInstance(cloneInstanceSegment);
+        }
+        if (null != ctx.cloneDir()) {
+            result.setCloneDir(((StringLiteralValue) visit(ctx.cloneDir())).getValue());
+        }
         return result;
     }
     
