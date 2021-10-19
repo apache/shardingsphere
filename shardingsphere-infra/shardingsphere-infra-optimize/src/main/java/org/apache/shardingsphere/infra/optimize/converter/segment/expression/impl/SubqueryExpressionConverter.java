@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
@@ -27,10 +27,10 @@ import java.util.Optional;
 /**
  * Subquery expression converter.
  */
-public final class SubqueryExpressionConverter implements SQLSegmentSQLNodeConverter<SubqueryExpressionSegment, SqlNode> {
+public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final SubqueryExpressionSegment expression) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryExpressionSegment expression) {
         if (null == expression) {
             return Optional.empty();
         }
@@ -38,7 +38,7 @@ public final class SubqueryExpressionConverter implements SQLSegmentSQLNodeConve
     }
     
     @Override
-    public Optional<SubqueryExpressionSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<SubqueryExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

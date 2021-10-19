@@ -31,7 +31,7 @@ import org.apache.calcite.util.Litmus;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
-import org.apache.shardingsphere.infra.optimize.converter.SQLStatementSQLNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
 import org.apache.shardingsphere.infra.optimize.converter.parameterized.jaxb.SQLNodeConvertCasesRegistry;
 import org.apache.shardingsphere.infra.optimize.converter.parameterized.loader.SQLNodeConvertCasesLoader;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -74,7 +74,7 @@ public final class SQLNodeConvertParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
-        SqlNode actual = SQLStatementSQLNodeConvertEngine.convertSQLNode(parseSQLStatement(databaseType, sql));
+        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(parseSQLStatement(databaseType, sql));
         assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     
@@ -83,7 +83,7 @@ public final class SQLNodeConvertParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SQLStatement expected = parseSQLStatement(databaseType, sql);
-        SQLStatement actual = SQLStatementSQLNodeConvertEngine.convertSQLStatement(parseSqlNode(databaseType, sql));
+        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(parseSqlNode(databaseType, sql));
         // TODO optimize assert logic
         assertThat(actual.toString(), is(expected.toString()));
     }

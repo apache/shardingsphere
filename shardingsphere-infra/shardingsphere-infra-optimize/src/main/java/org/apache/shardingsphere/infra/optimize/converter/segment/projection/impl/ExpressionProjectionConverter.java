@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
@@ -27,15 +27,15 @@ import java.util.Optional;
 /**
  * Expression projection converter.
  */
-public final class ExpressionProjectionConverter implements SQLSegmentSQLNodeConverter<ExpressionProjectionSegment, SqlNode> {
+public final class ExpressionProjectionConverter implements SQLSegmentConverter<ExpressionProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final ExpressionProjectionSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convertSQLNode(segment.getExpr());
+    public Optional<SqlNode> convertToSQLNode(final ExpressionProjectionSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionConverter().convertToSQLNode(segment.getExpr());
     }
     
     @Override
-    public Optional<ExpressionProjectionSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<ExpressionProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.limit;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
@@ -30,20 +30,20 @@ import java.util.function.Function;
  * Abstract limit converter.
  */
 @RequiredArgsConstructor
-public abstract class AbstractLimitConverter implements SQLSegmentSQLNodeConverter<LimitSegment, SqlNode> {
+public abstract class AbstractLimitConverter implements SQLSegmentConverter<LimitSegment, SqlNode> {
     
     private final Function<LimitSegment, Optional<PaginationValueSegment>> function;
     
     @Override
-    public final Optional<SqlNode> convertSQLNode(final LimitSegment segment) {
+    public final Optional<SqlNode> convertToSQLNode(final LimitSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        return function.apply(segment).flatMap(optional -> new PaginationValueSQLConverter().convertSQLNode(optional));
+        return function.apply(segment).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional));
     }
     
     @Override
-    public Optional<LimitSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<LimitSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

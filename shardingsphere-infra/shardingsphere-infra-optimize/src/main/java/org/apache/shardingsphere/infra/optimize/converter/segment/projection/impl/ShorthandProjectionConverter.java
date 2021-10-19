@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.projection.im
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
 import java.util.Optional;
@@ -28,15 +28,15 @@ import java.util.Optional;
 /**
  * Shorthand projection converter. 
  */
-public final class ShorthandProjectionConverter implements SQLSegmentSQLNodeConverter<ShorthandProjectionSegment, SqlNode> {
+public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final ShorthandProjectionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ShorthandProjectionSegment segment) {
         return null == segment ? Optional.empty() : Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
     }
     
     @Override
-    public Optional<ShorthandProjectionSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<ShorthandProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

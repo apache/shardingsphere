@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.projection;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 
 import java.util.Collections;
@@ -29,15 +29,15 @@ import java.util.Optional;
 /**
  * Distinct converter.
  */
-public final class DistinctConverter implements SQLSegmentSQLNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class DistinctConverter implements SQLSegmentConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convertSQLNode(final ProjectionsSegment segment) {
+    public Optional<SqlNodeList> convertToSQLNode(final ProjectionsSegment segment) {
         return segment.isDistinctRow() ? Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO)) : Optional.empty();
     }
     
     @Override
-    public Optional<ProjectionsSegment> convertSQLSegment(final SqlNodeList sqlNode) {
+    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
         return Optional.empty();
     }
 }

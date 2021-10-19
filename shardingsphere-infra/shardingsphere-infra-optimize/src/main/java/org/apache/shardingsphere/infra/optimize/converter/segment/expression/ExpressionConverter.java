@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ColumnConverter;
@@ -43,38 +43,38 @@ import java.util.Optional;
 /**
  * Expression converter.
  */
-public final class ExpressionConverter implements SQLSegmentSQLNodeConverter<ExpressionSegment, SqlNode> {
+public final class ExpressionConverter implements SQLSegmentConverter<ExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final ExpressionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ExpressionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         if (segment instanceof LiteralExpressionSegment) {
-            return new LiteralExpressionConverter().convertSQLNode((LiteralExpressionSegment) segment);
+            return new LiteralExpressionConverter().convertToSQLNode((LiteralExpressionSegment) segment);
         } else if (segment instanceof CommonExpressionSegment) {
             // TODO 
             throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
         } else if (segment instanceof ListExpression) {
-            return new ListExpressionConverter().convertSQLNode((ListExpression) segment);
+            return new ListExpressionConverter().convertToSQLNode((ListExpression) segment);
         } else if (segment instanceof BinaryOperationExpression) {
-            return new BinaryOperationExpressionConverter().convertSQLNode((BinaryOperationExpression) segment);
+            return new BinaryOperationExpressionConverter().convertToSQLNode((BinaryOperationExpression) segment);
         } else if (segment instanceof ColumnSegment) {
-            return new ColumnConverter().convertSQLNode((ColumnSegment) segment);
+            return new ColumnConverter().convertToSQLNode((ColumnSegment) segment);
         } else if (segment instanceof ExistsSubqueryExpression) {
-            return new ExistsSubqueryExpressionConverter().convertSQLNode((ExistsSubqueryExpression) segment);
+            return new ExistsSubqueryExpressionConverter().convertToSQLNode((ExistsSubqueryExpression) segment);
         } else if (segment instanceof SubqueryExpressionSegment) {
-            return new SubqueryExpressionConverter().convertSQLNode((SubqueryExpressionSegment) segment);
+            return new SubqueryExpressionConverter().convertToSQLNode((SubqueryExpressionSegment) segment);
         } else if (segment instanceof InExpression) {
-            return new InExpressionConverter().convertSQLNode((InExpression) segment);
+            return new InExpressionConverter().convertToSQLNode((InExpression) segment);
         } else if (segment instanceof BetweenExpression) {
-            return new BetweenExpressionConverter().convertSQLNode((BetweenExpression) segment);
+            return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }
     
     @Override
-    public Optional<ExpressionSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<ExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

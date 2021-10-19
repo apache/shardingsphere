@@ -22,7 +22,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
@@ -33,10 +33,10 @@ import java.util.Optional;
 /**
  * Subquery projection converter. 
  */
-public final class SubqueryProjectionConverter implements SQLSegmentSQLNodeConverter<SubqueryProjectionSegment, SqlNode> {
+public final class SubqueryProjectionConverter implements SQLSegmentConverter<SubqueryProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final SubqueryProjectionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -52,7 +52,7 @@ public final class SubqueryProjectionConverter implements SQLSegmentSQLNodeConve
     }
     
     @Override
-    public Optional<SubqueryProjectionSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<SubqueryProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

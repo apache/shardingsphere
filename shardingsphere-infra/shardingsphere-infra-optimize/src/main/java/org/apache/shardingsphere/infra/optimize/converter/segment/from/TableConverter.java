@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.from;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.JoinTableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SimpleTableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SubqueryTableConverter;
@@ -32,22 +32,22 @@ import java.util.Optional;
 /**
  * Table converter.
  */
-public final class TableConverter implements SQLSegmentSQLNodeConverter<TableSegment, SqlNode> {
+public final class TableConverter implements SQLSegmentConverter<TableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final TableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final TableSegment segment) {
         if (segment instanceof SimpleTableSegment) {
-            return new SimpleTableConverter().convertSQLNode((SimpleTableSegment) segment);
+            return new SimpleTableConverter().convertToSQLNode((SimpleTableSegment) segment);
         } else if (segment instanceof JoinTableSegment) {
-            return new JoinTableConverter().convertSQLNode((JoinTableSegment) segment);
+            return new JoinTableConverter().convertToSQLNode((JoinTableSegment) segment);
         } else if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableConverter().convertSQLNode((SubqueryTableSegment) segment);
+            return new SubqueryTableConverter().convertToSQLNode((SubqueryTableSegment) segment);
         }
         throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
     }
     
     @Override
-    public Optional<TableSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

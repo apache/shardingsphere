@@ -22,7 +22,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
@@ -33,10 +33,10 @@ import java.util.Optional;
 /**
  * Subquery table converter.
  */
-public final class SubqueryTableConverter implements SQLSegmentSQLNodeConverter<SubqueryTableSegment, SqlNode> {
+public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final SubqueryTableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryTableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -47,7 +47,7 @@ public final class SubqueryTableConverter implements SQLSegmentSQLNodeConverter<
     }
     
     @Override
-    public Optional<SubqueryTableSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<SubqueryTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

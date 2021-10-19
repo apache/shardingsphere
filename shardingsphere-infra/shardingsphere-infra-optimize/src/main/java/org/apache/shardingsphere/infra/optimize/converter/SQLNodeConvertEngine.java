@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * SQL statement and SQL node convert engine.
+ * SQL node convert engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementSQLNodeConvertEngine {
+public final class SQLNodeConvertEngine {
     
     /**
      * Convert SQL statement to SQL node.
@@ -38,7 +38,7 @@ public final class SQLStatementSQLNodeConvertEngine {
      * @param statement SQL statement to be converted
      * @return sqlNode converted SQL node
      */
-    public static SqlNode convertSQLNode(final SQLStatement statement) {
+    public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             return new SelectStatementSQLSelectConverter().convertSQLNode((SelectStatement) statement);
         }
@@ -51,7 +51,7 @@ public final class SQLStatementSQLNodeConvertEngine {
      * @param sqlNode sqlNode converted SQL node
      * @return SQL statement to be converted
      */
-    public static SQLStatement convertSQLStatement(final SqlNode sqlNode) {
+    public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
             return new SelectStatementSQLSelectConverter().convertSQLStatement(sqlNode);
         }

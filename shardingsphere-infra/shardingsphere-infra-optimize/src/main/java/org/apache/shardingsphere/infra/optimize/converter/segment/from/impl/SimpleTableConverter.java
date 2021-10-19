@@ -22,7 +22,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
@@ -31,10 +31,10 @@ import java.util.Optional;
 /**
  * Simple table converter.
  */
-public final class SimpleTableConverter implements SQLSegmentSQLNodeConverter<SimpleTableSegment, SqlNode> {
+public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final SimpleTableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
         SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
@@ -45,7 +45,7 @@ public final class SimpleTableConverter implements SQLSegmentSQLNodeConverter<Si
     }
     
     @Override
-    public Optional<SimpleTableSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<SimpleTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

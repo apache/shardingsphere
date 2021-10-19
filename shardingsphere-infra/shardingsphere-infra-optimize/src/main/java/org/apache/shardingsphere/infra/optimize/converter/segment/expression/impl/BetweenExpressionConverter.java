@@ -21,7 +21,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 
@@ -32,24 +32,24 @@ import java.util.Optional;
 /**
  * Between expression converter.
  */
-public final class BetweenExpressionConverter implements SQLSegmentSQLNodeConverter<BetweenExpression, SqlNode> {
+public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final BetweenExpression expression) {
+    public Optional<SqlNode> convertToSQLNode(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convertSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convertSQLNode(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        expressionConverter.convertSQLNode(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getAndExpr()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     @Override
-    public Optional<BetweenExpression> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<BetweenExpression> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

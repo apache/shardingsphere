@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentSQLNodeConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
@@ -30,10 +30,10 @@ import java.util.Optional;
 /**
  * Column converter.
  */
-public final class ColumnConverter implements SQLSegmentSQLNodeConverter<ColumnSegment, SqlNode> {
+public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertSQLNode(final ColumnSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
         if (owner.isPresent()) {
@@ -43,7 +43,7 @@ public final class ColumnConverter implements SQLSegmentSQLNodeConverter<ColumnS
     }
     
     @Override
-    public Optional<ColumnSegment> convertSQLSegment(final SqlNode sqlNode) {
+    public Optional<ColumnSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

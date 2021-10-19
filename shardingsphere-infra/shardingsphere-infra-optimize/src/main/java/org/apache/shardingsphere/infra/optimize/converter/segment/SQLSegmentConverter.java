@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import java.util.Optional;
 
 /**
- * SQL segment and SQL node converter.
+ * SQL segment converter.
  * 
  * @param <S> type of SQL segment
  * @param <T> type of SQL node
  */
-public interface SQLSegmentSQLNodeConverter<S extends SQLSegment, T extends SqlNode> {
+public interface SQLSegmentConverter<S extends SQLSegment, T extends SqlNode> {
     
     /**
      * Convert SQL segment to SQL node.
@@ -36,7 +36,7 @@ public interface SQLSegmentSQLNodeConverter<S extends SQLSegment, T extends SqlN
      * @param segment SQL segment be to converted
      * @return converted SQL node
      */
-    Optional<T> convertSQLNode(S segment);
+    Optional<T> convertToSQLNode(S segment);
     
     /**
      * Convert SQL node to SQL segment.
@@ -44,5 +44,5 @@ public interface SQLSegmentSQLNodeConverter<S extends SQLSegment, T extends SqlN
      * @param sqlNode SQL node be to converted
      * @return converted SQL segment
      */
-    Optional<S> convertSQLSegment(T sqlNode);
+    Optional<S> convertToSQLSegment(T sqlNode);
 }
