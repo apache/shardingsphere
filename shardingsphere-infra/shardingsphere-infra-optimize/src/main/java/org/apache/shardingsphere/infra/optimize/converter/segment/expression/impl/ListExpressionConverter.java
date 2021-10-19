@@ -34,10 +34,10 @@ import java.util.Optional;
 public final class ListExpressionConverter implements SQLSegmentConverter<ListExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ListExpression segment) {
+    public Optional<SqlNode> convertToSQLNode(final ListExpression segment) {
         SqlNode left = null;
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> optional = new ExpressionConverter().convert(each);
+            Optional<SqlNode> optional = new ExpressionConverter().convertToSQLNode(each);
             if (!optional.isPresent()) {
                 continue;
             }
@@ -48,5 +48,10 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
             left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
+    }
+    
+    @Override
+    public Optional<ListExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

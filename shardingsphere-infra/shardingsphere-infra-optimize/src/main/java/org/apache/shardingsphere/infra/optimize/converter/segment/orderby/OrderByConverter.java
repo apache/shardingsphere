@@ -31,7 +31,12 @@ import java.util.Optional;
 public final class OrderByConverter implements SQLSegmentConverter<OrderBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final OrderBySegment segment) {
+    public Optional<SqlNodeList> convertToSQLNode(final OrderBySegment segment) {
         return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convert(segment.getOrderByItems()), SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<OrderBySegment> convertToSQLSegment(final SqlNodeList sqlNode) {
+        return Optional.empty();
     }
 }

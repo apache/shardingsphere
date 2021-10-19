@@ -35,14 +35,19 @@ import java.util.Optional;
 public final class TableConverter implements SQLSegmentConverter<TableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final TableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final TableSegment segment) {
         if (segment instanceof SimpleTableSegment) {
-            return new SimpleTableConverter().convert((SimpleTableSegment) segment);
+            return new SimpleTableConverter().convertToSQLNode((SimpleTableSegment) segment);
         } else if (segment instanceof JoinTableSegment) {
-            return new JoinTableConverter().convert((JoinTableSegment) segment);
+            return new JoinTableConverter().convertToSQLNode((JoinTableSegment) segment);
         } else if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableConverter().convert((SubqueryTableSegment) segment);
+            return new SubqueryTableConverter().convertToSQLNode((SubqueryTableSegment) segment);
         }
         throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
+    }
+    
+    @Override
+    public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

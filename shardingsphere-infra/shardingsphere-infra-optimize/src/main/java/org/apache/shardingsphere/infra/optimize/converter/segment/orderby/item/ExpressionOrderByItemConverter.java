@@ -29,8 +29,13 @@ import java.util.Optional;
 public final class ExpressionOrderByItemConverter implements SQLSegmentConverter<ExpressionOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ExpressionOrderByItemSegment segment) {
         // TODO 
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<ExpressionOrderByItemSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

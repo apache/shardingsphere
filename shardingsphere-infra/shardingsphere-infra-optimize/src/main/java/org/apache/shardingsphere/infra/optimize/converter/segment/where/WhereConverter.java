@@ -30,7 +30,12 @@ import java.util.Optional;
 public final class WhereConverter implements SQLSegmentConverter<WhereSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final WhereSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+    public Optional<SqlNode> convertToSQLNode(final WhereSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionConverter().convertToSQLNode(segment.getExpr());
+    }
+    
+    @Override
+    public Optional<WhereSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

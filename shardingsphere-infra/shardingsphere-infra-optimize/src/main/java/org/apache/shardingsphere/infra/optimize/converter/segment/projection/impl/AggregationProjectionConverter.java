@@ -51,11 +51,16 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     }
     
     @Override
-    public Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final AggregationProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()), new SqlNode[]{SqlIdentifier.star(SqlParserPos.ZERO)}, SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<AggregationProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
     
     private SqlAggFunction convertOperator(final String operator) {

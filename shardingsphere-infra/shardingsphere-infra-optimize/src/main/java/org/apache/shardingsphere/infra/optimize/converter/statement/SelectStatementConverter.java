@@ -34,26 +34,27 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereCon
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
 import java.util.Optional;
 
 /**
- * Converter of select statement to SQL node.
+ * Select statement converter.
  */
-public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement> {
+public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final SelectStatement selectStatement) {
-        SqlNodeList distinct = new DistinctConverter().convert(selectStatement.getProjections()).orElse(null);
-        SqlNodeList projection = new ProjectionsConverter().convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
-        SqlNode from = new TableConverter().convert(selectStatement.getFrom()).orElse(null);
-        SqlNode where = selectStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
-        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convert(optional)).orElse(null);
-        SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convert(optional)).orElse(null);
-        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
+    public SqlNode convertToSQLNode(final SelectStatement selectStatement) {
+        SqlNodeList distinct = new DistinctConverter().convertToSQLNode(selectStatement.getProjections()).orElse(null);
+        SqlNodeList projection = new ProjectionsConverter().convertToSQLNode(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
+        SqlNode from = new TableConverter().convertToSQLNode(selectStatement.getFrom()).orElse(null);
+        SqlNode where = selectStatement.getWhere().flatMap(optional -> new WhereConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convertToSQLNode(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        SqlNode offset = limit.flatMap(optional -> new OffsetConverter().convert(optional)).orElse(null);
-        SqlNode rowCount = limit.flatMap(optional -> new RowCountConverter().convert(optional)).orElse(null);
+        SqlNode offset = limit.flatMap(optional -> new OffsetConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNode rowCount = limit.flatMap(optional -> new RowCountConverter().convertToSQLNode(optional)).orElse(null);
         SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from,
                 where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
         return containsOrderBy(orderBy, offset, rowCount) ? new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, offset, rowCount) : sqlSelect;
@@ -61,5 +62,11 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     
     private boolean containsOrderBy(final SqlNodeList orderBy, final SqlNode offset, final SqlNode rowCount) {
         return (null != orderBy && !orderBy.isEmpty()) || null != offset || null != rowCount;
+    }
+    
+    @Override
+    public SelectStatement convertToSQLStatement(final SqlNode sqlNode) {
+        // TODO support sql node convert to sql statement 
+        return new MySQLSelectStatement();
     }
 }

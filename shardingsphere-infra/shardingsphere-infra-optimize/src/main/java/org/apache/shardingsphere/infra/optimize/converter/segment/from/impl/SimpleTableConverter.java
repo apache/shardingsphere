@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SimpleTableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
         SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
@@ -42,5 +42,10 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSQLNode, aliasSQLNode}, SqlParserPos.ZERO));
         }
         return Optional.of(tableNameSQLNode);
+    }
+    
+    @Override
+    public Optional<SimpleTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

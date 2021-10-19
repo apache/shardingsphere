@@ -31,7 +31,12 @@ import java.util.Optional;
 public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ShorthandProjectionSegment segment) {
         return null == segment ? Optional.empty() : Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<ShorthandProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }
