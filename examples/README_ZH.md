@@ -6,8 +6,6 @@
 
 **注意事项**
 
-- *请不要使用 `dev` 分支来运行您的示例，`dev` 分支的示例尚未发布。*
-
 - *如果采用手动模式，请在首次运行示例之前执行[初始化脚本](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql)。*
 
 - *请确保 MySQL 上的主从数据同步正确运行。否则，读写分离示例查询从库数据为空。*
@@ -227,14 +225,15 @@ shardingsphere-example
 ## 用例列表
 
 | 例子 | 描述 |
-|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| [分片](shardingsphere-jdbc-example/sharding-example)                                                    | 演示通过 ShardingSphere-JDBC 进行分库、分表、主从等      |
-| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example)         | 演示通过 SpringBoot JPA 对接 ShardingSphere-JDBC      |
-| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | 演示通过 SpringBoot Mybatis 对接 ShardingSphere-JDBC  |
-| [治理](shardingsphere-jdbc-example/governance-example)                                                  | 演示在 ShardingSphere-JDBC 中使用治理                  |
-| [事务](shardingsphere-jdbc-example/transaction-example)                                                 | 演示在 ShardingSphere-JDBC 中使用事务                  |
-| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example)                                  | 演示在 ShardingSphere-JDBC 中使用 hint                |
-| [加密](shardingsphere-jdbc-example/other-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
+|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| [分片](shardingsphere-jdbc-example/single-feature-example/sharding-example)                              | 演示通过 ShardingSphere-JDBC 进行分库、分表等                                  |
+| [读写分离](shardingsphere-jdbc-example/mixed-feature-example/sharding-readwrite-splitting-example)        | 演示在 ShardingSphere-JDBC 中使用读写分离                                     |
+| [springboot jpa](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-spring-boot-jpa-example)         | 演示通过 SpringBoot JPA 对接 ShardingSphere-JDBC      |
+| [springboot mybatis](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-spring-boot-mybatis-example) | 演示通过 SpringBoot Mybatis 对接 ShardingSphere-JDBC  |
+| [治理](shardingsphere-jdbc-example/single-feature-example/cluster-mode-example)                          | 演示在 ShardingSphere-JDBC 中使用治理                  |
+| [事务](shardingsphere-jdbc-example/single-feature-example/transaction-example)                           | 演示在 ShardingSphere-JDBC 中使用事务                  |
+| [hint](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-raw-jdbc-example)   | 演示在 ShardingSphere-JDBC 中使用 hint                |
+| [加密](shardingsphere-jdbc-example/single-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
 | APM 监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
 | proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
-| [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境        |
+| [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境         |

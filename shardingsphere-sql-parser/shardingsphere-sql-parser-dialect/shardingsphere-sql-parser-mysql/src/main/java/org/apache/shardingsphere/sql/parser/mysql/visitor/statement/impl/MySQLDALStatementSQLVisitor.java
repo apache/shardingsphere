@@ -144,8 +144,10 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) { 
-        return new MySQLUninstallPluginStatement();
+    public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
+        MySQLUninstallPluginStatement result = new MySQLUninstallPluginStatement();
+        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return result;
     }
     
     @Override

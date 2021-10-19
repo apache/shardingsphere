@@ -25,4 +25,8 @@
         <component name="file://component1" start-index="20" stop-index="38"/>
         <component name="file://component2" start-index="41" stop-index="59"/>
     </uninstall-component>
+
+    <uninstall-plugin sql-case-id="uninstall_plugin">
+        <plugin name="binlog" start-index="17" stop-index="27"/>
+    </uninstall-plugin>
 </sql-parser-test-cases>
