@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.5.3. </b>"
+pre = "<b>4.5.3. </b>"
 title = "User Norms"
 weight = 3
 +++
@@ -11,4 +11,4 @@ weight = 3
 
 ## Unsupported Items
 
-* Do not support to scale tables without primary key.
+* Do not support to scale tables without primary key which must be single column.

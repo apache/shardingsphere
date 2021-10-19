@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit;
 
+import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPa
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
  */
+@ToString
 public final class MySQLComQuitPacket extends MySQLCommandPacket {
     
     public MySQLComQuitPacket() {

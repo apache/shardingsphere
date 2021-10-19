@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -41,6 +42,7 @@ import java.util.List;
  * Command bind packet for PostgreSQL.
  */
 @Getter
+@ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final PostgreSQLPacketPayload payload;

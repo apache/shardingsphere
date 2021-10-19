@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.db.protocol.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -34,6 +33,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,18 +91,34 @@ public final class MySQLPacketCodecEngineTest {
     
     @Test
     public void assertEncode() {
-        ByteBufAllocator byteBufAllocator = mock(ByteBufAllocator.class);
-        when(context.alloc()).thenReturn(byteBufAllocator);
-        ByteBuf payloadByteBuf = mock(ByteBuf.class);
-        when(byteBufAllocator.buffer()).thenReturn(payloadByteBuf);
-        when(payloadByteBuf.readableBytes()).thenReturn(50);
+        when(byteBuf.writeInt(anyInt())).thenReturn(byteBuf);
+        when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
+        when(byteBuf.readableBytes()).thenReturn(8);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
         when(actualMessage.getSequenceId()).thenReturn(1);
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
-        verify(actualMessage).write(ArgumentMatchers.any());
-        verify(byteBuf).writeMediumLE(50);
-        verify(byteBuf).writeByte(1);
-        verify(byteBuf).writeBytes(payloadByteBuf);
+        verify(byteBuf).writeInt(0);
+        verify(byteBuf).markWriterIndex();
+        verify(actualMessage).write(any(MySQLPacketPayload.class));
+        verify(byteBuf).setMediumLE(0, 4);
+        verify(byteBuf).setByte(3, 1);
+    }
+    
+    @Test
+    public void assertEncodeOccursException() {
+        when(byteBuf.writeInt(anyInt())).thenReturn(byteBuf);
+        when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
+        when(byteBuf.readableBytes()).thenReturn(12);
+        RuntimeException ex = mock(RuntimeException.class);
+        MySQLPacket actualMessage = mock(MySQLPacket.class);
+        doThrow(ex).when(actualMessage).write(any(MySQLPacketPayload.class));
+        when(actualMessage.getSequenceId()).thenReturn(2);
+        new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
+        verify(byteBuf).writeInt(0);
+        verify(byteBuf).markWriterIndex();
+        verify(byteBuf).resetWriterIndex();
+        verify(byteBuf).setMediumLE(0, 8);
+        verify(byteBuf).setByte(3, 2);
     }
     
     @Test

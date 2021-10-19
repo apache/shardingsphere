@@ -1,5 +1,5 @@
 +++
-pre = "<b>5.2. </b>"
+pre = "<b>6.2. </b>"
 title = "Configuration"
 weight = 2
 chapter = true
