@@ -619,7 +619,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "install-plugin")
     private final List<InstallPluginStatementTestCase> installPluginStatementTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
     
