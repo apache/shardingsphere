@@ -22,12 +22,15 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,11 +45,11 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isFederated()).thenReturn(true);
         shardingSQLRewriteContextDecorator.decorate(shardingRule, configurationProperties, sqlRewriteContext, routeContext);
-        Assert.assertNull(sqlRewriteContext.getSchema());
-        Assert.assertNull(sqlRewriteContext.getSqlStatementContext());
-        Assert.assertEquals(sqlRewriteContext.getParameters().size(), 0);
-        Assert.assertNull(sqlRewriteContext.getParameterBuilder());
-        Assert.assertEquals(sqlRewriteContext.getSqlTokens().size(), 0);
+        assertTrue(Objects.isNull(sqlRewriteContext.getSchema()));
+        assertTrue(Objects.isNull(sqlRewriteContext.getSqlStatementContext()));
+        assertThat(sqlRewriteContext.getParameters().size(), is(0));
+        assertTrue(Objects.isNull(sqlRewriteContext.getParameterBuilder()));
+        assertThat(sqlRewriteContext.getSqlTokens().size(), is(0));
     }
 
     @Test
@@ -61,20 +64,20 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isFederated()).thenReturn(false);
         shardingSQLRewriteContextDecorator.decorate(shardingRule, configurationProperties, sqlRewriteContext, routeContext);
-        Assert.assertNotNull(sqlRewriteContext.getSqlTokens());
+        assertTrue(Objects.nonNull(sqlRewriteContext.getSqlTokens()));
     }
 
     @Test
     public void assertGetOrder() {
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
         int actual = shardingSQLRewriteContextDecorator.getOrder();
-        Assert.assertEquals(actual, ShardingOrder.ORDER);
+        assertThat(actual, is(ShardingOrder.ORDER));
     }
 
     @Test
     public void assertGetTypeClass() {
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
         Class<ShardingRule> actual = shardingSQLRewriteContextDecorator.getTypeClass();
-        Assert.assertEquals(actual.getName(), ShardingRule.class.getName());
+        assertThat(actual.getName(), is(ShardingRule.class.getName()));
     }
 }
