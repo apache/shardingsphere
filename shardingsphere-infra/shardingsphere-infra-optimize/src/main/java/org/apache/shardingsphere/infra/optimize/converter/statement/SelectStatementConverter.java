@@ -44,7 +44,7 @@ import java.util.Optional;
 public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
-    public SqlNode convertSQLNode(final SelectStatement selectStatement) {
+    public SqlNode convertToSQLNode(final SelectStatement selectStatement) {
         SqlNodeList distinct = new DistinctConverter().convertToSQLNode(selectStatement.getProjections()).orElse(null);
         SqlNodeList projection = new ProjectionsConverter().convertToSQLNode(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
         SqlNode from = new TableConverter().convertToSQLNode(selectStatement.getFrom()).orElse(null);
@@ -65,7 +65,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     }
     
     @Override
-    public SelectStatement convertSQLStatement(final SqlNode sqlNode) {
+    public SelectStatement convertToSQLStatement(final SqlNode sqlNode) {
         // TODO support sql node convert to sql statement 
         return new MySQLSelectStatement();
     }
