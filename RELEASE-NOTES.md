@@ -2,7 +2,7 @@
 
 ### New feature
 
-1. Support parsing sql comment
+1. Support parsing SQL comment
 1. New DistSQL syntax: shadow rule management
 1. New DistSQL syntax: scaling job management
 1. New DistSQL syntax: disable proxy instance
