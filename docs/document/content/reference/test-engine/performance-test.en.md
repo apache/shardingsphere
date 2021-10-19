@@ -1,41 +1,41 @@
 +++
-pre = "<b>4.8.4. </b>"
-title = "性能测试"
+pre = "<b>8.1.4. </b>"
+title = "Performance Test"
 weight = 4
 +++
 
-## 目标
+## Target
 
-对ShardingSphere-JDBC，ShardingSphere-Proxy及MySQL进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
-为了更好的观察效果，设计在一定数据量的基础上，使用jmeter 20并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个MySQL实例，而对比MySQL场景为单机单实例部署。
+The performance of ShardingSphere-JDBC, ShardingSphere-Proxy and MySQL would be compared here. INSERT & UPDATE & DELETE which regarded as a set of associated operation and SELECT which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, readwrite-splitting & encrypt & sharding, full route). While another set of associated operation, INSERT & SELECT & DELETE, is used to evaluate performance for readwrite-splitting.
+To achieve the result better, these tests are performed with jmeter which based on a certain amount of data with 20 concurrent threads for 30 minutes, and one MySQL has been deployed on one machine, while the scenario of MySQL used for comparison is deployed on one machine with one instance.
 
-## 测试场景
+## Test Scenarios
 
-### 单路由
+### Single Route
 
-在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为1024个表，查询操作路由到单库单表；
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
+On the basis of one thousand data volume, four databases that are deployed on the same machine and each contains 1024 tables with `id` used for database sharding and `k` used for table sharding are designed for this scenario, single route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
 
-### 主从
+### Readwrite-splitting
 
-基本主从场景，设置一主库一从库，部署在两台不同的机器上，在10000数据量的基础上，观察读写性能；
-作为对比，MySQL运行在10000数据量的基础上，使用INSERT+SELECT+DELETE语句。
+One primary database and one replica database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume.
+While as a comparison, MySQL runs with INSERT & SELECT & DELETE sql statement on the basis of ten thousand data volume.
 
-### 主从+加密+分库分表
+### Readwrite-splitting & Encrypt & Sharding
 
-在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用aes加密，`pad`使用md5加密，查询操作路由到单库单表；
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
+On the basis of one thousand data volume, four databases that are deployed on different machines and each contains 1024 tables with `id` used for database sharding, `k` used for table sharding, `c` encrypted with aes and  `pad` encrypted with md5 are designed for this scenario, single route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
 
-### 全路由
+### Full Route
 
-在1000数据量的基础上，分库分表，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1个表，查询操作使用全路由。
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和全路由查询语句。
+On the basis of one thousand data volume, four databases that are deployed on different machines and each contains one table are designed for this scenario, field `id` is used for database sharding and `k` is used for table sharding, full route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and full route select sql statement on the basis of one thousand data volume.
 
-## 测试环境搭建
+## Testing Environment
 
-### 数据库表结构
+### Table Structure of Database
 
-此处表结构参考sysbench的sbtest表
+The structure of table here refer to `sbtest` in `sysbench`
 
 ```shell
 CREATE TABLE `tbl` (
@@ -47,11 +47,12 @@ CREATE TABLE `tbl` (
 );
 ```
 
-### 测试场景配置
+### Test Scenarios Configuration
 
-ShardingSphere-JDBC使用与ShardingSphere-Proxy一致的配置，MySQL直连一个库用作性能对比，下面为四个场景的具体配置：
+The same configurations are used for ShardingSphere-JDBC and ShardingSphere-Proxy, while MySQL with one database connected is designed for comparision.
+The details for these scenarios are shown as follows.
 
-#### 单路由配置
+#### Single Route Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -102,7 +103,7 @@ rules:
           column: id
           keyGeneratorName: snowflake
   defaultDatabaseStrategy:
-    standard:
+    inline:
       shardingColumn: id
       shardingAlgorithmName: default_db_inline
   defaultTableStrategy:
@@ -123,7 +124,7 @@ rules:
         worker-id: 123
 ```
 
-#### 主从配置
+#### Readwrite-splitting Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -154,7 +155,7 @@ rules:
         - replica_ds_0
 ```
 
-#### 主从+加密+分库分表配置
+#### Readwrite-splitting & Encrypt & Sharding Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -301,10 +302,10 @@ rules:
           encryptorName: aes_encryptor
         pad:
           cipherColumn: pad_cipher
-          encryptorName: md5_encryptor
+          encryptorName: md5_encryptor    
 ```
 
-#### 全路由
+#### Full Route Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -373,37 +374,38 @@ rules:
     snowflake:
       type: SNOWFLAKE
       props:
-        worker-id: 123
+        worker-id: 123  
 ```
 
-## 测试结果验证
+## Test Result Verification
 
-### 压测语句
-
+### SQL Statement
+ 
 ```shell
-INSERT+UPDATE+DELETE语句：
+INSERT+UPDATE+DELETE sql statements:
 INSERT INTO tbl(k, c, pad) VALUES(1, '###-###-###', '###-###');
 UPDATE tbl SET c='####-####-####', pad='####-####' WHERE id=?;
 DELETE FROM tbl WHERE id=?
 
-全路由查询语句：
+SELECT sql statement for full route:
 SELECT max(id) FROM tbl WHERE id%4=1
 
-单路由查询语句：
+SELECT sql statement for single route:
 SELECT id, k FROM tbl ignore index(`PRIMARY`) WHERE id=1 AND k=1
 
-INSERT+SELECT+DELETE语句：
+INSERT+SELECT+DELETE sql statements：
 INSERT INTO tbl1(k, c, pad) VALUES(1, '###-###-###', '###-###');
 SELECT count(id) FROM tbl1;
 SELECT max(id) FROM tbl1 ignore index(`PRIMARY`);
 DELETE FROM tbl1 WHERE id=?
 ```
 
-### 压测类
+### Jmeter Class
 
-参考[shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
+Consider the implementation of [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)
+Notes: the notes in shardingsphere-benchmark/README.md should be taken attention to
 
-### 编译
+### Compile & Build
 
 ```shell
 git clone https://github.com/apache/shardingsphere-benchmark.git
@@ -411,24 +413,24 @@ cd shardingsphere-benchmark/shardingsphere-benchmark
 mvn clean install
 ```
 
-### 压测执行
+### Perform Test
 
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
 jmeter –n –t test_plan/test.jmx
-test.jmx参考https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
+test.jmx example:https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
 ```
 
-### 压测结果处理
+### Process Result Data
 
-注意修改为上一步生成的result.jtl的位置。
+Make sure the location of result.jtl file is correct.
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
 ```
 
-### 历史压测数据展示
+### Display of Historical Performance Test Data
 
-正在进行中，请等待。
+In progress, please wait.
 <!--
-[Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
+The data of [benchmark platform](https://shardingsphere.apache.org/benchmark/#/overview) is show daily
 -->
