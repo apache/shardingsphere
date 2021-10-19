@@ -33,12 +33,17 @@ import java.util.Optional;
 public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
         if (owner.isPresent()) {
             return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
         }
         return Optional.of(new SqlIdentifier(columnName, SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<ColumnSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

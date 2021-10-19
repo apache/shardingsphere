@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * 
  * @param <T> type of SQL statement
  */
-public interface SQLStatementConverter<T extends SQLStatement> {
+public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode> {
     
     /**
      * Convert SQL statement to SQL node.
@@ -33,5 +33,13 @@ public interface SQLStatementConverter<T extends SQLStatement> {
      * @param sqlStatement SQL statement be to converted
      * @return converted SQL node
      */
-    SqlNode convert(T sqlStatement);
+    T convertToSQLNode(S sqlStatement);
+    
+    /**
+     * Convert SQL node to SQL statement.
+     *
+     * @param sqlNode SQL node be to converted
+     * @return converted SQL statement
+     */
+    S convertToSQLStatement(T sqlNode);
 }

@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
@@ -32,15 +30,22 @@ import java.util.Collections;
  * Command describe for PostgreSQL.
  */
 @RequiredArgsConstructor
-@Setter
 public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private PostgreSQLRowDescriptionPacket rowDescriptionPacket;
+    private final PostgreSQLComDescribePacket packet;
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        return null == rowDescriptionPacket ? Collections.singletonList(new PostgreSQLNoDataPacket()) : Collections.singletonList(rowDescriptionPacket);
+        switch (packet.getType()) {
+            case 'S':
+                // TODO Unsupported yet. Refer to https://github.com/apache/shardingsphere/issues/10814
+                return Collections.emptyList();
+            case 'P':
+                return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
+            default:
+                throw new UnsupportedOperationException("Unsupported describe type: " + packet.getType());
+        }
     }
 }

@@ -33,11 +33,16 @@ import java.util.Optional;
 public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
+    public Optional<SqlNode> convertToSQLNode(final ExistsSubqueryExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convert(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    }
+    
+    @Override
+    public Optional<ExistsSubqueryExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

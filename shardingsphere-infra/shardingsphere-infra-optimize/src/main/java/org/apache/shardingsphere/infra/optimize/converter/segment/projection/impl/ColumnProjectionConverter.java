@@ -30,7 +30,12 @@ import java.util.Optional;
 public final class ColumnProjectionConverter implements SQLSegmentConverter<ColumnProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
-        return new ColumnConverter().convert(segment.getColumn());
+    public Optional<SqlNode> convertToSQLNode(final ColumnProjectionSegment segment) {
+        return new ColumnConverter().convertToSQLNode(segment.getColumn());
+    }
+    
+    @Override
+    public Optional<ColumnProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

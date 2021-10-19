@@ -44,7 +44,7 @@ import java.util.Optional;
 public final class ProjectionsConverter implements SQLSegmentConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+    public Optional<SqlNodeList> convertToSQLNode(final ProjectionsSegment segment) {
         Collection<SqlNode> projectionSQLNodes = new ArrayList<>(segment.getProjections().size());
         for (ProjectionSegment each : segment.getProjections()) {
             getProjectionSQLNode(each).ifPresent(projectionSQLNodes::add);
@@ -52,17 +52,22 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         return Optional.of(new SqlNodeList(projectionSQLNodes, SqlParserPos.ZERO));
     }
     
+    @Override
+    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
+        return Optional.empty();
+    }
+    
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return new ColumnProjectionConverter().convert((ColumnProjectionSegment) segment);
+            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment);
         } else if (segment instanceof ExpressionProjectionSegment) {
-            return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
+            return new ExpressionProjectionConverter().convertToSQLNode((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
-            return new ShorthandProjectionConverter().convert((ShorthandProjectionSegment) segment);
+            return new ShorthandProjectionConverter().convertToSQLNode((ShorthandProjectionSegment) segment);
         } else if (segment instanceof SubqueryProjectionSegment) {
-            return new SubqueryProjectionConverter().convert((SubqueryProjectionSegment) segment);
+            return new SubqueryProjectionConverter().convertToSQLNode((SubqueryProjectionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
-            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
+            return new AggregationProjectionConverter().convertToSQLNode((AggregationProjectionSegment) segment);
         }
         // TODO process other projection
         return Optional.empty();

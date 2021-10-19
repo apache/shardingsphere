@@ -30,10 +30,15 @@ import java.util.Optional;
 public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryExpressionSegment expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        return Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
+        return Optional.of(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect()));
+    }
+    
+    @Override
+    public Optional<SubqueryExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

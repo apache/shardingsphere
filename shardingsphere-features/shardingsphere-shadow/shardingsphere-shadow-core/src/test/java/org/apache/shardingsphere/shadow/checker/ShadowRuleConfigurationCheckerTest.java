@@ -17,30 +17,87 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ShadowRuleConfigurationCheckerTest {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
+    private RuleConfigurationChecker<ShadowRuleConfiguration> checker;
+    
+    @Before
+    public void init() {
+        checker = new ShadowRuleConfigurationChecker();
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertValidCheck() {
-        ShadowRuleConfiguration config = mock(ShadowRuleConfiguration.class);
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singletonList(config)).get(config);
-        assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
-        checker.check("test", config);
+    public void assertCheck() {
+        checker.check("", createShadowRuleConfiguration());
+    }
+    
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.setEnable(true);
+        result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
+        result.setDataSources(createDataSources());
+        result.setTables(createTables());
+        return result;
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("user-id-insert-match-algorithm", createShardingSphereAlgorithmConfiguration());
+        return result;
+    }
+    
+    private ShardingSphereAlgorithmConfiguration createShardingSphereAlgorithmConfiguration() {
+        return new ShardingSphereAlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
+    }
+    
+    private Properties createProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("column", "shadow");
+        properties.setProperty("operation", "insert");
+        properties.setProperty("regex", "[1]");
+        return properties;
+    }
+    
+    private Map<String, ShadowTableConfiguration> createTables() {
+        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
+        Collection<String> dataSourceNames = new LinkedList<>();
+        Collection<String> shadowAlgorithmNames = new LinkedList<>();
+        shadowAlgorithmNames.add("user-id-insert-match-algorithm");
+        result.put("t_order", new ShadowTableConfiguration(dataSourceNames, shadowAlgorithmNames));
+        return result;
+    }
+    
+    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        return result;
+    }
+    
+    @Test
+    public void assertGetOrder() {
+        assertThat(checker.getOrder() == ShadowOrder.ORDER, is(true));
+    }
+    
+    @Test
+    public void assertGetTypeClass() {
+        assertThat(checker.getTypeClass() == ShadowRuleConfiguration.class, is(true));
     }
 }

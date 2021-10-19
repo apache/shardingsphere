@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.optimize.converter.parameterized.loader.S
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -46,6 +47,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -68,12 +71,22 @@ public final class SQLNodeConvertParameterizedTest {
     }
     
     @Test
-    public void assertSQLNodeConvert() {
+    public void assertConvertToSQLNode() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
         SqlNode expected = parseSqlNode(databaseType, sql);
-        SqlNode actual = SQLNodeConvertEngine.convert(parseSQLStatement(databaseType, sql));
-        assertTrue(expected.equalsDeep(actual, Litmus.THROW));
+        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(parseSQLStatement(databaseType, sql));
+        assertTrue(actual.equalsDeep(expected, Litmus.THROW));
+    }
+    
+    @Ignore
+    public void assertConvertToSQLStatement() {
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
+        SQLStatement expected = parseSQLStatement(databaseType, sql);
+        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(parseSqlNode(databaseType, sql));
+        // TODO optimize assert logic
+        assertThat(actual.toString(), is(expected.toString()));
     }
     
     @SneakyThrows(SqlParseException.class)

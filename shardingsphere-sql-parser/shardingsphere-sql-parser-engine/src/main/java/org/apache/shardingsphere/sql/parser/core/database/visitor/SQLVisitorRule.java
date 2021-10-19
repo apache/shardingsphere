@@ -269,6 +269,8 @@ public enum SQLVisitorRule {
     FLUSH("Flush", SQLStatementType.DAL),
 
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
+
+    CLONE("Clone", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

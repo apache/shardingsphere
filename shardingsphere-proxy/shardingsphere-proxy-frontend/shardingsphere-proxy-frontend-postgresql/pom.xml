@@ -68,6 +68,7 @@
                         <configuration>
                             <excludes>
                                 <!-- TODO Consider refactoring tests which changed Field's modifiers -->
+                                <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortalTest</exclude>
                                 <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutorTest</exclude>
                             </excludes>
                         </configuration>
