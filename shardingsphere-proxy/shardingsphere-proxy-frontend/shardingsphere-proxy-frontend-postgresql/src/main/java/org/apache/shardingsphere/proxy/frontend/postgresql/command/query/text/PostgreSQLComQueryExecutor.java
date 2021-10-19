@@ -91,7 +91,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
+    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             connectionContext.closeAllPortals();

@@ -94,7 +94,7 @@ public final class PostgreSQLConnectionContext {
     /**
      * Close all portals.
      */
-    public void closeAllPortals() {
+    public void closeAllPortals() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (PostgreSQLPortal each : portals.values()) {
             try {
@@ -109,6 +109,7 @@ public final class PostgreSQLConnectionContext {
         }
         SQLException ex = new SQLException("Close all portals failed.");
         result.forEach(ex::setNextException);
+        throw ex;
     }
     
     /**
