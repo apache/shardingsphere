@@ -93,6 +93,8 @@ public final class PostgreSQLConnectionContext {
     
     /**
      * Close all portals.
+     * 
+     * @throws SQLException SQL exception
      */
     public void closeAllPortals() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
