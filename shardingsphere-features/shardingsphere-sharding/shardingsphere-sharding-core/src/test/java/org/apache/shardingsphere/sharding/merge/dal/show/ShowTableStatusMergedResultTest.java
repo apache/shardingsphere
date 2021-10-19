@@ -94,7 +94,6 @@ public final class ShowTableStatusMergedResultTest {
         when(result.getValue(16, Object.class)).thenReturn(null);
         when(result.getValue(17, Object.class)).thenReturn("");
         when(result.getValue(18, Object.class)).thenReturn("");
-
         return result;
     }
     
