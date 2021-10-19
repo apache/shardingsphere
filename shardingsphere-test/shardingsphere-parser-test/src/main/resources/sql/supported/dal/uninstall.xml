@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="uninstall_component" value="UNINSTALL COMPONENT 'file://component1'" db-types="MySQL" />
     <sql-case id="uninstall_components" value="UNINSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
+    <sql-case id="uninstall_plugin" value="UNINSTALL PLUGIN binlog" db-types="MySQL" />
 </sql-cases>
