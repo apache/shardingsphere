@@ -53,7 +53,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrviewDistSQLBackendHandler implements TextProtocolBackendHandler {
+public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHandler {
     
     private final PreviewStatement previewStatement;
     
