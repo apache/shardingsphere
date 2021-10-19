@@ -18,11 +18,6 @@ The downloads are distributed via mirror sites and should be checked for tamperi
 - ShardingSphere-Proxy Binary Distribution: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz.sha512) ]
 - ShardingSphere-Scaling Binary Distribution: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz.sha512) ]
 
-##### ShardingSphere UI - Version: 5.0.0-alpha ( Release Date: Nov 22ed, 2020 )
-
-- Source Codes: [ [<u>SRC</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip ) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip.sha512) ]
-- ShardingSphere-UI Binary Distribution: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz.sha512) ]
-
 ## All Releases
 
 Find all releases in the [Archive repository](https://archive.apache.org/dist/shardingsphere/).</br>

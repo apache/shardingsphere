@@ -299,8 +299,3 @@ Response:
    "model": null
 }
 ```
-
-### Operate through the UI interface
-
-We provide user interface in ShardingSphere-UI, so all the operations related can be implemented with a click of the UI interface.
-For more information, please refer to the ShardingSphere-UI module.

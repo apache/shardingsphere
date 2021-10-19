@@ -26,25 +26,27 @@ shardingsphere
   ├─community
   │  ├─archetypes
   │  ├─content
-  │  │  ├─users
   │  │  ├─contribute
-  │  │  ├─team
-  │  │  └─security
+  │  │  ├─powered-by
+  │  │  ├─security
+  │  │  └─team
   │  ├─layouts
   │  ├─static
   │  └─themes
   ├─document
   │  ├─archetypes
   │  ├─content
+  │  │  ├─concepts
+  │  │  │  ├─adaptor
+  │  │  │  ├─distsql
+  │  │  │  ├─mode
+  │  │  │  └─pluggable         
   │  │  ├─dev-manual
   │  │  ├─downloads
-  │  │  ├─faq
   │  │  ├─features
   │  │  │  ├─encrypt
   │  │  │  ├─governance
-  │  │  │  ├─pluggable-architecture
-  │  │  │  ├─replica-query
-  │  │  │  ├─consensus-replica
+  │  │  │  ├─readwrite-splitting
   │  │  │  ├─scaling
   │  │  │  ├─shadow
   │  │  │  ├─sharding
@@ -56,16 +58,18 @@ shardingsphere
   │  │  │      ├─concept
   │  │  │      ├─principle
   │  │  │      └─use-norms
+  │  │  ├─others
+  │  │  │  ├─api-change-history
+  │  │  │  └─faq    
+  │  │  ├─overview
+  │  │  ├─quick-start
   │  │  ├─user-manual
   │  │  │  ├─shardingsphere-jdbc
   │  │  │  │  ├─configuration
   │  │  │  │  └─usage
   │  │  │  ├─shardingsphere-proxy
-  │  │  │  ├─shardingsphere-scaling
   │  │  │  ├─shardingsphere-sidecar
-  │  │  │  └─shardingsphere-ui
-  │  │  ├─overview
-  │  │  └─quick-start
+  │  │  │  └─shardingsphere-scaling  
   │  ├─i18n
   │  ├─layouts
   │  ├─static
