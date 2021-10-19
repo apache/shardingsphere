@@ -57,9 +57,9 @@ import java.util.List;
 /**
  * PostgreSQL portal.
  */
-@Getter
 public final class PostgreSQLPortal {
     
+    @Getter
     private final SQLStatement sqlStatement;
     
     private final List<PostgreSQLValueFormat> resultFormats;
