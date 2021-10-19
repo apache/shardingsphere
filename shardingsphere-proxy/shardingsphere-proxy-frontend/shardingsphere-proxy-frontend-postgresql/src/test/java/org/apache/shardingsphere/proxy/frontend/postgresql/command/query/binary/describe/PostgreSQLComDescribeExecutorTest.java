@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,6 +31,7 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,34 +42,30 @@ public final class PostgreSQLComDescribeExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
-    private PostgreSQLPortal portal;
-    
-    @Mock
     private PostgreSQLComDescribePacket packet;
     
-    @Before
-    public void setup() {
-        when(packet.getType()).thenReturn('P');
-        when(packet.getName()).thenReturn("");
-        when(connectionContext.getPortal("")).thenReturn(portal);
-    }
-    
     @Test
-    public void assertDescribeEmptyStatement() {
-        PostgreSQLNoDataPacket expected = mock(PostgreSQLNoDataPacket.class);
+    public void assertDescribePortal() {
+        when(packet.getType()).thenReturn('P');
+        when(packet.getName()).thenReturn("P_1");
+        PostgreSQLPortal portal = mock(PostgreSQLPortal.class);
+        PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
+        when(connectionContext.getPortal("P_1")).thenReturn(portal);
         Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));
     }
     
     @Test
-    public void assertDescribeRows() {
-        PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
-        when(portal.describe()).thenReturn(expected);
-        PostgreSQLComDescribeExecutor describeExecutor = new PostgreSQLComDescribeExecutor(connectionContext, packet);
-        Collection<DatabasePacket<?>> actual = describeExecutor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(expected));
+    public void assertDescribePreparedStatement() {
+        when(packet.getType()).thenReturn('S');
+        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertDescribeUnknownType() {
+        new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
     }
 }
