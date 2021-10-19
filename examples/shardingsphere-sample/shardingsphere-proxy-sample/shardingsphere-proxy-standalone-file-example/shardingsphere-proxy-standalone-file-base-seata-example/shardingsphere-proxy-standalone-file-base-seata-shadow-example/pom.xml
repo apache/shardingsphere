@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-standalone-file-base-seata-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.0-RC1</version>
     </parent>
     <artifactId>shardingsphere-proxy-standalone-file-base-seata-shadow-example</artifactId>
     <name>${project.artifactId}</name>

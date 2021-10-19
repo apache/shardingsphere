@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-memory-xa-bitronix-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.0-RC1</version>
     </parent>
     <artifactId>shardingsphere-proxy-memory-xa-bitronix-sharding-example</artifactId>
     <name>${project.artifactId}</name>
