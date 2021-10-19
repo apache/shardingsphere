@@ -23,7 +23,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SelectStatementSQLSelectConverter().convertSQLNode(segment.getSubquery().getSelect()));
+        sqlNodes.add(new SelectStatementConverter().convertSQLNode(segment.getSubquery().getSelect()));
         segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
     }

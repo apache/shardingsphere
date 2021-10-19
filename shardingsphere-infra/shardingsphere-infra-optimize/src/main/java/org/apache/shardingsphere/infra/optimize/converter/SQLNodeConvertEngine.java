@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -40,7 +40,7 @@ public final class SQLNodeConvertEngine {
      */
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementSQLSelectConverter().convertSQLNode((SelectStatement) statement);
+            return new SelectStatementConverter().convertSQLNode((SelectStatement) statement);
         }
         throw new UnsupportedOperationException("Unsupported SQL node conversion.");
     }
@@ -53,7 +53,7 @@ public final class SQLNodeConvertEngine {
      */
     public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
-            return new SelectStatementSQLSelectConverter().convertSQLStatement(sqlNode);
+            return new SelectStatementConverter().convertSQLStatement(sqlNode);
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }

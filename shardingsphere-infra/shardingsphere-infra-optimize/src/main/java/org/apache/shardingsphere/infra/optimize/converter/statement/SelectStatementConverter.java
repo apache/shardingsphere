@@ -40,7 +40,7 @@ import java.util.Optional;
 /**
  * Select statement and SQL select converter.
  */
-public final class SelectStatementSQLSelectConverter implements SQLStatementSQLNodeConverter<SelectStatement, SqlNode> {
+public final class SelectStatementConverter implements SQLStatementSQLNodeConverter<SelectStatement, SqlNode> {
     
     @Override
     public SqlNode convertSQLNode(final SelectStatement selectStatement) {

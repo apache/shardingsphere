@@ -22,7 +22,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 
 import java.util.Optional;
@@ -38,7 +38,7 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
             return Optional.empty();
         }
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, 
-                new SqlNode[]{new SelectStatementSQLSelectConverter().convertSQLNode(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
+                new SqlNode[]{new SelectStatementConverter().convertSQLNode(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     

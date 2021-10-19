@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.expression.im
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementSQLSelectConverter;
+import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Optional;
@@ -34,7 +34,7 @@ public final class SubqueryExpressionConverter implements SQLSegmentConverter<Su
         if (null == expression) {
             return Optional.empty();
         }
-        return Optional.of(new SelectStatementSQLSelectConverter().convertSQLNode(expression.getSubquery().getSelect()));
+        return Optional.of(new SelectStatementConverter().convertSQLNode(expression.getSubquery().getSelect()));
     }
     
     @Override
