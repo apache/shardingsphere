@@ -66,39 +66,19 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     }
     
     private void merge(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        mergeRows(row, newRow);
-        mergeDataLength(row, newRow);
-        mergeMaxDataLength(row, newRow);
-        mergeIndexLength(row, newRow);
-        mergeDataFree(row, newRow);
-        mergeAvgRowLength(row);
+        row.setCell(5, sum(row.getCell(5), newRow.getCell(5)));
+        row.setCell(7, sum(row.getCell(7), newRow.getCell(7)));
+        row.setCell(8, sum(row.getCell(8), newRow.getCell(8)));
+        row.setCell(9, sum(row.getCell(9), newRow.getCell(9)));
+        row.setCell(10, sum(row.getCell(10), newRow.getCell(10)));
+        row.setCell(6, avg(row.getCell(7), row.getCell(5)));
     }
     
-    private void mergeAvgRowLength(final MemoryQueryResultRow row) {
-        row.setCell(6, row.getCell(5).equals(BigInteger.ZERO) ? BigInteger.ZERO : ((BigInteger) row.getCell(7)).divide((BigInteger) row.getCell(5)));
+    private BigInteger sum(Object num1, Object num2) {
+        return ((BigInteger) num1).add((BigInteger) num2);
     }
     
-    private void mergeDataFree(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        sum(row, newRow, 10);
-    }
-    
-    private void mergeIndexLength(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        sum(row, newRow, 9);
-    }
-    
-    private void mergeMaxDataLength(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        sum(row, newRow, 8);
-    }
-    
-    private void mergeDataLength(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        sum(row, newRow, 7);
-    }
-    
-    private void mergeRows(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {
-        sum(row, newRow, 5);
-    }
-    
-    private void sum(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow, final int index) {
-        row.setCell(index, ((BigInteger) row.getCell(index)).add((BigInteger) newRow.getCell(index)));
+    private BigInteger avg(Object sum, Object number) {
+        return BigInteger.ZERO.equals(number) ? BigInteger.ZERO : ((BigInteger) sum).divide((BigInteger) number);
     }
 }
