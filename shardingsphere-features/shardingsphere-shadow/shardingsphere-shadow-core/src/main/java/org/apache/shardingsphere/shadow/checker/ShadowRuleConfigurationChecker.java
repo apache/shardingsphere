@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+
+import java.util.Map;
 
 /**
  * Shadow rule configuration checker.
@@ -26,8 +31,18 @@ import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    protected boolean isAvailableShadowRule(final ShadowRuleConfiguration config) {
-        return true;
+    protected void checkShadowRuleConfiguration(final ShadowRuleConfiguration config) {
+        if (config.isEnable()) {
+            Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+            Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
+            Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations = config.getShadowAlgorithms();
+            sizeCheck(dataSources, shadowTables);
+            shadowAlgorithmConfigurationsSizeCheck(shadowAlgorithmConfigurations);
+            shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
+            shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigurations.keySet());
+            shadowTableAlgorithmsReferencesCheck(shadowTables);
+        }
     }
     
     @Override
