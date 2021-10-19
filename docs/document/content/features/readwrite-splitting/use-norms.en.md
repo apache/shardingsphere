@@ -6,8 +6,8 @@ weight = 2
 
 ## Supported Items
 
-* Provide the replica query configuration of one primary database with multiple replica databases, which can be used alone or with sharding table and database;
-* Support SQL pass-through in independent use of replica query;
+* Provide the readwrite-splitting configuration of one primary database with multiple replica databases, which can be used alone or with sharding table and database;
+* Support SQL pass-through in independent use of readwrite-splitting;
 * Forcible primary database route based on SQL Hint;
 
 ## Unsupported Items
@@ -16,7 +16,7 @@ weight = 2
 * Data inconsistency caused by replication delay between databases;
 * Double or multiple primary databases to provide write operation;
 * The data for transaction across primary and replica nodes are inconsistent. 
-In the replica query model, the primary nodes need to be used for both reading and writing in the transaction.
+In the readwrite-splitting model, the primary nodes need to be used for both reading and writing in the transaction.
 
 ## Optional Items
 

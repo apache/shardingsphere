@@ -5,7 +5,7 @@ weight = 1
 +++
 
 The SQL parsing unit test covers both SQL placeholder and literal dimension. 
-Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and replica query while the latter one includes `Statement` and `PreparedStatement`.
+Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and readwrite-splitting while the latter one includes `Statement` and `PreparedStatement`.
 
 Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter transmission modes + 5 kinds of databases * 5 kinds of Sharding strategies * 2 kinds of JDBC operation modes = 60 test cases, to enable ShardingSphere to achieve the pursuit of high quality.
 

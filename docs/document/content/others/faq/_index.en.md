@@ -44,8 +44,21 @@ tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.g
 
 Answer:
 
-1. Before version 4.1.0, sharing-proxy can't support adding a new logic schema dynamically, for example, when a proxy starting with two logic schemas, it always hold the two schemas and will be notified about the table/rule changed events in the two schemas.
-2. Since version 4.1.0, sharing-proxy support adding a new logic schema dynamically via ShardingSphere-UI or zookeeper, and it's a plan to support removing a exist logic schema dynamically in runtime.
+When using ShardingSphere-Proxy, users can dynamically create or drop logic schema through `DistSQL`, the syntax is as follows:
+
+```sql
+CREATE (DATABASE | SCHEMA) [IF NOT EXISTS] schemaName;
+    
+DROP (DATABASE | SCHEMA) [IF EXISTS] schemaName;
+```
+
+Example:
+
+```sql
+CREATE DATABASE sharding_db;
+
+DROP SCHEMA sharding_db;
+```
 
 ## 6. [Proxy] How to use a suitable database tools connecting ShardingSphere-Proxy?
 
@@ -278,7 +291,7 @@ In Apache ShardingSphere, many functionality implementation are uploaded through
 
 Answer:
 
-1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
+1. Update to 4.0.1 above, which helps speed up the process of loading table metadata.
 2. Configure:
 - `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3 & Version < 5.0.0).
 - `max-connections-size-per-query`(Default value is 1) higher referring to connection pool you adopt(Version >= 5.0.0).
