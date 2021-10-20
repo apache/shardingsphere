@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.parameterized.engine;
 
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.config.CalciteConnectionConfig;
@@ -32,103 +33,96 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
-import org.apache.shardingsphere.infra.optimize.converter.parameterized.jaxb.SQLNodeConvertCasesRegistry;
-import org.apache.shardingsphere.infra.optimize.converter.parameterized.loader.SQLNodeConvertCasesLoader;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.CasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class SQLNodeConvertParameterizedTest {
+public final class SQLNodeConvertEngineParameterizedTest {
     
-    private static final SQLNodeConvertCasesLoader SQL_NODE_CONVERT_CASES_LOADER = SQLNodeConvertCasesRegistry.getInstance().getSqlNodeConvertCasesLoader();
+    public static final SQLCasesLoader SQL_CASES_LOADER = CasesRegistry.getInstance().getSqlCasesLoader();
     
-    private final String caseId;
+    public static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    
+    private static final String SELECT_STATEMENT_PREFIX = "SELECT";
+    
+    private static final Set<String> SUPPORTED_SQL_CASE_IDS = Sets.newHashSet("select_with_join_table_subquery", 
+            "select_with_projection_subquery", "select_with_in_subquery_condition", "select_with_between_and_subquery_condition", 
+            "select_with_exist_subquery_condition", "select_with_not_exist_subquery_condition", "select_with_simple_table");
+    
+    private static final Set<String> SUPPORTED_DATABASE_TYPES = Sets.newHashSet("MySQL");
+    
+    private final String sqlCaseId;
     
     private final String databaseType;
     
-    @Parameters(name = "{0} -> {1}")
+    private final SQLCaseType sqlCaseType;
+    
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return SQLNodeConvertParameterizedTest.getTestParameters("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
+        return getTestParameters("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
     }
     
     private static Collection<Object[]> getTestParameters(final String... databaseTypes) {
-        return SQL_NODE_CONVERT_CASES_LOADER.getTestParameters(Arrays.asList(databaseTypes));
+        Collection<Object[]> result = new LinkedList<>();
+        for (Object[] each : SQL_CASES_LOADER.getTestParameters(Arrays.asList(databaseTypes))) {
+            if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
+        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
+    }
+    
+    private static boolean isSupportedSQLCase(final Object[] sqlTestParameter) {
+        String sqlCaseId = sqlTestParameter[0].toString();
+        String databaseType = sqlTestParameter[1].toString();
+        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId) && SUPPORTED_DATABASE_TYPES.contains(databaseType);
     }
     
     @Test
     public void assertConvertToSQLNode() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
-        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(parseSQLStatement(databaseType, sql));
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
+        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);
         assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     
-    @Test
+    @Ignore
     public void assertConvertToSQLStatement() {
+        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_NODE_CONVERT_CASES_LOADER.getCaseValue(caseId);
-        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(parseSqlNode(databaseType, sql));
-        SQLStatement expected = parseSQLStatement(databaseType, sql);
-        assertSelectStatement(actual, expected);
-    }
-    
-    private void assertSelectStatement(final SQLStatement actual, final SQLStatement expected) {
-        assertThat(actual, instanceOf(SelectStatement.class));
-        assertThat(expected, instanceOf(SelectStatement.class));
-        assertProjections(((SelectStatement) actual).getProjections(), ((SelectStatement) expected).getProjections());
-    }
-    
-    private void assertProjections(final ProjectionsSegment actual, final ProjectionsSegment expected) {
-        assertNotNull(actual);
-        assertNotNull(expected);
-        assertThat(actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(actual.getStopIndex(), is(expected.getStopIndex()));
-        assertThat(actual.isDistinctRow(), is(expected.isDistinctRow()));
-        assertProjections(actual.getProjections(), expected.getProjections());
-    }
-    
-    private void assertProjections(final Collection<ProjectionSegment> actual, final Collection<ProjectionSegment> expected) {
-        assertThat(actual.size(), is(expected.size()));
-        List<ProjectionSegment> actualProjections = new ArrayList<>(actual);
-        List<ProjectionSegment> expectedProjections = new ArrayList<>(expected);
-        for (int index = 0; index < actualProjections.size(); index++) {
-            ProjectionSegment actualProjection = actualProjections.get(index);
-            ProjectionSegment expectedProjection = expectedProjections.get(index);
-            assertProjection(actualProjection, expectedProjection);
-        }
-    }
-    
-    private void assertProjection(final ProjectionSegment actual, final ProjectionSegment expected) {
-        assertCommon(actual, expected);
-    }
-    
-    private void assertCommon(final ProjectionSegment actual, final ProjectionSegment expected) {
-        assertNotNull(actual);
-        assertNotNull(expected);
-        assertThat(actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(actual.getStopIndex(), is(expected.getStopIndex()));
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        SqlNode sqlNode = parseSqlNode(databaseType, sql);
+        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(sqlNode);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
     }
     
     @SneakyThrows(SqlParseException.class)
