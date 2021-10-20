@@ -61,7 +61,7 @@ public final class ShardingSphereOptimizer {
      */
     public RelNode optimize(final String schemaName, final SQLStatement sqlStatement) {
         try {
-            SqlNode sqlNode = SQLNodeConvertEngine.convert(sqlStatement);
+            SqlNode sqlNode = SQLNodeConvertEngine.convertToSQLNode(sqlStatement);
             SqlNode validNode = context.getPlannerContexts().get(schemaName).getValidator().validate(sqlNode);
             RelDataType resultType = context.getPlannerContexts().get(schemaName).getValidator().getValidatedNodeType(sqlNode);
             RelNode queryPlan = context.getPlannerContexts().get(schemaName).getConverter().convertQuery(validNode, false, true).rel;

@@ -59,11 +59,16 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     @Override
-    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
+    public Optional<SqlNode> convertToSQLNode(final BinaryOperationExpression segment) {
         SqlBinaryOperator operator = convertOperator(segment.getOperator());
         SqlNode left = convertExpression(segment.getLeft());
         SqlNode right = convertExpression(segment.getRight());
         return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<BinaryOperationExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
     
     private SqlBinaryOperator convertOperator(final String operator) {
@@ -72,7 +77,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     private SqlNode convertExpression(final ExpressionSegment segment) {
-        Optional<SqlNode> result = new ExpressionConverter().convert(segment);
+        Optional<SqlNode> result = new ExpressionConverter().convertToSQLNode(segment);
         Preconditions.checkState(result.isPresent());
         return result.get();
     }

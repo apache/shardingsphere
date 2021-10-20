@@ -36,18 +36,23 @@ import java.util.Optional;
 public final class SubqueryProjectionConverter implements SQLSegmentConverter<SubqueryProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
-        return segment.getAlias().isPresent() ? convert(sqlNode, segment.getAlias().get()) : Optional.of(sqlNode);
+        SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode(segment.getSubquery().getSelect());
+        return segment.getAlias().isPresent() ? convertToSQLStatement(sqlNode, segment.getAlias().get()) : Optional.of(sqlNode);
     }
     
-    private Optional<SqlNode> convert(final SqlNode sqlNode, final String alias) {
+    private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(sqlNode);
         sqlNodes.add(new SqlIdentifier(alias, SqlParserPos.ZERO));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<SubqueryProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

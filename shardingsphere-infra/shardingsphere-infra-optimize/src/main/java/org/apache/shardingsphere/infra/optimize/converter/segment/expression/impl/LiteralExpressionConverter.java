@@ -31,13 +31,18 @@ import java.util.Optional;
 public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final LiteralExpressionSegment segment) {
         if (Integer.class == segment.getLiterals().getClass()) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
         if (String.class == segment.getLiterals().getClass()) {
             return Optional.of(SqlLiteral.createCharString((String) segment.getLiterals(), SqlParserPos.ZERO));
         }
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<LiteralExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         return Optional.empty();
     }
 }

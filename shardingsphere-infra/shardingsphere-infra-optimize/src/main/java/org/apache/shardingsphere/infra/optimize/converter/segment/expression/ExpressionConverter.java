@@ -46,30 +46,35 @@ import java.util.Optional;
 public final class ExpressionConverter implements SQLSegmentConverter<ExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExpressionSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ExpressionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         if (segment instanceof LiteralExpressionSegment) {
-            return new LiteralExpressionConverter().convert((LiteralExpressionSegment) segment);
+            return new LiteralExpressionConverter().convertToSQLNode((LiteralExpressionSegment) segment);
         } else if (segment instanceof CommonExpressionSegment) {
             // TODO 
             throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
         } else if (segment instanceof ListExpression) {
-            return new ListExpressionConverter().convert((ListExpression) segment);
+            return new ListExpressionConverter().convertToSQLNode((ListExpression) segment);
         } else if (segment instanceof BinaryOperationExpression) {
-            return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment);
+            return new BinaryOperationExpressionConverter().convertToSQLNode((BinaryOperationExpression) segment);
         } else if (segment instanceof ColumnSegment) {
-            return new ColumnConverter().convert((ColumnSegment) segment);
+            return new ColumnConverter().convertToSQLNode((ColumnSegment) segment);
         } else if (segment instanceof ExistsSubqueryExpression) {
-            return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
+            return new ExistsSubqueryExpressionConverter().convertToSQLNode((ExistsSubqueryExpression) segment);
         } else if (segment instanceof SubqueryExpressionSegment) {
-            return new SubqueryExpressionConverter().convert((SubqueryExpressionSegment) segment);
+            return new SubqueryExpressionConverter().convertToSQLNode((SubqueryExpressionSegment) segment);
         } else if (segment instanceof InExpression) {
-            return new InExpressionConverter().convert((InExpression) segment);
+            return new InExpressionConverter().convertToSQLNode((InExpression) segment);
         } else if (segment instanceof BetweenExpression) {
-            return new BetweenExpressionConverter().convert((BetweenExpression) segment);
+            return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
+    }
+    
+    @Override
+    public Optional<ExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

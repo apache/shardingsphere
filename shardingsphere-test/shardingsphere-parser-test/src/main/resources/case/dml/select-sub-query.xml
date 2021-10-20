@@ -238,4 +238,285 @@
             </subquery-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_join_table_subquery">
+        <projections start-index="7" stop-index="68">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="60" stop-index="68">
+                <owner start-index="60" stop-index="60" name="u"/>
+            </column-projection>
+        </projections>
+        <from start-index="70" stop-index="90">
+            <join-table>
+                <left>
+                    <simple-table name="t_order_federate" start-index="75" stop-index="90" />
+                </left>
+                <right>
+                    <subquery-table alias="u">
+                        <subquery>
+                            <select>
+                                <projections start-index="101" stop-index="101">
+                                    <shorthand-projection start-index="101" stop-index="101" />
+                                </projections>
+                                <from>
+                                    <simple-table start-index="108" stop-index="118" name="t_user_info"/>
+                                </from>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="126" stop-index="167">
+            <expr>
+                <binary-operation-expression start-index="132" stop-index="167">
+                    <left>
+                        <column name="user_id" start-index="132" stop-index="155">
+                            <owner start-index="132" stop-index="147" name="t_order_federate"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="user_id" start-index="159" stop-index="167">
+                            <owner start-index="159" stop-index="159" name="u"/>
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_projection_subquery">
+        <projections start-index="7" stop-index="93">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+            <subquery-projection start-index="60" stop-index="93" text="(SELECT COUNT(*) FROM t_user_info)">
+                <subquery>
+                    <select>
+                        <projections start-index="68" stop-index="75">
+                            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="68" stop-index="75" />
+                        </projections>
+                        <from start-index="77" stop-index="80">
+                            <simple-table name="t_user_info" start-index="82" stop-index="92" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+        <from start-index="95" stop-index="115">
+            <simple-table name="t_order_federate" start-index="100" stop-index="115" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_in_subquery_condition">
+        <projections start-index="7" stop-index="57">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+        </projections>
+        <from start-index="59" stop-index="79">
+            <simple-table name="t_order_federate" start-index="64" stop-index="79" />
+        </from>
+        <where start-index="81" stop-index="124">
+            <expr>
+                <in-expression start-index="87" stop-index="124">
+                    <left>
+                        <column name="user_id" start-index="87" stop-index="93" />
+                    </left>
+                    <right>
+                        <subquery start-index="98" stop-index="124">
+                            <select>
+                                <projections start-index="106" stop-index="106">
+                                    <shorthand-projection start-index="106" stop-index="106" />
+                                </projections>
+                                <from start-index="108" stop-index="123">
+                                    <simple-table name="t_user_info" start-index="113" stop-index="123" />
+                                </from>
+                            </select>
+                        </subquery>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_between_and_subquery_condition">
+        <projections start-index="7" stop-index="57">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+        </projections>
+        <from start-index="59" stop-index="79">
+            <simple-table name="t_order_federate" start-index="64" stop-index="79" />
+        </from>
+        <where start-index="81" stop-index="230">
+            <expr>
+                <between-expression start-index="87" stop-index="230">
+                    <left>
+                        <column name="user_id" start-index="87" stop-index="93" />
+                    </left>
+                    <between-expr>
+                        <subquery start-index="103" stop-index="164">
+                            <select>
+                                <projections start-index="111" stop-index="117">
+                                    <column-projection name="user_id" start-index="111" stop-index="117" />
+                                </projections>
+                                <from start-index="119" stop-index="134">
+                                    <simple-table name="t_user_info" start-index="124" stop-index="134" />
+                                </from>
+                                <where start-index="136" stop-index="163">
+                                    <expr>
+                                        <binary-operation-expression start-index="142" stop-index="163">
+                                            <left>
+                                                <column name="information" start-index="142" stop-index="152" />
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="before" start-index="156" stop-index="163" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </between-expr>
+                    <and-expr>
+                        <subquery start-index="170" stop-index="230">
+                            <select>
+                                <projections start-index="178" stop-index="184">
+                                    <column-projection name="user_id" start-index="178" stop-index="184" />
+                                </projections>
+                                <from start-index="186" stop-index="201">
+                                    <simple-table name="t_user_info" start-index="191" stop-index="201" />
+                                </from>
+                                <where start-index="203" stop-index="229">
+                                    <expr>
+                                        <binary-operation-expression start-index="209" stop-index="229">
+                                            <left>
+                                                <column name="information" start-index="209" stop-index="219" />
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="after" start-index="223" stop-index="229" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_exist_subquery_condition">
+        <projections start-index="7" stop-index="57">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+        </projections>
+        <from start-index="59" stop-index="79">
+            <simple-table name="t_order_federate" start-index="64" stop-index="79" />
+        </from>
+        <where start-index="81" stop-index="173">
+            <expr>
+                <exists-subquery start-index="87" stop-index="173">
+                    <subquery start-index="94" stop-index="173">
+                        <select>
+                            <projections start-index="102" stop-index="102">
+                                <shorthand-projection start-index="102" stop-index="102" />
+                            </projections>
+                            <from start-index="104" stop-index="119">
+                                <simple-table name="t_user_info" start-index="109" stop-index="119" />
+                            </from>
+                            <where start-index="121" stop-index="172">
+                                <expr>
+                                    <binary-operation-expression start-index="127" stop-index="172">
+                                        <left>
+                                            <column name="user_id" start-index="127" stop-index="150">
+                                                <owner start-index="127" stop-index="142" name="t_order_federate"/>
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="user_id" start-index="154" stop-index="172">
+                                                <owner start-index="154" stop-index="164" name="t_user_info"/>
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </exists-subquery>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_not_exist_subquery_condition">
+        <projections start-index="7" stop-index="57">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+        </projections>
+        <from start-index="59" stop-index="79">
+            <simple-table name="t_order_federate" start-index="64" stop-index="79" />
+        </from>
+        <where start-index="81" stop-index="177">
+            <expr>
+                <exists-subquery start-index="91" stop-index="177">
+                    <not>true</not>
+                    <subquery start-index="98" stop-index="177">
+                        <select>
+                            <projections start-index="106" stop-index="106">
+                                <shorthand-projection start-index="106" stop-index="106" />
+                            </projections>
+                            <from start-index="108" stop-index="123">
+                                <simple-table name="t_user_info" start-index="113" stop-index="123" />
+                            </from>
+                            <where start-index="125" stop-index="176">
+                                <expr>
+                                    <binary-operation-expression start-index="131" stop-index="176">
+                                        <left>
+                                            <column name="user_id" start-index="131" stop-index="154">
+                                                <owner start-index="131" stop-index="146" name="t_order_federate"/>
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="user_id" start-index="158" stop-index="176">
+                                                <owner start-index="158" stop-index="168" name="t_user_info"/>
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </exists-subquery>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

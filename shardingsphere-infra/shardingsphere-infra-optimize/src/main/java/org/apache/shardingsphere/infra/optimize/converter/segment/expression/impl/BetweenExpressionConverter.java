@@ -35,16 +35,21 @@ import java.util.Optional;
 public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final BetweenExpression expression) {
+    public Optional<SqlNode> convertToSQLNode(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getAndExpr()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    }
+    
+    @Override
+    public Optional<BetweenExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

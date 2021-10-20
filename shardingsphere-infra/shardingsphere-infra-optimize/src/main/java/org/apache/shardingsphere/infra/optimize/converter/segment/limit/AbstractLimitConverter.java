@@ -35,10 +35,15 @@ public abstract class AbstractLimitConverter implements SQLSegmentConverter<Limi
     private final Function<LimitSegment, Optional<PaginationValueSegment>> function;
     
     @Override
-    public final Optional<SqlNode> convert(final LimitSegment segment) {
+    public final Optional<SqlNode> convertToSQLNode(final LimitSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        return function.apply(segment).flatMap(optional -> new PaginationValueSQLConverter().convert(optional));
+        return function.apply(segment).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional));
+    }
+    
+    @Override
+    public Optional<LimitSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }
