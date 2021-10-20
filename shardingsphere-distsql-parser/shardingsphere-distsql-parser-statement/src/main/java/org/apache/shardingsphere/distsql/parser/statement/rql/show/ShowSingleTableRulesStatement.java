@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSinglesTableRules
-    ) SEMI?
-    ;
+/**
+ * Show single table rules statement.
+ */
+@Getter
+public final class ShowSingleTableRulesStatement extends ShowRulesStatement {
+    
+    private final String tableName;
+    
+    public ShowSingleTableRulesStatement(final String tableName, final SchemaSegment schema) {
+        super(schema);
+        this.tableName = tableName;
+    }
+}
