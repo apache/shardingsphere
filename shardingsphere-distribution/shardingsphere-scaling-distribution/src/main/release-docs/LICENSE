@@ -240,7 +240,6 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.8.6: https://github.com/google/gson, Apache 2.0
     guava 29.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    HikariCP-java7-2.4.13: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient 4.5.9: http://hc.apache.org/httpcomponents-client, Apache 2.0
     httpcore 4.4.11: http://hc.apache.org/httpcomponents-core-ga, Apache 2.0
     jackson-annotations 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
@@ -251,9 +250,9 @@ The text of each license is the standard Apache 2.0 license.
     json-path 2.4.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.3: https://www.minidev.net/, Apache 2.0
     listenablefuture 9999.0-empty-to-avoid-conflict-with-guava:https://github.com/google/guava, Apache 2.0
-    log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
+    log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-all 4.1.45: https://github.com/netty, Apache 2.0
+    netty-all 4.1.69.Final: https://github.com/netty, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.16: http://www.snakeyaml.org, Apache 2.0
@@ -268,7 +267,7 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
+    groovy 2.4.9-indy: https://github.com/apache/groovy, Apache 2.0
 
 ========================================================================
 BSD licenses
