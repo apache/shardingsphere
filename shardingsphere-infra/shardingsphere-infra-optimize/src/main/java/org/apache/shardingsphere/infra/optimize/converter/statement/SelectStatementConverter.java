@@ -70,7 +70,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlSelect sqlSelect = sqlNode instanceof SqlOrderBy ? (SqlSelect) ((SqlOrderBy) sqlNode).query : (SqlSelect) sqlNode;
         ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
         projections.setDistinctRow(sqlSelect.isDistinct());
-        // TODO instance select statement for different dialect 
+        // TODO create select statement for different dialect 
         MySQLSelectStatement result = new MySQLSelectStatement();
         result.setProjections(projections);
         new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);

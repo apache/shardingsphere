@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -49,24 +46,6 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
     
     @Override
     public Optional<SimpleTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        int startIndex = sqlNode.getParserPosition().getColumnNum() - 1;
-        int stopIndex = sqlNode.getParserPosition().getEndColumnNum() - 1;
-        if (sqlNode instanceof SqlBasicCall) {
-            SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
-            if (sqlBasicCall.getOperator().getName().equals("AS")) {
-                ImmutableList<String> names = ((SqlIdentifier) sqlBasicCall.getOperandList().get(0)).names;
-                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(startIndex, stopIndex, new IdentifierValue(names.get(0))));
-//                SqlParserPos componentParserPosition = ((SqlIdentifier) sqlBasicCall.getOperandList().get(0)).getComponentParserPosition(1);
-//                tableSegment.setAlias(new AliasSegment(componentParserPosition.getColumnNum() - 1, componentParserPosition.getEndColumnNum() - 1, new IdentifierValue(names.get(1))));
-                return Optional.of(tableSegment);
-            }
-        }
-        if (sqlNode instanceof SqlIdentifier) {
-            ImmutableList<String> names = ((SqlIdentifier) sqlNode).names;
-            if (1 == names.size()) {
-                return Optional.of(new SimpleTableSegment(new TableNameSegment(startIndex, stopIndex, new IdentifierValue(names.get(0)))));
-            }   
-        }
         return Optional.empty();
     }
 }

@@ -62,9 +62,9 @@ import static org.junit.Assert.assertTrue;
 @RequiredArgsConstructor
 public final class SQLNodeConvertEngineParameterizedTest {
     
-    public static final SQLCasesLoader SQL_CASES_LOADER = CasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCasesLoader SQL_CASES_LOADER = CasesRegistry.getInstance().getSqlCasesLoader();
     
-    public static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final String SELECT_STATEMENT_PREFIX = "SELECT";
     
