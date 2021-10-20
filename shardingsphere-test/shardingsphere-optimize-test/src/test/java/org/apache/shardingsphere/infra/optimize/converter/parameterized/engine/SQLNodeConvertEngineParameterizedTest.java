@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.parameterized.engine;
 
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.config.CalciteConnectionConfig;
@@ -52,6 +51,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
@@ -68,11 +68,22 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     private static final String SELECT_STATEMENT_PREFIX = "SELECT";
     
-    private static final Set<String> SUPPORTED_SQL_CASE_IDS = Sets.newHashSet("select_with_join_table_subquery", 
-            "select_with_projection_subquery", "select_with_in_subquery_condition", "select_with_between_and_subquery_condition", 
-            "select_with_exist_subquery_condition", "select_with_not_exist_subquery_condition", "select_with_simple_table");
+    private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
-    private static final Set<String> SUPPORTED_DATABASE_TYPES = Sets.newHashSet("MySQL");
+    static {
+        SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_in_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_between_and_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_exist_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_not_exist_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_simple_table");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_left_outer_join_related_with_alias");
+        SUPPORTED_SQL_CASE_IDS.add("select_right_outer_join_related_with_alias");
+    }
     
     private final String sqlCaseId;
     
@@ -82,7 +93,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return getTestParameters("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
+        return getTestParameters("MySQL");
     }
     
     private static Collection<Object[]> getTestParameters(final String... databaseTypes) {
@@ -101,8 +112,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     private static boolean isSupportedSQLCase(final Object[] sqlTestParameter) {
         String sqlCaseId = sqlTestParameter[0].toString();
-        String databaseType = sqlTestParameter[1].toString();
-        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId) && SUPPORTED_DATABASE_TYPES.contains(databaseType);
+        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId);
     }
     
     @Test
