@@ -152,7 +152,7 @@ it.run.additional.cases=false
     运行 `org.apache.shardingsphere.test.integration.engine.it.${SQL-TYPE}.Additional${SQL-TYPE}IT` 以启动使用更多 JDBC 方法调用的测试引擎。
     附加测试引擎需要通过设置 `it.run.additional.cases=true` 开启。
 
-#### 运行Docker 模式
+#### 运行 Docker 模式
 
 ```bash
 ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.databases=MySQL

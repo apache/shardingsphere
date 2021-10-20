@@ -1,7 +1,6 @@
 +++
-pre = "<b>8.1.3. </b>"
 title = "SQL Rewrite Test"
-weight = 3
+weight = 2
 +++
 
 ## Target
