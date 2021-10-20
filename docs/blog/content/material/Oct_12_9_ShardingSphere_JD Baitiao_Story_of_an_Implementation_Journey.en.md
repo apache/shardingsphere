@@ -88,7 +88,7 @@ ShardingSphere - JDBC provides the following features, making it the best soluti
 
 **Extensibility:** users can combine with the migration sync component to easily extend data.
 
-![](../../static/img/Blog_25_img_2_JD_VS_ShardingSphere_Table_en.png)
+![](../../static/img/Blog_25_img_2_JD_ShardingSphere_JDBC_en.png)
 
 After being systematically tested for several times, Apache ShardingSphere became JD Baitiao's first choice of data sharding middleware. The cooperation started at the end of 2018. 
 

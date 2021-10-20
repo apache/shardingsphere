@@ -178,7 +178,7 @@ For more information, please read: [https://github.com/apache/shardingsphere/blo
 
 @CatYangWei was the first GitHub user to ask about `AutoTable`.
 
-![](../../static/img/Blog_22_img_5_Liang_Longtao_Photo.png)
+![](../../static/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
 
 We’d like to thank him for helping us find the problem. We do appreciate that. In order to express our gratitude, we will contact you later and send you a gift. as a token of appreciation from the community👏👏👏
 
@@ -198,6 +198,6 @@ Contributor Guide：[https://shardingsphere.apache.org/community/en/contribute/]
 
 Longtao Jiang
 
-![](../../static/img/Blog_22_img_5_Liang_Langtao_Photo.png)
+![](../../static/img/Blog_22_img_5_Liang_Longtao_Photo.png)
 
 > SphereEx Middleware Development Engineer & Apache ShardingSphere Contributor.
