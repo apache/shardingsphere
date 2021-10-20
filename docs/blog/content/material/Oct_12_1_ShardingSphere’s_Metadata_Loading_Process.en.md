@@ -208,7 +208,7 @@ Then what is an actualTable and what is a `logicTable`? Simply put for `t_order_
 ~~~ 
 private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
     Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
-    // 数据库方言SQL加载元数据
+    // Database SQL Loading Metadata
     appendRemainTables(materials, result);
     for (ShardingSphereRule rule : materials.getRules()) {
         if (rule instanceof TableContainedRule) {

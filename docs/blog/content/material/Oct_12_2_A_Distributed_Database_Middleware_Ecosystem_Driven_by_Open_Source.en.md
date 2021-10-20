@@ -29,7 +29,7 @@ When a business grows bigger, one database can no longer support a large volume 
 
 When the volume of a business increases, the pressure of data fragmentation will increase, and thus its fragmentation strategy will become increasingly complex. ShardingSphere enables users to unlock more fragmentation strategies apart from horizontal scaling in a flexible and scalable way at the minimum cost. It also supports custom scaling.
 
-* **Read-read Splitting**
+* **Read and Write Splitting**
 
 Usually, master-slave deployment can effectively relieve database pressure, but if there is a problem in a machine or a table of a certain cluster, it’s impossible to have read and write operations, and this problem will have a great impact on the business. To avoid this, developers usually need to rewrite a set of highly available strategies to change the position of master/slave between read and write tables. ShardingSphere can automatically explore all cluster states, so it can immediately find problems such as unreliable requests, and master-slave switching of a database. It also can automatically restore the old master/slave state, which cannot be perceived by the user.
 
