@@ -47,7 +47,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     public Collection<ParameterRewriter> getParameterRewriters(final ShardingSphereSchema schema) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, schema);
+            setUpParameterRewrites(each, schema);
         }
         return result;
     }
@@ -61,7 +61,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final ShardingSphereSchema schema) {
+    private void setUpParameterRewrites(final ParameterRewriter parameterRewriter, final ShardingSphereSchema schema) {
         if (parameterRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) parameterRewriter).setSchema(schema);
         }

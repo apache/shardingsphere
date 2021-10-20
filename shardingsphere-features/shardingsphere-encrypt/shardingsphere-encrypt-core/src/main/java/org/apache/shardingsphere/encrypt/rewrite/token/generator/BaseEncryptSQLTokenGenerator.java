@@ -42,7 +42,7 @@ public abstract class BaseEncryptSQLTokenGenerator implements SQLTokenGenerator,
     
     private boolean isNeedEncrypt(final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findEncryptTable(each).isPresent()) {
+            if (encryptRule.findEncryptTable(each).isPresent() && encryptRule.isQueryWithCipherColumn(each)) {
                 return true;
             }
         }

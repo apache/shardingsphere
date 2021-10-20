@@ -37,7 +37,7 @@
     <encrypt:encrypt-algorithm id="md5Encryptor" type="MD5" />
     
     <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_order">
+        <encrypt:table name="t_order" query-with-cipher-column="false">
             <encrypt:column logic-column="pwd" cipher-column="pwd_cipher" encrypt-algorithm-ref="aesEncryptor" />
             <encrypt:column logic-column="credit_card" cipher-column="credit_card_cipher" assisted-query-column="credit_card_assisted_query" plain-column="credit_card_plain" encrypt-algorithm-ref="md5Encryptor" />
         </encrypt:table>

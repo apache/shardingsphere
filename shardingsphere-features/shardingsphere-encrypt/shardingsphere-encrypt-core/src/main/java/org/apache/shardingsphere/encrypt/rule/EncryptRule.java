@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -241,6 +242,19 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+    }
+
+    /**
+     * Check the table is support QueryWithCipherColumn.
+     * @param tableName table name
+     * @return isQueryWithCipherColumn
+     */
+    public boolean isQueryWithCipherColumn(final String tableName) {
+        if (tables.containsKey(tableName)) {
+            Boolean isQueryWithCipherColumn = tables.get(tableName).getQueryWithCipherColumn();
+            return Objects.nonNull(isQueryWithCipherColumn) ? isQueryWithCipherColumn : queryWithCipherColumn;
+        }
+        return queryWithCipherColumn;
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
