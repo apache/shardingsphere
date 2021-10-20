@@ -34,11 +34,11 @@ import static org.junit.Assert.assertTrue;
 public final class ShowSingleTableRulesStatementAssert {
 
     /**
-     * Assert single table rules statement is correct with expected parser result.
+     * Assert show single table rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual single table rules statement
-     * @param expected expected single table rules statement test case
+     * @param actual actual show single table rules statement
+     * @param expected expected show single table rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowSingleTableRulesStatement actual, final ShowSingleTableRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
