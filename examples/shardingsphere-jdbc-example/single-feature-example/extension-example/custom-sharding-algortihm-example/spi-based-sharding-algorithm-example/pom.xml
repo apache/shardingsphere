@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>custom-sharding-algortihm-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.0-RC1</version>
     </parent>
     <artifactId>spi-based-sharding-algorithm-example</artifactId>
     <name>${project.artifactId}</name>

@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
-    <version>5.0.0-RC1-SNAPSHOT</version>
+    <version>5.0.0-RC1</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
+        <shardingsphere.version>5.0.0-RC1</shardingsphere.version>
 
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>5.0.13.RELEASE</spring-framework.version>
