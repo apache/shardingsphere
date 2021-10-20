@@ -101,7 +101,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public ResponseType getResponseType() {
-        throw new UnsupportedOperationException("openGauss batch bind doesn't have response type");
+        return ResponseType.UPDATE;
     }
     
     @Override
