@@ -9,14 +9,14 @@
 1. New DistSQL syntax: disable readwrite-splitting read data source
 1. New DistSQL syntax: `DROP SHARDING ALGORITHM`
 1. New DistSQL syntax: `ALTER RESOURCE`
-1. Support `3` modes, including Memory、Standalone and Cluster mode
+1. Support `3` modes, including Memory, Standalone and Cluster mode
 1. Proxy supports for openGauss
 
 ### API Change
 
 1. Add schema name configuration for ShardingSphere-JDBC
 1. Add default sharding column configuration
-1. Add readwrite-splitting configuration item `queryConsistent`, and chang the default value of consistent routing to `false`
+1. Add readwrite-splitting configuration item `queryConsistent`, and change the default value of consistent routing to `false`
 1. Change the default authority provider from `NATIVE` to `ALL_PRIVILEGES_PERMITTED`
 1. SCTL syntax adjustment, merged with DistSQL RAL syntax
 1. `SHOW RESOURCES` DistSQL is adjusted to `SHOW SCHEMA RESOURCES`
