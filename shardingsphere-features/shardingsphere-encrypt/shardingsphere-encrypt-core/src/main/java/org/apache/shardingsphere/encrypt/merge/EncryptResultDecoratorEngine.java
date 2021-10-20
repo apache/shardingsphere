@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
@@ -42,12 +43,17 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
                                        final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(schema, 
-                    encryptRule, (SelectStatementContext) sqlStatementContext), encryptRule.isQueryWithCipherColumn());
+                    encryptRule, (SelectStatementContext) sqlStatementContext), isQueryWithCipherColumn(encryptRule, sqlStatementContext));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();
         }
         return new TransparentResultDecorator();
+    }
+    
+    private boolean isQueryWithCipherColumn(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        return encryptRule.isQueryWithCipherColumn(tableName);
     }
     
     @Override

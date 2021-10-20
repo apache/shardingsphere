@@ -21,6 +21,8 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -35,12 +37,18 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @SuppressWarnings("unchecked")
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, encryptRule.isQueryWithCipherColumn()).getParameterRewriters(sqlRewriteContext.getSchema())) {
+        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn(encryptRule, sqlRewriteContext.getSqlStatementContext()))
+                .getParameterRewriters(sqlRewriteContext.getSchema())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, encryptRule.isQueryWithCipherColumn()).getSQLTokenGenerators());
+    }
+
+    private boolean isQueryWithCipherColumn(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        return encryptRule.isQueryWithCipherColumn(tableName);
     }
     
     @Override

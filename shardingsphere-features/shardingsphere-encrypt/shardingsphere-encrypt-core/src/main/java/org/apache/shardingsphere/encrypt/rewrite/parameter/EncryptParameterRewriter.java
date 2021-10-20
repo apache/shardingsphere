@@ -44,7 +44,7 @@ public abstract class EncryptParameterRewriter<T extends SQLStatementContext> im
     
     private boolean isNeedEncrypt(final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findEncryptTable(each).isPresent() && encryptRule.isQueryWithCipherColumn(each)) {
+            if (encryptRule.findEncryptTable(each).isPresent()) {
                 return true;
             }
         }
