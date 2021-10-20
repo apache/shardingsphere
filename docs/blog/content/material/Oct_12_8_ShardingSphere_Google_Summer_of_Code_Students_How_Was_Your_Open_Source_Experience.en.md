@@ -12,13 +12,13 @@ Recently the ShardingSphere community had the pleasure of contributing to the Go
 
 Thanoshan and Liangda are the students that worked with Apache ShardingSphere mentors during the latest GSoC, and continue contributing to the project ever since.
 
-![](../../Blog_24_img_2_GSoC_2021_Projects_ss_Students_Snapshot_Thanoshan_Liangda.png)
+![](../../static/img/Blog_24_img_2_GSoC_2021_Projects_ss_Students_Snapshot_Thanoshan_Liangda.png)
 
 They were kind enough to agree to a phone interview with Yacine, one of the ShardingSphere committers and community managers — to share their opinions and experience with the GSoC application process, joining the Apache ShardingSphere project, and their future plans.
 
 ## Students Intro:
 
-![](../../Blog_24_img_3_Thanoshan_Photo.png)
+![](../../static/img/Blog_24_img_3_Thanoshan_Photo.png)
 
 Name: Thanoshan
 
@@ -28,7 +28,7 @@ University: Sabaragamuwa University
 
 Major: Computing & Information Systems
 
-![](../../Blog_24_img_4_Liangda_Photo.png)
+![](../../static/img/Blog_24_img_4_Liangda_Photo.png)
 
 Name:Liangda
 
@@ -158,7 +158,7 @@ ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
 
 ## Author
 
-![](../../static/img/Blog_24_img_25_Yachine_Photo.png)
+![](../../static/img/Blog_24_img_5_Yachine_Photo.png)
 
 > **Yacine Si Tayeb**
 
