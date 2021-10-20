@@ -1,41 +1,40 @@
 +++
-pre = "<b>8.1.4. </b>"
-title = "性能测试"
-weight = 4
+title = "Sysbench 性能测试"
+weight = 1
 +++
 
 ## 目标
 
-对ShardingSphere-JDBC，ShardingSphere-Proxy及MySQL进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
-为了更好的观察效果，设计在一定数据量的基础上，使用jmeter 20并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个MySQL实例，而对比MySQL场景为单机单实例部署。
+对ShardingSphere-JDBC，ShardingSphere-Proxy及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
+为了更好的观察效果，设计在一定数据量的基础上，使用 jmeter 20 并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个 MySQL 实例，而对比 MySQL 场景为单机单实例部署。
 
 ## 测试场景
 
 ### 单路由
 
 在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为1024个表，查询操作路由到单库单表；
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
+作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 主从
 
 基本主从场景，设置一主库一从库，部署在两台不同的机器上，在10000数据量的基础上，观察读写性能；
-作为对比，MySQL运行在10000数据量的基础上，使用INSERT+SELECT+DELETE语句。
+作为对比，MySQL 运行在10000数据量的基础上，使用 INSERT+SELECT+DELETE 语句。
 
 ### 主从+加密+分库分表
 
-在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用aes加密，`pad`使用md5加密，查询操作路由到单库单表；
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
+在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用aes加密，`pad` 使用md5加密，查询操作路由到单库单表；
+作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 全路由
 
 在1000数据量的基础上，分库分表，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1个表，查询操作使用全路由。
-作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和全路由查询语句。
+作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
 
 ## 测试环境搭建
 
 ### 数据库表结构
 
-此处表结构参考sysbench的sbtest表
+此处表结构参考 sysbench 的 sbtest 表
 
 ```shell
 CREATE TABLE `tbl` (
@@ -49,7 +48,7 @@ CREATE TABLE `tbl` (
 
 ### 测试场景配置
 
-ShardingSphere-JDBC使用与ShardingSphere-Proxy一致的配置，MySQL直连一个库用作性能对比，下面为四个场景的具体配置：
+ShardingSphere-JDBC 使用与 ShardingSphere-Proxy 一致的配置，MySQL 直连一个库用作性能对比，下面为四个场景的具体配置：
 
 #### 单路由配置
 
