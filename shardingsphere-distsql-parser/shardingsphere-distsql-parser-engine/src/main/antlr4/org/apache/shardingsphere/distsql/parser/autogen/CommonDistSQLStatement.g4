@@ -30,5 +30,6 @@ execute
     | enableInstance
     | disableInstance
     | showInstance
+    | showSinglesTableRules
     ) SEMI?
     ;

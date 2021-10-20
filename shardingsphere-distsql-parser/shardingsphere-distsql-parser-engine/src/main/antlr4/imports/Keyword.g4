@@ -134,3 +134,15 @@ TABLES
 LIST
     : L I S T
     ;
+    
+TABLE
+    : T A B L E
+    ;
+
+RULES
+    : R U L E S
+    ;
+    
+RULE
+    : R U L E
+    ;

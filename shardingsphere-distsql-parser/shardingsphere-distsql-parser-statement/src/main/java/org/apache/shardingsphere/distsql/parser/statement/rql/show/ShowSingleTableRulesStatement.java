@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
-
-showSinglesTableRules
-    : SHOW SINGLE TABLE (tableRule | RULES) (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableRule
-    : RULE tableName
-    ;
+/**
+ * Show single table rules statement.
+ */
+@Getter
+public final class ShowSingleTableRulesStatement extends ShowRulesStatement {
     
-tableName
-    : IDENTIFIER
-    ;
+    private final String tableName;
+    
+    public ShowSingleTableRulesStatement(final String tableName, final SchemaSegment schema) {
+        super(schema);
+        this.tableName = tableName;
+    }
+}
