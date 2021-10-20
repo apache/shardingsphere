@@ -131,7 +131,7 @@ public final class SingleTableRuleQueryResultSetTest {
         return singleTableRule;
     }
     
-    private void addShardingSphereRule(ShardingSphereRule... rules) {
+    private void addShardingSphereRule(final ShardingSphereRule... rules) {
         shardingSphereMetaData.getRuleMetaData().getRules().addAll(Arrays.asList(rules));
     }
 }
