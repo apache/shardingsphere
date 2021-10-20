@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
+import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowDeterminerFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
@@ -49,8 +49,16 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
+        Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> noteShadowAlgorithms = shadowRule.getAllNoteShadowAlgorithms();
+        if (!noteShadowAlgorithms.isPresent()) {
+            return Optional.empty();
+        }
         Optional<Collection<String>> sqlNotes = parseSqlNotes();
-        if (sqlNotes.isPresent() && isShadowSqlNotes(shadowRule, sqlNotes.get())) {
+        if (!sqlNotes.isPresent()) {
+            return Optional.empty();
+        }
+        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition("", ShadowOperationType.NON_DML);
+        if (isMatchAnyNoteShadowAlgorithms(noteShadowAlgorithms.get(), shadowDetermineCondition.initSqlNotes(sqlNotes.get()), shadowRule)) {
             return Optional.of(shadowRule.getAllShadowDataSourceMappings());
         }
         return Optional.empty();
@@ -62,28 +70,17 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private boolean isShadowSqlNotes(final ShadowRule shadowRule, final Collection<String> sqlNotes) {
-        Optional<Collection<ShadowAlgorithm>> relatedNoteShadowAlgorithms = shadowRule.getRelatedNoteShadowAlgorithms();
-        return relatedNoteShadowAlgorithms.filter(shadowAlgorithms -> isMatchNoteAlgorithms(shadowAlgorithms, shadowRule, sqlNotes)).isPresent();
-    }
-    
-    private boolean isMatchNoteAlgorithms(final Collection<ShadowAlgorithm> shadowAlgorithms, final ShadowRule shadowRule, final Collection<String> sqlNotes) {
-        for (ShadowAlgorithm each : shadowAlgorithms) {
-            if (isMatchNoteAlgorithm(each, shadowRule, sqlNotes)) {
+    private boolean isMatchAnyNoteShadowAlgorithms(final Collection<NoteShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        for (NoteShadowAlgorithm<Comparable<?>> each : shadowAlgorithms) {
+            if (isMatchNoteShadowAlgorithm(each, shadowCondition, shadowRule)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isMatchNoteAlgorithm(final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final Collection<String> sqlNotes) {
-        return ShadowDeterminerFactory.newInstance(shadowAlgorithm).isShadow(createShadowDetermineCondition(sqlNotes), shadowRule, "");
-    }
-    
-    private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlNotes) {
-        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.NON_DML);
-        shadowDetermineCondition.initSqlNotes(sqlNotes);
-        return shadowDetermineCondition;
+    private boolean isMatchNoteShadowAlgorithm(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        return ShadowDeterminerFactory.newInstance(noteShadowAlgorithm).isShadow(shadowCondition, shadowRule);
     }
     
     private void shadowNonDMLStatementRouteDecorate(final RouteContext routeContext, final Map<String, String> shadowDataSourceMappings) {

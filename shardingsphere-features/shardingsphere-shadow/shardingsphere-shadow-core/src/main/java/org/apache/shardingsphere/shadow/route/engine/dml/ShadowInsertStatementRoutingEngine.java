@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -73,13 +72,13 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition(ShadowOperationType.INSERT);
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return insertStatementContext.getAllTables();
     }
     
     @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return insertStatementContext.getAllTables();
+    protected ShadowOperationType getShadowOperationType() {
+        return ShadowOperationType.INSERT;
     }
     
     @Override
