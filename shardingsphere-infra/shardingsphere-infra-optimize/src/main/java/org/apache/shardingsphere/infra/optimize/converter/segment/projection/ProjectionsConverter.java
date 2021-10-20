@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.projection;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -52,11 +55,6 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         return Optional.of(new SqlNodeList(projectionSQLNodes, SqlParserPos.ZERO));
     }
     
-    @Override
-    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
-        return Optional.empty();
-    }
-    
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
             return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment);
@@ -68,6 +66,29 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             return new SubqueryProjectionConverter().convertToSQLNode((SubqueryProjectionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
             return new AggregationProjectionConverter().convertToSQLNode((AggregationProjectionSegment) segment);
+        }
+        // TODO process other projection
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        for (SqlNode each : sqlNode) {
+            getProjectionSegment(each).ifPresent(projections::add);
+        }
+        int startIndex = sqlNode.get(0).getParserPosition().getColumnNum() - 1;
+        int stopIndex = sqlNode.get(sqlNode.size() - 1).getParserPosition().getEndColumnNum() - 1;
+        ProjectionsSegment result = new ProjectionsSegment(startIndex, stopIndex);
+        result.getProjections().addAll(projections);
+        return Optional.of(result);
+    }
+    
+    private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlIdentifier) {
+            return new ColumnProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlBasicCall) {
+            return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
         // TODO process other projection
         return Optional.empty();

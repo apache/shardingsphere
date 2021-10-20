@@ -36,6 +36,6 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
     
     @Override
     public Optional<ColumnProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+        return new ColumnConverter().convertToSQLSegment(sqlNode).map(ColumnProjectionSegment::new);
     }
 }
