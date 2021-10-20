@@ -23,4 +23,10 @@
     <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL, PostgreSQL" />
     <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id BETWEEN (SELECT user_id FROM t_order_item WHERE order_id = 10) AND ?" db-types="MySQL, PostgreSQL" />
     <sql-case id="select_with_exists_sub_query_with_project" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL, PostgreSQL" />
+    <sql-case id="select_with_join_table_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, u.user_id FROM t_order_federate, (SELECT * FROM t_user_info) as u WHERE t_order_federate.user_id = u.user_id" db-types="MySQL, PostgreSQL, SQLServer, SQL92" />
+    <sql-case id="select_with_projection_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT COUNT(*) FROM t_user_info) FROM t_order_federate" />
+    <sql-case id="select_with_in_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id IN (SELECT * FROM t_user_info)" />
+    <sql-case id="select_with_between_and_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') AND (SELECT user_id FROM t_user_info WHERE information = 'after')" />
+    <sql-case id="select_with_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL, PostgreSQL" />
+    <sql-case id="select_with_not_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE NOT EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL" />
 </sql-cases>

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.orderby.OrderB
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.DistinctConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -66,7 +67,22 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     
     @Override
     public SelectStatement convertToSQLStatement(final SqlNode sqlNode) {
-        // TODO support sql node convert to sql statement 
-        return new MySQLSelectStatement();
+        SqlSelect sqlSelect = sqlNode instanceof SqlOrderBy ? (SqlSelect) ((SqlOrderBy) sqlNode).query : (SqlSelect) sqlNode;
+        ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
+        projections.setDistinctRow(sqlSelect.isDistinct());
+        // TODO create select statement for different dialect 
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setProjections(projections);
+        new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);
+        new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);
+        new GroupByConverter().convertToSQLSegment(sqlSelect.getGroup()).ifPresent(result::setGroupBy);
+        new HavingConverter().convertToSQLSegment(sqlSelect.getHaving()).ifPresent(result::setHaving);
+        if (sqlNode instanceof SqlOrderBy) {
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
+            Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new OffsetConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
+            Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new RowCountConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
+        }
+        return result;
     }
 }
