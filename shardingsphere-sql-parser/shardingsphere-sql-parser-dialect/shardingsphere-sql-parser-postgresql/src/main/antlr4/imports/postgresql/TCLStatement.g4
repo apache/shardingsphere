@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement;
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList
@@ -70,5 +70,17 @@ commitPrepared
 
 rollbackPrepared
     : ROLLBACK PREPARED STRING_
+    ;
+
+setConstraints
+    : SET CONSTRAINTS constraintsSetList constraintsSetMode
+    ;
+
+constraintsSetMode
+    : DEFERRED | IMMEDIATE
+    ;
+
+constraintsSetList
+    : ALL | qualifiedNameList
     ;
 
