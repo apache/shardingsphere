@@ -56,7 +56,7 @@ dropShardingBroadcastTableRules
     ;
     
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM algorithmTypeName (COMMA algorithmTypeName)*
+    : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
 shardingTableRuleDefinition
@@ -92,10 +92,10 @@ bindTableRulesDefinition
     ;
 
 algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
-algorithmTypeName
+algorithmName
     : IDENTIFIER
     ;
 
