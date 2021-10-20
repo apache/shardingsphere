@@ -219,10 +219,10 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.0: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.5.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.17.0: https://calcite.apache.org/avatica, Apache 2.0 
-    avatica-metrics 1.17.0: https://calcite.apache.org/avatica, Apache 2.0
-    calcite-core 1.26.0: https://calcite.apache.org, Apache 2.0
-    calcite-linq4j 1.26.0: https://calcite.apache.org, Apache 2.0
+    avatica-core 1.18.0: https://calcite.apache.org/avatica, Apache 2.0 
+    avatica-metrics 1.18.0: https://calcite.apache.org/avatica, Apache 2.0
+    calcite-core 1.27.0: https://calcite.apache.org, Apache 2.0
+    calcite-linq4j 1.27.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.10: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
     commons-dbcp 1.4: https://github.com/apache/commons-dbcp, Apache 2.0
@@ -298,7 +298,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.7.2: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.9.2: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 5.0.4: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License
