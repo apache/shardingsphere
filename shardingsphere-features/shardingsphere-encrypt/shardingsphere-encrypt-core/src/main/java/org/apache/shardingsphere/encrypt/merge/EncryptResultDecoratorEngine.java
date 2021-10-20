@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.merge.dal.EncryptDALResultDecorator;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptAlgorithmMetaData;
@@ -31,7 +32,10 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+
+import java.util.Collection;
 
 /**
  * Result decorator engine for encrypt.
@@ -52,7 +56,11 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     }
     
     private boolean isQueryWithCipherColumn(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
-        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        Collection<SimpleTableSegment> tables = ((TableAvailable) sqlStatementContext).getAllTables();
+        if (CollectionUtils.isEmpty(tables)) {
+            return encryptRule.isQueryWithCipherColumn();
+        }
+        String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
         return encryptRule.isQueryWithCipherColumn(tableName);
     }
     

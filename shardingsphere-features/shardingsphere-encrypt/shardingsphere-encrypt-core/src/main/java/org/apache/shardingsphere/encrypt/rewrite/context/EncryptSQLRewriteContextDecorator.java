@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
@@ -28,6 +29,9 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+
+import java.util.Collection;
 
 /**
  * SQL rewrite context decorator for encrypt.
@@ -47,7 +51,11 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     }
 
     private boolean isQueryWithCipherColumn(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
-        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        Collection<SimpleTableSegment> tables = ((TableAvailable) sqlStatementContext).getAllTables();
+        if (CollectionUtils.isEmpty(tables)) {
+            return encryptRule.isQueryWithCipherColumn();
+        }
+        String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
         return encryptRule.isQueryWithCipherColumn(tableName);
     }
     
