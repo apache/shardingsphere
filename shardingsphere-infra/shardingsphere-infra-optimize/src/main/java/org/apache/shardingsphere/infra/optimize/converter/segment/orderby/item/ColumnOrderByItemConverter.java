@@ -36,7 +36,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final ColumnOrderByItemSegment segment) {
-        Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn());
+        Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
         if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
             result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {result.get()}, SqlParserPos.ZERO));
         }

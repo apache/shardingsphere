@@ -57,11 +57,11 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment);
+            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment).map(optional -> optional);
         } else if (segment instanceof ExpressionProjectionSegment) {
             return new ExpressionProjectionConverter().convertToSQLNode((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
-            return new ShorthandProjectionConverter().convertToSQLNode((ShorthandProjectionSegment) segment);
+            return new ShorthandProjectionConverter().convertToSQLNode((ShorthandProjectionSegment) segment).map(optional -> optional);
         } else if (segment instanceof SubqueryProjectionSegment) {
             return new SubqueryProjectionConverter().convertToSQLNode((SubqueryProjectionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
@@ -72,21 +72,23 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     }
     
     @Override
-    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
+    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
-        for (SqlNode each : sqlNode) {
+        for (SqlNode each : sqlNodeList) {
             getProjectionSegment(each).ifPresent(projections::add);
         }
-        int startIndex = sqlNode.get(0).getParserPosition().getColumnNum() - 1;
-        int stopIndex = sqlNode.get(sqlNode.size() - 1).getParserPosition().getEndColumnNum() - 1;
-        ProjectionsSegment result = new ProjectionsSegment(startIndex, stopIndex);
+        ProjectionsSegment result = new ProjectionsSegment(getStartIndex(sqlNodeList), getStopIndex(sqlNodeList));
         result.getProjections().addAll(projections);
         return Optional.of(result);
     }
     
     private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlIdentifier) {
-            return new ColumnProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+            SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
+            if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names)) {
+                return new ShorthandProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);    
+            }
+            return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
             return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
