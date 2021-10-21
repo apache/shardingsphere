@@ -31,6 +31,10 @@ createShardingBroadcastTableRules
     : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
+createShardingAlgorithm
+    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
 alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
@@ -91,11 +95,19 @@ bindTableRulesDefinition
     : LP tableName (COMMA tableName)* RP
     ;
 
+shardingAlgorithmDefinition
+    : shardingAlgorithmName LP algorithmDefinition RP
+    ;
+
 algorithmDefinition
     : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 algorithmName
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmName
     : IDENTIFIER
     ;
 
