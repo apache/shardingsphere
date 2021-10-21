@@ -50,7 +50,7 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
         LinkedList<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         checkDuplicate(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("SHARDING", schemaName, duplicated));
-        checkExists(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("SHARDING", schemaName, duplicated));
+        checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("SHARDING", schemaName, duplicated));
     }
     
     private static void checkDuplicate(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
@@ -59,7 +59,7 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
-    private static void checkExists(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    private static void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }

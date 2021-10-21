@@ -288,6 +288,7 @@
             </table-rule>
         </rule>
     </create-shadow-rule>
+    
     <create-sharding-algorithm sql-case-id="create-sharding-algorithm">
         <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
             <algorithm algorithm-name="hash_mod">
