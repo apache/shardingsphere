@@ -21,13 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
-
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Repair table statement assert.
@@ -43,8 +38,10 @@ public final class MySQLRepairTableStatementAssert {
      * @param expected expected repair table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
-        assertNotNull("expected repair table should be not null", expected.getTable());
-        String actualTables = actual.getTables().stream().map(simpleTableSegment -> simpleTableSegment.getTableName().getIdentifier().getValue()).collect(Collectors.joining(","));
-        assertThat(actualTables, is(expected.getTable().getName()));
+        assertTables(assertContext, actual, expected);
+    }
+    
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

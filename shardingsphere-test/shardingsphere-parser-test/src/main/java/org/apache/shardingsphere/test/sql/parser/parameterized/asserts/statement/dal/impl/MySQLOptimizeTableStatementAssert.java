@@ -21,13 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
-
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Optimize table statement assert.
@@ -43,8 +38,10 @@ public final class MySQLOptimizeTableStatementAssert {
      * @param expected expected optimize table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
-        assertNotNull("expected optimize table should be not null", expected.getTable());
-        String actualTables = actual.getTables().stream().map(simpleTableSegment -> simpleTableSegment.getTableName().getIdentifier().getValue()).collect(Collectors.joining(","));
-        assertThat(actualTables, is(expected.getTable().getName()));
+        assertTables(assertContext, actual, expected);
+    }
+    
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }
