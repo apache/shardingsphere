@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
@@ -649,6 +650,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "set-resource-group")
     private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "optimize-table")
+    private final List<OptimizeTableStatementTestCase> optimizeTableStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-sharding-algorithm")
     private final List<CreateShardingAlgorithmStatementTestCase> createShardingAlgorithmStatementTestCases = new LinkedList<>();
     /**
@@ -812,6 +816,7 @@ public final class SQLParserTestCases {
         putAll(uninstallPluginStatementTestCases, result);
         putAll(showSingleTableRulesStatementTestCases, result);
         putAll(setResourceGroupStatementTestCases, result);
+        putAll(optimizeTableStatementTestCases, result);
         putAll(createShardingAlgorithmStatementTestCases, result);
         return result;
     }

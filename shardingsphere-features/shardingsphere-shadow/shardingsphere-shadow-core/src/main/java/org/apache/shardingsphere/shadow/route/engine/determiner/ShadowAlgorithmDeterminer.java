@@ -30,8 +30,7 @@ public interface ShadowAlgorithmDeterminer {
      *
      * @param shadowDetermineCondition shadow determine condition
      * @param shadowRule shadow rule
-     * @param tableName table name
      * @return is shadow or not
      */
-    boolean isShadow(ShadowDetermineCondition shadowDetermineCondition, ShadowRule shadowRule, String tableName);
+    boolean isShadow(ShadowDetermineCondition shadowDetermineCondition, ShadowRule shadowRule);
 }

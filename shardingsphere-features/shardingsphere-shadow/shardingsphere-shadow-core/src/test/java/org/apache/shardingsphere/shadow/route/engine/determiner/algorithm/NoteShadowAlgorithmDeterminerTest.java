@@ -66,7 +66,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
 
     @Test
     public void assertIsShadow() {
-        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), "t_order"), is(true));
+        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
     }
 
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -104,7 +104,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
+        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
         shadowDetermineCondition.initSqlNotes(createSqlNotes());
         return shadowDetermineCondition;
     }

@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -77,13 +76,13 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition(ShadowOperationType.SELECT);
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return selectStatementContext.getAllTables();
     }
     
     @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return selectStatementContext.getAllTables();
+    protected ShadowOperationType getShadowOperationType() {
+        return ShadowOperationType.SELECT;
     }
     
     @Override

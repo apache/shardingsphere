@@ -153,15 +153,18 @@ public class SpringBootStarterTest {
         assertThat(shadowTableRules.size(), is(2));
         assertThat(shadowTableRules.get("t_order").getTableName(), is("t_order"));
         assertThat(shadowTableRules.get("t_order").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_order").getShadowAlgorithmNames().size(), is(2));
+        assertThat(shadowTableRules.get("t_order").getNoteShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_order").getColumnShadowAlgorithmNames().size(), is(2));
         assertThat(shadowTableRules.get("t_user").getTableName(), is("t_user"));
         assertThat(shadowTableRules.get("t_user").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_user").getShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_user").getNoteShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        assertThat(shadowAlgorithms.size(), is(2));
+        assertThat(shadowAlgorithms.size(), is(3));
         assertThat(shadowAlgorithms.get("user-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("order-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
         assertThat(shadowAlgorithms.get("simple-note-algorithm") instanceof NoteShadowAlgorithm, is(true));
     }
     

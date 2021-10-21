@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowDeterminerFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -53,59 +53,53 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
         Collection<String> relatedShadowTables = getRelatedShadowTables(getAllTables(), shadowRule);
+        ShadowOperationType shadowOperationType = getShadowOperationType();
         for (String each : relatedShadowTables) {
-            if (isShadowTable(shadowRule, each)) {
+            if (isShadowTable(each, shadowRule, shadowOperationType)) {
                 return shadowRule.getRelatedShadowDataSourceMappings(each);
             }
         }
         return Optional.empty();
     }
     
-    private boolean isShadowTable(final ShadowRule shadowRule, final String tableName) {
-        Optional<Collection<ShadowAlgorithm>> relatedShadowAlgorithms = shadowRule.getRelatedShadowAlgorithms(tableName);
-        return relatedShadowAlgorithms.isPresent() && isMatchAnyShadowAlgorithms(relatedShadowAlgorithms.get(), shadowRule, tableName);
+    private boolean isShadowTable(final String tableName, final ShadowRule shadowRule, final ShadowOperationType shadowOperationType) {
+        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(tableName, shadowOperationType);
+        Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> noteShadowAlgorithms = shadowRule.getRelatedNoteShadowAlgorithms(tableName);
+        Optional<Collection<String>> sqlNotes = parseSqlNotes();
+        if (noteShadowAlgorithms.isPresent() && sqlNotes.isPresent() && isMatchAnyNoteShadowAlgorithms(noteShadowAlgorithms.get(), shadowDetermineCondition.initSqlNotes(sqlNotes.get()), shadowRule)) {
+            return true;
+        }
+        Optional<Collection<ColumnShadowAlgorithm<Comparable<?>>>> columnShadowAlgorithms = shadowRule.getRelatedColumnShadowAlgorithms(tableName, shadowOperationType);
+        Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = parseShadowColumnConditions();
+        return columnShadowAlgorithms.isPresent() && shadowColumnConditions.isPresent() && isMatchAnyColumnShadowAlgorithms(columnShadowAlgorithms.get(),
+                shadowDetermineCondition.initShadowColumnCondition(shadowColumnConditions.get()), shadowRule);
     }
     
-    private boolean isMatchAnyShadowAlgorithms(final Collection<ShadowAlgorithm> shadowAlgorithms, final ShadowRule shadowRule, final String tableName) {
-        ShadowDetermineCondition shadowDetermineCondition = createShadowDetermineCondition();
-        for (ShadowAlgorithm each : shadowAlgorithms) {
-            if (isMatchShadowAlgorithm(shadowDetermineCondition, each, shadowRule, tableName)) {
+    private boolean isMatchAnyNoteShadowAlgorithms(final Collection<NoteShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        for (NoteShadowAlgorithm<Comparable<?>> each : shadowAlgorithms) {
+            if (isMatchNoteShadowAlgorithm(each, shadowCondition, shadowRule)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isMatchShadowAlgorithm(final ShadowDetermineCondition shadowDetermineCondition, final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final String tableName) {
-        if (shadowAlgorithm instanceof NoteShadowAlgorithm) {
-            return isMatchNoteAlgorithm(shadowDetermineCondition, shadowAlgorithm, shadowRule, tableName);
-        } else if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-            return isMatchColumnAlgorithm(shadowDetermineCondition, shadowAlgorithm, shadowRule, tableName);
-        } else {
-            return false;
-        }
+    private boolean isMatchNoteShadowAlgorithm(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        return ShadowDeterminerFactory.newInstance(noteShadowAlgorithm).isShadow(shadowCondition, shadowRule);
     }
     
-    private boolean isMatchColumnAlgorithm(final ShadowDetermineCondition shadowDetermineCondition, final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final String tableName) {
-        if (!shadowDetermineCondition.isShadowColumnConditionsInitialized()) {
-            Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = parseShadowColumnConditions();
-            if (!shadowColumnConditions.isPresent()) {
-                return false;
+    private boolean isMatchAnyColumnShadowAlgorithms(final Collection<ColumnShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition,
+                                                     final ShadowRule shadowRule) {
+        for (ColumnShadowAlgorithm<Comparable<?>> each : shadowAlgorithms) {
+            if (isMatchColumnShadowAlgorithm(each, shadowCondition, shadowRule)) {
+                return true;
             }
-            shadowDetermineCondition.initShadowColumnCondition(shadowColumnConditions.get());
         }
-        return ShadowDeterminerFactory.newInstance(shadowAlgorithm).isShadow(shadowDetermineCondition, shadowRule, tableName);
+        return false;
     }
     
-    private boolean isMatchNoteAlgorithm(final ShadowDetermineCondition shadowDetermineCondition, final ShadowAlgorithm shadowAlgorithm, final ShadowRule shadowRule, final String tableName) {
-        if (!shadowDetermineCondition.isSqlNotesInitialized()) {
-            Optional<Collection<String>> sqlNotes = parseSqlNotes();
-            if (!sqlNotes.isPresent()) {
-                return false;
-            }
-            shadowDetermineCondition.initSqlNotes(sqlNotes.get());
-        }
-        return ShadowDeterminerFactory.newInstance(shadowAlgorithm).isShadow(shadowDetermineCondition, shadowRule, tableName);
+    private boolean isMatchColumnShadowAlgorithm(final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        return ShadowDeterminerFactory.newInstance(columnShadowAlgorithm).isShadow(shadowCondition, shadowRule);
     }
     
     private Collection<String> getRelatedShadowTables(final Collection<SimpleTableSegment> simpleTableSegments, final ShadowRule shadowRule) {
@@ -134,11 +128,11 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     protected abstract Optional<Collection<String>> parseSqlNotes();
     
     /**
-     * Create shadow determine condition.
+     * get shadow operation type.
      *
-     * @return  new instance of shadow determine condition
+     * @return  shadow operation type
      */
-    protected abstract ShadowDetermineCondition createShadowDetermineCondition();
+    protected abstract ShadowOperationType getShadowOperationType();
     
     /**
      * Get all tables.
