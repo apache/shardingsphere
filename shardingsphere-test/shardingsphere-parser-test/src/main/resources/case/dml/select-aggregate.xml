@@ -438,4 +438,13 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_bit_xor">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <aggregation-projection type="BIT_XOR" inner-expression="(user_id)" start-index="7" stop-index="22" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
