@@ -17,27 +17,25 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Test;
 
 import java.sql.Timestamp;
+import java.util.TimeZone;
 
-/**
- * Binary protocol value for time for PostgreSQL.
- */
-public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class PostgreSQLBinaryTimestampUtilsTest {
     
-    @Override
-    public int getColumnLength(final Object value) {
-        return 8;
+    @Test
+    public void assertToPostgreSQLTimeWithoutTimeZone() {
+        long expected = 688123357272000L + TimeZone.getDefault().getRawOffset() * 1000L;
+        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(1634808157272L), false), is(expected));
     }
     
-    @Override
-    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt8();
-    }
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value, false));
+    @Test
+    public void assertToPostgreSQLTimeWithTimeZone() {
+        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(1634808157272L), true), is(688123357272000L));
+        assertThat(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(new Timestamp(-15165977600000L), true), is(-16113440000000000L));
     }
 }
