@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-grammar ShardingDistSQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    | createShardingAlgorithm
-    ) SEMI?
-    ;
+/**
+ * Sharding algorithm segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingAlgorithmSegment implements ASTNode {
+    
+    private final String shardingAlgorithmName;
+    
+    private final AlgorithmSegment algorithmSegment;
+}
