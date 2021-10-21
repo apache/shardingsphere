@@ -104,8 +104,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition result = new ShadowDetermineCondition(ShadowOperationType.INSERT);
-        result.setTableName("t_order");
+        ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
         result.initSqlNotes(Collections.singletonList("/*foo:bar,shadow:true*/"));
         return result;
     }

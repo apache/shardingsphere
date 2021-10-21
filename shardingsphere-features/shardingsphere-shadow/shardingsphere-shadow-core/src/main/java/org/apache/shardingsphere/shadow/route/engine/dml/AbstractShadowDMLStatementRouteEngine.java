@@ -55,18 +55,18 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule, final ConfigurationProperties props) {
         Collection<String> relatedShadowTables = getRelatedShadowTables(getAllTables(), shadowRule);
-        ShadowDetermineCondition shadowCondition = new ShadowDetermineCondition(getShadowOperationType());
         boolean sqlCommentParseEnabled = Boolean.parseBoolean(String.valueOf(props.getProps().get(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey())));
+        ShadowOperationType shadowOperationType = getShadowOperationType();
         for (String each : relatedShadowTables) {
-            shadowCondition.setTableName(each);
-            if (isShadowTable(each, shadowRule, shadowCondition, sqlCommentParseEnabled)) {
+            if (isShadowTable(each, shadowRule, shadowOperationType, sqlCommentParseEnabled)) {
                 return shadowRule.getRelatedShadowDataSourceMappings(each);
             }
         }
         return Optional.empty();
     }
     
-    private boolean isShadowTable(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition, final boolean sqlCommentParseEnabled) {
+    private boolean isShadowTable(final String tableName, final ShadowRule shadowRule, final ShadowOperationType shadowOperationType, final boolean sqlCommentParseEnabled) {
+        ShadowDetermineCondition shadowCondition = new ShadowDetermineCondition(tableName, shadowOperationType);
         if (sqlCommentParseEnabled && isShadowSqlNote(tableName, shadowRule, shadowCondition)) {
             return true;
         }

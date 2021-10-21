@@ -76,8 +76,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlNotes) {
-        ShadowDetermineCondition result = new ShadowDetermineCondition(ShadowOperationType.NON_DML);
-        result.setTableName("");
+        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.NON_DML);
         return result.initSqlNotes(sqlNotes);
     }
     

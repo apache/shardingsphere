@@ -105,8 +105,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition result = new ShadowDetermineCondition(ShadowOperationType.INSERT);
-        result.setTableName("t_order");
+        ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
         result.initShadowColumnCondition(createColumnValuesMappings());
         return result;
     }
