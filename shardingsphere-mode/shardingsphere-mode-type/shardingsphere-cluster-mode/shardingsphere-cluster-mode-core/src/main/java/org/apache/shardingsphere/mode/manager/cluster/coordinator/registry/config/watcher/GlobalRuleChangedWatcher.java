@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Global rule changed watcher.
  */
-public final class PrivilegeNodeChangedWatcherGlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
+public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
