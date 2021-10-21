@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -88,7 +90,9 @@ public final class ShadowSelectStatementRoutingEngineTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), String.valueOf(Boolean.TRUE));
+        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), new ConfigurationProperties(props));
         Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowRouteEngine.parseShadowColumnConditions();
         assertThat(shadowColumnConditions.isPresent(), is(true));
         Collection<ShadowColumnCondition> shadowColumns = shadowColumnConditions.get();
