@@ -104,14 +104,8 @@ public final class NoteShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        shadowDetermineCondition.initSqlNotes(createSqlNotes());
-        return shadowDetermineCondition;
-    }
-
-    private Collection<String> createSqlNotes() {
-        Collection<String> result = new LinkedList<>();
-        result.add("/*foo:bar,shadow:true*/");
+        ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
+        result.initSqlNotes(Collections.singletonList("/*foo:bar,shadow:true*/"));
         return result;
     }
 }

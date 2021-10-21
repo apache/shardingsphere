@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
@@ -61,13 +60,8 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expressionSegment);
-        if (1 == columnSegments.size()) {
-            ColumnSegment columnSegment = columnSegments.iterator().next();
-            String columnName = columnSegment.getIdentifier().getValue();
-            String tableName = extractTableName(columnSegment);
-            ShadowExtractor.extractValues(expressionSegment, parameters).ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(tableName, columnName, values)));
-        }
+        ShadowExtractor.extractColumn(expressionSegment).ifPresent(columnSegment -> ShadowExtractor.extractValues(expressionSegment, parameters)
+                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(extractTableName(columnSegment), columnSegment.getIdentifier().getValue(), values))));
     }
     
     private String extractTableName(final ColumnSegment columnSegment) {

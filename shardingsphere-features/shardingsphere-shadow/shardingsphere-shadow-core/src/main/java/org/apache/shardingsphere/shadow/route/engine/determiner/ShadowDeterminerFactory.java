@@ -33,7 +33,7 @@ public final class ShadowDeterminerFactory {
     /**
      * Create new instance of Shadow algorithm determiner.
      *
-     * @param noteShadowAlgorithm note shadow algorithm.
+     * @param noteShadowAlgorithm note shadow algorithm
      * @return new instance of Shadow algorithm determiner
      */
     public static ShadowAlgorithmDeterminer newInstance(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm) {
@@ -43,7 +43,7 @@ public final class ShadowDeterminerFactory {
     /**
      * Create new instance of Shadow algorithm determiner.
      *
-     * @param columnShadowAlgorithm column shadow algorithm.
+     * @param columnShadowAlgorithm column shadow algorithm
      * @return new instance of Shadow algorithm determiner
      */
     public static ShadowAlgorithmDeterminer newInstance(final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm) {
