@@ -50,21 +50,22 @@ public final class PostgreSQLBinaryTimestampUtils {
     }
     
     /**
-     * @see <a href="https://github.com/pgjdbc/pgjdbc/blob/e5e36bd3e8ac87ae554ac5cd1ac664fcd0010073/pgjdbc/src/main/java/org/postgresql/jdbc/TimestampUtils.java#L1453-L1475">org.postgresql.jdbc.TimestampUtils</a>
+     * Refer to <a href="https://github.com/pgjdbc/pgjdbc/blob/e5e36bd3e8ac87ae554ac5cd1ac664fcd0010073/pgjdbc/src/main/java/org/postgresql/jdbc/TimestampUtils.java#L1453-L1475">
+     * org.postgresql.jdbc.TimestampUtils</a>.
      */
-    private static long convertJavaEpochToPgEpoch(long seconds) {
-        seconds -= POSTGRESQL_SECONDS_OFFSET;
-        if (seconds >= JULIAN_GREGORIAN_CALENDAR_CUTOFF_POINT) {
-            return seconds;
+    private static long convertJavaEpochToPgEpoch(final long seconds) {
+        long offsetSeconds = seconds - POSTGRESQL_SECONDS_OFFSET;
+        if (offsetSeconds >= JULIAN_GREGORIAN_CALENDAR_CUTOFF_POINT) {
+            return offsetSeconds;
         }
-        seconds = convertToJulianSeconds(seconds);
+        offsetSeconds = convertToJulianSeconds(seconds);
         if (seconds < -15773356800L) {
             int years = (int) ((seconds + 15773356800L) / -3155823050L);
             years++;
             years -= years / 4;
-            seconds += years * 86400L;
+            offsetSeconds += years * 86400L;
         }
-        return seconds;
+        return offsetSeconds;
     }
     
     private static long convertToJulianSeconds(long seconds) {
