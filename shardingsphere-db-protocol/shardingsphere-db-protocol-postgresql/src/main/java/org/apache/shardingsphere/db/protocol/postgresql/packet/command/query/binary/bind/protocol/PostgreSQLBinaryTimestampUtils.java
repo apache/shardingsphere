@@ -58,9 +58,9 @@ public final class PostgreSQLBinaryTimestampUtils {
         if (offsetSeconds >= JULIAN_GREGORIAN_CALENDAR_CUTOFF_POINT) {
             return offsetSeconds;
         }
-        offsetSeconds = convertToJulianSeconds(seconds);
-        if (seconds < -15773356800L) {
-            int years = (int) ((seconds + 15773356800L) / -3155823050L);
+        offsetSeconds = convertToJulianSeconds(offsetSeconds);
+        if (offsetSeconds < -15773356800L) {
+            int years = (int) ((offsetSeconds + 15773356800L) / -3155823050L);
             years++;
             years -= years / 4;
             offsetSeconds += years * 86400L;
