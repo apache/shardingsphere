@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Frontend connection limit exception.
  */
-public final class FrontendConnectionLimitException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class FrontendConnectionLimitException extends FrontendException {
 
     private static final long serialVersionUID = -4397915988239251541L;
 
-    public FrontendConnectionLimitException(final String message) {
-        super(message);
-    }
-
+    private final String message;
 }

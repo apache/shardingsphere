@@ -20,20 +20,28 @@ package org.apache.shardingsphere.proxy.frontend.connection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Connection limit context.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConnectionLimitContext {
     
-    public static final ConnectionLimitContext INSTANCE = new ConnectionLimitContext();
+    private static final ConnectionLimitContext INSTANCE = new ConnectionLimitContext();
 
     private final AtomicInteger activeConnections = new AtomicInteger();
     
-    private ConnectionLimitContext() {
-        ShardingSphereEventBus.getInstance().register(this);
+    /**
+     * Get instance of ConnectionLimitContext.
+     *
+     * @return instance of ConnectionLimitContext.
+     */
+    public static ConnectionLimitContext getInstance() {
+        return INSTANCE;
     }
     
     /**
@@ -41,7 +49,7 @@ public final class ConnectionLimitContext {
      * @return Whether the connection can be established.
      */
     public boolean connect() {
-        if (this.getConnectionLimit() < 0) {
+        if (this.getConnectionLimit() <= 0) {
             return true;
         }
         if (this.activeConnections.incrementAndGet() <= this.getConnectionLimit()) {
@@ -54,7 +62,7 @@ public final class ConnectionLimitContext {
      * Channel inactive state.
      */
     public void disconnect() {
-        if (this.getConnectionLimit() < 0) {
+        if (this.getConnectionLimit() <= 0) {
             return;
         }
         this.activeConnections.decrementAndGet();

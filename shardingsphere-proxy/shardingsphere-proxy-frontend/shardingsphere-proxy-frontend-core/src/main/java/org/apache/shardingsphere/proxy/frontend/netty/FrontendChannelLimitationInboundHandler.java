@@ -21,25 +21,26 @@ import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContex
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendConnectionLimitException;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
-import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Frontend channel limitation inbound handler.
+ */
 @Slf4j
-public class FrontendChannelLimitInboundHandler extends ChannelDuplexHandler {
+@RequiredArgsConstructor
+public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandlerAdapter {
 
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
-    
-    public FrontendChannelLimitInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
-        this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-    }
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-        if (ConnectionLimitContext.INSTANCE.connect()) {
+        if (ConnectionLimitContext.getInstance().connect()) {
             ctx.fireChannelActive();
         } else {
-            log.info("Close channel {}, The server connections greater than {}", ctx.channel().remoteAddress(), ConnectionLimitContext.INSTANCE.getConnectionLimit());
+            log.debug("Close channel {}, The server connections greater than {}", ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getConnectionLimit());
             ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendConnectionLimitException("The number of connections exceeds the limit")));
             ctx.close();
         }
@@ -47,6 +48,6 @@ public class FrontendChannelLimitInboundHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-        ConnectionLimitContext.INSTANCE.disconnect();
+        ConnectionLimitContext.getInstance().disconnect();
     }
 }
