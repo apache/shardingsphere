@@ -35,10 +35,10 @@ public final class BitXorAggregationUnit implements AggregationUnit {
         if (null == values || null == values.get(0)) {
             return;
         }
-        if (result == null) {
+        if (null == result) {
             result = BigInteger.ZERO;
         }
-        result = result.xor((BigInteger) values.get(0));
+        result = result.xor(new BigInteger(values.get(0).toString()));
     }
     
     @Override
