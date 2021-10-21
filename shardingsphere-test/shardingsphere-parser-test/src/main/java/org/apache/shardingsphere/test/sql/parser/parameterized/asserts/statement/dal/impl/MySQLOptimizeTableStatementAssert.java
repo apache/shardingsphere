@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -44,8 +44,7 @@ public final class MySQLOptimizeTableStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
         assertNotNull("expected optimize table should be not null", expected.getTable());
-        StringJoiner actualTableList = new StringJoiner(",");
-        actual.getTables().forEach(simpleTableSegment -> actualTableList.add(simpleTableSegment.getTableName().getIdentifier().getValue()));
-        assertThat(actualTableList.toString(), is(expected.getTable().getName()));
+        String actualTables = actual.getTables().stream().map(simpleTableSegment -> simpleTableSegment.getTableName().getIdentifier().getValue()).collect(Collectors.joining(","));
+        assertThat(actualTables, is(expected.getTable().getName()));
     }
 }
