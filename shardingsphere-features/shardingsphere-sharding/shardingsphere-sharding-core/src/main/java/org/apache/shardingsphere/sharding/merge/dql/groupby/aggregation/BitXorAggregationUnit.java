@@ -15,23 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
-import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
+
+import java.math.BigInteger;
+import java.util.List;
 
 /**
- * Aggregation function enum.
+ * BIT_XOR aggregation unit.
  */
-public enum AggregationType {
+@RequiredArgsConstructor
+public final class BitXorAggregationUnit implements AggregationUnit {
     
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
+    private BigInteger result;
     
-    /**
-     * Is aggregation type.
-     * @param aggregationType aggregation type
-     * @return is aggregation type or not
-     */
-    public static boolean isAggregationType(final String aggregationType) {
-        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
+    @Override
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0)) {
+            return;
+        }
+        if (null == result) {
+            result = BigInteger.ZERO;
+        }
+        result = result.xor(new BigInteger(values.get(0).toString()));
+    }
+    
+    @Override
+    public Comparable<?> getResult() {
+        return result;
     }
 }
