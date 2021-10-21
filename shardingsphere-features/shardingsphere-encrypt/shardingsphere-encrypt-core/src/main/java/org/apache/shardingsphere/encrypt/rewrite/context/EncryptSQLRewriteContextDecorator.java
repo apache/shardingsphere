@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
 
 /**
  * SQL rewrite context decorator for encrypt.
@@ -42,24 +35,13 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @SuppressWarnings("unchecked")
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn(encryptRule, sqlRewriteContext.getSqlStatementContext()))
+        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, encryptRule.isQueryWithCipherColumn(sqlRewriteContext.getSqlStatementContext()))
                 .getParameterRewriters(sqlRewriteContext.getSchema())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, encryptRule.isQueryWithCipherColumn()).getSQLTokenGenerators());
-    }
-
-    private boolean isQueryWithCipherColumn(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            Collection<SimpleTableSegment> tables = ((TableAvailable) sqlStatementContext).getAllTables();
-            if (CollectionUtils.isNotEmpty(tables)) {
-                String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
-                return encryptRule.isQueryWithCipherColumn(tableName);
-            }
-        }
-        return encryptRule.isQueryWithCipherColumn();
     }
     
     @Override

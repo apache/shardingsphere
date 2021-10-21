@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -27,17 +28,20 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.rewrite.util.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -246,13 +250,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
 
     /**
      * Check the table is support QueryWithCipherColumn.
-     * @param tableName table name
+     * @param sqlStatementContext sqlStatementContext
      * @return isQueryWithCipherColumn
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        if (tables.containsKey(tableName)) {
-            Boolean isQueryWithCipherColumn = tables.get(tableName).getQueryWithCipherColumn();
-            return Objects.nonNull(isQueryWithCipherColumn) ? isQueryWithCipherColumn : queryWithCipherColumn;
+    public boolean isQueryWithCipherColumn(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof SelectStatementContext
+                ? ((TableAvailable) sqlStatementContext).getAllTables()
+                : Collections.emptyList();
+        if (CollectionUtils.isNotEmpty(simpleTables)) {
+            String tableName = simpleTables.iterator().next().getTableName().getIdentifier().getValue();
+            if (tables.containsKey(tableName) && tables.get(tableName).getQueryWithCipherColumn() != null) {
+                return tables.get(tableName).getQueryWithCipherColumn();
+            }
         }
         return queryWithCipherColumn;
     }
