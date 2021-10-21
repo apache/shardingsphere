@@ -21,6 +21,8 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.AggregationProjectionConverter;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.projection.imp
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ExpressionProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.ShorthandProjectionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl.SubqueryProjectionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -38,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,7 +68,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         } else if (segment instanceof SubqueryProjectionSegment) {
             return new SubqueryProjectionConverter().convertToSQLNode((SubqueryProjectionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
-            return new AggregationProjectionConverter().convertToSQLNode((AggregationProjectionSegment) segment);
+            return new AggregationProjectionConverter().convertToSQLNode((AggregationProjectionSegment) segment).map(optional -> optional);
         }
         // TODO process other projection
         return Optional.empty();
@@ -73,11 +76,13 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     
     @Override
     public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
+        List<ProjectionSegment> projections = new ArrayList<>();
         for (SqlNode each : sqlNodeList) {
             getProjectionSegment(each).ifPresent(projections::add);
         }
-        ProjectionsSegment result = new ProjectionsSegment(getStartIndex(sqlNodeList), getStopIndex(sqlNodeList));
+        int startIndex = projections.get(0).getStartIndex();
+        int stopIndex = projections.get(projections.size() - 1).getStopIndex();
+        ProjectionsSegment result = new ProjectionsSegment(startIndex, stopIndex);
         result.getProjections().addAll(projections);
         return Optional.of(result);
     }
@@ -90,7 +95,13 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             }
             return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
+            SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
+            if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName())) {
+                return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+            }
             return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy) {
+            return new SubqueryProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
         // TODO process other projection
         return Optional.empty();

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -70,9 +71,9 @@ public final class SQLNodeConvertEngineParameterizedTest {
     private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
     static {
-        SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
+//        SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
 //        SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_in_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_in_subquery_condition");
 //        SUPPORTED_SQL_CASE_IDS.add("select_with_between_and_subquery_condition");
 //        SUPPORTED_SQL_CASE_IDS.add("select_with_exist_subquery_condition");
 //        SUPPORTED_SQL_CASE_IDS.add("select_with_not_exist_subquery_condition");

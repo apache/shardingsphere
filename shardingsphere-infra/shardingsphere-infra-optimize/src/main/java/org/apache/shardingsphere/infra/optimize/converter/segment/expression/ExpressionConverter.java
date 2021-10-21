@@ -21,6 +21,8 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.fun.SqlInOperator;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BinaryOperationExpressionConverter;
@@ -69,7 +71,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         } else if (segment instanceof SubqueryExpressionSegment) {
             return new SubqueryExpressionConverter().convertToSQLNode((SubqueryExpressionSegment) segment);
         } else if (segment instanceof InExpression) {
-            return new InExpressionConverter().convertToSQLNode((InExpression) segment);
+            return new InExpressionConverter().convertToSQLNode((InExpression) segment).map(optional -> optional);
         } else if (segment instanceof BetweenExpression) {
             return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment);
         }
@@ -85,10 +87,23 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(optional -> optional);
         }
         if (sqlNode instanceof SqlBasicCall) {
-            SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
-            if (sqlBasicCall.getOperator() instanceof SqlBinaryOperator) {
-                return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
-            }
+            return convertToSQLSegment((SqlBasicCall) sqlNode);
+        }
+        if (sqlNode instanceof SqlSelect) {
+            return new SubqueryExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<ExpressionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+        if (null == sqlBasicCall) {
+            return Optional.empty();
+        }
+        if (sqlBasicCall.getOperator() instanceof SqlInOperator) {
+            return new InExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        }
+        if (sqlBasicCall.getOperator() instanceof SqlBinaryOperator) {
+            return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
         return Optional.empty();
     }
