@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-grammar ShardingDistSQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
-    | createShardingAlgorithm
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Create sharding algorithm statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateShardingAlgorithmStatement extends CreateRuleStatement {
+    
+    private final Collection<ShardingAlgorithmSegment> algorithmSegments;
+}
