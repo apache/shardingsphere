@@ -113,7 +113,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
      * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
      */
-    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class);
+    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
+    
+    /**
+     * Proxy connection num limit. less than 0 or equal 0 means no limit.
+     */
+    PROXY_FRONTEND_CONNECTION_LIMIT("proxy-frontend-connection-limit", "-1", int.class);
     
     private final String key;
     
