@@ -122,7 +122,7 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
         }
         if (cause instanceof FrontendConnectionLimitException) {
-            return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, cause.getMessage());
+            return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
