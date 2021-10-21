@@ -273,6 +273,8 @@ public enum SQLVisitorRule {
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
     SET_RESOURCE_GROUP("SetResourceGroup", SQLStatementType.DAL),
+    
+    OPTIMIZE_TABLE("OptimizeTable", SQLStatementType.DAL),
 
     CLONE("Clone", SQLStatementType.DAL),
     
