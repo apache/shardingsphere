@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * set resource group test case.
+ * Set resource group test case.
  */
 @Getter
 public final class SetResourceGroupStatementTestCase extends SQLParserTestCase {
