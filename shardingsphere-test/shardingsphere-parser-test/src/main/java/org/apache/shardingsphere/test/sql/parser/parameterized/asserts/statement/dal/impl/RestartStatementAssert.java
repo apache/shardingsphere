@@ -35,6 +35,5 @@ public final class RestartStatementAssert {
      * @param expected      expected restart statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRestartStatement actual, final RestartStatementTestCase expected) {
-
     }
 }

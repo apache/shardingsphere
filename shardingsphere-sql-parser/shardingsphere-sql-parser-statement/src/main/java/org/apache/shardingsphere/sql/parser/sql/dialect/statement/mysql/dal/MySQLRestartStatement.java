@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 
 @ToString
-public class MySQLRestartStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLRestartStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
