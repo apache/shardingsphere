@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.netty;
 
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
+import org.apache.shardingsphere.proxy.frontend.exception.FrontendConnectionLimitException;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,13 +27,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FrontendChannelLimitInboundHandler extends ChannelDuplexHandler {
+
+    private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
+    public FrontendChannelLimitInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
+        this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
+    }
+
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         if (ConnectionLimitContext.INSTANCE.connect()) {
             ctx.fireChannelActive();
         } else {
             log.info("Close channel {}, The server connections greater than {}", ctx.channel().remoteAddress(), ConnectionLimitContext.INSTANCE.getConnectionLimit());
+            ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendConnectionLimitException("The number of connections exceeds the limit")));
             ctx.close();
         }
     }
