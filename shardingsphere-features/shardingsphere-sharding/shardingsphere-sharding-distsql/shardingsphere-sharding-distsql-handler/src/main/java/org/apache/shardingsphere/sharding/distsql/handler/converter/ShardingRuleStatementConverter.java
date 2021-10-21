@@ -62,7 +62,7 @@ public final class ShardingRuleStatementConverter {
     /**
      * Create algorithm configuration.
      * @param segment algorithm segment
-     * @return sharding sphere algorithm configuration
+     * @return ShardingSphere algorithm configuration
      */
     public static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
         return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
