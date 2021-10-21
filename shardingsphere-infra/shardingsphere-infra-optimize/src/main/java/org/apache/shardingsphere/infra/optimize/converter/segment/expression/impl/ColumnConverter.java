@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConv
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -36,10 +36,9 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     public Optional<SqlNode> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
-        if (owner.isPresent()) {
-            return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
-        }
-        return Optional.of(new SqlIdentifier(columnName, SqlParserPos.ZERO));
+        SqlIdentifier sqlIdentifier = owner.map(optional 
+            -> new SqlIdentifier(Arrays.asList(optional.getIdentifier().getValue(), columnName), SqlParserPos.ZERO)).orElseGet(() -> new SqlIdentifier(columnName, SqlParserPos.ZERO));
+        return Optional.of(sqlIdentifier);
     }
     
     @Override

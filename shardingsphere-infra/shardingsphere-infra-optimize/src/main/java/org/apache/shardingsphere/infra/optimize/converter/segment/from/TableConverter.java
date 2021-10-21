@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.JoinTableConverter;
@@ -48,6 +51,12 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
     
     @Override
     public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlBasicCall || sqlNode instanceof SqlIdentifier) {
+            return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
+        if (sqlNode instanceof SqlJoin) {
+            return new JoinTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
         return Optional.empty();
     }
 }
