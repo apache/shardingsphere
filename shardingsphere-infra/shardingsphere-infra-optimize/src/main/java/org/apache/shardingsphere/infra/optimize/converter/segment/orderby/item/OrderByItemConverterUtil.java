@@ -45,7 +45,7 @@ public final class OrderByItemConverterUtil {
         Collection<SqlNode> result = new ArrayList<>(orderByItems.size());
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
-                new ColumnOrderByItemConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
+                new ColumnOrderByItemConverter().convertToSQLNode((ColumnOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof ExpressionOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
             } else if (each instanceof IndexOrderByItemSegment) {

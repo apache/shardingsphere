@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
@@ -36,6 +39,9 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -45,14 +51,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatemen
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * PostgreSQL portal.
  */
-@Getter
 public final class PostgreSQLPortal {
     
+    @Getter
     private final SQLStatement sqlStatement;
     
     private final List<PostgreSQLValueFormat> resultFormats;
@@ -62,6 +69,8 @@ public final class PostgreSQLPortal {
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     private final BackendConnection backendConnection;
+    
+    private ResponseHeader responseHeader;
     
     public PostgreSQLPortal(final PostgreSQLBinaryStatement binaryStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                             final BackendConnection backendConnection) throws SQLException {
@@ -84,11 +93,48 @@ public final class PostgreSQLPortal {
     /**
      * Execute portal.
      *
-     * @return response header
      * @throws SQLException SQL exception
      */
-    public ResponseHeader execute() throws SQLException {
-        return null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
+    public void execute() throws SQLException {
+        responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
+    }
+    
+    /**
+     * Describe portal.
+     *
+     * @return portal description packet
+     */
+    public PostgreSQLPacket describe() {
+        if (responseHeader instanceof QueryResponseHeader) {
+            return createRowDescriptionPacket((QueryResponseHeader) responseHeader);
+        }
+        if (responseHeader instanceof UpdateResponseHeader) {
+            return new PostgreSQLNoDataPacket();
+        }
+        throw new UnsupportedOperationException("Failed to describe portal");
+    }
+    
+    private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
+        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
+        return new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions);
+    }
+    
+    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
+        Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
+        int columnIndex = 0;
+        for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
+            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get update count.
+     * 
+     * @return update count
+     */
+    public long getUpdateCount() {
+        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0;
     }
     
     /**

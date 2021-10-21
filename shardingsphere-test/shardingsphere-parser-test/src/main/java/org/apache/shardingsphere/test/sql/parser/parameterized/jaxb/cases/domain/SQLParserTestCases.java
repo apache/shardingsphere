@@ -21,6 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
@@ -155,6 +158,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
@@ -308,6 +312,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "show-create-trigger")
     private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
+
+    @XmlElement(name = "create-resource-group")
+    private final List<CreateResourceGroupStatementTestCase> createResourceGroupStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-create-user")
     private final List<ShowCreateUserStatementTestCase> showCreateUserTestCases = new LinkedList<>();
@@ -624,6 +631,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "clone")
+    private final List<CloneStatementTestCase> cloneStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-readwrite-splitting-read-resources")
     private final List<ShowReadwriteSplittingReadResourcesStatementTestCase> showReadwriteSplittingReadResourcesStatementTestCases = new LinkedList<>();
     
@@ -632,6 +642,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-single-table-rules")
+    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-resource-group")
     private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
@@ -790,9 +803,12 @@ public final class SQLParserTestCases {
         putAll(flushStatementTestCase, result);
         putAll(installPluginStatementTestCase, result);
         putAll(showInstanceStatementTestCases, result);
+        putAll(cloneStatementTestCases, result);
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
+        putAll(createResourceGroupStatementTestCases, result);
         putAll(uninstallPluginStatementTestCases, result);
+        putAll(showSingleTableRulesStatementTestCases, result);
         putAll(setResourceGroupStatementTestCases, result);
         return result;
     }

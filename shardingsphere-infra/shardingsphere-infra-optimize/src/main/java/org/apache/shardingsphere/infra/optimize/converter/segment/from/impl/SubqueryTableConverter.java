@@ -36,13 +36,18 @@ import java.util.Optional;
 public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryTableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryTableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        sqlNodes.add(new SelectStatementConverter().convertToSQLNode(segment.getSubquery().getSelect()));
         segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<SubqueryTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }
