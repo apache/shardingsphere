@@ -93,7 +93,7 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertWriteInt6() {
-        new MySQLPacketPayload(byteBuf).writeInt6(1);
+        new MySQLPacketPayload(byteBuf).writeInt6(1L);
     }
     
     @Test
