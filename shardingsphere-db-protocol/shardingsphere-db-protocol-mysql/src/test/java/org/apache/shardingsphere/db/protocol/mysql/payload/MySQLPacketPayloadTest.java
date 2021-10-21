@@ -280,7 +280,7 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertWriteReserved() {
         new MySQLPacketPayload(byteBuf).writeReserved(10);
-        verify(byteBuf, times(10)).writeByte(0);
+        verify(byteBuf, times(1)).writeZero(10);
     }
     
     @Test
