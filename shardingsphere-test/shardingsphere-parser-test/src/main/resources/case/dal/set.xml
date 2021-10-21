@@ -80,4 +80,7 @@
             <parameter name="charset" />
         </parameter-assign>
     </set-parameter>
+    <set-resource-group sql-case-id="set_resource_group">
+        <group name="rg" />
+    </set-resource-group>
 </sql-parser-test-cases>

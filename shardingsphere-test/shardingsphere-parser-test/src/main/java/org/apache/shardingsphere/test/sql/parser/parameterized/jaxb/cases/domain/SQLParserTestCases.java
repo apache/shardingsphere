@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTriggerStatementTestCase;
@@ -632,6 +633,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "set-resource-group")
+    private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -789,6 +793,7 @@ public final class SQLParserTestCases {
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
         putAll(uninstallPluginStatementTestCases, result);
+        putAll(setResourceGroupStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
