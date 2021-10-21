@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.condition;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 
 import java.util.Collection;
@@ -29,8 +30,9 @@ import java.util.Optional;
  */
 public final class ShadowDetermineCondition {
     
+    @Setter
     @Getter
-    private final String tableName;
+    private String tableName;
     
     @Getter
     private final ShadowOperationType shadowOperationType;
@@ -39,8 +41,7 @@ public final class ShadowDetermineCondition {
     
     private final Collection<String> sqlNotes = new LinkedList<>();
     
-    public ShadowDetermineCondition(final String tableName, final ShadowOperationType shadowOperationType) {
-        this.tableName = tableName;
+    public ShadowDetermineCondition(final ShadowOperationType shadowOperationType) {
         this.shadowOperationType = shadowOperationType;
     }
     
