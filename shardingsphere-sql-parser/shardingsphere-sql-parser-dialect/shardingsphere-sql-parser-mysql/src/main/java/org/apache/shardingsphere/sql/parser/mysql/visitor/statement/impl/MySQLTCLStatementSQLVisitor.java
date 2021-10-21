@@ -28,7 +28,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Rollbac
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaBeginContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaEndContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaPrepareContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaCommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaRollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaRecoverContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
@@ -36,7 +41,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXABeginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAEndStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXACommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXARollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXARecoverStatement;
 
 import java.util.Properties;
 
@@ -98,7 +108,32 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitXa(final XaContext ctx) {
-        return new MySQLXAStatement();
+    public ASTNode visitXaBegin(final XaBeginContext ctx) {
+        return new MySQLXABeginStatement();
+    }
+
+    @Override
+    public ASTNode visitXaEnd(final XaEndContext ctx) {
+        return new MySQLXAEndStatement();
+    }
+
+    @Override
+    public ASTNode visitXaPrepare(final XaPrepareContext ctx) {
+        return new MySQLXAPrepareStatement();
+    }
+
+    @Override
+    public ASTNode visitXaCommit(final XaCommitContext ctx) {
+        return new MySQLXACommitStatement();
+    }
+
+    @Override
+    public ASTNode visitXaRollback(final XaRollbackContext ctx) {
+        return new MySQLXARollbackStatement();
+    }
+
+    @Override
+    public ASTNode visitXaRecover(final XaRecoverContext ctx) {
+        return new MySQLXARecoverStatement();
     }
 }

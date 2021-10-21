@@ -141,7 +141,7 @@ public final class BackendConnectionTest {
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
@@ -162,7 +162,7 @@ public final class BackendConnectionTest {
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(true);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
@@ -172,7 +172,7 @@ public final class BackendConnectionTest {
     @Test
     public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         setConnectionPostProcessors();
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         verify(backendConnection.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
@@ -193,7 +193,7 @@ public final class BackendConnectionTest {
     @Test
     public void assertMultiThreadsGetConnection() throws SQLException, InterruptedException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         Thread thread1 = new Thread(this::assertOneThreadResult);
         Thread thread2 = new Thread(this::assertOneThreadResult);
         thread1.start();

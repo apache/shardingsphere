@@ -163,7 +163,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource()
+                .getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode, transactionStatus.getTransactionType());
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-/**
- * Transaction operation type.
- */
-public enum TransactionOperationType {
-    
-    BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK_TO_SAVEPOINT, RELEASE_SAVEPOINT, SKIP
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+@ToString
+public final class MySQLXAEndStatement extends XAStatement implements MySQLStatement {
 }

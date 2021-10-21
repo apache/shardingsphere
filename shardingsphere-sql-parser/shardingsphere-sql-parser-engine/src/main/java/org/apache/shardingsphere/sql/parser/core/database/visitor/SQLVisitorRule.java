@@ -282,7 +282,17 @@ public enum SQLVisitorRule {
     
     STOP_SLAVE("StopSlave", SQLStatementType.RL),
 
-    XA("Xa", SQLStatementType.TCL),
+    XA_RECOVER("XaRecover", SQLStatementType.TCL),
+
+    XA_BEGIN("XaBegin", SQLStatementType.TCL),
+
+    XA_END("XaEnd", SQLStatementType.TCL),
+
+    XA_PREPARE("XaPrepare", SQLStatementType.TCL),
+
+    XA_COMMIT("XaCommit", SQLStatementType.TCL),
+
+    XA_ROLLBACK("XaRollback", SQLStatementType.TCL),
     
     ABORT("Abort", SQLStatementType.TCL),
 

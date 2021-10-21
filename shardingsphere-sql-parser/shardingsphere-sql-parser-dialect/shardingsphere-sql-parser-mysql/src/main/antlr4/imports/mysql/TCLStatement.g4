@@ -63,14 +63,28 @@ releaseSavepoint
     : RELEASE SAVEPOINT identifier
     ;
 
-xa
-    : XA ((START | BEGIN) xid (JOIN | RESUME)
-        | END xid (SUSPEND (FOR MIGRATE)?)?
-        | PREPARE xid
-        | COMMIT xid (ONE PHASE)?
-        | ROLLBACK xid
-        | RECOVER (CONVERT xid)?
-    )
+xaRecover
+    : XA RECOVER (CONVERT xid)?
+    ;
+
+xaBegin
+    : XA (START | BEGIN) xid
+    ;
+
+xaEnd
+    : XA END xid (SUSPEND (FOR MIGRATE)?)?
+    ;
+
+xaPrepare
+    : XA PREPARE xid
+    ;
+
+xaCommit
+    : XA COMMIT xid (ONE PHASE)?
+    ;
+
+xaRollback
+    : XA ROLLBACK xid
     ;
 
 optionChain

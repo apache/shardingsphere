@@ -26,7 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSave
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXABeginStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -45,6 +47,9 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
+        if (tclStatement instanceof MySQLXABeginStatement) {
+            backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
+        }
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
@@ -68,6 +73,8 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 break;
             case ROLLBACK:
                 backendTransactionManager.rollback();
+                break;
+            case SKIP:
                 break;
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
