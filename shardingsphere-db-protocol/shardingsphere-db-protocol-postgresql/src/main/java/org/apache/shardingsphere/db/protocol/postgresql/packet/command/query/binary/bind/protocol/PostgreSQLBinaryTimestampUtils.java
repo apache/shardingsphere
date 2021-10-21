@@ -68,7 +68,7 @@ public final class PostgreSQLBinaryTimestampUtils {
         return offsetSeconds;
     }
     
-    private static long convertToJulianSeconds(long seconds) {
+    private static long convertToJulianSeconds(final long seconds) {
         return seconds - TimeUnit.DAYS.toSeconds(10);
     }
 }
