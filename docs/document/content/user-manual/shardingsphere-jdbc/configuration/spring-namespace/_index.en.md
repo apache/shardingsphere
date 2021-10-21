@@ -51,10 +51,10 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/da
 
 \<shardingsphere:data-source />
 
-| *Name*            | *Type*    | *Description*                                                        |
-| ----------------- | --------- | -------------------------------------------------------------------- |
-| id                | Attribute | Spring Bean Id                                                       |
-| schema-name       | Attribute | JDBC data source alias                                               |
-| data-source-names | Attribute | Data source name, multiple data source names are separated by commas |
-| rule-refs         | Attribute | Rule name, multiple rule names are separated by commas               |
-| props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/configuration/props) for more details |
+| *Name*                | *Type*    | *Description*                                                        |
+| --------------------- | --------- | -------------------------------------------------------------------- |
+| id                    | Attribute | Spring Bean Id                                                       |
+| schema-name (?)       | Attribute | JDBC data source alias                                               |
+| data-source-names     | Attribute | Data source name, multiple data source names are separated by commas |
+| rule-refs             | Attribute | Rule name, multiple rule names are separated by commas               |
+| props (?)             | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/configuration/props) for more details |
