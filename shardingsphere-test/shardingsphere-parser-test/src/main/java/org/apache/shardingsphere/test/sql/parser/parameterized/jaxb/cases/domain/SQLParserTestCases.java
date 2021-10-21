@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
@@ -652,6 +653,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "optimize-table")
     private final List<OptimizeTableStatementTestCase> optimizeTableStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "repair-table")
+    private final List<RepairTableStatementTestCase> repairTableStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -814,6 +818,7 @@ public final class SQLParserTestCases {
         putAll(showSingleTableRulesStatementTestCases, result);
         putAll(setResourceGroupStatementTestCases, result);
         putAll(optimizeTableStatementTestCases, result);
+        putAll(repairTableStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

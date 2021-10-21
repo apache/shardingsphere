@@ -276,6 +276,8 @@ public enum SQLVisitorRule {
 
     CLONE("Clone", SQLStatementType.DAL),
     
+    REPAIR_TABLE("RepairTable", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
