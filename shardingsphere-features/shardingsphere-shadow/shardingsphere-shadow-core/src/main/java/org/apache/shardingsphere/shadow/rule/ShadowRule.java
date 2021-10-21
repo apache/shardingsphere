@@ -26,8 +26,9 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
+import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
-import org.apache.shardingsphere.shadow.rule.checker.ShadowRuleChecker;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -84,8 +85,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {
         tables.forEach((key, value) -> {
             Collection<String> tableShadowAlgorithmNames = value.getShadowAlgorithmNames();
-            ShadowRuleChecker.checkTableShadowAlgorithms(key, tableShadowAlgorithmNames, shadowAlgorithms);
-            shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), tableShadowAlgorithmNames));
+            shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), tableShadowAlgorithmNames, shadowAlgorithms));
         });
     }
     
@@ -117,18 +117,59 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     }
     
     /**
-     * Get related shadow algorithms by table name.
+     * Get related note shadow algorithms.
+     *
+     * @return related note shadow algorithms
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> getAllNoteShadowAlgorithms() {
+        Collection<NoteShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
+        shadowAlgorithms.values().forEach(each -> {
+            if (each instanceof NoteShadowAlgorithm<?>) {
+                result.add((NoteShadowAlgorithm<Comparable<?>>) each);
+            }
+        });
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    /**
+     * Get related note shadow algorithms by table name.
      *
      * @param tableName table name
-     * @return shadow algorithms
+     * @return note shadow algorithms
      */
-    public Optional<Collection<ShadowAlgorithm>> getRelatedShadowAlgorithms(final String tableName) {
+    @SuppressWarnings("unchecked")
+    public Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> getRelatedNoteShadowAlgorithms(final String tableName) {
+        Collection<NoteShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
         ShadowTableRule shadowTableRule = shadowTableRules.get(tableName);
-        if (Objects.isNull(shadowTableRule)) {
-            return Optional.empty();
-        }
-        Collection<ShadowAlgorithm> result = shadowTableRule.getShadowAlgorithmNames().stream().map(shadowAlgorithms::get).filter(each -> !Objects.isNull(each))
-                .collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> noteShadowAlgorithmNames = shadowTableRule.getNoteShadowAlgorithmNames();
+        noteShadowAlgorithmNames.forEach(each -> {
+            ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
+            if (!Objects.isNull(shadowAlgorithm)) {
+                result.add((NoteShadowAlgorithm<Comparable<?>>) shadowAlgorithm);
+            }
+        });
+        return result.isEmpty() ? Optional.of(result) : Optional.of(result);
+    }
+    
+    /**
+     * Get related column shadow algorithms by table name.
+     *
+     * @param tableName table name
+     * @param shadowOperationType shadow operation type
+     * @return column shadow algorithms
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<Collection<ColumnShadowAlgorithm<Comparable<?>>>> getRelatedColumnShadowAlgorithms(final String tableName, final ShadowOperationType shadowOperationType) {
+        Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
+        ShadowTableRule shadowTableRule = shadowTableRules.get(tableName);
+        Collection<String> columnShadowAlgorithmNames = shadowTableRule.getColumnShadowAlgorithmNames().get(shadowOperationType);
+        columnShadowAlgorithmNames.forEach(each -> {
+            ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
+            if (!Objects.isNull(shadowAlgorithm)) {
+                result.add((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithm);
+            }
+        });
         return result.isEmpty() ? Optional.of(result) : Optional.of(result);
     }
     
@@ -147,16 +188,6 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
                 result.put(shadowDataSourceRule.getSourceDataSource(), shadowDataSourceRule.getShadowDataSource());
             }
         });
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
-    
-    /**
-     * Get related note shadow algorithms.
-     *
-     * @return related note shadow algorithms
-     */
-    public Optional<Collection<ShadowAlgorithm>> getRelatedNoteShadowAlgorithms() {
-        Collection<ShadowAlgorithm> result = shadowAlgorithms.values().stream().filter(each -> each instanceof NoteShadowAlgorithm).collect(Collectors.toCollection(LinkedList::new));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -145,11 +144,6 @@ public final class ShadowSelectStatementRoutingEngineTest {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
-    }
-    
-    @Test
-    public void assertCreateShadowDetermineCondition() {
-        assertThat(shadowRouteEngine.createShadowDetermineCondition().getShadowOperationType(), is(ShadowOperationType.SELECT));
     }
     
     @Test

@@ -67,7 +67,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), "t_order"), is(true));
+        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -105,7 +105,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
+        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
         shadowDetermineCondition.initShadowColumnCondition(createColumnValuesMappings());
         return shadowDetermineCondition;
     }
