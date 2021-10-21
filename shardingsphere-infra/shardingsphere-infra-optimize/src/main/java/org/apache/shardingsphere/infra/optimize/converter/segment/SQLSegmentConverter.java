@@ -25,10 +25,10 @@ import java.util.Optional;
 /**
  * SQL segment converter.
  * 
- * @param <T> type of SQL segment
- * @param <S> type of SQL node
+ * @param <S> type of SQL segment
+ * @param <T> type of SQL node
  */
-public interface SQLSegmentConverter<T extends SQLSegment, S extends SqlNode> {
+public interface SQLSegmentConverter<S extends SQLSegment, T extends SqlNode> {
     
     /**
      * Convert SQL segment to SQL node.
@@ -36,5 +36,13 @@ public interface SQLSegmentConverter<T extends SQLSegment, S extends SqlNode> {
      * @param segment SQL segment be to converted
      * @return converted SQL node
      */
-    Optional<S> convert(T segment);
+    Optional<T> convertToSQLNode(S segment);
+    
+    /**
+     * Convert SQL node to SQL segment.
+     *
+     * @param sqlNode SQL node be to converted
+     * @return converted SQL segment
+     */
+    Optional<S> convertToSQLSegment(T sqlNode);
 }

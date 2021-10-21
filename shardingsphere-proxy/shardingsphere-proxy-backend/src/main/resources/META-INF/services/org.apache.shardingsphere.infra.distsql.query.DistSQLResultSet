@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.backend.text.distsql.rql.DataSourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.text.distsql.rql.SingleTableRuleQueryResultSet

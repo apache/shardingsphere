@@ -31,29 +31,31 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.orderby.OrderB
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.DistinctConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
 import java.util.Optional;
 
 /**
- * Converter of select statement to SQL node.
+ * Select statement converter.
  */
-public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement> {
+public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final SelectStatement selectStatement) {
-        SqlNodeList distinct = new DistinctConverter().convert(selectStatement.getProjections()).orElse(null);
-        SqlNodeList projection = new ProjectionsConverter().convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
-        SqlNode from = new TableConverter().convert(selectStatement.getFrom()).orElse(null);
-        SqlNode where = selectStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
-        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convert(optional)).orElse(null);
-        SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convert(optional)).orElse(null);
-        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
+    public SqlNode convertToSQLNode(final SelectStatement selectStatement) {
+        SqlNodeList distinct = new DistinctConverter().convertToSQLNode(selectStatement.getProjections()).orElse(null);
+        SqlNodeList projection = new ProjectionsConverter().convertToSQLNode(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
+        SqlNode from = new TableConverter().convertToSQLNode(selectStatement.getFrom()).orElse(null);
+        SqlNode where = selectStatement.getWhere().flatMap(optional -> new WhereConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convertToSQLNode(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        SqlNode offset = limit.flatMap(optional -> new OffsetConverter().convert(optional)).orElse(null);
-        SqlNode rowCount = limit.flatMap(optional -> new RowCountConverter().convert(optional)).orElse(null);
+        SqlNode offset = limit.flatMap(optional -> new OffsetConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNode rowCount = limit.flatMap(optional -> new RowCountConverter().convertToSQLNode(optional)).orElse(null);
         SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from,
                 where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
         return containsOrderBy(orderBy, offset, rowCount) ? new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, offset, rowCount) : sqlSelect;
@@ -61,5 +63,26 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     
     private boolean containsOrderBy(final SqlNodeList orderBy, final SqlNode offset, final SqlNode rowCount) {
         return (null != orderBy && !orderBy.isEmpty()) || null != offset || null != rowCount;
+    }
+    
+    @Override
+    public SelectStatement convertToSQLStatement(final SqlNode sqlNode) {
+        SqlSelect sqlSelect = sqlNode instanceof SqlOrderBy ? (SqlSelect) ((SqlOrderBy) sqlNode).query : (SqlSelect) sqlNode;
+        ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
+        projections.setDistinctRow(sqlSelect.isDistinct());
+        // TODO create select statement for different dialect 
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setProjections(projections);
+        new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);
+        new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);
+        new GroupByConverter().convertToSQLSegment(sqlSelect.getGroup()).ifPresent(result::setGroupBy);
+        new HavingConverter().convertToSQLSegment(sqlSelect.getHaving()).ifPresent(result::setHaving);
+        if (sqlNode instanceof SqlOrderBy) {
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
+            Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new OffsetConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
+            Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new RowCountConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
+        }
+        return result;
     }
 }

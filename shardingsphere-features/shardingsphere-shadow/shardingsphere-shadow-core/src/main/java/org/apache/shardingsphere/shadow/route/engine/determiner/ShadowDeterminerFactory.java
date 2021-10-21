@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 /**
  * Shadow determiner factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowDeterminerFactory {
     
     /**

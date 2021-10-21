@@ -69,4 +69,9 @@
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <schema name="shadow_db" start-index="28" stop-index="36"/>
     </show-shadow-algorithms>
+
+    <show-single-table-rules sql-case-id="show-single-table-rules">
+        <name name="t_order" start-index="23" stop-index="29"/>
+        <schema name="single_table_db" start-index="36" stop-index="50"/>
+    </show-single-table-rules>
 </sql-parser-test-cases>

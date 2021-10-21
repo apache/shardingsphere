@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -26,13 +27,18 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command describe packet for PostgreSQL.
  */
+@Getter
 @ToString
 public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {
     
+    private final char type;
+    
+    private final String name;
+    
     public PostgreSQLComDescribePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
-        payload.readInt1();
-        payload.readStringNul();
+        type = (char) payload.readInt1();
+        name = payload.readStringNul();
     }
     
     @Override

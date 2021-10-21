@@ -71,7 +71,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
                     Map<String, Object> row = new HashMap<>();
                     ResultSetMetaData metaData = resultSet.getMetaData();
                     for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
-                        row.put(resultSet.getMetaData().getColumnName(i), resultSet.getString(i));
+                        row.put(resultSet.getMetaData().getColumnLabel(i), resultSet.getString(i));
                     }
                     rowPostProcessing(schemaName, row);
                     if (!row.isEmpty()) {

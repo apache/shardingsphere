@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rule.checker;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -30,21 +29,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public final class ShadowRuleCheckerTest {
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckDataSources() {
-        ShadowRuleChecker.checkDataSources(Maps.newLinkedHashMap());
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckShadowTables() {
-        ShadowRuleChecker.checkShadowTables(Maps.newLinkedHashMap());
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckShadowAlgorithms() {
-        ShadowRuleChecker.checkShadowAlgorithms(Maps.newLinkedHashMap());
-    }
     
     @Test
     public void assertCheckTableShadowAlgorithmsPass() {

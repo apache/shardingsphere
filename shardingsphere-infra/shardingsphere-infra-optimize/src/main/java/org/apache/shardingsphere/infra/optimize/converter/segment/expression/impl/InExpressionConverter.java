@@ -35,15 +35,20 @@ import java.util.Optional;
 public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final InExpression expression) {
+    public Optional<SqlNode> convertToSQLNode(final InExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getRight()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+    }
+    
+    @Override
+    public Optional<InExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        return Optional.empty();
     }
 }

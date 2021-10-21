@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.optimize.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -36,10 +38,23 @@ public final class SQLNodeConvertEngine {
      * @param statement SQL statement to be converted
      * @return sqlNode converted SQL node
      */
-    public static SqlNode convert(final SQLStatement statement) {
+    public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementConverter().convert((SelectStatement) statement);
+            return new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
         }
         throw new UnsupportedOperationException("Unsupported SQL node conversion.");
+    }
+    
+    /**
+     * Convert SQL node to SQL statement.
+     *
+     * @param sqlNode sqlNode converted SQL node
+     * @return SQL statement to be converted
+     */
+    public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
+            return new SelectStatementConverter().convertToSQLStatement(sqlNode);
+        }
+        throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }
 }
