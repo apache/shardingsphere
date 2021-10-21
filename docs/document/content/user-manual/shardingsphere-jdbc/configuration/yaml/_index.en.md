@@ -68,7 +68,7 @@ Through this parameter and the management module, JDBC and PROXY can be online a
 ##### Configuration Example
 
 ```yaml
-schemaName: sharding_db
+schemaName (?): sharding_db
 ```
 
 ### Data Source Configuration

@@ -66,7 +66,7 @@ schemaName可理解为数据库中的schema，JDBC中的datasource的别名
 ##### 配置示例
 
 ```yaml
-schemaName: sharding_db
+schemaName (?): sharding_db
 ```
 
 ### 数据源配置
