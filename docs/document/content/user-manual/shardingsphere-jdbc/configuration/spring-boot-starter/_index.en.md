@@ -10,7 +10,7 @@ ShardingSphere-JDBC provides official Spring Boot Starter to make convenient for
 ## Data Source Configuration
 
 ```properties
-spring.shardingsphere.schema.name= # JDBC data source alias
+spring.shardingsphere.schema.name= # JDBC data source alias, this parameter is optional. If it is not configured, logic_db is used as the schemaName by default.
 
 spring.shardingsphere.datasource.names= # Data source name, multiple data sources are separated by commas
 

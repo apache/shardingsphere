@@ -8,7 +8,7 @@ weight = 5
 ### Memory mode
 ```yaml
 schema:
-  name: # JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy
+  name: # JDBC data source alias. Optional, if it is not configured, logic_db is used as the schemaName by default, this parameter can help the configuration shared between JDBC driver and Proxy
 mode:
   type: # Memory
 ```
@@ -16,7 +16,7 @@ mode:
 ### Standalone mode
 ```yaml
 schema:
-  name: # JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy
+  name: # JDBC data source alias. Optional, if it is not configured, logic_db is used as the schemaName by default, this parameter can help the configuration shared between JDBC driver and Proxy
 mode:
   type: # Standalone
   repository:
@@ -29,7 +29,7 @@ mode:
 ### Cluster mode
 ```yaml
 schema:
-  name: # JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy
+  name: # JDBC data source alias. Optional, if it is not configured, logic_db is used as the schemaName by default, this parameter can help the configuration shared between JDBC driver and Proxy
 mode:
   type: # Cluster
   repository:

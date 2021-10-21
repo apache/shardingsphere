@@ -59,9 +59,9 @@ try (
 
 ### schemaName配置
 
-该参数为可选项，不配置则默认采用logic_db作为schemaName。 
-schemaName可理解为数据库中的schema，JDBC中的datasource的别名
-通过该参数与治理模块可实现JDBC与PROXY同时在线，共享配置。
+该参数为可选项，不配置则默认采用 logic_db 作为 schemaName。 
+schemaName 可理解为数据库中的 schema，JDBC 中的 datasource 的别名
+通过该参数与治理模块可实现 JDBC 与 PROXY 同时在线，共享配置。
 
 ##### 配置示例
 
