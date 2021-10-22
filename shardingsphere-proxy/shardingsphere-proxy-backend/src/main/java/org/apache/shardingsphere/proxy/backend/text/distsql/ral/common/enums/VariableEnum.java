@@ -24,6 +24,42 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
  */
 public enum VariableEnum {
     
+    /**
+     * Props variables.
+     */
+    MAX_CONNECTIONS_SIZE_PER_QUERY,
+    
+    KERNEL_EXECUTOR_SIZE,
+    
+    PROXY_FRONTEND_FLUSH_THRESHOLD,
+    
+    PROXY_OPENTRACING_ENABLED,
+    
+    PROXY_HINT_ENABLED,
+    
+    SQL_SHOW,
+    
+    CHECK_TABLE_METADATA_ENABLED,
+    
+    LOCK_WAIT_TIMEOUT_MILLISECONDS,
+    
+    SHOW_PROCESS_LIST_ENABLED,
+    
+    PROXY_BACKEND_QUERY_FETCH_SIZE,
+
+    CHECK_DUPLICATE_TABLE_ENABLED,
+
+    SQL_COMMENT_PARSE_ENABLED,
+
+    PROXY_FRONTEND_EXECUTOR_SIZE,
+
+    PROXY_BACKEND_EXECUTOR_SUITABLE,
+    
+    PROXY_FRONTEND_CONNECTION_LIMIT,
+    
+    /**
+     * Other variables.
+     */
     AGENT_PLUGINS_ENABLED, 
     
     CACHED_CONNECTIONS, 
