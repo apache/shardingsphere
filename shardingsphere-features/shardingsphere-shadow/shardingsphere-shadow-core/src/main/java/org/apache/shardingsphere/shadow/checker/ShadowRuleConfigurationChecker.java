@@ -36,11 +36,13 @@ public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConf
             Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
             Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
             Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations = config.getShadowAlgorithms();
-            sizeCheck(dataSources, shadowTables);
+            String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+            sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
             shadowAlgorithmConfigurationsSizeCheck(shadowAlgorithmConfigurations);
             shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
             shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
-            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigurations.keySet());
+            defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigurations);
+            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigurations.keySet(), defaultShadowAlgorithmName);
             shadowTableAlgorithmsReferencesCheck(shadowTables);
         }
     }

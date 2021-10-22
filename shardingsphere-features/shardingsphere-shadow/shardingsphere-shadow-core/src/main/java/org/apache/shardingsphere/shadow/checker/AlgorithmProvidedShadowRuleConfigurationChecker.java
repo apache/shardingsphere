@@ -36,11 +36,13 @@ public final class AlgorithmProvidedShadowRuleConfigurationChecker extends Abstr
             Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
             Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
             Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
-            sizeCheck(dataSources, shadowTables);
+            String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+            sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
             shadowAlgorithmsSizeCheck(shadowAlgorithms);
             shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
             shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
-            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet());
+            defaultShadowAlgorithmCheck(defaultShadowAlgorithmName, shadowAlgorithms);
+            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet(), defaultShadowAlgorithmName);
             shadowTableAlgorithmsReferencesCheck(shadowTables);
         }
     }
