@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.converter.context.ConverterContext;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.HavingConverter;
@@ -60,19 +61,15 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convertToSQLNode(optional)).orElse(null);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convertToSQLNode(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        SqlNode offset = null;
-        SqlNode rowCount = null;
-        if (limit.isPresent()) {
-            offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional)).orElse(null);
-            rowCount = limit.get().getRowCount().flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional)).orElse(null);
-        }
+        ConverterContext context = new ConverterContext();
         SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from,
                 where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
-        return containsOrderBy(orderBy, offset, rowCount) ? new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, offset, rowCount) : sqlSelect;
-    }
-    
-    private boolean containsOrderBy(final SqlNodeList orderBy, final SqlNode offset, final SqlNode rowCount) {
-        return (null != orderBy && !orderBy.isEmpty()) || null != offset || null != rowCount;
+        if (limit.isPresent()) {
+            SqlNode offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLNode(optional)).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLNode(optional)).orElse(null);
+            return new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, offset, rowCount);
+        }
+        return !orderBy.isEmpty() ? new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, null, null) : sqlSelect;
     }
     
     @Override
@@ -87,20 +84,22 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);
         new GroupByConverter().convertToSQLSegment(sqlSelect.getGroup()).ifPresent(result::setGroupBy);
         new HavingConverter().convertToSQLSegment(sqlSelect.getHaving()).ifPresent(result::setHaving);
+        ConverterContext context = new ConverterContext();
         if (sqlNode instanceof SqlOrderBy) {
             SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
             new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
-            createLimitSegment(sqlOrderBy).ifPresent(result::setLimit);
+            createLimitSegment(sqlOrderBy, context).ifPresent(result::setLimit);
         }
+        result.setParameterCount(context.getParameterCount().get());
         return result;
     }
     
-    private Optional<LimitSegment> createLimitSegment(final SqlOrderBy sqlOrderBy) {
+    private Optional<LimitSegment> createLimitSegment(final SqlOrderBy sqlOrderBy, final ConverterContext context) {
         if (null == sqlOrderBy.offset && null == sqlOrderBy.fetch) {
             return Optional.empty();
         }
-        Optional<PaginationValueSegment> offset = Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLSegment(optional));
-        Optional<PaginationValueSegment> rowCount = Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLSegment(optional));
+        Optional<PaginationValueSegment> offset = Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLSegment(optional));
+        Optional<PaginationValueSegment> rowCount = Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLSegment(optional));
         List<Integer> startIndexes = new LinkedList<>();
         List<Integer> stopIndexes = new LinkedList<>();
         offset.map(SQLSegment::getStartIndex).ifPresent(startIndexes::add);

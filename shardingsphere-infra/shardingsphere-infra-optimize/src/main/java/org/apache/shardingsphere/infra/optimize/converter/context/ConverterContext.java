@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.converter.context;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.optimize.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.infra.optimize.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Optimizer context.
+ * Converter context.
  */
-@RequiredArgsConstructor
 @Getter
-public final class OptimizerContext {
+public final class ConverterContext {
     
-    private final FederationMetaData metaData;
-    
-    private final Map<String, OptimizerParserContext> parserContexts;
-    
-    private final Map<String, OptimizerPlannerContext> plannerContexts;
+    private final AtomicInteger parameterCount = new AtomicInteger();
 }

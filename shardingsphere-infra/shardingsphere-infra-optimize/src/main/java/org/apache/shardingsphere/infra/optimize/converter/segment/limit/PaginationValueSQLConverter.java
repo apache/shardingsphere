@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.limit;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.converter.context.ConverterContext;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
@@ -33,7 +35,10 @@ import java.util.Optional;
 /**
  * Pagination value converter.
  */
+@RequiredArgsConstructor
 public final class PaginationValueSQLConverter implements SQLSegmentConverter<PaginationValueSegment, SqlNode> {
+    
+    private final ConverterContext context;
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final PaginationValueSegment segment) {
@@ -55,6 +60,7 @@ public final class PaginationValueSQLConverter implements SQLSegmentConverter<Pa
             return Optional.of(new NumberLiteralLimitValueSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), ((SqlNumericLiteral) sqlNode).getValueAs(Long.class)));
         }
         if (sqlNode instanceof SqlDynamicParam) {
+            context.getParameterCount().incrementAndGet();
             return Optional.of(new ParameterMarkerLimitValueSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), ((SqlDynamicParam) sqlNode).getIndex()));
         }
         return Optional.empty();
