@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-/*
- * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
- */
-
-package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
+package org.apache.shardingsphere.example.readwrite.splitting.spring.boot.jpa;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config.EncryptDatabasesConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class EncryptRawJavaConfigurationExample {
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+public class ReadwriteSplittingSpringBootJpaExample {
     
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = new EncryptDatabasesConfiguration().getDataSource();
-        ExampleExecuteTemplate.run(getExampleService(dataSource));
-    }
-    
-    private static ExampleService getExampleService(final DataSource dataSource) {
-        return new UserServiceImpl(new UserRepositoryImpl(dataSource));
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ReadwriteSplittingSpringBootJpaExample.class, args)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
+        }
     }
 }

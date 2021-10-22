@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
+/*
+ * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
+ */
+
+package org.apache.shardingsphere.example.encrypt.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.encrypt.raw.jdbc.config.EncryptDatabasesConfiguration;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
-public final class EncryptRawYamlConfigurationExample {
+public final class EncryptRawJavaConfigurationExample {
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());
+    public static void main(final String[] args) throws SQLException {
+        DataSource dataSource = new EncryptDatabasesConfiguration().getDataSource();
         ExampleExecuteTemplate.run(getExampleService(dataSource));
-    }
-    
-    private static File getFile() {
-        return new File(EncryptRawYamlConfigurationExample.class.getResource("/META-INF/encrypt-databases.yaml").getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
