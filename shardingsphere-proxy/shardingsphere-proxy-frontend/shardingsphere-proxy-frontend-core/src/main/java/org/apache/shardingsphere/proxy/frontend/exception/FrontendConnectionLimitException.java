@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.proxy.frontend.exception;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL repair table statement.
+ * Frontend connection limit exception.
  */
+@RequiredArgsConstructor
 @Getter
-@ToString
-public final class MySQLRepairTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+public final class FrontendConnectionLimitException extends FrontendException {
+
+    private static final long serialVersionUID = -4397915988239251541L;
+
+    private final String message;
 }
