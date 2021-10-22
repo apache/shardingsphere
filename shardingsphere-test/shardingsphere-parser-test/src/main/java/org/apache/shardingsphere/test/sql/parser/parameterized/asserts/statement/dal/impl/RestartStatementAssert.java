@@ -28,8 +28,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RestartStatementAssert {
+    
     /**
      * Assert restart statement is correct with expected parser result.
+     *
      * @param assertContext assert context
      * @param actual        actual restart statement
      * @param expected      expected restart statement test case

@@ -21,10 +21,10 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
 /**
  * MySQL restart statement.
  */
-
 @ToString
 public final class MySQLRestartStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
