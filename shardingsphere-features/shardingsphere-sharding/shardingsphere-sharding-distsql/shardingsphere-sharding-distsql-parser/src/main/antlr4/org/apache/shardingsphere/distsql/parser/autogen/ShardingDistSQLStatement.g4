@@ -39,5 +39,6 @@ execute
     | addShardingHintTableValue
     | showShardingHintStatus
     | clearShardingHint
+    | createShardingAlgorithm
     ) SEMI?
     ;

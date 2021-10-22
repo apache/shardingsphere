@@ -24,7 +24,7 @@ import java.util.Arrays;
  */
 public enum AggregationType {
     
-    MAX, MIN, SUM, COUNT, AVG;
+    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
     
     /**
      * Is aggregation type.

@@ -37,8 +37,8 @@ public final class NoteShadowAlgorithmDeterminer implements ShadowAlgorithmDeter
     private final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm;
     
     @Override
-    public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule, final String tableName) {
-        Collection<PreciseNoteShadowValue<Comparable<?>>> noteShadowValues = createNoteShadowValues(shadowDetermineCondition, tableName);
+    public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule) {
+        Collection<PreciseNoteShadowValue<Comparable<?>>> noteShadowValues = createNoteShadowValues(shadowDetermineCondition);
         for (PreciseNoteShadowValue<Comparable<?>> each : noteShadowValues) {
             if (noteShadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
                 return true;
@@ -47,8 +47,9 @@ public final class NoteShadowAlgorithmDeterminer implements ShadowAlgorithmDeter
         return false;
     }
     
-    private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final String tableName) {
+    private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
         ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
+        String tableName = shadowDetermineCondition.getTableName();
         Collection<PreciseNoteShadowValue<Comparable<?>>> result = new LinkedList<>();
         shadowDetermineCondition.getSqlNotes().ifPresent(notes -> notes.forEach(each -> result.add(new PreciseNoteShadowValue<>(tableName, shadowOperationType, each))));
         return result;

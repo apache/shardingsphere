@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -141,9 +140,11 @@ public final class ShadowRuleTest {
     
     private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
         if ("t_user".equals(tableName)) {
-            assertThat(shadowTableRule.getShadowAlgorithmNames().size(), is(3));
+            assertThat(shadowTableRule.getNoteShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(2));
         } else {
-            assertThat(shadowTableRule.getShadowAlgorithmNames().size(), is(2));
+            assertThat(shadowTableRule.getNoteShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(1));
         }
     }
     
@@ -169,25 +170,6 @@ public final class ShadowRuleTest {
         Iterator<String> iterator = allShadowTableNames.iterator();
         assertThat(iterator.next(), is("t_user"));
         assertThat(iterator.next(), is("t_order"));
-    }
-    
-    @Test
-    public void assertGetRelatedShadowAlgorithms() {
-        Optional<Collection<ShadowAlgorithm>> shadowAlgorithmsOptional = shadowRuleWithAlgorithm.getRelatedShadowAlgorithms("t_user");
-        assertThat(shadowAlgorithmsOptional.isPresent(), is(true));
-        Collection<ShadowAlgorithm> shadowAlgorithms = shadowAlgorithmsOptional.get();
-        Iterator<ShadowAlgorithm> iterator = shadowAlgorithms.iterator();
-        ShadowAlgorithm shadowAlgorithm0 = iterator.next();
-        assertThat(shadowAlgorithm0.getType(), is("SIMPLE_NOTE"));
-        assertThat(shadowAlgorithm0.getProps().get("shadow"), is("true"));
-        ShadowAlgorithm shadowAlgorithm1 = iterator.next();
-        assertThat(shadowAlgorithm1.getType(), is("COLUMN_REGEX_MATCH"));
-        assertThat(shadowAlgorithm1.getProps().get("operation"), is("insert"));
-        assertThat(shadowAlgorithm1.getProps().get("column"), is("user_id"));
-        ShadowAlgorithm shadowAlgorithm2 = iterator.next();
-        assertThat(shadowAlgorithm2.getType(), is("COLUMN_REGEX_MATCH"));
-        assertThat(shadowAlgorithm2.getProps().get("operation"), is("update"));
-        assertThat(shadowAlgorithm2.getProps().get("column"), is("user_id"));
     }
     
     @Test
