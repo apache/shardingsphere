@@ -60,6 +60,7 @@ public final class ShardingRuleStatementConverter {
     
     /**
      * Create algorithm configuration.
+     *
      * @param segment algorithm segment
      * @return ShardingSphere algorithm configuration
      */
@@ -77,8 +78,8 @@ public final class ShardingRuleStatementConverter {
     }
     
     private static ShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
-        return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(), 
-                getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()), segment.getTableStrategyColumn());
+        return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(),
+                segment.getTableStrategyColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()));
     }
     
     /**
