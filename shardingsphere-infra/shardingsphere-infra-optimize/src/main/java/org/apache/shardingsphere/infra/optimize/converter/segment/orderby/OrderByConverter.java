@@ -22,7 +22,9 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.orderby.item.OrderByItemConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -32,11 +34,15 @@ public final class OrderByConverter implements SQLSegmentConverter<OrderBySegmen
     
     @Override
     public Optional<SqlNodeList> convertToSQLNode(final OrderBySegment segment) {
-        return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convert(segment.getOrderByItems()), SqlParserPos.ZERO));
+        return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convertToSQLNode(segment.getOrderByItems()), SqlParserPos.ZERO));
     }
     
     @Override
-    public Optional<OrderBySegment> convertToSQLSegment(final SqlNodeList sqlNode) {
-        return Optional.empty();
+    public Optional<OrderBySegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
+        if (null == sqlNodeList) {
+            return Optional.empty(); 
+        }
+        Collection<OrderByItemSegment> orderByItems = OrderByItemConverterUtil.convertToSQLSegment(sqlNodeList);
+        return Optional.of(new OrderBySegment(getStartIndex(sqlNodeList), getStopIndex(sqlNodeList), orderByItems));
     }
 }

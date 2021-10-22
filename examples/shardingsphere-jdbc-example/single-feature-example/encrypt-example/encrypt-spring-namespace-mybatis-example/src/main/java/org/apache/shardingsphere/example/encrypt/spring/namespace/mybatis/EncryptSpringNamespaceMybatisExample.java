@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.spring.namespace.mybatis;
+package org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
