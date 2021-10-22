@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.limit;
+package org.apache.shardingsphere.infra.optimize.converter.context;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import lombok.Getter;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Offset converter.
+ * Converter context.
  */
-public final class OffsetConverter extends AbstractLimitConverter {
+@Getter
+public final class ConverterContext {
     
-    public OffsetConverter() {
-        super(LimitSegment::getOffset);
-    }
+    private final AtomicInteger parameterCount = new AtomicInteger();
 }

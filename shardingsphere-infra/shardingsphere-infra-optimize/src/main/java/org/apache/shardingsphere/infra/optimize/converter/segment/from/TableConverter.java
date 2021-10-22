@@ -21,6 +21,8 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.JoinTableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SimpleTableConverter;
@@ -56,8 +58,17 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
         } else if (sqlNode instanceof SqlJoin) {
             return new JoinTableConverter().convertToSQLSegment((SqlJoin) sqlNode).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
-            return new SubqueryTableConverter().convertToSQLSegment((SqlBasicCall) sqlNode).map(optional -> optional);
+            Optional<SqlNode> existSubquery = ((SqlBasicCall) sqlNode).getOperandList().stream().filter(this::containsSqlSelect).findAny();
+            if (existSubquery.isPresent()) {
+                return new SubqueryTableConverter().convertToSQLSegment((SqlBasicCall) sqlNode).map(optional -> optional);
+            } else {
+                return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+            }
         }
         throw new UnsupportedOperationException("Unsupported sql node type: " + sqlNode.getClass());
+    }
+    
+    private boolean containsSqlSelect(final SqlNode sqlNode) {
+        return sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy;
     }
 }

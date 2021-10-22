@@ -39,7 +39,7 @@ public final class OrderByConverter implements SQLSegmentConverter<OrderBySegmen
     
     @Override
     public Optional<OrderBySegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
-        if (null == sqlNodeList) {
+        if (null == sqlNodeList || 0 == sqlNodeList.size()) {
             return Optional.empty(); 
         }
         Collection<OrderByItemSegment> orderByItems = OrderByItemConverterUtil.convertToSQLSegment(sqlNodeList);
