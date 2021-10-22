@@ -21,6 +21,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Optional;
@@ -38,8 +39,8 @@ public final class ExpressionProjectionConverter implements SQLSegmentConverter<
     @Override
     public Optional<ExpressionProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlBasicCall) {
-            return Optional.of(new ExpressionProjectionSegment(sqlNode.getParserPosition().getColumnNum() - 1,
-                    sqlNode.getParserPosition().getEndColumnNum() - 1, sqlNode.toString(), new ExpressionConverter().convertToSQLSegment(sqlNode).orElse(null)));
+            ExpressionSegment expressionSegment = new ExpressionConverter().convertToSQLSegment(sqlNode).orElse(null);
+            return Optional.of(new ExpressionProjectionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), sqlNode.toString(), expressionSegment));
         }
         return Optional.empty();
     }

@@ -32,7 +32,8 @@ public final class GroupByConverter implements SQLSegmentConverter<GroupBySegmen
     
     @Override
     public Optional<SqlNodeList> convertToSQLNode(final GroupBySegment segment) {
-        return null == segment || segment.getGroupByItems().isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convert(segment.getGroupByItems()), SqlParserPos.ZERO));
+        return null == segment || segment.getGroupByItems().isEmpty() 
+                ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convertToSQLNode(segment.getGroupByItems()), SqlParserPos.ZERO));
     }
     
     @Override

@@ -29,6 +29,8 @@ import java.util.Optional;
  */
 public final class WhereConverter implements SQLSegmentConverter<WhereSegment, SqlNode> {
     
+    private static final int WHERE_SEGMENT_LENGTH = 6;
+    
     @Override
     public Optional<SqlNode> convertToSQLNode(final WhereSegment segment) {
         return null == segment ? Optional.empty() : new ExpressionConverter().convertToSQLNode(segment.getExpr());
@@ -36,6 +38,11 @@ public final class WhereConverter implements SQLSegmentConverter<WhereSegment, S
     
     @Override
     public Optional<WhereSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+        if (null == sqlNode) {
+            return Optional.empty();
+        }
+        // FIXME Now sqlNode position returned by the CalCite parser does not contain WHERE and requires manual calculation
+        int startIndex = getStartIndex(sqlNode) - WHERE_SEGMENT_LENGTH;
+        return new ExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> new WhereSegment(startIndex, optional.getStopIndex(), optional));
     }
 }

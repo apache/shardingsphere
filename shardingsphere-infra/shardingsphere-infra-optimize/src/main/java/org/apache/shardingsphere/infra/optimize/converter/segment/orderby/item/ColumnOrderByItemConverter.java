@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.orderby.item;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -36,7 +39,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final ColumnOrderByItemSegment segment) {
-        Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn());
+        Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
         if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
             result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {result.get()}, SqlParserPos.ZERO));
         }
@@ -45,6 +48,11 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     
     @Override
     public Optional<ColumnOrderByItemSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+        if (!(sqlNode instanceof SqlIdentifier)) {
+            return Optional.empty(); 
+        }
+        SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
+        ColumnSegment column = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(sqlIdentifier.names.get(0)));
+        return Optional.of(new ColumnOrderByItemSegment(column, OrderDirection.ASC));
     }
 }
