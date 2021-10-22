@@ -43,6 +43,6 @@ public final class OrderByConverter implements SQLSegmentConverter<OrderBySegmen
             return Optional.empty(); 
         }
         Collection<OrderByItemSegment> orderByItems = OrderByItemConverterUtil.convertToSQLSegment(sqlNodeList);
-        return Optional.of(new OrderBySegment(getStartIndex(sqlNodeList), getStopIndex(sqlNodeList), orderByItems));
+        return Optional.of(new OrderBySegment(getSQLNodeStartIndex(sqlNodeList), getSQLNodeStopIndex(sqlNodeList), orderByItems));
     }
 }

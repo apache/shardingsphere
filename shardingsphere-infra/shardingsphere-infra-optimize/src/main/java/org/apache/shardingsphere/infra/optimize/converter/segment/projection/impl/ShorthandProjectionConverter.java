@@ -41,10 +41,10 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
         if (null == sqlIdentifier) {
             return Optional.empty();
         }
-        ShorthandProjectionSegment result = new ShorthandProjectionSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier));
+        ShorthandProjectionSegment result = new ShorthandProjectionSegment(getSQLNodeStartIndex(sqlIdentifier), getSQLNodeStopIndex(sqlIdentifier));
         if (sqlIdentifier.names.size() > 1) {
             SqlIdentifier owner = sqlIdentifier.getComponent(0);
-            result.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(sqlIdentifier.names.get(0))));
+            result.setOwner(new OwnerSegment(getSQLNodeStartIndex(owner), getSQLNodeStopIndex(owner), new IdentifierValue(sqlIdentifier.names.get(0))));
         }
         return Optional.of(result);
     }

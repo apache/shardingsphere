@@ -49,11 +49,11 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
         }
         ImmutableList<String> names = sqlIdentifier.names;
         if (1 == names.size()) {
-            return Optional.of(new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(names.get(0))));    
+            return Optional.of(new ColumnSegment(getSQLNodeStartIndex(sqlIdentifier), getSQLNodeStopIndex(sqlIdentifier), new IdentifierValue(names.get(0))));    
         }
-        ColumnSegment result = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(names.get(1)));
+        ColumnSegment result = new ColumnSegment(getSQLNodeStartIndex(sqlIdentifier), getSQLNodeStopIndex(sqlIdentifier), new IdentifierValue(names.get(1)));
         SqlIdentifier owner = sqlIdentifier.getComponent(0);
-        result.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(names.get(0))));
+        result.setOwner(new OwnerSegment(getSQLNodeStartIndex(owner), getSQLNodeStopIndex(owner), new IdentifierValue(names.get(0))));
         return Optional.of(result);
     }
 }

@@ -42,7 +42,7 @@ public final class WhereConverter implements SQLSegmentConverter<WhereSegment, S
             return Optional.empty();
         }
         // FIXME Now sqlNode position returned by the CalCite parser does not contain WHERE and requires manual calculation
-        int startIndex = getStartIndex(sqlNode) - WHERE_SEGMENT_LENGTH;
+        int startIndex = getSQLNodeStartIndex(sqlNode) - WHERE_SEGMENT_LENGTH;
         return new ExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> new WhereSegment(startIndex, optional.getStopIndex(), optional));
     }
 }

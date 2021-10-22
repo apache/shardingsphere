@@ -62,8 +62,8 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
         Optional<ExpressionSegment> condition = new ExpressionConverter().convertToSQLSegment((sqlJoin).getCondition());
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         JoinTableSegment result = new JoinTableSegment();
-        result.setStartIndex(getStartIndex(sqlJoin));
-        result.setStartIndex(getStopIndex(sqlJoin));
+        result.setStartIndex(getSQLNodeStartIndex(sqlJoin));
+        result.setStartIndex(getSQLNodeStopIndex(sqlJoin));
         result.setAlias(null);
         result.setLeft(left);
         //        result.setJoinType(conditionType.getStringValue());

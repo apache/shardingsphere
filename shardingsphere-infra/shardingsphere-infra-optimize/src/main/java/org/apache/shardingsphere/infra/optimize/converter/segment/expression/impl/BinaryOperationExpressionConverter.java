@@ -73,7 +73,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
         String operator = sqlBasicCall.getOperator().getName();
         String text = sqlBasicCall.toString();
-        return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, operator, text));
+        return Optional.of(new BinaryOperationExpression(getSQLNodeStartIndex(sqlBasicCall), getSQLNodeStopIndex(sqlBasicCall), left, right, operator, text));
     }
     
     private SqlBinaryOperator convertOperator(final String operator) {
