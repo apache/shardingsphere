@@ -16,9 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <optimize-table sql-case-id="optimize_table">
-        <table name="table1" start-index="15" stop-index="20"/>
-        <table name="table2" start-index="22" stop-index="27"/>
-    </optimize-table>
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="repair_table" value="REPAIR TABLE table1,table2" db-types="MySQL" />
+</sql-cases>

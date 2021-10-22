@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Optimize table statement test case.
@@ -31,6 +33,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class OptimizeTableStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedSimpleTable table;
+    @XmlElement(name = "table")
+    private List<ExpectedSimpleTable> tables = new LinkedList<>();
 }

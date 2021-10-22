@@ -19,29 +19,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 
 /**
- * Optimize table statement assert.
+ * Repair table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLOptimizeTableStatementAssert {
+public final class MySQLRepairTableStatementAssert {
 
     /**
-     * Assert optimize table statement is correct with expected parser result.
+     * Assert repair table statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual optimize table statement
-     * @param expected expected optimize table statement test case
+     * @param actual actual repair table statement
+     * @param expected expected repair table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }
