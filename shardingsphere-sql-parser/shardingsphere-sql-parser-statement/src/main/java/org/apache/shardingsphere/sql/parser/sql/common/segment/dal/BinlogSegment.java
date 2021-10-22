@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Show like segment.
+ * Binlog segment.
  */
 @RequiredArgsConstructor
 @Getter
