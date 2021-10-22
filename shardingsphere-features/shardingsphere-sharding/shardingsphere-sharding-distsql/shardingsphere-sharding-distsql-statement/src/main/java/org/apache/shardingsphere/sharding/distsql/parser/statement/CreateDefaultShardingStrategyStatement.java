@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
- * Duplicate rule exception.
+ * Create default sharding strategy statement.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+public final class CreateDefaultShardingStrategyStatement extends CreateRuleStatement {
     
-    private static final long serialVersionUID = -1738699538105858939L;
+    private final String defaultType;
     
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
-    }
+    private final String strategyType;
     
-    public DuplicateRuleException(final String type, final String schemaName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
-    }
+    private final String shardingColumn;
+    
+    private final String shardingAlgorithmName;
 }

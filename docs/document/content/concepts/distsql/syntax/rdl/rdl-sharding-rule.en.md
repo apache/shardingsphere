@@ -10,6 +10,8 @@ weight = 2
 ```sql
 CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
+CREATE DEFAULT SHARDING (DATABASE | TABLE) STRATEGY shardingStrategy
+
 ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
 DROP SHARDING TABLE RULE tableName [, tableName] ...
@@ -17,7 +19,7 @@ DROP SHARDING TABLE RULE tableName [, tableName] ...
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
 
 shardingTableRuleDefinition:
-    tableName(resources [, shardingColumn] [, shardingAlgorithm] [, keyGenerateStrategy])
+    tableName(resources [, shardingColumn] [, algorithmDefinition] [, keyGenerateStrategy])
 
 resources:
     RESOURCES(resourceName [, resourceName] ...))
@@ -25,11 +27,17 @@ resources:
 shardingColumn:
     SHARDING_COLUMN=columnName
 
-shardingAlgorithm:
+algorithmDefinition:
     TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
 
 keyGenerateStrategy:
-    GENERATED_KEY(COLUMN=columnName,strategyDefinition)
+    GENERATED_KEY(COLUMN=columnName, strategyDefinition)
+
+shardingStrategy:
+    (TYPE=strategyType, shardingColumn, shardingAlgorithm )
+
+shardingAlgorithm
+    : SHARDING_ALGORITHM=shardingAlgorithmName
 
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties] )] )
@@ -46,6 +54,7 @@ algorithmProperty:
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
+- `strategyType` specifies the sharding strategy，please refer to[Sharding Strategy](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/#sharding-strategy)
 
 ### Sharding Binding Table Rule
 

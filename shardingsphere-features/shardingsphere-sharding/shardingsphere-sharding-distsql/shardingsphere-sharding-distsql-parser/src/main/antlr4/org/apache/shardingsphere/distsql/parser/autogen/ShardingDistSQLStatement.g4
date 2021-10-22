@@ -21,6 +21,7 @@ import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (createShardingTableRule
+    | createDefaultShardingStrategy
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
     | alterShardingTableRule

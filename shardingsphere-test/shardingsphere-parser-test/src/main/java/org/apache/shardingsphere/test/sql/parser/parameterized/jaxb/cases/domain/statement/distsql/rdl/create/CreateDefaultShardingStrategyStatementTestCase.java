@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDefaultShardingStrategy;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Duplicate rule exception.
+ * Create default sharding strategy statement test case.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+@Getter
+@Setter
+public final class CreateDefaultShardingStrategyStatementTestCase extends SQLParserTestCase {
     
-    private static final long serialVersionUID = -1738699538105858939L;
-    
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
-    }
-    
-    public DuplicateRuleException(final String type, final String schemaName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
-    }
+    @XmlElement(name = "strategy")
+    private ExpectedDefaultShardingStrategy strategy;
 }
