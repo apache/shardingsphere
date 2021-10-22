@@ -81,13 +81,12 @@ public final class SelectInformationExecutorTest {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         List<String> keys = new ArrayList<>(mockMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
-            when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
+            when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
             when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
         }
         when(RESULT_SET.next()).thenReturn(true, false);
         when(metaData.getColumnCount()).thenReturn(mockMap.size());
         when(RESULT_SET.getMetaData()).thenReturn(metaData);
-        
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
@@ -172,6 +171,22 @@ public final class SelectInformationExecutorTest {
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
+    }
+
+    @Test
+    public void assertSelectSchemaAliasExecute() throws SQLException {
+        final String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
+        Map<String, String> mockResultSetMap = new HashMap<>();
+        mockResultSetMap.put("sn", "demo_ds_0");
+        mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
+        mockResultSet(mockResultSetMap, false);
+        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
+        metaDataMap.put("demo_ds_0", getMetaData());
+        metaDataMap.put("test", mock(ShardingSphereMetaData.class));
+        DefaultSelectInformationExecutor selectExecutor = new DefaultSelectInformationExecutor(sql);
+        selectExecutor.execute(mock(BackendConnection.class));
+        assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
+        assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
     }
     
     @Test

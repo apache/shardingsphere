@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -30,6 +31,7 @@ public interface ShadowRouteEngine {
      *
      * @param routeContext route context
      * @param shadowRule shadow rule
+     * @param props configuration properties
      */
-    void route(RouteContext routeContext, ShadowRule shadowRule);
+    void route(RouteContext routeContext, ShadowRule shadowRule, ConfigurationProperties props);
 }

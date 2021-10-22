@@ -1,21 +1,20 @@
 +++
-pre = "<b>8.1.2. </b>"
-title = "SQL Parser Test"
-weight = 2
+title = "SQL 解析测试"
+weight = 1
 +++
 
-## Prepare Data
+## 数据准备
 
-Not like Integration test, SQL parse test does not need a specific database environment, just define the sql  to parse, and the assert data:
+SQL 解析无需真实的测试环境，开发者只需定义好待测试的 SQL，以及解析后的断言数据即可：
 
-### SQL Data
+### SQL数据
 
-As mentioned `sql-case-id` in Integration test，test-case-id could be shared in different module to test, and the file is at `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 
+在集成测试的部分提到过`sql-case-id`，其对应的SQL，可以在不同模块共享。开发者只需要在`shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 添加待测试的 SQL 即可。
 
-### Assert Data
+### 断言数据
 
-The assert data is at `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/case/${SQL-TYPE}/*.xml`
-in that xml file, it could assert against the table name, token or sql condition and so on. For example:
+断言的解析数据保存在 `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/case/${SQL-TYPE}/*.xml`
+在`xml`文件中，可以针对表名，token，SQL条件等进行断言，例如如下的配置：
 
 ```xml
 <parser-result-sets>
@@ -48,4 +47,4 @@ in that xml file, it could assert against the table name, token or sql condition
 </parser-result-sets>
 ```
 
-When these configs are ready, launch the test engine in `shardingsphere-sql-parser/shardingsphere-sql-parser-test` to test SQL parse. 
+设置好上面两类数据，开发者就可以通过 `shardingsphere-sql-parser/shardingsphere-sql-parser-test` 下对应的测试引擎启动 SQL 解析的测试了。

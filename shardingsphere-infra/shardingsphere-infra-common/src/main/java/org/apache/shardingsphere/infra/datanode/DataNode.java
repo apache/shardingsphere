@@ -55,7 +55,7 @@ public final class DataNode {
     }
     
     private static boolean isValidDataNode(final String dataNodeStr) {
-        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(dataNodeStr).size();
+        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
     
     @Override

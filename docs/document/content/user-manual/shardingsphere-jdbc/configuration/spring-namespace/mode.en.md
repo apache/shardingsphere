@@ -40,9 +40,9 @@ weight = 5
 
 <shardingsphere:data-source />
 
-| *Name*        | *Type*     | *Description*                                                                                             |
-| ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| schema-name   | Attribute  | JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy    |
+| *Name*            | *Type*     | *Description*                                                                                             |
+| ----------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| schema-name (?)   | Attribute  | JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy    |
 
 ### Cluster mode
 
@@ -82,6 +82,6 @@ weight = 5
 
 <shardingsphere:data-source />
 
-| *Name*        | *Type*     | *Description*                                                                                             |
-| ------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| schema-name   | Attribute  | JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy    |
+| *Name*            | *Type*     | *Description*                                                                                             |
+| ----------------- | ---------- | --------------------------------------------------------------------------------------------------------- |
+| schema-name (?)   | Attribute  | JDBC data source alias, this parameter can help the configuration shared between JDBC driver and Proxy    |

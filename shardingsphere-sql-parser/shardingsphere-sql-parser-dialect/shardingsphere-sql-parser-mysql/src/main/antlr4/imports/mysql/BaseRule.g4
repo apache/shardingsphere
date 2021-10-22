@@ -888,7 +888,7 @@ aggregationFunction
     ;
     
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR
     ;
     
 distinct

@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetCharacterContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinlogEventsContext;
@@ -99,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallComponentStatement;
@@ -108,6 +111,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinaryLogsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogStatement;
@@ -229,9 +233,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return new MySQLResetStatement();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepairTable(final RepairTableContext ctx) {
-        return new MySQLRepairTableStatement();
+        MySQLRepairTableStatement result = new MySQLRepairTableStatement();
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -315,9 +322,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
-        return new MySQLOptimizeTableStatement();
+        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement();
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return result;
     }
     
     @Override
@@ -432,6 +442,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
         MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
         result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
+        MySQLCreateResourceGroupStatement result = new MySQLCreateResourceGroupStatement();
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
     
@@ -610,6 +627,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             components.add(((StringLiteralValue) visit(each.string_())).getValue());
         }
         result.getComponents().addAll(components);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
+        MySQLSetResourceGroupStatement result = new MySQLSetResourceGroupStatement();
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
 }

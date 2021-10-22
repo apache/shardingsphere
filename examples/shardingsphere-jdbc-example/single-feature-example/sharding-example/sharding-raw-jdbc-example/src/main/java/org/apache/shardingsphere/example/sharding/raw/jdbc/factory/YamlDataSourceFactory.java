@@ -37,6 +37,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
             case READWRITE_SPLITTING:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting.yaml"));
+            case SHARDING_AUTO_TABLES:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-auto-tables.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

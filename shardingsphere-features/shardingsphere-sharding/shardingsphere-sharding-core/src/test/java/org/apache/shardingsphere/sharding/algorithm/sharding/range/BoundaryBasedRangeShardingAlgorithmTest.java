@@ -44,18 +44,36 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0L));
+    }
+    
+    private void assertPreciseDoSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0L)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, shardingValue), is("t_order_0"));
+    }
+    
+    @Test
+    public void assertPreciseDoShardingWithIntShardingValue() {
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0));
     }
     
     @Test
     public void assertRangeDoSharding() {
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2L, 15L)));
+    }
+    
+    private void assertRangeDoSharding(final RangeShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(2L, 15L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_3"));
+    }
+    
+    @Test
+    public void assertRangeDoShardingWithIntShardingValue() {
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2, 15)));
     }
     
     @Test

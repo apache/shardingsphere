@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -25,7 +27,6 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -89,7 +90,9 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), String.valueOf(Boolean.TRUE));
+        shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), new ConfigurationProperties(props));
         Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowDeleteStatementRoutingEngine.parseShadowColumnConditions();
         assertThat(shadowColumnConditions.isPresent(), is(true));
         Collection<ShadowColumnCondition> shadowColumns = shadowColumnConditions.get();
@@ -146,12 +149,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
     }
-
-    @Test
-    public void assertCreateShadowDetermineCondition() {
-        assertThat(shadowDeleteStatementRoutingEngine.createShadowDetermineCondition().getShadowOperationType(), is(ShadowOperationType.DELETE));
-    }
-
+    
     @Test
     public void assertGetAllTables() {
         Collection<SimpleTableSegment> allTables = shadowDeleteStatementRoutingEngine.getAllTables();

@@ -38,6 +38,6 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(((Timestamp) value).getTime());
+        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value, false));
     }
 }

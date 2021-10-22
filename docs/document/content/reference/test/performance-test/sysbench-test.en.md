@@ -1,7 +1,6 @@
 +++
-pre = "<b>8.1.4. </b>"
-title = "Performance Test"
-weight = 4
+title = "Performance Test with Sysbench"
+weight = 1
 +++
 
 ## Target

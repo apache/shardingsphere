@@ -1,7 +1,6 @@
 +++
-pre = "<b>8.1.3. </b>"
 title = "SQL 改写测试"
-weight = 3
+weight = 2
 +++
 
 ## 目标
