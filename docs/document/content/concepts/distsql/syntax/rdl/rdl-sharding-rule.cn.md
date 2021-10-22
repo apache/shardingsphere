@@ -22,25 +22,25 @@ shardingTableRuleDefinition:
     tableName(resources [, shardingColumn] [, algorithmDefinition] [, keyGenerateStrategy])
 
 resources:
-    RESOURCES(resourceName [, resourceName] ...))
+    RESOURCES(resourceName [, resourceName] ...)
 
 shardingColumn:
     SHARDING_COLUMN=columnName
 
 algorithmDefinition:
-    TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties])])
 
 keyGenerateStrategy:
     GENERATED_KEY(COLUMN=columnName, strategyDefinition)
 
 shardingStrategy:
-    (TYPE=strategyType, shardingColumn, shardingAlgorithm )
+    (TYPE=strategyType, shardingColumn, shardingAlgorithm)
 
 shardingAlgorithm
     : SHARDING_ALGORITHM=shardingAlgorithmName
 
 strategyDefinition:
-    TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -73,9 +73,9 @@ bindTableRulesDefinition:
 ### Sharding Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
+CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 
-ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
+ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 
 DROP SHARDING BROADCAST TABLE RULES
 ```

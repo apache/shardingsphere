@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
- * Create sharding default strategy statement.
+ * Create default sharding strategy statement.
  */
 @RequiredArgsConstructor
 @Getter
