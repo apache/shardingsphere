@@ -52,7 +52,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
             return Optional.empty(); 
         }
         SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
-        ColumnSegment column = new ColumnSegment(getSQLNodeStartIndex(sqlIdentifier), getSQLNodeStopIndex(sqlIdentifier), new IdentifierValue(sqlIdentifier.names.get(0)));
+        ColumnSegment column = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(sqlIdentifier.names.get(0)));
         return Optional.of(new ColumnOrderByItemSegment(column, OrderDirection.ASC));
     }
 }

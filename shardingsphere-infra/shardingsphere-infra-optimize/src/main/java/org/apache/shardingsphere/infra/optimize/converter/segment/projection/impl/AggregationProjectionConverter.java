@@ -66,7 +66,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         }
         AggregationType aggregationType = AggregationType.valueOf(sqlBasicCall.getOperator().getName());
         String innerExpression = sqlBasicCall.toString().replace(sqlBasicCall.getOperator().getName(), "");
-        return Optional.of(new AggregationProjectionSegment(getSQLNodeStartIndex(sqlBasicCall), getSQLNodeStopIndex(sqlBasicCall), aggregationType, innerExpression));
+        return Optional.of(new AggregationProjectionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), aggregationType, innerExpression));
     }
     
     private SqlAggFunction convertOperator(final String operator) {

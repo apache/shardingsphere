@@ -40,7 +40,7 @@ public final class ExpressionProjectionConverter implements SQLSegmentConverter<
     public Optional<ExpressionProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlBasicCall) {
             ExpressionSegment expressionSegment = new ExpressionConverter().convertToSQLSegment(sqlNode).orElse(null);
-            return Optional.of(new ExpressionProjectionSegment(getSQLNodeStartIndex(sqlNode), getSQLNodeStopIndex(sqlNode), sqlNode.toString(), expressionSegment));
+            return Optional.of(new ExpressionProjectionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), sqlNode.toString(), expressionSegment));
         }
         return Optional.empty();
     }

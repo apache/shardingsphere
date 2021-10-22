@@ -58,8 +58,8 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
         }
         SqlNode subquerySqlNode = sqlBasicCall.getOperandList().get(0);
         SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(subquerySqlNode);
-        SubquerySegment subquery = new SubquerySegment(getSQLNodeStartIndex(subquerySqlNode) - 1, getSQLNodeStopIndex(subquerySqlNode) + 1, selectStatement);
-        ExistsSubqueryExpression result = new ExistsSubqueryExpression(getSQLNodeStartIndex(sqlBasicCall), subquery.getStopIndex(), subquery);
+        SubquerySegment subquery = new SubquerySegment(getStartIndex(subquerySqlNode) - 1, getStopIndex(subquerySqlNode) + 1, selectStatement);
+        ExistsSubqueryExpression result = new ExistsSubqueryExpression(getStartIndex(sqlBasicCall), subquery.getStopIndex(), subquery);
         result.setNot(not);
         return Optional.of(result);
     }

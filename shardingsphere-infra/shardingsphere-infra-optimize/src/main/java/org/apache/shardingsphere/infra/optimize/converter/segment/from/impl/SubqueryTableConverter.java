@@ -54,7 +54,7 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
     public Optional<SubqueryTableSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
         SqlNode select = sqlBasicCall.getOperandList().get(0);
         SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(select);
-        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(getSQLNodeStartIndex(sqlBasicCall), getSQLNodeStopIndex(sqlBasicCall), selectStatement));
+        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), selectStatement));
         if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
             SqlNode alias = sqlBasicCall.getOperandList().get(1);
             int aliasStartIndex = alias.getParserPosition().getColumnNum();

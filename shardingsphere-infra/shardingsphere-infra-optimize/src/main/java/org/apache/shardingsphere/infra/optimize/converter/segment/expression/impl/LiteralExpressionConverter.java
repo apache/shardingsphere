@@ -46,7 +46,7 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
     public Optional<LiteralExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlLiteral) {
             SqlLiteral sqlLiteral = (SqlLiteral) sqlNode;
-            return Optional.of(new LiteralExpressionSegment(getSQLNodeStartIndex(sqlLiteral), getSQLNodeStopIndex(sqlLiteral), SQLUtil.getExactlyValue(sqlLiteral.toValue())));
+            return Optional.of(new LiteralExpressionSegment(getStartIndex(sqlLiteral), getStopIndex(sqlLiteral), SQLUtil.getExactlyValue(sqlLiteral.toValue())));
         }
         return Optional.empty();
     }

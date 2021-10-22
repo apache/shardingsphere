@@ -61,8 +61,8 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
         if (sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy) {
             SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(sqlNode);
             // FIXME subquery projection position returned by the CalCite parser does not contain two brackets
-            int startIndex = getSQLNodeStartIndex(sqlNode) - 1;
-            int stopIndex = getSQLNodeStopIndex(sqlNode) + 1;
+            int startIndex = getStartIndex(sqlNode) - 1;
+            int stopIndex = getStopIndex(sqlNode) + 1;
             String text = "(" + sqlNode + ")";
             String originalText = text.replace("\n", " ").replace(Quoting.BACK_TICK.string, "");
             return Optional.of(new SubqueryProjectionSegment(new SubquerySegment(startIndex, stopIndex, selectStatement), originalText));

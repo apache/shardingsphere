@@ -47,22 +47,22 @@ public interface SQLSegmentConverter<S extends SQLSegment, T extends SqlNode> {
     Optional<S> convertToSQLSegment(T sqlNode);
     
     /**
-     * Get SQL node start index.
+     * Get start index.
      * 
      * @param sqlNode SQL node
-     * @return SQL nod start index
+     * @return start index
      */
-    default int getSQLNodeStartIndex(SqlNode sqlNode) {
+    default int getStartIndex(SqlNode sqlNode) {
         return sqlNode.getParserPosition().getColumnNum() - 1;
     }
     
     /**
-     * Get SQL node stop index.
+     * Get stop index.
      *
      * @param sqlNode SQL node
-     * @return SQL nod stop index
+     * @return stop index
      */
-    default int getSQLNodeStopIndex(SqlNode sqlNode) {
+    default int getStopIndex(SqlNode sqlNode) {
         return sqlNode.getParserPosition().getEndColumnNum() - 1;
     }
 }

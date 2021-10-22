@@ -64,6 +64,6 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         ExpressionConverter expressionConverter = new ExpressionConverter();
         ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new InExpression(getSQLNodeStartIndex(sqlBasicCall), getSQLNodeStopIndex(sqlBasicCall) + 1, left, right, not));
+        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall) + 1, left, right, not));
     }
 }

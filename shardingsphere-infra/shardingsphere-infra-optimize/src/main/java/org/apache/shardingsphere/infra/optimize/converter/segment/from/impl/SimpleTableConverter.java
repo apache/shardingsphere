@@ -52,12 +52,12 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
             SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
             if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
                 ImmutableList<String> names = ((SqlIdentifier) sqlBasicCall.getOperandList().get(0)).names;
-                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getSQLNodeStartIndex(sqlNode), getSQLNodeStopIndex(sqlNode), new IdentifierValue(names.get(0))));
+                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(names.get(0))));
                 return Optional.of(tableSegment);
             }
         }
         if (sqlNode instanceof SqlIdentifier) {
-            return Optional.of(new SimpleTableSegment(new TableNameSegment(getSQLNodeStartIndex(sqlNode), getSQLNodeStopIndex(sqlNode), new IdentifierValue(((SqlIdentifier) sqlNode).names.get(0)))));
+            return Optional.of(new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(((SqlIdentifier) sqlNode).names.get(0)))));
         }
         return Optional.empty();
     }

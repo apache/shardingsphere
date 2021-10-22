@@ -46,8 +46,8 @@ public final class SubqueryExpressionConverter implements SQLSegmentConverter<Su
         }
         SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(sqlNode);
         // FIXME subquery projection position returned by the CalCite parser does not contain two brackets
-        int startIndex = getSQLNodeStartIndex(sqlNode) - 1;
-        int stopIndex = getSQLNodeStopIndex(sqlNode) + 1;
+        int startIndex = getStartIndex(sqlNode) - 1;
+        int stopIndex = getStopIndex(sqlNode) + 1;
         return Optional.of(new SubqueryExpressionSegment(new SubquerySegment(startIndex, stopIndex, selectStatement)));
     }
 }
