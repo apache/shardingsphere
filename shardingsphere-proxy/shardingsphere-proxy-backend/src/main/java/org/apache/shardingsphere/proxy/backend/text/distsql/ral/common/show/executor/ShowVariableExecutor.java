@@ -62,7 +62,8 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
             VariableEnum.CHECK_DUPLICATE_TABLE_ENABLED,
             VariableEnum.SQL_COMMENT_PARSE_ENABLED,
             VariableEnum.PROXY_FRONTEND_EXECUTOR_SIZE,
-            VariableEnum.PROXY_BACKEND_EXECUTOR_SUITABLE);
+            VariableEnum.PROXY_BACKEND_EXECUTOR_SUITABLE,
+            VariableEnum.PROXY_FRONTEND_CONNECTION_LIMIT);
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {

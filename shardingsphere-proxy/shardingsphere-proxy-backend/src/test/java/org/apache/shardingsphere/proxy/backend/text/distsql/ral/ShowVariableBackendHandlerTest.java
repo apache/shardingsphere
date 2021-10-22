@@ -79,16 +79,4 @@ public final class ShowVariableBackendHandlerTest {
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(Boolean.FALSE.toString()));
     }
-    
-    @Test
-    public void assertShowPropsVariable() throws SQLException {
-        backendConnection.setCurrentSchema("schema");
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("sql_show"), backendConnection);
-        ResponseHeader actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
-        backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is("false"));
-    }
 }

@@ -55,6 +55,8 @@ public enum VariableEnum {
 
     PROXY_BACKEND_EXECUTOR_SUITABLE,
     
+    PROXY_FRONTEND_CONNECTION_LIMIT,
+    
     /**
      * Other variables.
      */
