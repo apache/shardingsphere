@@ -78,21 +78,21 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
             throw new SchemaNotExistedException(schemaName);
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName);
-        Collection<List<Object>> rows = buildInstanceRows(metaData, ENABLE);
+        Collection<List<Object>> rows = buildResourceRows(metaData, ENABLE);
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository()) {
             return new MultipleLocalDataMergedResult(rows);
         }
-        Collection<List<Object>> disableInstanceRows = buildInstanceRows(persistService, DISABLE);
-        return new MultipleLocalDataMergedResult(mergeRows(rows, disableInstanceRows));
+        Collection<List<Object>> disabledResourceRows = buildResourceRows(persistService, DISABLE);
+        return new MultipleLocalDataMergedResult(mergeRows(rows, disabledResourceRows));
     }
     
-    private Collection<List<Object>> buildInstanceRows(final ShardingSphereMetaData metaData, final String status) {
+    private Collection<List<Object>> buildResourceRows(final ShardingSphereMetaData metaData, final String status) {
         Set<String> allResources = metaData.getResource().getDataSources().keySet();
         return allResources.stream().map(each -> buildRow(each, status)).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService, final String status) {
+    private Collection<List<Object>> buildResourceRows(final MetaDataPersistService persistService, final String status) {
         List<String> instanceIds = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(status.equals(DISABLE) ? StorageNodeStatus.DISABLE : StorageNodeStatus.PRIMARY));
         if (!instanceIds.isEmpty()) {
             return instanceIds.stream().filter(Objects::nonNull).map(each -> each.split(DELIMITER)[1]).map(each -> buildRow(each, status)).collect(Collectors.toCollection(LinkedList::new));
@@ -100,11 +100,11 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         return Collections.emptyList();
     }
     
-    private Collection<List<Object>> mergeRows(final Collection<List<Object>> rows, final Collection<List<Object>> disableInstanceRow) {
+    private Collection<List<Object>> mergeRows(final Collection<List<Object>> rows, final Collection<List<Object>> disabledResourceRows) {
         Collection<List<Object>> result;
-        Set<Object> disableResource = disableInstanceRow.stream().flatMap(Collection::stream).filter(each -> !each.equals(DISABLE)).collect(Collectors.toSet());
-        result = rows.stream().filter(each -> !hasIntersection(each, disableResource)).collect(Collectors.toCollection(LinkedList::new));
-        result.addAll(disableInstanceRow);
+        Set<Object> disabledResourceNames = disabledResourceRows.stream().map(each -> getResourceName(each)).collect(Collectors.toSet());
+        result = rows.stream().filter(each -> !disabledResourceNames.contains(getResourceName(each))).collect(Collectors.toCollection(LinkedList::new));
+        result.addAll(disabledResourceRows);
         return result;
     }
     
@@ -112,7 +112,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         return Arrays.asList(resource, status);
     }
     
-    private boolean hasIntersection(final Collection<Object> collection, final Set<Object> set) {
-        return collection.stream().filter(each -> !each.equals(DISABLE) && !each.equals(ENABLE)).anyMatch(set::contains);
+    private Object getResourceName(final List<Object> row) {
+        return row.get(0);
     }
 }
