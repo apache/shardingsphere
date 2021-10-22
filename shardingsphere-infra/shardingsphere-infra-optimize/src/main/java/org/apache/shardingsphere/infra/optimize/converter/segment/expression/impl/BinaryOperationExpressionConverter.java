@@ -35,7 +35,7 @@ import java.util.TreeMap;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
+public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlBasicCall> {
     
     private static final Map<String, SqlBinaryOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -59,26 +59,25 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final BinaryOperationExpression segment) {
+    public Optional<SqlBasicCall> convertToSQLNode(final BinaryOperationExpression segment) {
         SqlBinaryOperator operator = convertOperator(segment.getOperator());
-        SqlNode left = convertExpression(segment.getLeft());
-        SqlNode right = convertExpression(segment.getRight());
+        SqlNode left = new ExpressionConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        SqlNode right = new ExpressionConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
         return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
     }
     
     @Override
-    public Optional<BinaryOperationExpression> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+    public Optional<BinaryOperationExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+        ExpressionConverter expressionConverter = new ExpressionConverter();
+        ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
+        ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
+        String operator = sqlBasicCall.getOperator().getName();
+        String text = sqlBasicCall.toString();
+        return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, operator, text));
     }
     
     private SqlBinaryOperator convertOperator(final String operator) {
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
-    }
-    
-    private SqlNode convertExpression(final ExpressionSegment segment) {
-        Optional<SqlNode> result = new ExpressionConverter().convertToSQLNode(segment);
-        Preconditions.checkState(result.isPresent());
-        return result.get();
     }
 }

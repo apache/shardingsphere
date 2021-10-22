@@ -41,8 +41,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     @Override
     protected Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions() {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
-        Collection<String> columnNames = parseColumnNames();
-        Iterator<String> columnNamesIt = columnNames.iterator();
+        Iterator<String> columnNamesIt = parseColumnNames().iterator();
         List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
         int index = 0;
         while (columnNamesIt.hasNext()) {

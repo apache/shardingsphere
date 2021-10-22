@@ -120,7 +120,6 @@ public final class MySQLPacketPayload implements PacketPayload {
      */
     public void writeInt4(final int value) {
         byteBuf.writeIntLE(value);
-    
     }
     
     /**
@@ -145,7 +144,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      *
      * @param value 6 byte fixed length integer
      */
-    public void writeInt6(final int value) {
+    public void writeInt6(final long value) {
         // TODO
     }
     
@@ -169,7 +168,6 @@ public final class MySQLPacketPayload implements PacketPayload {
      */
     public void writeInt8(final long value) {
         byteBuf.writeLongLE(value);
-        
     }
     
     /**
@@ -462,9 +460,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param length length of reserved
      */
     public void writeReserved(final int length) {
-        for (int i = 0; i < length; i++) {
-            byteBuf.writeByte(0);
-        }
+        byteBuf.writeZero(length);
     }
     
     @Override

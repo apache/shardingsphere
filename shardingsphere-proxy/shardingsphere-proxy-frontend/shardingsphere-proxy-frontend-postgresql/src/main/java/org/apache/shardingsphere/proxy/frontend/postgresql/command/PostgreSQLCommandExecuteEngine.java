@@ -81,7 +81,12 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
         }
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }
-    
+
+    @Override
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+        return PostgreSQLErrPacketFactory.newInstance(cause);
+    }
+
     @Override
     public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(backendConnection.getConnectionId());
