@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.expression.imp
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Objects;
@@ -52,7 +53,14 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
             return Optional.empty(); 
         }
         SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
-        ColumnSegment column = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(sqlIdentifier.names.get(0)));
-        return Optional.of(new ColumnOrderByItemSegment(column, OrderDirection.ASC));
+        if (sqlIdentifier.names.size() > 1) {
+            SqlIdentifier column = sqlIdentifier.getComponent(1);
+            SqlIdentifier owner = sqlIdentifier.getComponent(0);
+            ColumnSegment columnSegment = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(column.toString()));
+            columnSegment.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(owner.toString())));
+            return Optional.of(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
+        }
+        ColumnSegment columnSegment = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(sqlIdentifier.names.get(0)));
+        return Optional.of(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
     }
 }

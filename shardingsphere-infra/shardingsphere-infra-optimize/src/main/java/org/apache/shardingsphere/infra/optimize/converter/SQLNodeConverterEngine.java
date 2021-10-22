@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * SQL node convert engine.
+ * SQL node converter engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLNodeConvertEngine {
+public final class SQLNodeConverterEngine {
     
     /**
      * Convert SQL statement to SQL node.

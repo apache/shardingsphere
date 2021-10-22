@@ -31,7 +31,7 @@ import org.apache.calcite.util.Litmus;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.optimize.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -43,7 +43,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLPar
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -120,18 +119,18 @@ public final class SQLNodeConvertEngineParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
-        SqlNode actual = SQLNodeConvertEngine.convertToSQLNode(sqlStatement);
+        SqlNode actual = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);
         assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     
-    @Ignore
+    @Test
     public void assertConvertToSQLStatement() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SqlNode sqlNode = parseSqlNode(databaseType, sql);
-        SQLStatement actual = SQLNodeConvertEngine.convertToSQLStatement(sqlNode);
+        SQLStatement actual = SQLNodeConverterEngine.convertToSQLStatement(sqlNode);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
     }
     

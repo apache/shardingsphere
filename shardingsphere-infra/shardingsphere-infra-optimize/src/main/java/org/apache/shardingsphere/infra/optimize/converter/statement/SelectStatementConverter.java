@@ -25,24 +25,30 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.HavingConverter;
-import org.apache.shardingsphere.infra.optimize.converter.segment.limit.OffsetConverter;
-import org.apache.shardingsphere.infra.optimize.converter.segment.limit.RowCountConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.orderby.OrderByConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.DistinctConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Select statement converter.
  */
 public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
+    
+    private static final int LIMIT_SEGMENT_LENGTH = 6;
     
     @Override
     public SqlNode convertToSQLNode(final SelectStatement selectStatement) {
@@ -54,8 +60,12 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convertToSQLNode(optional)).orElse(null);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convertToSQLNode(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        SqlNode offset = limit.flatMap(optional -> new OffsetConverter().convertToSQLNode(optional)).orElse(null);
-        SqlNode rowCount = limit.flatMap(optional -> new RowCountConverter().convertToSQLNode(optional)).orElse(null);
+        SqlNode offset = null;
+        SqlNode rowCount = null;
+        if (limit.isPresent()) {
+            offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional)).orElse(null);
+            rowCount = limit.get().getRowCount().flatMap(optional -> new PaginationValueSQLConverter().convertToSQLNode(optional)).orElse(null);
+        }
         SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from,
                 where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
         return containsOrderBy(orderBy, offset, rowCount) ? new SqlOrderBy(SqlParserPos.ZERO, sqlSelect, orderBy, offset, rowCount) : sqlSelect;
@@ -80,9 +90,26 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         if (sqlNode instanceof SqlOrderBy) {
             SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
             new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
-            Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new OffsetConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
-            Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new RowCountConverter().convertToSQLSegment(optional)).ifPresent(result::setLimit);
+            createLimitSegment(sqlOrderBy).ifPresent(result::setLimit);
         }
         return result;
+    }
+    
+    private Optional<LimitSegment> createLimitSegment(final SqlOrderBy sqlOrderBy) {
+        if (null == sqlOrderBy.offset && null == sqlOrderBy.fetch) {
+            return Optional.empty();
+        }
+        Optional<PaginationValueSegment> offset = Optional.ofNullable(sqlOrderBy.offset).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLSegment(optional));
+        Optional<PaginationValueSegment> rowCount = Optional.ofNullable(sqlOrderBy.fetch).flatMap(optional -> new PaginationValueSQLConverter().convertToSQLSegment(optional));
+        List<Integer> startIndexes = new LinkedList<>();
+        List<Integer> stopIndexes = new LinkedList<>();
+        offset.map(SQLSegment::getStartIndex).ifPresent(startIndexes::add);
+        rowCount.map(SQLSegment::getStartIndex).ifPresent(startIndexes::add);
+        offset.map(SQLSegment::getStopIndex).ifPresent(stopIndexes::add);
+        rowCount.map(SQLSegment::getStopIndex).ifPresent(stopIndexes::add);
+        // FIXME Now sqlNode position returned by the CalCite parser does not contain LIMIT and requires manual calculation
+        int startIndex = startIndexes.stream().min(Comparator.naturalOrder()).orElse(0) - LIMIT_SEGMENT_LENGTH;
+        int stopIndex = stopIndexes.stream().max(Comparator.naturalOrder()).orElse(0);
+        return Optional.of(new LimitSegment(startIndex, stopIndex, offset.orElse(null), rowCount.orElse(null)));
     }
 }
