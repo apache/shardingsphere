@@ -154,4 +154,3 @@ SHARDING_ALGORITHM
 STRATEGY
     : S T R A T E G Y
     ;
-    
