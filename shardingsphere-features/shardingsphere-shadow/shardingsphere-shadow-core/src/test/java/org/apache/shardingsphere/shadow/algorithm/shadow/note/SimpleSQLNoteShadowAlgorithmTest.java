@@ -67,7 +67,7 @@ public final class SimpleSQLNoteShadowAlgorithmTest {
     }
     
     private PreciseNoteShadowValue<String> createNoteShadowValue(final String sqlNote) {
-        return new PreciseNoteShadowValue<>("t_user", ShadowOperationType.NON_DML, sqlNote);
+        return new PreciseNoteShadowValue<>("t_user", ShadowOperationType.NOTE_MATCH, sqlNote);
     }
     
     private Collection<String> createShadowTableNames() {
