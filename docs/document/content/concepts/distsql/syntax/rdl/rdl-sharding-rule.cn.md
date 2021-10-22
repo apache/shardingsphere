@@ -10,6 +10,8 @@ weight = 2
 ```sql
 CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
+CREATE DEFAULT SHARDING (DATABASE | TABLE) STRATEGY shardingStrategy
+
 ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
 DROP SHARDING TABLE RULE tableName [, tableName] ...
@@ -17,7 +19,7 @@ DROP SHARDING TABLE RULE tableName [, tableName] ...
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
 
 shardingTableRuleDefinition:
-    tableName(resources [, shardingColumn] [, shardingAlgorithm] [, keyGenerateStrategy])
+    tableName(resources [, shardingColumn] [, algorithmDefinition] [, keyGenerateStrategy])
 
 resources:
     RESOURCES(resourceName [, resourceName] ...))
@@ -25,11 +27,17 @@ resources:
 shardingColumn:
     SHARDING_COLUMN=columnName
 
-shardingAlgorithm:
+algorithmDefinition:
     TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
 
 keyGenerateStrategy:
-    GENERATED_KEY(COLUMN=columnName,strategyDefinition)
+    GENERATED_KEY(COLUMN=columnName, strategyDefinition)
+
+shardingStrategy:
+    (TYPE=strategyType, shardingColumn, shardingAlgorithm )
+
+shardingAlgorithm
+    : SHARDING_ALGORITHM=shardingAlgorithmName
 
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties] )] )
@@ -46,6 +54,7 @@ algorithmProperty:
 - 重复的 `tableName` 将无法被创建
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`
+- `strategyType` 指定分片策略，请参考[分片策略](https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)
 
 ### Sharding Binding Table Rule
 
