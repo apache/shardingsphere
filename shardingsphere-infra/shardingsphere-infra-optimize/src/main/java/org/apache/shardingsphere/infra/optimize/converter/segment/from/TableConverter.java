@@ -58,7 +58,7 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
         } else if (sqlNode instanceof SqlJoin) {
             return new JoinTableConverter().convertToSQLSegment((SqlJoin) sqlNode).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
-            Optional<SqlNode> existSubquery = ((SqlBasicCall) sqlNode).getOperandList().stream().filter(each -> each instanceof SqlSelect || each instanceof SqlOrderBy).findAny();
+            Optional<SqlNode> existSubquery = ((SqlBasicCall) sqlNode).getOperandList().stream().filter(this::containsSqlSelect).findAny();
             if (existSubquery.isPresent()) {
                 return new SubqueryTableConverter().convertToSQLSegment((SqlBasicCall) sqlNode).map(optional -> optional);
             } else {
@@ -66,5 +66,9 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
             }
         }
         throw new UnsupportedOperationException("Unsupported sql node type: " + sqlNode.getClass());
+    }
+    
+    private boolean containsSqlSelect(final SqlNode sqlNode) {
+        return sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy;
     }
 }
