@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.resource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
+import org.apache.shardingsphere.infra.config.datasource.closer.DataSourceCloser;
+import org.apache.shardingsphere.infra.config.datasource.closer.DataSourceCloserFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * ShardingSphere resource.
@@ -81,14 +85,7 @@ public final class ShardingSphereResource {
      * @throws SQLException exception
      */
     public void close(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLException(ex);
-            }
-        }
+        DataSourceCloser dataSourceCloser = DataSourceCloserFactory.getDataSourceCloser(dataSource.getClass().getName());
+        dataSourceCloser.closeDataSource(dataSource);
     }
 }
