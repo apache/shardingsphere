@@ -42,21 +42,22 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
         if (segment instanceof SimpleTableSegment) {
             return new SimpleTableConverter().convertToSQLNode((SimpleTableSegment) segment);
         } else if (segment instanceof JoinTableSegment) {
-            return new JoinTableConverter().convertToSQLNode((JoinTableSegment) segment);
+            return new JoinTableConverter().convertToSQLNode((JoinTableSegment) segment).map(optional -> optional);
         } else if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableConverter().convertToSQLNode((SubqueryTableSegment) segment);
+            return new SubqueryTableConverter().convertToSQLNode((SubqueryTableSegment) segment).map(optional -> optional);
         }
-        throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
+        throw new UnsupportedOperationException("Unsupported segment type: " + segment.getClass());
     }
     
     @Override
     public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        if (sqlNode instanceof SqlBasicCall || sqlNode instanceof SqlIdentifier) {
+        if (sqlNode instanceof SqlIdentifier) {
             return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlJoin) {
+            return new JoinTableConverter().convertToSQLSegment((SqlJoin) sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlBasicCall) {
+            return new SubqueryTableConverter().convertToSQLSegment((SqlBasicCall) sqlNode).map(optional -> optional);
         }
-        if (sqlNode instanceof SqlJoin) {
-            return new JoinTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
-        }
-        return Optional.empty();
+        throw new UnsupportedOperationException("Unsupported sql node type: " + sqlNode.getClass());
     }
 }

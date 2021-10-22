@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
 
+import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,6 +58,15 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
     
     @Override
     public Optional<SubqueryProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy) {
+            SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(sqlNode);
+            // FIXME subquery projection position returned by the CalCite parser does not contain two brackets
+            int startIndex = getStartIndex(sqlNode) - 1;
+            int stopIndex = getStopIndex(sqlNode) + 1;
+            String text = "(" + sqlNode + ")";
+            String originalText = text.replace("\n", " ").replace(Quoting.BACK_TICK.string, "");
+            return Optional.of(new SubqueryProjectionSegment(new SubquerySegment(startIndex, stopIndex, selectStatement), originalText));
+        }
         return Optional.empty();
     }
 }

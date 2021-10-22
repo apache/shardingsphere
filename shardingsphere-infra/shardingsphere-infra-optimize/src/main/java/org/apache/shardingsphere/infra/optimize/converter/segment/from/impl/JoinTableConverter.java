@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlNode> {
+public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlJoin> {
     
     private static final String JOIN_TYPE_INNER = "INNER";
     
@@ -44,7 +44,7 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final JoinTableSegment segment) {
+    public Optional<SqlJoin> convertToSQLNode(final JoinTableSegment segment) {
         SqlNode left = new TableConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new TableConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
         Optional<SqlNode> condition = new ExpressionConverter().convertToSQLNode(segment.getCondition());
@@ -54,7 +54,7 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     }
     
     @Override
-    public Optional<JoinTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+    public Optional<JoinTableSegment> convertToSQLSegment(final SqlJoin sqlJoin) {
         return Optional.empty();
     }
     

@@ -24,7 +24,11 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,10 +37,10 @@ import java.util.Optional;
 /**
  * Subquery table converter.
  */
-public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlNode> {
+public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlBasicCall> {
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final SubqueryTableSegment segment) {
+    public Optional<SqlBasicCall> convertToSQLNode(final SubqueryTableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -47,7 +51,14 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
     }
     
     @Override
-    public Optional<SubqueryTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+    public Optional<SubqueryTableSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+        SqlNode select = sqlBasicCall.getOperandList().get(0);
+        SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(select);
+        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), selectStatement));
+        if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
+            SqlNode alias = sqlBasicCall.getOperandList().get(1);
+            result.setAlias(new AliasSegment(getStartIndex(alias), getStopIndex(alias), new IdentifierValue(alias.toString())));   
+        }
+        return Optional.of(result);
     }
 }

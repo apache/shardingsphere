@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Optional;
 
@@ -43,6 +44,10 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
     
     @Override
     public Optional<LiteralExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlLiteral) {
+            SqlLiteral sqlLiteral = (SqlLiteral) sqlNode;
+            return Optional.of(new LiteralExpressionSegment(getStartIndex(sqlLiteral), getStopIndex(sqlLiteral), SQLUtil.getExactlyValue(sqlLiteral.toValue())));
+        }
         return Optional.empty();
     }
 }
