@@ -81,6 +81,7 @@ public final class SelectInformationExecutorTest {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         List<String> keys = new ArrayList<>(mockMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
+            when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
             when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
             when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
         }
