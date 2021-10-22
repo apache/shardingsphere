@@ -26,9 +26,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Optional;
 
@@ -57,20 +55,7 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     
     @Override
     public Optional<JoinTableSegment> convertToSQLSegment(final SqlJoin sqlJoin) {
-        TableSegment left = new TableConverter().convertToSQLSegment(sqlJoin.getLeft()).orElseThrow(IllegalStateException::new);
-        TableSegment right = new TableConverter().convertToSQLSegment(sqlJoin.getRight()).orElseThrow(IllegalStateException::new);
-        Optional<ExpressionSegment> condition = new ExpressionConverter().convertToSQLSegment((sqlJoin).getCondition());
-        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
-        JoinTableSegment result = new JoinTableSegment();
-        result.setStartIndex(getStartIndex(sqlJoin));
-        result.setStartIndex(getStopIndex(sqlJoin));
-        result.setAlias(null);
-        result.setLeft(left);
-        //        result.setJoinType(conditionType.getStringValue());
-        result.setRight(right);
-        result.setUsing(null);
-        //        result.setCondition(condition);
-        return Optional.of(result);
+        return Optional.empty();
     }
     
     private SqlLiteral convertJoinType(final String joinType) {
