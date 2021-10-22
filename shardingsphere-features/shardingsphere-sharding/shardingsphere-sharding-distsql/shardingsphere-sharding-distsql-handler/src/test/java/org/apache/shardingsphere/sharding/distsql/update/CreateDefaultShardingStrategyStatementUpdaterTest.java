@@ -71,7 +71,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
-        StandardShardingStrategyConfiguration defaultTableShardingStrategy =(StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
+        StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         Assert.assertEquals("order_id_algorithm", defaultTableShardingStrategy.getShardingAlgorithmName());
         Assert.assertEquals("order_id", defaultTableShardingStrategy.getShardingColumn());
     }
