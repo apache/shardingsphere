@@ -71,13 +71,13 @@ public final class SQLNodeConvertEngineParameterizedTest {
     private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
     static {
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery");
         SUPPORTED_SQL_CASE_IDS.add("select_with_in_subquery_condition");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_between_and_subquery_condition");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_exist_subquery_condition");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_not_exist_subquery_condition");
-//        SUPPORTED_SQL_CASE_IDS.add("select_with_simple_table");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_between_and_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_exist_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_not_exist_subquery_condition");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_simple_table");
 //        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
 //        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
 //        SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_limit");

@@ -20,9 +20,13 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.fun.SqlBetweenOperator;
 import org.apache.calcite.sql.fun.SqlInOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.BinaryOperationExpressionConverter;
@@ -67,13 +71,13 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         } else if (segment instanceof ColumnSegment) {
             return new ColumnConverter().convertToSQLNode((ColumnSegment) segment).map(optional -> optional);
         } else if (segment instanceof ExistsSubqueryExpression) {
-            return new ExistsSubqueryExpressionConverter().convertToSQLNode((ExistsSubqueryExpression) segment);
+            return new ExistsSubqueryExpressionConverter().convertToSQLNode((ExistsSubqueryExpression) segment).map(optional -> optional);
         } else if (segment instanceof SubqueryExpressionSegment) {
             return new SubqueryExpressionConverter().convertToSQLNode((SubqueryExpressionSegment) segment);
         } else if (segment instanceof InExpression) {
             return new InExpressionConverter().convertToSQLNode((InExpression) segment).map(optional -> optional);
         } else if (segment instanceof BetweenExpression) {
-            return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment);
+            return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment).map(optional -> optional);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }
@@ -87,22 +91,35 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(optional -> optional);
         }
         if (sqlNode instanceof SqlBasicCall) {
-            return convertToSQLSegment((SqlBasicCall) sqlNode);
+            return convertToSQLSegment((SqlBasicCall) sqlNode, false);
         }
         if (sqlNode instanceof SqlSelect) {
             return new SubqueryExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
+        if (sqlNode instanceof SqlLiteral) {
+            return new LiteralExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
         return Optional.empty();
     }
     
-    private Optional<ExpressionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+    private Optional<ExpressionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall, final boolean not) {
         if (null == sqlBasicCall) {
             return Optional.empty();
         }
-        if (sqlBasicCall.getOperator() instanceof SqlInOperator) {
-            return new InExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        SqlOperator operator = sqlBasicCall.getOperator();
+        if (operator.getName().equals(SqlStdOperatorTable.NOT.getName()) && sqlBasicCall.getOperandList().get(0) instanceof SqlBasicCall) {
+            return convertToSQLSegment((SqlBasicCall) sqlBasicCall.getOperandList().get(0), true);
         }
-        if (sqlBasicCall.getOperator() instanceof SqlBinaryOperator) {
+        if (operator instanceof SqlInOperator) {
+            return new InExpressionConverter(not).convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        }
+        if (operator instanceof SqlBetweenOperator) {
+            return new BetweenExpressionConverter(not).convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        }
+        if (operator.getName().equals(SqlStdOperatorTable.EXISTS.getName())) {
+            return new ExistsSubqueryExpressionConverter(not).convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        }
+        if (operator instanceof SqlBinaryOperator) {
             return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
         return Optional.empty();
