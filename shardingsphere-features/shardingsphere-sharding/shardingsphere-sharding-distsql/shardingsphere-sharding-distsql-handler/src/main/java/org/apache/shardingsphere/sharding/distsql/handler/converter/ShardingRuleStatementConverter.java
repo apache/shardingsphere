@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
@@ -77,9 +76,22 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    // TODO consider other sharding strategy type, for example: complex, hint
     private static ShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
-        return new StandardShardingStrategyConfiguration(segment.getTableStrategyColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()));
+        return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(), 
+                getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()), segment.getTableStrategyColumn());
+    }
+    
+    /**
+     * Create strategy configuration.
+     *
+     * @param strategyType strategy type
+     * @param shardingColumn sharding column
+     * @param shardingAlgorithmName sharding algorithm name
+     * @return sharding strategy configuration
+     */
+    public static ShardingStrategyConfiguration createStrategyConfiguration(final String strategyType, final String shardingColumn, final String shardingAlgorithmName) {
+        ShardingStrategyType shardingStrategyType = ShardingStrategyType.getValueOf(strategyType);
+        return shardingStrategyType.getConfiguration(shardingAlgorithmName, shardingColumn);
     }
     
     private static String getShardingAlgorithmName(final String tableName, final String algorithmType) {
