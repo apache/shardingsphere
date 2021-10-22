@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <optimize-table sql-case-id="optimize_table">
-        <table name="table1" start-index="15" stop-index="20"/>
-        <table name="table2" start-index="22" stop-index="27"/>
-    </optimize-table>
+    <repair-table sql-case-id="repair_table">
+        <table name="table1" start-index="13" stop-index="18"/>
+        <table name="table2" start-index="20" stop-index="25"/>
+    </repair-table>
 </sql-parser-test-cases>

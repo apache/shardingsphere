@@ -44,6 +44,6 @@ public final class PostgreSQLTimeBinaryProtocolValueTest {
         assertThat(actual.read(payload, 8), is(1L));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         actual.write(payload, timestamp);
-        verify(payload).writeInt8(timestamp.getTime());
+        verify(payload).writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(timestamp, false));
     }
 }

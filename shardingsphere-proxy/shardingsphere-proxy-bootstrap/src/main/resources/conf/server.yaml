@@ -74,3 +74,4 @@
 #    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
 #    # if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
 #  proxy-backend-executor-suitable: OLAP
+#  proxy-frontend-connection-limit: -1 # Proxy connection limit, less than 0 or equal 0 means no limit.
