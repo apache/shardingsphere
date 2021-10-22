@@ -38,7 +38,9 @@ public final class DefaultDataSourceCloser implements DataSourceCloser {
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
             } catch (final Exception ex) {
+                // CHECKSTYLE:ON
                 throw new SQLException(ex);
             }
         }
