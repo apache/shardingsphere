@@ -103,12 +103,16 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     private Collection<List<Object>> mergeRows(final Collection<List<Object>> rows, final Collection<List<Object>> disableInstanceRow) {
         Collection<List<Object>> result;
         Set<Object> disableResource = disableInstanceRow.stream().flatMap(Collection::stream).filter(each -> !each.equals(DISABLE)).collect(Collectors.toSet());
-        result = rows.stream().filter(each -> !disableResource.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        result = rows.stream().filter(each -> !hasIntersection(each, disableResource)).collect(Collectors.toCollection(LinkedList::new));
         result.addAll(disableInstanceRow);
         return result;
     }
     
     private List<Object> buildRow(final String resource, final String status) {
         return Arrays.asList(resource, status);
+    }
+    
+    private boolean hasIntersection(final Collection<Object> collection, final Set<Object> set) {
+        return collection.stream().filter(each -> !each.equals(DISABLE) && !each.equals(ENABLE)).anyMatch(set::contains);
     }
 }
