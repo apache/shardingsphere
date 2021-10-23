@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.original;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
@@ -25,12 +25,14 @@ import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelReferentialConstraint;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.util.ImmutableBitSet;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class FederationTableStatistic implements Statistic {
+/**
+ * Statistic of federation table.
+ */
+public final class FederationTableStatistic implements Statistic {
     
     @Override
-    public @Nullable Double getRowCount() {
+    public Double getRowCount() {
         return Statistic.super.getRowCount();
     }
 
@@ -40,22 +42,22 @@ public class FederationTableStatistic implements Statistic {
     }
 
     @Override
-    public @Nullable List<ImmutableBitSet> getKeys() {
+    public List<ImmutableBitSet> getKeys() {
         return Statistic.super.getKeys();
     }
 
     @Override
-    public @Nullable List<RelReferentialConstraint> getReferentialConstraints() {
-        return ImmutableList.of();
+    public List<RelReferentialConstraint> getReferentialConstraints() {
+        return new ArrayList<>();
     }
 
     @Override
-    public @Nullable List<RelCollation> getCollations() {
-        return ImmutableList.of();
+    public List<RelCollation> getCollations() {
+        return new ArrayList<>();
     }
 
     @Override
-    public @Nullable RelDistribution getDistribution() {
+    public RelDistribution getDistribution() {
         return RelDistributionTraitDef.INSTANCE.getDefault();
     }
 }
