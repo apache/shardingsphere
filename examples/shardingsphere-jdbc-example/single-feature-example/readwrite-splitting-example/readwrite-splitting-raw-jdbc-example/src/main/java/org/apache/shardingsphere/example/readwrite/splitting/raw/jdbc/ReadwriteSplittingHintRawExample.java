@@ -1,4 +1,4 @@
-package org.apache.shardingsphere.example.hint.raw.jdbc;/*
+package org.apache.shardingsphere.example.readwrite.splitting.raw.jdbc;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class ReadwriteSplittingHintRawExample {
-
+    
     private static final ShardingType TYPE = ShardingType.READWRITE_SPLITTING_HINT;
     
     public static void main(final String[] args) throws SQLException, IOException {
@@ -43,7 +43,7 @@ public final class ReadwriteSplittingHintRawExample {
     private static DataSource getDataSource() throws IOException, SQLException {
         switch (TYPE) {
             case READWRITE_SPLITTING_HINT:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting-hint.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
         }
