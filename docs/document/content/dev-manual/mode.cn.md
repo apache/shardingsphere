@@ -32,12 +32,12 @@ chapter = true
 | ----------------------------- | ------------------ |
 | GovernanceWatcher             | 治理监听器           |
 
-| *已知实现类*                    | *详细说明*          |
-| ----------------------------- | ------------------ |
-| TerminalStateChangedWatcher   | 终端节点状态变化监听器 |
-| DataSourceStateChangedWatcher | 数据源状态变化监听器   |
-| LockChangedWatcher            | 锁状态变化监听器      |
-| PropertiesChangedWatcher      | 属性变化监听器        |
-| PrivilegeNodeChangedWatcher   | 权限变化监听器        |
-| GlobalRuleChangedWatcher      | 全局规则配置变化监听器 |
-| MetaDataChangedWatcher        | 元数据变化监听器      |
+| *已知实现类*                     | *详细说明*          |
+| -----------------------------  | ------------------ |
+| StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |
+| ComputeNodeStateChangedWatcher | 计算节点状态变化监听器 |
+| LockChangedWatcher             | 锁状态变化监听器      |
+| PropertiesChangedWatcher       | 属性变化监听器        |
+| PrivilegeNodeChangedWatcher    | 权限变化监听器        |
+| GlobalRuleChangedWatcher       | 全局规则配置变化监听器 |
+| MetaDataChangedWatcher         | 元数据变化监听器      |
