@@ -22,19 +22,19 @@ weight = 3
 1. Connect to ShardingProxy
 2. Create a distributed database
 
-```SQL
+```sql
 CREATE DATABASE encrypt_db;
 ```
 
 3. Use newly created database
 
-```SQL
+```sql
 USE encrypt_db;
 ```
 
 4. Configure data source information
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
@@ -45,7 +45,7 @@ PASSWORD=root
 ```
 5. Create encrypt table
 
-```SQL
+```sql
 CREATE TABLE `t_encrypt` (
   `order_id` int NOT NULL,
   `user_plain` varchar(45) DEFAULT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `t_encrypt` (
 
 6. Create encrypt rule
 
-```SQL
+```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
@@ -66,7 +66,7 @@ COLUMNS(
 
 7. Alter encrypt rule
 
-```SQL
+```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
@@ -75,19 +75,19 @@ COLUMNS(
 
 8. Drop encrypt rule
 
-```SQL
+```sql
 DROP ENCRYPT RULE t_encrypt;
 ```
 
 9. Drop resource
 
-```SQL
+```sql
 DROP RESOURCE ds_0;
 ```
 
 10. Drop distributed database
 
-```SQL
+```sql
 DROP DATABASE encrypt_db;
 ```
 

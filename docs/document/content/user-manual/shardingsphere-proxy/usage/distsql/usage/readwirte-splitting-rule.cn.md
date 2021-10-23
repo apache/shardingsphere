@@ -1,6 +1,6 @@
 +++
-title = "影子库压测"
-weight = 5
+title = "读写分离"
+weight = 2
 +++
 
 ## 使用实战
@@ -22,75 +22,70 @@ weight = 5
 1. 连接到 ShardingProxy
 2. 创建分布式数据库
 
-```SQL
-CREATE DATABASE shadow_db;
+```sql
+CREATE DATABASE readwrite_splitting_db;
 ```
 
 3. 使用新创建的数据库
 
-```SQL
-USE shadow_db;
+```sql
+USE readwrite_splitting_db;
 ```
 
 4. 配置数据源信息
 
-```SQL
-ADD RESOURCE ds_0 (
+```sql
+ADD RESOURCE write_ds (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_0,
 USER=root,
 PASSWORD=root
-),ds_1 (
+),read_ds (
 HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
-),ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
+PORT=3307,
+DB=ds_0,
 USER=root,
 PASSWORD=root
 );
 ```
 
-5. 创建影子库压测规则
+5. 创建读写分离规则
 
-```SQL
-CREATE SHADOW RULE group_0(
-SOURCE=ds_0,
-SHADOW=ds_1,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+```sql
+CREATE READWRITE_SPLITTING RULE group_0 (
+WRITE_RESOURCE=write_ds,
+READ_RESOURCES(read_ds),
+TYPE(NAME=random)
+);
 ```
 
-6. 修改影子库压测规则
+6. 修改读写分离规则
 
-```SQL
-ALTER SHADOW RULE group_0(
-SOURCE=ds_0,
-SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+```sql
+ALTER READWRITE_SPLITTING RULE group_0 (
+WRITE_RESOURCE=write_ds,
+READ_RESOURCES(read_ds),
+TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
+)
 ```
 
-7. 删除影子库压测规则
+7. 删除读写分离规则
 
-```SQL
-DROP SHADOW RULE group_0;
+```sql
+DROP READWRITE_SPLITTING RULE group_0;
 ```
 
 8. 删除数据源
 
-```SQL
-DROP RESOURCE ds_0,ds_1,ds_2;
+```sql
+DROP RESOURCE write_ds,read_ds;
 ```
 
 9. 删除分布式数据库
 
-```SQL
-DROP DATABASE shadow_db;
+```sql
+DROP DATABASE readwrite_splitting_db;
 ```
 
 ### 注意事项

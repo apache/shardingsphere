@@ -22,19 +22,19 @@ weight = 1
 1. Connect to ShardingSphere-Proxy
 2. Create a distributed database
 
-```SQL
+```sql
 CREATE DATABASE sharding_db;
 ```
 
 3. Use newly created database
 
-```SQL
+```sql
 USE sharding_db;
 ```
 
 4. Configure data source information
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
@@ -54,7 +54,7 @@ PASSWORD=root
 
 5. Create sharding rule
 
-```SQL
+```sql
 CREATE SHARDING TABLE RULE t_order(
 RESOURCES(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
@@ -65,7 +65,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 
 6. Create sharding table
 
-```SQL
+```sql
 CREATE TABLE `t_order` (
   `order_id` int NOT NULL,
   `user_id` int NOT NULL,
@@ -76,25 +76,25 @@ CREATE TABLE `t_order` (
 
 7. Drop sharding table
 
-```SQL
+```sql
 DROP TABLE t_order;
 ```
 
 8. Drop sharding rule
 
-```SQL
+```sql
 DROP SHARDING TABLE RULE t_order;
 ```
 
 9. Drop resource
 
-```SQL
+```sql
 DROP RESOURCE ds_0, ds_1;
 ```
 
 10. Drop distributed database
 
-```SQL
+```sql
 DROP DATABASE sharding_db;
 ```
 

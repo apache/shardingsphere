@@ -98,6 +98,7 @@ props:
 * 创建影子库 `ds-shadow`。
 
 * 创建压测相关影子表，影子表结构与生产环境对应表结构必须一致。假设需要在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`。即：
+
 ```sql
 CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/
 ``` 
@@ -108,6 +109,7 @@ CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ..
 1. 列影子算法使用
 
 假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据。 即：
+
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 ```

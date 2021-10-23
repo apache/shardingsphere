@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.3.2 </b>"
 title = "Usage"
 weight = 2
 chapter = true

@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.3.1. </b>"
 title = "语法"
 weight = 1
 chapter = true

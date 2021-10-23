@@ -22,19 +22,19 @@ weight = 2
 1. Connect to ShardingProxy
 2. Create a distributed database
 
-```SQL
+```sql
 CREATE DATABASE readwrite_splitting_db;
 ```
 
 3. Use newly created database
 
-```SQL
+```sql
 USE readwrite_splitting_db;
 ```
 
 4. Configure data source information
 
-```SQL
+```sql
 ADD RESOURCE write_ds (
 HOST=127.0.0.1,
 PORT=3306,
@@ -52,7 +52,7 @@ PASSWORD=root
 
 5. Create readwrite_splitting rule
 
-```SQL
+```sql
 CREATE READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
@@ -62,7 +62,7 @@ TYPE(NAME=random)
 
 6. Alter readwrite_splitting rule
 
-```SQL
+```sql
 ALTER READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
@@ -72,19 +72,19 @@ TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
 
 7. Drop readwrite_splitting rule
 
-```SQL
+```sql
 DROP READWRITE_SPLITTING RULE group_0;
 ```
 
 8. Drop resource
 
-```SQL
+```sql
 DROP RESOURCE write_ds,read_ds;
 ```
 
 9. Drop distributed database
 
-```SQL
+```sql
 DROP DATABASE readwrite_splitting_db;
 ```
 

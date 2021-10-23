@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.3.1.1 </b>"
 title = "RDL Syntax"
 weight = 1
 chapter = true
