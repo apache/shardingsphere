@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.raw.jdbc;
+package org.apache.shardingsphere.example.readwrite.splitting.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
-import org.apache.shardingsphere.example.core.jdbc.service.AccountServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.readwrite.splitting.raw.jdbc.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 
 /*
  * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
-public final class ShardingRawYamlConfigurationExample {
+public final class ReadwriteSplittingRawJavaConfigurationExample {
     
-//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
-//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-    private static ShardingType shardingType = ShardingType.SHARDING_AUTO_TABLES;
+    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
-        ExampleExecuteTemplate.run(new OrderServiceImpl(dataSource));
-        ExampleExecuteTemplate.run(new AccountServiceImpl(dataSource));
+    public static void main(final String[] args) throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
+    }
+    
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(dataSource);
     }
 }
