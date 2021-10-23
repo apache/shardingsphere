@@ -22,19 +22,19 @@ weight = 1
 1. 连接到 ShardingSphere-Proxy
 2. 创建分布式数据库
 
-```SQL
+```sql
 CREATE DATABASE sharding_db;
 ```
 
 3. 使用新创建的数据库
 
-```SQL
+```sql
 USE sharding_db;
 ```
 
 4. 配置数据源信息
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
@@ -54,7 +54,7 @@ PASSWORD=root
 
 5. 创建分片规则
 
-```SQL
+```sql
 CREATE SHARDING TABLE RULE t_order(
 RESOURCES(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
@@ -65,7 +65,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 
 6. 创建切分表
 
-```SQL
+```sql
 CREATE TABLE `t_order` (
   `order_id` int NOT NULL,
   `user_id` int NOT NULL,
@@ -76,25 +76,25 @@ CREATE TABLE `t_order` (
 
 7. 删除切分表
 
-```SQL
+```sql
 DROP TABLE t_order;
 ```
 
 8. 删除分片规则
 
-```SQL
+```sql
 DROP SHARDING TABLE RULE t_order;
 ```
 
 9. 删除数据源
 
-```SQL
+```sql
 DROP RESOURCE ds_0, ds_1;
 ```
 
 10. 删除分布式数据库
 
-```SQL
+```sql
 DROP DATABASE sharding_db;
 ```
 

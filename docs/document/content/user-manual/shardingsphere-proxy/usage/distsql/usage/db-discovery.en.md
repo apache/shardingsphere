@@ -1,5 +1,5 @@
 +++
-title = "Shadow"
+title = "DB Discovery"
 weight = 5
 +++
 
@@ -22,32 +22,32 @@ weight = 5
 1. Connect to ShardingProxy
 2. Create a distributed database
 
-```SQL
-CREATE DATABASE shadow_db;
+```sql
+CREATE DATABASE discovery_db;
 ```
 
 3. Use newly created database
 
-```SQL
-USE shadow_db;
+```sql
+USE discovery_db;
 ```
 
 4. Configure data source information
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_0,
 USER=root,
 PASSWORD=root
-),ds_1 (
+),RESOURCE ds_1 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_1,
 USER=root,
 PASSWORD=root
-),ds_2 (
+),RESOURCE ds_2 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_2,
@@ -56,41 +56,40 @@ PASSWORD=root
 );
 ```
 
-5. Create shadow rule
+5. Create DB discovery rule
 
-```SQL
-CREATE SHADOW RULE group_0(
-SOURCE=ds_0,
-SHADOW=ds_1,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+```sql
+CREATE DB_DISCOVERY RULE group_0 (
+RESOURCES(ds_0,ds_1),
+TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
+);
 ```
 
-6. Alter shadow rule
+6. Alter DB discovery rule
 
-```SQL
-ALTER SHADOW RULE group_0(
-SOURCE=ds_0,
-SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+```sql
+ALTER DB_DISCOVERY RULE group_0 (
+RESOURCES(ds_0,ds_1,ds_2),
+TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
+);
 ```
 
-7. Drop shadow rule
+7. Drop db_discovery rule
 
-```SQL
-DROP SHADOW RULE group_0;
+```sql
+DROP DB_DISCOVERY RULE group_0;
 ```
 
 8. Drop resource
 
-```SQL
+```sql
 DROP RESOURCE ds_0,ds_1,ds_2;
 ```
 
 9. Drop distributed database
 
-```SQL
-DROP DATABASE shadow_db;
+```sql
+DROP DATABASE discovery_db;
 ```
 
 ### Notice

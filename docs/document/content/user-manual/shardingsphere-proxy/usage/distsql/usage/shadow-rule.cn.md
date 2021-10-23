@@ -1,6 +1,6 @@
 +++
-title = "数据加密"
-weight = 3
+title = "影子库压测"
+weight = 5
 +++
 
 ## 使用实战
@@ -22,73 +22,75 @@ weight = 3
 1. 连接到 ShardingProxy
 2. 创建分布式数据库
 
-```SQL
-CREATE DATABASE encrypt_db;
+```sql
+CREATE DATABASE shadow_db;
 ```
 
 3. 使用新创建的数据库
 
-```SQL
-USE encrypt_db;
+```sql
+USE shadow_db;
 ```
 
 4. 配置数据源信息
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_0,
 USER=root,
 PASSWORD=root
+),ds_1 (
+HOST=127.0.0.1,
+PORT=3306,
+DB=ds_1,
+USER=root,
+PASSWORD=root
+),ds_2 (
+HOST=127.0.0.1,
+PORT=3306,
+DB=ds_2,
+USER=root,
+PASSWORD=root
 );
 ```
-5. 创建加密表
 
-```SQL
-CREATE TABLE `t_encrypt` (
-  `order_id` int NOT NULL,
-  `user_plain` varchar(45) DEFAULT NULL,
-  `user_cipher` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+5. 创建影子库压测规则
+
+```sql
+CREATE SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_1,
+t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-6. 创建加密规则
+6. 修改影子库压测规则
 
-```SQL
-CREATE ENCRYPT RULE t_encrypt (
-COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))
-));
+```sql
+ALTER SHADOW RULE group_0(
+SOURCE=ds_0,
+SHADOW=ds_2,
+t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
 ```
 
-7. 修改加密规则
+7. 删除影子库压测规则
 
-```SQL
-CREATE ENCRYPT RULE t_encrypt (
-COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
-));
+```sql
+DROP SHADOW RULE group_0;
 ```
 
-8. 删除加密规则
+8. 删除数据源
 
-```SQL
-DROP ENCRYPT RULE t_encrypt;
+```sql
+DROP RESOURCE ds_0,ds_1,ds_2;
 ```
 
-9. 删除数据源
+9. 删除分布式数据库
 
-```SQL
-DROP RESOURCE ds_0;
-```
-
-10. 删除分布式数据库
-
-```SQL
-DROP DATABASE encrypt_db;
+```sql
+DROP DATABASE shadow_db;
 ```
 
 ### 注意事项

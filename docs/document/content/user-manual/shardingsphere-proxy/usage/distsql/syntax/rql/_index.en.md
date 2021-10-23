@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.3.1.2 </b>"
 title = "RQL Syntax"
 weight = 2
 chapter = true

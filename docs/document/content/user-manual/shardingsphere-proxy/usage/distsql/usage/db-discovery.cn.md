@@ -22,19 +22,19 @@ weight = 5
 1. 连接到 ShardingProxy
 2. 创建分布式数据库
 
-```SQL
+```sql
 CREATE DATABASE discovery_db;
 ```
 
 3. 使用新创建的数据库
 
-```SQL
+```sql
 USE discovery_db;
 ```
 
 4. 配置数据源信息
 
-```SQL
+```sql
 ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
@@ -58,7 +58,7 @@ PASSWORD=root
 
 5. 创建数据库发现规则
 
-```SQL
+```sql
 CREATE DB_DISCOVERY RULE group_0 (
 RESOURCES(ds_0,ds_1),
 TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
@@ -67,7 +67,7 @@ TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
 
 6. 修改数据库发现规则
 
-```SQL
+```sql
 ALTER DB_DISCOVERY RULE group_0 (
 RESOURCES(ds_0,ds_1,ds_2),
 TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
@@ -76,19 +76,19 @@ TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
 
 7. 删除数据库发现规则
 
-```SQL
+```sql
 DROP DB_DISCOVERY RULE group_0;
 ```
 
 8. 删除数据源
 
-```SQL
+```sql
 DROP RESOURCE ds_0,ds_1,ds_2;
 ```
 
 9. 删除分布式数据库
 
-```SQL
+```sql
 DROP DATABASE discovery_db;
 ```
 

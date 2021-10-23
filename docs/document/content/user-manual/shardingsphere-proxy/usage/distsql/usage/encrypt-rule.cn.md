@@ -1,6 +1,6 @@
 +++
-title = "读写分离"
-weight = 2
+title = "数据加密"
+weight = 3
 +++
 
 ## 使用实战
@@ -22,70 +22,74 @@ weight = 2
 1. 连接到 ShardingProxy
 2. 创建分布式数据库
 
-```SQL
-CREATE DATABASE readwrite_splitting_db;
+```sql
+CREATE DATABASE encrypt_db;
 ```
 
 3. 使用新创建的数据库
 
-```SQL
-USE readwrite_splitting_db;
+```sql
+USE encrypt_db;
 ```
 
 4. 配置数据源信息
 
-```SQL
-ADD RESOURCE write_ds (
+```sql
+ADD RESOURCE ds_0 (
 HOST=127.0.0.1,
 PORT=3306,
 DB=ds_0,
 USER=root,
 PASSWORD=root
-),read_ds (
-HOST=127.0.0.1,
-PORT=3307,
-DB=ds_0,
-USER=root,
-PASSWORD=root
 );
 ```
 
-5. 创建读写分离规则
+5. 创建加密表
 
-```SQL
-CREATE READWRITE_SPLITTING RULE group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds),
-TYPE(NAME=random)
-);
+```sql
+CREATE TABLE `t_encrypt` (
+  `order_id` int NOT NULL,
+  `user_plain` varchar(45) DEFAULT NULL,
+  `user_cipher` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
 
-6. 修改读写分离规则
+6. 创建加密规则
 
-```SQL
-ALTER READWRITE_SPLITTING RULE group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds),
-TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
-)
+```sql
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
+(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))
+));
 ```
 
-7. 删除读写分离规则
+7. 修改加密规则
 
-```SQL
-DROP READWRITE_SPLITTING RULE group_0;
+```sql
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
+));
 ```
 
-8. 删除数据源
+8. 删除加密规则
 
-```SQL
-DROP RESOURCE write_ds,read_ds;
+```sql
+DROP ENCRYPT RULE t_encrypt;
 ```
 
-9. 删除分布式数据库
+9. 删除数据源
 
-```SQL
-DROP DATABASE readwrite_splitting_db;
+```sql
+DROP RESOURCE ds_0;
+```
+
+10. 删除分布式数据库
+
+```sql
+DROP DATABASE encrypt_db;
 ```
 
 ### 注意事项
