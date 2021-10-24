@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.5.2. </b>"
-title = "实现原理"
-weight = 2
+pre = "<b>8.3</b>"
+title = "弹性伸缩"
+weight = 3
 +++
 
 ## 原理说明

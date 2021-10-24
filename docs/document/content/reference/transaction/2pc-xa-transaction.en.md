@@ -1,6 +1,7 @@
 +++
+pre = "<b>8.2.1 </b>"
 title = "XA Transaction"
-weight = 2
+weight = 1
 +++
 
 `XAShardingSphereTransactionManager` is XA transaction manager of Apache ShardingSphere.

@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.1.2. </b>"
-title = "Guide to Kernel"
-weight = 2
+pre = "<b>8.1</b>"
+title = "Sharding"
+weight = 1
 chapter = true
 +++
 
