@@ -1,5 +1,5 @@
 +++
-pre = "<b>7.4 </b>"
+pre = "<b>7.4. </b>"
 title = "Encryption"
 weight = 4
 +++

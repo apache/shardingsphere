@@ -1,5 +1,4 @@
 +++
-pre = "<b>4.4.2 </b>"
 title = "Observability"
 weight = 2
 chapter = true
