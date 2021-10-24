@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.1.3 </b>"
 title = "Rewrite Engine"
 weight = 3
 +++

@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.2.2 </b>"
 title = "Seata 柔性事务"
 weight = 2
 +++

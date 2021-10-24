@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.8.1. </b>"
 title = "ShardingSphere-JDBC"
 weight = 1
 chapter = true

@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.6.3 </b>"
 title = "Module Test"
 weight = 3
 +++
