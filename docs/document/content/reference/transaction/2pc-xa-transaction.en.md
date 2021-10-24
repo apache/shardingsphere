@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.2.1 </b>"
 title = "XA Transaction"
 weight = 1
 +++
