@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.1.3. </b>"
+pre = "<b>4.1.2. </b>"
 title = "Use Norms"
-weight = 3
+weight = 2
 +++
 
 ## Background

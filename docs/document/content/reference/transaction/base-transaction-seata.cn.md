@@ -1,6 +1,7 @@
 +++
+pre = "<b>8.2.2 </b>"
 title = "Seata 柔性事务"
-weight = 3
+weight = 2
 +++
 
 整合 Seata AT 事务时，需要将 TM，RM 和 TC 的模型融入 Apache ShardingSphere 的分布式事务生态中。

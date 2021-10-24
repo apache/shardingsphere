@@ -1,6 +1,7 @@
 +++
+pre = "<b>8.2.2 </b>"
 title = "Seata BASE transaction"
-weight = 3
+weight = 2
 +++
 
 When integrating Seata AT transaction, we need to integrate TM, RM and TC component into ShardingSphere transaction manager. 

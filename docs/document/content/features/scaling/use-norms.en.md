@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.5.3. </b>"
+pre = "<b>4.5.2. </b>"
 title = "User Norms"
-weight = 3
+weight = 2
 +++
 
 ## Supported Items

@@ -1,6 +1,7 @@
 +++
-title = "XA两阶段事务"
-weight = 2
+pre = "<b>8.2.1 </b>"
+title = "XA 事务"
+weight = 1
 +++
 
 `XAShardingSphereTransactionManager` 为 Apache ShardingSphere 的分布式事务的 XA 实现类。

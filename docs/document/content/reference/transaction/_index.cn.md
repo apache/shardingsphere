@@ -1,6 +1,6 @@
 +++
-pre = "<b>4.2.2. </b>"
-title = "实现原理"
+pre = "<b>8.2</b>"
+title = "分布式事务"
 weight = 2
 chapter = true
 +++
