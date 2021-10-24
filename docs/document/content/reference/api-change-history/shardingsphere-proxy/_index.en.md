@@ -1,7 +1,7 @@
 +++
-pre = "<b>8.7.2. </b>"
+pre = "<b>8.8.2. </b>"
 title = "ShardingSphere-Proxy"
-weight = 7
+weight = 8
 chapter = true
 +++
 
