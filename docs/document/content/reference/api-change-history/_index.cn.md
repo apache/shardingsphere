@@ -1,7 +1,7 @@
 +++
-pre = "<b>8.7. </b>"
+pre = "<b>8.8. </b>"
 title = "API 变更历史"
-weight = 7
+weight = 8
 chapter = true
 +++
 
