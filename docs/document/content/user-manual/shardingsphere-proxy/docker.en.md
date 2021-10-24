@@ -1,5 +1,4 @@
 +++
-pre = "<b>5.2.3. </b>"
 title = "Docker Image"
 weight = 3
 +++

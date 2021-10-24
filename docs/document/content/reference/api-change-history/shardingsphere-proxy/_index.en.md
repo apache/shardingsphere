@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere-Proxy"
-weight = 8
+weight = 2
 chapter = true
 +++
 

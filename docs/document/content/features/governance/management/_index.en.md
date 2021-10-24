@@ -1,5 +1,4 @@
 +++
-pre = "<b>4.4.1 </b>"
 title = "Management"
 weight = 1
 chapter = true
