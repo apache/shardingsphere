@@ -15,25 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.closer;
+package org.apache.shardingsphere.infra.config.datasource.killer.impl;
 
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
 
 /**
- * Close data source.
+ * Close hikari data source.
  */
-public interface DataSourceCloser extends TypedSPI, RequiredSPI {
+public final class DefaultDataSourceKiller implements DataSourceKiller {
 
-    /**
-     * Gracefully close the dataSource.
-     * 
-     * @param dataSource data source
-     * @throws SQLException sql exception
-     */
-    void closeDataSource(DataSource dataSource) throws SQLException;
+    @Override
+    public String getType() {
+        return "Default";
+    }
+
+    @Override
+    public void closeDataSource(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new SQLException(ex);
+            }
+        }
+    }
+
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

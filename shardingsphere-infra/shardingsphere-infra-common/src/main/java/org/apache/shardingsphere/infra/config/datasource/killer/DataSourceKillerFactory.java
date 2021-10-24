@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.closer;
+package org.apache.shardingsphere.infra.config.datasource.killer;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
@@ -26,10 +26,10 @@ import java.util.Properties;
 /**
  * Data source closer factory.
  */
-public final class DataSourceCloserFactory {
+public final class DataSourceKillerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourceCloser.class);
+        ShardingSphereServiceLoader.register(DataSourceKiller.class);
     }
     
     /**
@@ -38,7 +38,7 @@ public final class DataSourceCloserFactory {
      * @param dataSourceClassName data source class name
      * @return data source closer
      */
-    public static DataSourceCloser getDataSourceCloser(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourceCloser.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceCloser.class));
+    public static DataSourceKiller getDataSourceCloser(final String dataSourceClassName) {
+        return TypedSPIRegistry.findRegisteredService(DataSourceKiller.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceKiller.class));
     }
 }

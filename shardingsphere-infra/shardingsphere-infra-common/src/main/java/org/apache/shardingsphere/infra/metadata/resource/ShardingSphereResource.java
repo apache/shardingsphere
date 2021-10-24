@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.apache.shardingsphere.infra.config.datasource.closer.DataSourceCloser;
-import org.apache.shardingsphere.infra.config.datasource.closer.DataSourceCloserFactory;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKillerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import lombok.Getter;
@@ -85,7 +85,7 @@ public final class ShardingSphereResource {
      * @throws SQLException exception
      */
     public void close(final DataSource dataSource) throws SQLException {
-        DataSourceCloser dataSourceCloser = DataSourceCloserFactory.getDataSourceCloser(dataSource.getClass().getName());
+        DataSourceKiller dataSourceCloser = DataSourceKillerFactory.getDataSourceCloser(dataSource.getClass().getName());
         dataSourceCloser.closeDataSource(dataSource);
     }
 }

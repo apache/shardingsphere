@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.closer.impl;
+package org.apache.shardingsphere.infra.config.datasource.killer.impl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.sql.DataSource;
 
-import org.apache.shardingsphere.infra.config.datasource.closer.DataSourceCloser;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
 
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Close hikari data source.
  */
-public final class HikariDataSourceCloser implements DataSourceCloser {
+public final class HikariDataSourceKiller implements DataSourceKiller {
 
     @Override
     public String getType() {

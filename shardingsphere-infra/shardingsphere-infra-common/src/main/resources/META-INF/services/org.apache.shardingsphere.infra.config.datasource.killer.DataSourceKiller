@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.datasource.closer.impl.DefaultDataSourceCloser
-org.apache.shardingsphere.infra.config.datasource.closer.impl.HikariDataSourceCloser
+org.apache.shardingsphere.infra.config.datasource.killer.impl.DefaultDataSourceKiller
+org.apache.shardingsphere.infra.config.datasource.killer.impl.HikariDataSourceKiller
