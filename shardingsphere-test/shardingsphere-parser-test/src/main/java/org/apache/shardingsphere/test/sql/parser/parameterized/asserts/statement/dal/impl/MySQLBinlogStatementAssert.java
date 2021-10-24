@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.BinlogStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +40,6 @@ public final class MySQLBinlogStatementAssert {
      * @param expected expected binlog statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLBinlogStatement actual, final BinlogStatementTestCase expected) {
-        assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBinlogSegment().getBase64Str(), is(expected.getExpectedBinlogStr().getBase64Str()));
-        SQLSegmentAssert.assertIs(assertContext, actual.getBinlogSegment(), expected.getExpectedBinlogStr());
+        assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBase64Str(), is(expected.getBase64Str()));
     }
 }

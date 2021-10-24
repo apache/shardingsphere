@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.binlog.ExpectedBinlogStr;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Binlog statement test case.
@@ -29,6 +28,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 public final class BinlogStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "binlog-str")
-    private ExpectedBinlogStr expectedBinlogStr;
+    @XmlAttribute
+    private String base64Str;
 }

@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.BinlogSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -28,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL binlog statement.
  */
-@ToString
-@Setter
 @Getter
+@ToString
+@RequiredArgsConstructor
 public final class MySQLBinlogStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private BinlogSegment binlogSegment;
+    private final String base64Str;
 }

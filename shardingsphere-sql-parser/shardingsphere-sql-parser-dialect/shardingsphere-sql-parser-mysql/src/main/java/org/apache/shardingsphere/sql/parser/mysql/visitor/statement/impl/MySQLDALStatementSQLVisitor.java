@@ -84,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseCont
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.BinlogSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
@@ -457,11 +456,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitBinlog(final BinlogContext ctx) {
-        StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
-        BinlogSegment binlogSegment = new BinlogSegment(ctx.stringLiterals().getStart().getStartIndex(), ctx.stringLiterals().getStop().getStopIndex(), literalValue.getValue());
-        MySQLBinlogStatement result = new MySQLBinlogStatement();
-        result.setBinlogSegment(binlogSegment);
-        return result;
+        return new MySQLBinlogStatement(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
     }
     
     @Override
