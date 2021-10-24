@@ -38,6 +38,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapper implement
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedShadowRuleConfiguration dataConfiguration) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         result.setEnable(dataConfiguration.isEnable());
+        result.setDefaultShadowAlgorithmName(dataConfiguration.getDefaultShadowAlgorithmName());
         parseDataSources(dataConfiguration, result);
         parseShadowTables(dataConfiguration, result);
         parseShadowAlgorithms(dataConfiguration, result);
@@ -61,6 +62,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapper implement
     public AlgorithmProvidedShadowRuleConfiguration swapToObject(final YamlShadowRuleConfiguration yamlConfiguration) {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setEnable(yamlConfiguration.isEnable());
+        result.setDefaultShadowAlgorithmName(yamlConfiguration.getDefaultShadowAlgorithmName());
         parseYamlDataSources(yamlConfiguration, result);
         parseYamlShadowTables(yamlConfiguration, result);
         return result;

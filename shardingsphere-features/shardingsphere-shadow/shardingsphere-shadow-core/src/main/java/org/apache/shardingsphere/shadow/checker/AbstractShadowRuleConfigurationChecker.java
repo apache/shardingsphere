@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -43,9 +44,11 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     
     protected abstract void checkShadowRuleConfiguration(T config);
     
-    protected void sizeCheck(final Map<String, ShadowDataSourceConfiguration> dataSources, final Map<String, ShadowTableConfiguration> shadowTables) {
+    protected void sizeCheck(final Map<String, ShadowDataSourceConfiguration> dataSources, final Map<String, ShadowTableConfiguration> shadowTables, final String defaultShadowAlgorithmName) {
         Preconditions.checkState(!dataSources.isEmpty(), "No available shadow data sources mappings in shadow configuration.");
-        Preconditions.checkState(!shadowTables.isEmpty(), "No available shadow tables in shadow configuration.");
+        if (null == defaultShadowAlgorithmName) {
+            Preconditions.checkState(!shadowTables.isEmpty(), "No available shadow tables in shadow configuration.");
+        }
     }
     
     protected void shadowAlgorithmsSizeCheck(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
@@ -72,8 +75,33 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         });
     }
     
-    protected void shadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Set<String> shadowAlgorithmNames) {
-        shadowTables.forEach((key, value) -> value.getShadowAlgorithmNames().removeIf(each -> !shadowAlgorithmNames.contains(each)));
+    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
+        if (null != defaultShadowAlgorithmName) {
+            ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = shadowAlgorithmConfigurations.get(defaultShadowAlgorithmName);
+            boolean state = null != shardingSphereAlgorithmConfiguration && "SIMPLE_NOTE".equals(shardingSphereAlgorithmConfiguration.getType());
+            Preconditions.checkState(state, "Default shadow algorithm class should be implement NoteShadowAlgorithm.");
+        }
+    }
+    
+    protected void defaultShadowAlgorithmCheck(final String defaultShadowAlgorithmName, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+        if (null != defaultShadowAlgorithmName) {
+            boolean isNoteShadowAlgorithmState = shadowAlgorithms.get(defaultShadowAlgorithmName) instanceof NoteShadowAlgorithm;
+            Preconditions.checkState(isNoteShadowAlgorithmState, "Default shadow algorithm class should be implement NoteShadowAlgorithm.");
+        }
+    }
+    
+    protected void shadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Set<String> shadowAlgorithmNames, final String defaultShadowAlgorithmName) {
+        for (Map.Entry<String, ShadowTableConfiguration> entry : shadowTables.entrySet()) {
+            Collection<String> names = entry.getValue().getShadowAlgorithmNames();
+            names.forEach(each -> {
+                if (!shadowAlgorithmNames.contains(each)) {
+                    names.remove(each);
+                }
+            });
+            if (null != defaultShadowAlgorithmName && names.isEmpty()) {
+                names.add(defaultShadowAlgorithmName);
+            }
+        }
     }
     
     protected void shadowTableAlgorithmsReferencesCheck(final Map<String, ShadowTableConfiguration> shadowTables) {
