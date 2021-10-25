@@ -1,6 +1,6 @@
 +++
 pre = "<b>2.3. </b>"
-title = "ShardingSphere-Scaling(Alpha)"
+title = "ShardingSphere-Scaling (Experimental)"
 weight = 3
 +++
 

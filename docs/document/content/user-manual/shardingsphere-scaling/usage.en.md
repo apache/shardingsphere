@@ -1,5 +1,4 @@
 +++
-pre = "<b>5.4.2. </b>"
 title = "Manual"
 weight = 2
 +++

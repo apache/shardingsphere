@@ -34,8 +34,8 @@ chapter = true
 
 | *Implementation Class*           | *Description*                     |
 | -------------------------------- | --------------------------------- |
-| TerminalStateChangedWatcher      | Terminal state changed watcher    |
-| DataSourceStateChangedWatcher    | Data source state changed watcher |
+| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
+| ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
 | LockChangedWatcher               | Lock changed watcher              |
 | PropertiesChangedWatcher         | Properties changed watcher        |
 | PrivilegeNodeChangedWatcher      | Privilege changed watcher         |

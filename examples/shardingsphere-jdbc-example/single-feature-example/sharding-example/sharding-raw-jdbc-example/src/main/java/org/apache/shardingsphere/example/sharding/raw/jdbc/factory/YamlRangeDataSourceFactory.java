@@ -35,8 +35,6 @@ public final class YamlRangeDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables-range.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables-range.yaml"));
-            case READWRITE_SPLITTING:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

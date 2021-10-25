@@ -37,6 +37,8 @@ public final class AlgorithmProvidedShadowRuleConfiguration implements SchemaRul
     
     private boolean enable;
     
+    private String defaultShadowAlgorithmName;
+    
     private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
     private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
