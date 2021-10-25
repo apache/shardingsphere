@@ -14,6 +14,7 @@ weight = 4
 | id    | 属性    | Spring Bean Id |
 | enable | 属性   | Shadow功能开关。 可选值：true/false，默认为false |
 | data-source(?)  | 标签  | 影子数据源配置 |
+| default-shadow-algorithm-name(?)  | 标签  | 默认影子算法配置 |
 | shadow-table(?) | 标签  | 影子表配置 |
 
 \<shadow:data-source />
@@ -23,6 +24,11 @@ weight = 4
 | id | 属性 | Spring Bean Id |
 | source-data-source-name | 属性 | 生产数据源名称 |
 | shadow-data-source-name | 属性 | 影子数据源名称 |
+
+\<shadow:default-shadow-algorithm-name />
+| *名称* | *类型*  | *说明* |
+| ----- | ------ | ------ |
+| name | 属性 | 默认影子算法名称 |
 
 \<shadow:shadow-table />
 

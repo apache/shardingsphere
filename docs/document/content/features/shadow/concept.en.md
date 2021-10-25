@@ -36,3 +36,9 @@ It is suitable for scenarios where the value of a field involved in the executed
 - Note shadow algorithm
 
 It is suitable for scenarios where the field values involved in executing SQL cannot meet certain matching conditions in the test.
+
+## Default Shadow Algorithm
+
+Default shadow algorithm, optional item. For the default matching algorithm that is not configured with the shadow algorithm table.
+
+**Note**: The default shadow algorithm only supports note shadow algorithm.

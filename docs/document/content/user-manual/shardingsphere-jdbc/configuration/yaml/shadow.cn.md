@@ -21,6 +21,7 @@ rules:
         - <shadow-data-source> 
       shadowAlgorithmNames: # 影子表关联影子算法名称列表
         - <shadow-algorithm-name>
+  defaultShadowAlgorithmName: # 默认影子算法名称
   shadowAlgorithms:
     <shadow-algorithm-name> (+): # 影子算法名称
       type: # 影子算法类型
