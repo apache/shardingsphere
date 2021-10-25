@@ -66,11 +66,11 @@ JD Baitiao is a huge business, so its business scenario is truly related to fina
 
 1. Be a mature product
 
-1. Have excellent performance
+2. Have excellent performance
 
-1. Be able to handle big data
+3. Be able to handle big data
 
-1. Have an extensible architecture
+4. Have an extensible architecture
 
 ##The Apache ShardingSphere Solution
 
