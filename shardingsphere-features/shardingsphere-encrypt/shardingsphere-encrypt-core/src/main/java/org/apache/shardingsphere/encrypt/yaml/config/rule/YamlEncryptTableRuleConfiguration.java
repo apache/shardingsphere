@@ -34,4 +34,6 @@ public final class YamlEncryptTableRuleConfiguration implements YamlConfiguratio
     private String name;
     
     private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    
+    private Boolean queryWithCipherColumn;
 }
