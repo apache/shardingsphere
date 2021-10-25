@@ -27,10 +27,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -84,9 +82,9 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    private static ShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
+    private static ShardingStrategyConfiguration createTableStrategyConfiguration(final AutoTableRuleSegment segment) {
         return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(),
-                segment.getTableStrategyColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()));
+                segment.getShardingColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getShardingAlgorithmSegment().getName()));
     }
     
     /**

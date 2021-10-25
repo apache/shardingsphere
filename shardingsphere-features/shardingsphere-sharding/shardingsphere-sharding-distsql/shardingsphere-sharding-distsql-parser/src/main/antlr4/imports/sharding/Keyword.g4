@@ -154,3 +154,16 @@ SHARDING_ALGORITHM
 STRATEGY
     : S T R A T E G Y
     ;
+        
+DATANODES
+    : D A T A N O D E S
+    ;
+    
+DATABASE_STRATEGY
+    : D A T A B A S E UL_ S T R A T E G Y
+    ;
+    
+TABLE_STRATEGY
+    : T A B L E UL_ S T R A T E G Y
+    ;
+

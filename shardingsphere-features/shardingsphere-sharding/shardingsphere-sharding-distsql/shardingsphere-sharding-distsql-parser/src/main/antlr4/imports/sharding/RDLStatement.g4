@@ -68,7 +68,15 @@ dropShardingAlgorithm
     ;
 
 shardingTableRuleDefinition
+    : (shardingAutoTableRule | shardingTableRule)
+    ;
+
+shardingAutoTableRule
     : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
+    ;
+
+shardingTableRule
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?
     ;
 
 resources
@@ -77,6 +85,10 @@ resources
 
 resource
     : IDENTIFIER | STRING
+    ;
+
+dataNodes
+    : DATANODES LP (IDENTIFIER | STRING)* RP
     ;
 
 shardingColumn
@@ -91,8 +103,20 @@ shardingStrategy
     :  LP TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm RP
     ;
 
+databaseStrategy
+    : DATABASE_STRATEGY LP shardingStrategy RP
+    ;
+
+tableStrategy
+    : TABLE_STRATEGY LP shardingStrategy RP
+    ;
+
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 tableName
@@ -109,10 +133,6 @@ bindTableRulesDefinition
 
 shardingAlgorithmDefinition
     : shardingAlgorithmName LP algorithmDefinition RP
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 algorithmName

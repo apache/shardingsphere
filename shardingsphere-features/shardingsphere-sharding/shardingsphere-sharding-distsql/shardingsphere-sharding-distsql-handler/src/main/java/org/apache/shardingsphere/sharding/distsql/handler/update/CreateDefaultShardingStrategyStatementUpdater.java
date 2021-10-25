@@ -19,14 +19,16 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -40,11 +42,13 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkAlgorithmType(sqlStatement);
+        checkAlgorithm(schemaName, currentRuleConfig, sqlStatement);
         checkExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkAlgorithmType(final CreateDefaultShardingStrategyStatement sqlStatement) {
+    private void checkAlgorithm(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final CreateDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
+        boolean isAlgorithmExist = currentRuleConfig.getShardingAlgorithms().containsKey(sqlStatement.getShardingAlgorithmName());
+        DistSQLException.predictionThrow(isAlgorithmExist, new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getShardingAlgorithmName())));
         ShardingStrategyType.getValueOf(sqlStatement.getStrategyType());
     }
     
