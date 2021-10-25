@@ -4,8 +4,6 @@ weight = 3
 chapter = true
 +++
 
-## How to merge the child resultsets
-
 This series of articles is a hands-on introduction and analysis of SS's core modules, the cutting-edge technologies used, and valuable lessons learned by SS's core development members. This series of articles will take you into the world of SS kernel, to gain new knowledge and inspire. We hope you will pay attention to us, exchange ideas and go forward together.
 
 ### Lecturers

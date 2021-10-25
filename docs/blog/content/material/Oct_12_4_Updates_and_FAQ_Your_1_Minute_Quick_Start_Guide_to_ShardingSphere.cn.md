@@ -4,8 +4,6 @@ weight = 20
 chapter = true
 +++
 
-# ShardingSphere 知识库更新 | 官方样例集助你快速上手
-
 Apache ShardingSphere 作为 Apache 顶级项目，是数据库领域最受欢迎的开源项目之一。经过 5 年多的发展，ShardingSphere 已获得超 14K Stars 的关注，270+ 贡献者，建立起了活跃的社区生态。
 
 随着项目的蓬勃发展，版本的不断更迭，Apache ShardingSphere 支持的特性逐渐增多，功能日益强大，配置规则也在不断优化。为了帮助用户更好地理解各项特性和配置规则，方便用户快速测试并运行相关功能组件，找到最佳实现，`shardingsphere-example` 项目应运而生。

@@ -4,8 +4,6 @@ weight = 23
 chapter = true
 +++
 
-# openGauss X ShardingSphere: One of the Top Distribution Solutions
-
 ## About openGauss
 
 openGauss is an open source relational database management system. Since its launch in June 2020, it has made waves the database management vertical. With an increasing number of partners and developers, it’s already reaping the benefits of the significant efforts & resources poured into building a successful database ecosystem.

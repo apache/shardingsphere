@@ -4,8 +4,6 @@ weight = 2
 chapter = true
 +++
 
-## Distributed Transaction Implementation on Sharding-Sphere
-
 <!-- ## 分布式事务在Sharding-Sphere中的实现 -->
 ### Lecturer
 <!-- ### 讲师简介 -->

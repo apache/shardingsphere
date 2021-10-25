@@ -4,8 +4,6 @@ weight = 25
 chapter = true
 +++
 
-# Apache ShardingSphere x JD Baitiao: Story of an Implementation Journey
-
 >Apache ShardingSphere has become the best solution for JD Baitiao's very large storage scenarios and scale-up. JD's shopping festival weighed very much on our big data storage. I mean, like hundreds of millions of data sets.
 
 >JD Baitiao, an internet credit products provider launched in 2014, has always been challenged by data explosion. Every shopping festival is like a technical test for us, but every time the technical staff professionals take proactive strategic initiatives in data architecture development to ensure everything goes smoothly. 
@@ -68,11 +66,11 @@ JD Baitiao is a huge business, so its business scenario is truly related to fina
 
 1. Be a mature product
 
-1. Have excellent performance
+2. Have excellent performance
 
-1. Be able to handle big data
+3. Be able to handle big data
 
-1. Have an extensible architecture
+4. Have an extensible architecture
 
 ##The Apache ShardingSphere Solution
 

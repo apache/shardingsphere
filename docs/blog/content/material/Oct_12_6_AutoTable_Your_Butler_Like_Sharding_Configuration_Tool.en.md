@@ -4,8 +4,6 @@ weight = 22
 chapter = true
 +++
 
-# AutoTable: Your Butler-Like Sharding Configuration Tool
-
 ## Summary
 
 In the previous article _“An Introduction to DistSQL”_ written by Haoran Meng, the Apache ShardingSphere Committer shared the motivating reasons behind the design of DistSQL, explained its syntax system, and impressively showcased how you can use one SQL to create a sharding table.
