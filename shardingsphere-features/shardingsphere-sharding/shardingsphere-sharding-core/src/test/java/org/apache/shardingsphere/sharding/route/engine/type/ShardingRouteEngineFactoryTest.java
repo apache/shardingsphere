@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -302,5 +303,13 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingConditions.isSameShardingCondition()).thenReturn(false);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingFederatedRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForResourceGroup() {
+        ResourceGroupStatement resourceGroupStatement = mock(ResourceGroupStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
     }
 }

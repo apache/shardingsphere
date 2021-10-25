@@ -17,18 +17,9 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.group.ExpectedGroup;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Set resource group test case.
  */
-@Getter
-public final class SetResourceGroupStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedGroup group;
+public final class SetResourceGroupStatementTestCase extends ResourceGroupStatementTestCase {
 }

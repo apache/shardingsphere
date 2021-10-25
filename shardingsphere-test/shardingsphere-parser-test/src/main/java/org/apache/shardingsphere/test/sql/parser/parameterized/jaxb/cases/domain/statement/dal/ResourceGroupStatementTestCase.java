@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.group.ExpectedGroup;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL create resource group statement.
+ * Resource group test case.
  */
-@ToString
-public final class MySQLCreateResourceGroupStatement extends ResourceGroupStatement implements MySQLStatement {
+@Getter
+public class ResourceGroupStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedGroup group;
 }

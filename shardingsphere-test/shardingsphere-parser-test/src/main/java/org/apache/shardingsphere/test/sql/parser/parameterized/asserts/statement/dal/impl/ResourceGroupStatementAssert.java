@@ -19,29 +19,32 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
 
 /**
- * Create resource group statement assert.
+ * Resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCreateResourceGroupStatementAssert {
-
+public final class ResourceGroupStatementAssert {
+    
     /**
-     * Assert create resource group statement is correct with expected parser result.
+     * Assert Resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create resource group statement
-     * @param expected expected create resource group statement test case
+     * @param actual actual resource group statement
+     * @param expected expected resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
-        assertNotNull(assertContext.getText("Expected create resource group should be not null."), expected.getGroup());
-        assertThat(assertContext.getText("Group name does not match."), actual.getGroupName(), is(expected.getGroup().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ResourceGroupStatement actual, final ResourceGroupStatementTestCase expected) {
+        if (actual instanceof MySQLCreateResourceGroupStatement) {
+            MySQLCreateResourceGroupStatementAssert.assertIs(assertContext, (MySQLCreateResourceGroupStatement) actual, (CreateResourceGroupStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetResourceGroupStatement) {
+            MySQLSetResourceGroupStatementAssert.assertIs(assertContext, (MySQLSetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
+        }
     }
 }

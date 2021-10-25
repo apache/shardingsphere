@@ -17,20 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL set resource group statement.
  */
 @ToString
-@Getter
-@Setter
-public final class MySQLSetResourceGroupStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private String groupName;
+public final class MySQLSetResourceGroupStatement extends ResourceGroupStatement implements MySQLStatement {
 }

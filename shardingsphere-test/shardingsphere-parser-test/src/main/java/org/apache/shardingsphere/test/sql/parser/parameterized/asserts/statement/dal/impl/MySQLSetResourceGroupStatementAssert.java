@@ -41,7 +41,7 @@ public final class MySQLSetResourceGroupStatementAssert {
      * @param expected expected set resource group statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetResourceGroupStatement actual, final SetResourceGroupStatementTestCase expected) {
-        assertNotNull("expected set resource group should be not null", expected.getGroup());
-        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
+        assertNotNull(assertContext.getText("Expected set resource group should be not null."), expected.getGroup());
+        assertThat(assertContext.getText("Group name does not match."), actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }
