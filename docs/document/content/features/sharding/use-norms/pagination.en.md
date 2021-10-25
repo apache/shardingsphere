@@ -21,7 +21,7 @@ This SQL will make MySQL acquire another 10 records after skipping 1,000,000 rec
 SELECT * FROM t_order ORDER BY id LIMIT 0, 1000010
 ```
 
-It also means taking out all the records prior to the offset and only acquire the last 10 records after ordering. It will further aggravate the performance bottleneck effect when the database is already slow in execution. The reason for that is the former SQL only needs to transmit 10 records to the user end, but now it will transmit `1000010 * 2` records after the rewrite.
+It also means taking out all the records prior to the offset and only acquire the last 10 records after ordering. It will further aggravate the performance bottleneck effect when the database is already slow in execution. The reason for that is the former SQL only needs to transmit 10 records to the user end, but now it will transmit `1,000,010 * 2` records after the rewrite.
 
 ### Optimization of ShardingSphere
 
