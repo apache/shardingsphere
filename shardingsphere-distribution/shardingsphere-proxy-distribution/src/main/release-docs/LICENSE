@@ -236,7 +236,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-recipes 5.1.0:  https://github.com/apache/curator, Apache 2.0
     error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
-    Failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
+    failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
     grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
@@ -297,7 +297,7 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 2.4.9-indy: https://github.com/apache/groovy, Apache 2.0
+    groovy 2.4.19-indy: https://github.com/apache/groovy, Apache 2.0
     atomikos-util 4.0.6: https://www.atomikos.com, Apache 2.0
     transactions 4.0.6: https://www.atomikos.com, Apache 2.0
     transactions-api 4.0.6: https://www.atomikos.com, Apache 2.0
