@@ -43,7 +43,6 @@ public final class RuleConfiguration {
     
     private void checkParameters(final ScalingDataSourceConfigurationWrap wrap) {
         Preconditions.checkNotNull(wrap);
-        Preconditions.checkNotNull(wrap.getSchemaName());
         Preconditions.checkNotNull(wrap.getType());
         Preconditions.checkNotNull(wrap.getParameter());
     }
