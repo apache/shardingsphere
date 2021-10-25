@@ -54,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablesp
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLLoadStatement;
@@ -125,6 +127,9 @@ public final class ShardingRouteEngineFactory {
                 || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof PostgreSQLLoadStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
+        if (isResourceGroupStatement(sqlStatement)) {
+            return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
+        }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
         if (!tableNames.isEmpty() && shardingRuleTableNames.isEmpty()) {
@@ -138,6 +143,11 @@ public final class ShardingRouteEngineFactory {
             return new ShardingUnicastRoutingEngine(shardingRuleTableNames);
         }
         return new ShardingDataSourceGroupBroadcastRoutingEngine();
+    }
+    
+    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
+        // TODO add dropResourceGroupStatement, alterResourceGroupStatement
+        return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
     private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {

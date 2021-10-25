@@ -45,6 +45,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
@@ -302,5 +304,21 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingConditions.isSameShardingCondition()).thenReturn(false);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingFederatedRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCreateResourceGroup() {
+        MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForSetResourceGroup() {
+        MySQLSetResourceGroupStatement resourceGroupStatement = mock(MySQLSetResourceGroupStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
     }
 }
