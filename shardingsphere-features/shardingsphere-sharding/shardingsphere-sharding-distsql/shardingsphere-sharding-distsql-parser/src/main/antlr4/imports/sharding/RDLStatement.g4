@@ -35,6 +35,10 @@ createShardingAlgorithm
     : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
     ;
 
+createDefaultShardingStrategy
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY shardingStrategy
+    ;
+
 alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
@@ -79,6 +83,14 @@ shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
+shardingAlgorithm
+    : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+shardingStrategy
+    :  LP TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm RP
+    ;
+
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
@@ -108,6 +120,10 @@ algorithmName
     ;
 
 shardingAlgorithmName
+    : IDENTIFIER
+    ;
+
+strategyType
     : IDENTIFIER
     ;
 

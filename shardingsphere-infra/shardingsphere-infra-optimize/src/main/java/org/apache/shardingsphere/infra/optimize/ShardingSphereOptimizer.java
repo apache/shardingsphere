@@ -37,7 +37,7 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
-import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConvertEngine;
+import org.apache.shardingsphere.infra.optimize.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public final class ShardingSphereOptimizer {
      */
     public RelNode optimize(final String schemaName, final SQLStatement sqlStatement) {
         try {
-            SqlNode sqlNode = SQLNodeConvertEngine.convertToSQLNode(sqlStatement);
+            SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
             SqlNode validNode = context.getPlannerContexts().get(schemaName).getValidator().validate(sqlNode);
             RelDataType resultType = context.getPlannerContexts().get(schemaName).getValidator().getValidatedNodeType(sqlNode);
             RelNode queryPlan = context.getPlannerContexts().get(schemaName).getConverter().convertQuery(validNode, false, true).rel;

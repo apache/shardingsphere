@@ -54,6 +54,8 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     private final boolean enable;
     
+    private ShadowAlgorithm defaultShadowAlgorithm;
+    
     private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
     
     private final Map<String, ShadowAlgorithm> shadowAlgorithms = new LinkedHashMap<>();
@@ -65,6 +67,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         if (enable) {
             initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
             initShadowAlgorithmConfigurations(shadowRuleConfig.getShadowAlgorithms());
+            initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
             initShadowTableRules(shadowRuleConfig.getTables());
         }
     }
@@ -74,24 +77,38 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         if (enable) {
             initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
             initShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
+            initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
             initShadowTableRules(shadowRuleConfig.getTables());
         }
+    }
+    
+    private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
+        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getSourceDataSourceName(), value.getShadowDataSourceName())));
     }
     
     private void initShadowAlgorithmConfigurations(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
         shadowAlgorithmConfigurations.forEach((key, value) -> shadowAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShadowAlgorithm.class)));
     }
     
-    private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {
-        tables.forEach((key, value) -> shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), value.getShadowAlgorithmNames(), shadowAlgorithms)));
-    }
-    
     private void initShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         this.shadowAlgorithms.putAll(shadowAlgorithms);
     }
     
-    private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getSourceDataSourceName(), value.getShadowDataSourceName())));
+    private void initDefaultShadowAlgorithm(final String defaultShadowAlgorithmName) {
+        defaultShadowAlgorithm = shadowAlgorithms.get(defaultShadowAlgorithmName);
+    }
+    
+    private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {
+        tables.forEach((key, value) -> shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), value.getShadowAlgorithmNames(), shadowAlgorithms)));
+    }
+    
+    /**
+     * Get default shadow algorithm.
+     *
+     * @return shadow algorithm
+     */
+    public Optional<ShadowAlgorithm> getDefaultShadowAlgorithm() {
+        return null == defaultShadowAlgorithm ? Optional.empty() : Optional.of(defaultShadowAlgorithm);
     }
     
     /**
@@ -122,6 +139,9 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     public Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> getAllNoteShadowAlgorithms() {
         Collection<NoteShadowAlgorithm<Comparable<?>>> result = shadowAlgorithms.values().stream().filter(each -> each instanceof NoteShadowAlgorithm<?>)
                 .map(each -> (NoteShadowAlgorithm<Comparable<?>>) each).collect(Collectors.toCollection(LinkedList::new));
+        if (defaultShadowAlgorithm instanceof NoteShadowAlgorithm<?>) {
+            result.add((NoteShadowAlgorithm<Comparable<?>>) defaultShadowAlgorithm);
+        }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     

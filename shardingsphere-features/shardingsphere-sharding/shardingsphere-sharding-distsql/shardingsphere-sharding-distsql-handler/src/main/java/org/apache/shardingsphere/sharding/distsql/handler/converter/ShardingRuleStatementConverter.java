@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -83,9 +84,22 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    // TODO consider other sharding strategy type, for example: complex, hint
-    private static ShardingStrategyConfiguration createTableStrategyConfiguration(final AutoTableRuleSegment segment) {
-        return new StandardShardingStrategyConfiguration(segment.getShardingColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getShardingAlgorithmSegment().getName()));
+    private static ShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
+        return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(),
+                segment.getTableStrategyColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()));
+    }
+    
+    /**
+     * Create strategy configuration.
+     *
+     * @param strategyType strategy type
+     * @param shardingColumn sharding column
+     * @param shardingAlgorithmName sharding algorithm name
+     * @return sharding strategy configuration
+     */
+    public static ShardingStrategyConfiguration createStrategyConfiguration(final String strategyType, final String shardingColumn, final String shardingAlgorithmName) {
+        ShardingStrategyType shardingStrategyType = ShardingStrategyType.getValueOf(strategyType);
+        return shardingStrategyType.getConfiguration(shardingAlgorithmName, shardingColumn);
     }
     
     private static String getShardingAlgorithmName(final String tableName, final String algorithmType) {

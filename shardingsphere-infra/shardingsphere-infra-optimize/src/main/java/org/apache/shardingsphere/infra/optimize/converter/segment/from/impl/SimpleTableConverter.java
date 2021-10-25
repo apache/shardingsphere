@@ -23,8 +23,10 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -46,6 +48,19 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
     
     @Override
     public Optional<SimpleTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlBasicCall) {
+            SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
+            if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
+                String name = sqlBasicCall.getOperandList().get(0).toString();
+                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(name)));
+                SqlNode alias = sqlBasicCall.getOperandList().get(1);
+                tableSegment.setAlias(new AliasSegment(getStartIndex(alias), getStopIndex(alias), new IdentifierValue(alias.toString())));
+                return Optional.of(tableSegment);
+            }
+        }
+        if (sqlNode instanceof SqlIdentifier) {
+            return Optional.of(new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(((SqlIdentifier) sqlNode).names.get(0)))));
+        }
         return Optional.empty();
     }
 }

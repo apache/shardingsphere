@@ -27,13 +27,14 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConv
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Optional;
 
 /**
  * Join converter.
  */
-public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlNode> {
+public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlJoin> {
     
     private static final String JOIN_TYPE_INNER = "INNER";
     
@@ -44,7 +45,7 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final JoinTableSegment segment) {
+    public Optional<SqlJoin> convertToSQLNode(final JoinTableSegment segment) {
         SqlNode left = new TableConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new TableConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
         Optional<SqlNode> condition = new ExpressionConverter().convertToSQLNode(segment.getCondition());
@@ -54,8 +55,16 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     }
     
     @Override
-    public Optional<JoinTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        return Optional.empty();
+    public Optional<JoinTableSegment> convertToSQLSegment(final SqlJoin sqlJoin) {
+        TableSegment left = new TableConverter().convertToSQLSegment(sqlJoin.getLeft()).orElseThrow(IllegalStateException::new);
+        TableSegment right = new TableConverter().convertToSQLSegment(sqlJoin.getRight()).orElseThrow(IllegalStateException::new);
+        JoinTableSegment result = new JoinTableSegment();
+        result.setStartIndex(getStartIndex(sqlJoin));
+        result.setStartIndex(getStopIndex(sqlJoin));
+        result.setLeft(left);
+        result.setRight(right);
+        new ExpressionConverter().convertToSQLSegment(sqlJoin.getCondition()).ifPresent(result::setCondition);
+        return Optional.of(result);
     }
     
     private SqlLiteral convertJoinType(final String joinType) {

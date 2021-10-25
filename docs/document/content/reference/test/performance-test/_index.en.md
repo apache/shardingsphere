@@ -1,5 +1,4 @@
 +++
-pre = "<b>8.1.2 </b>"
 title = "Performance Test"
 weight = 2
 +++
