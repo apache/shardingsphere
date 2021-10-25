@@ -93,11 +93,7 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     protected void shadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Set<String> shadowAlgorithmNames, final String defaultShadowAlgorithmName) {
         for (Map.Entry<String, ShadowTableConfiguration> entry : shadowTables.entrySet()) {
             Collection<String> names = entry.getValue().getShadowAlgorithmNames();
-            names.forEach(each -> {
-                if (!shadowAlgorithmNames.contains(each)) {
-                    names.remove(each);
-                }
-            });
+            names.removeIf(next -> !shadowAlgorithmNames.contains(next));
             if (null != defaultShadowAlgorithmName && names.isEmpty()) {
                 names.add(defaultShadowAlgorithmName);
             }
