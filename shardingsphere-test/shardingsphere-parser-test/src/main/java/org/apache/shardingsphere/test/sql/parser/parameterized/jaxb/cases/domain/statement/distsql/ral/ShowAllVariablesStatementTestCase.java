@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Clear sharding hint statement.
+ * Show all variables statement test case.
  */
-public final class ClearShardingHintStatement extends HintDistSQLStatement {
+public final class ShowAllVariablesStatementTestCase extends SQLParserTestCase {
 }
