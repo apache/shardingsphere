@@ -7,7 +7,7 @@ chapter = true
 
 ## Background
 
-The traditional solution that stores all the data in one concentrated node has hardly satisfied the requirement of massive Internet data scenario in three aspects, performance, availability and operation cost.
+The traditional solution that stores all the data in one concentrated node has hardly satisfied the requirement of massive data scenario in three aspects, performance, availability and operation cost.
 
 In performance, the relational database mostly uses B+ tree index. When the data amount exceeds the threshold, deeper index will increase the disk IO access number, and thereby, weaken the performance of query. In the same time, high concurrency requests also make the centralized database to be the greatest limitation of the system.
 
