@@ -106,8 +106,8 @@ public final class ShardingRuleStatementConverter {
     
     private static KeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final AutoTableRuleSegment segment) {
         KeyGenerateSegment keyGenerateSegment = segment.getKeyGenerateSegment();
-        return new KeyGenerateStrategyConfiguration(keyGenerateSegment.getKeyGenerateColumn(), getKeyGeneratorName(segment.getLogicTable(),
-                keyGenerateSegment.getKeyGenerateAlgorithmSegment().getName()));
+        return new KeyGenerateStrategyConfiguration(keyGenerateSegment.getKeyGenerateColumn(),
+                getKeyGeneratorName(segment.getLogicTable(), keyGenerateSegment.getKeyGenerateAlgorithmSegment().getName()));
     }
     
     private static String getKeyGeneratorName(final String tableName, final String columnName) {

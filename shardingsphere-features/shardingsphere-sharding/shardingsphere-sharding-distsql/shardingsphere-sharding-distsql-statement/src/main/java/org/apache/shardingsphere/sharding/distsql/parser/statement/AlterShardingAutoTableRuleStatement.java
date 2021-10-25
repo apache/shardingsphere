@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSe
 import java.util.Collection;
 
 /**
- * Alter sharding table rule statement.
+ * Alter sharding auto table rule statement.
  */
 @RequiredArgsConstructor
 @Getter

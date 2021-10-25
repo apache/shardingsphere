@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+
+import java.util.Collection;
 
 /**
- * Abstract table rule segment.
+ * Alter sharding table rule statement.
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
-public abstract class AbstractTableRuleSegment implements ASTNode {
+public final class AlterShardingTableRuleStatement extends AlterRuleStatement {
     
-    private final String logicTable;
-    
-    private KeyGenerateSegment keyGenerateSegment;
-    
-    /**
-     * Empty table rule segment.
-     */
-    public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
-        public EmptyTableRuleSegment() {
-            super(null);
-        }
-    }
+    private final Collection<TableRuleSegment> rules;
 }
