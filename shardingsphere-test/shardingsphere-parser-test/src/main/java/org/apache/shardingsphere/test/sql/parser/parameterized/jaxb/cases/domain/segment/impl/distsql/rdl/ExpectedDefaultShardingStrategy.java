@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Duplicate rule exception.
+ * Expected default sharding strategy.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+@Getter
+@Setter
+public final class ExpectedDefaultShardingStrategy extends AbstractExpectedIdentifierSQLSegment {
     
-    private static final long serialVersionUID = -1738699538105858939L;
+    @XmlAttribute(name = "default-type")
+    private String defaultType;
     
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
-    }
+    @XmlAttribute(name = "strategy-type")
+    private String strategyType;
     
-    public DuplicateRuleException(final String type, final String schemaName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
-    }
+    @XmlAttribute(name = "sharding-column")
+    private String shardingColumn;
+    
+    @XmlAttribute(name = "sharding-algorithm-name")
+    private String shardingAlgorithmName;
 }

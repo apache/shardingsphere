@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.converter.segment.limit;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
- * Offset converter.
+ * Create default sharding strategy statement.
  */
-public final class OffsetConverter extends AbstractLimitConverter {
+@RequiredArgsConstructor
+@Getter
+public final class CreateDefaultShardingStrategyStatement extends CreateRuleStatement {
     
-    public OffsetConverter() {
-        super(LimitSegment::getOffset);
-    }
+    private final String defaultType;
+    
+    private final String strategyType;
+    
+    private final String shardingColumn;
+    
+    private final String shardingAlgorithmName;
 }
