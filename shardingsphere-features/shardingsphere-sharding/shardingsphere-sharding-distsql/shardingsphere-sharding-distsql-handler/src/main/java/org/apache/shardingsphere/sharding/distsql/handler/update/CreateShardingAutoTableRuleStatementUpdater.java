@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Create sharding table rule statement updater.
+ * Create sharding auto table rule statement updater.
  */
 public final class CreateShardingAutoTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingAutoTableRuleStatement, ShardingRuleConfiguration> {
     
