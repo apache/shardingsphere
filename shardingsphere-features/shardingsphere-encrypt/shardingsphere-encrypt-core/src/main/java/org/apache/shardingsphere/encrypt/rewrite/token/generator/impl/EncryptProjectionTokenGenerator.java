@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RewriteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -55,13 +55,11 @@ import lombok.Setter;
  */
 @Setter
 public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator 
-        implements CollectionSQLTokenGenerator<SQLStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware, RewriteMetaDataAware {
+        implements CollectionSQLTokenGenerator<SQLStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware {
     
     private boolean queryWithCipherColumn;
     
     private List<SQLToken> previousSQLTokens;
-    
-    private Map<String, Map<String, Optional<String>>> rewriteMetaDataMap;
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -72,45 +70,49 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        Map<String, Map<String, String>> rewriteMetaDataMap = new HashMap<>();
         if (sqlStatementContext instanceof InsertStatementContext) {
-            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), true, false, false, false));
+            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), true, false, false, false, 
+                    rewriteMetaDataMap));
         }
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), false, false, false, false));
+            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), false, false, false, false, rewriteMetaDataMap));
             if (selectStatementContext.isContainsSubquery()) {
                 SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> result.addAll(generateSQLTokens(
                         new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
-                                selectStatementContext.getSchemaName()), Optional.empty(), false, true, false, false)));
+                                selectStatementContext.getSchemaName()), Optional.empty(), false, true, false, false, rewriteMetaDataMap)));
                 SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> result.addAll(generateSQLTokens(
                         new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSubquery().getSelect(), 
-                                selectStatementContext.getSchemaName()), each.getAlias(), false, true, true, false)));
+                                selectStatementContext.getSchemaName()), each.getAlias(), false, true, true, false, rewriteMetaDataMap)));
                 SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> result.addAll(generateSQLTokens(
                         new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
-                                selectStatementContext.getSchemaName()), Optional.empty(), false, false, false, true)));
+                                selectStatementContext.getSchemaName()), Optional.empty(), false, false, false, true, rewriteMetaDataMap)));
             }
         }
         return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final Optional<String> alias, final boolean insertSelect, 
-            final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
+            final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression, final Map<String, Map<String, String>> rewriteMetaDataMap) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional, alias, insertSelect, subquery, 
-                    inProjectionOrTabSegment, inExpression)).ifPresent(result::addAll);
+                    inProjectionOrTabSegment, inExpression, rewriteMetaDataMap)).ifPresent(result::addAll);
         }
+        selectStatementContext.setRewriteMetaDataMap(rewriteMetaDataMap);
         return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, final SelectStatementContext selectStatementContext, 
-            final EncryptTable encryptTable, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
+            final EncryptTable encryptTable, final Optional<String> alias, final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression,
+            final Map<String, Map<String, String>> rewriteMetaDataMap) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
-                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, insertSelect, subquery, inProjectionOrTabSegment, inExpression));
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, insertSelect, subquery, inProjectionOrTabSegment, inExpression, rewriteMetaDataMap));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
@@ -120,7 +122,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 }
             }
         }
-        setRewriteMetaData(rewriteMetaDataMap);
         return result;
     }
     
@@ -133,7 +134,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final boolean insertSelect, 
-            final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression) {
+            final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression, final Map<String, Map<String, String>> rewriteMetaDataMap) {
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
         Collection<ColumnProjection> projections = new LinkedList<>();
         if (insertSelect) {
@@ -148,7 +149,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, plainColumn);
                 assistedQueryColumn.ifPresent(each -> projections.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
                 alias.ifPresent(item -> {
-                    rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn));
+                    rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn.get()));
                 });
             }
         }
@@ -219,10 +220,5 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public void setPreviousSQLTokens(final List<SQLToken> previousSQLTokens) {
         this.previousSQLTokens = previousSQLTokens;
-    }
-    
-    @Override
-    public void setRewriteMetaData(final Map<String, Map<String, Optional<String>>> rewriteMetaDataMap) {
-        this.rewriteMetaDataMap = rewriteMetaDataMap;
     }
 }

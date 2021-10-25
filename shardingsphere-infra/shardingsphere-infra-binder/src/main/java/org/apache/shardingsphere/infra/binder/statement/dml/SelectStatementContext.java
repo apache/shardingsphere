@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -54,11 +58,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.google.common.base.Preconditions;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Select SQL statement context.
@@ -83,6 +86,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final List<Object> parameters;
+    
+    @Setter
+    private Map<String, Map<String, String>> rewriteMetaDataMap;
 
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);

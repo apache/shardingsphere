@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RewriteMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -100,9 +99,6 @@ public final class SQLTokenGenerators {
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);
-        }
-        if (sqlTokenGenerator instanceof RewriteMetaDataAware) {
-            ((RewriteMetaDataAware) sqlTokenGenerator).setRewriteMetaData(rewriteMetaDataMap);
         }
     }
 }
