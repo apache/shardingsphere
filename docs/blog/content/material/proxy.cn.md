@@ -4,8 +4,6 @@ weight = 1
 chapter = true
 +++
 
-## 揭秘Sharding-Proxy——面向DBA的数据库中间层
-
 ### 讲师介绍
 
 **张永伦**：京东金融运维部高级软件工程师

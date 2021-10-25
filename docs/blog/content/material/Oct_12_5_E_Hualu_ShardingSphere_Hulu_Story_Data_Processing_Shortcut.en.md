@@ -4,8 +4,6 @@ weight = 21
 chapter = true
 +++
 
-# E-Hualu X ShardingSphere | Hulu Story’s Data Processing Shortcut
-
 > “ShardingSphere has greatly simplified sharding development and maintenance, which has played a very important role in our rapid product release. We estimate that ShardingSphere has saved us at least 4 months of R&D costs.”                                                
 *— Shi Moxuan, Technical Director，E-Hualu*
 

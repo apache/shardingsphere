@@ -4,8 +4,6 @@ weight = 18
 chapter = true
 +++
 
-# A Distributed Database Middleware Ecosystem Driven by Open Source  
-
 On July 21, 2021, Pan Juan, the SphereEx Co-Founder and Apache ShardingSphere PMC, was invited to give a keynote session at the 2021 AWS Cloud Summit Shanghai, on “Apache ShardingSphere: Open-Source Distributed Database Middleware Ecosystem Building”.
 
 She introduced the expansion of the Open-Source project, community building, and how ShardingSphere practices the “Apache Way”. This article is a summary of Pan Juan’ s ideas.

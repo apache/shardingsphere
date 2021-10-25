@@ -4,8 +4,6 @@ weight = 23
 chapter = true
 +++
 
-# openGauss X ShardingSphere，分布式方案的另一种最佳实践
-
 Apache ShardingSphere 持续助力于 openGauss 分布式数据库能力的构建。openGauss 数据库自 2020 年 6 月开源以来，受到了业界的广泛关注，现已吸引众多伙伴、开发者参与其中，共建繁荣的数据库生态。面对如今海量数据，超高并发等诸多场景，openGauss 将目光转向于分布式解决方案，专注于解决海量数据存储、超高并发吞吐、大表瓶颈等众多难题，与 **ShardingSphere** 一起构建全栈开源分布式解决方案，实现 **openGauss** 的又一大突破。
 
 ## 分布式解决方案

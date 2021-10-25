@@ -4,8 +4,6 @@ weight = 21
 chapter = true
 +++
 
-# 易华录 X ShardingSphere｜葫芦 App 后台数据处理的逻辑捷径
-
 ~~~
 “ShardingSphere 大大简化了分库分表的开发和维护工作，对于业务的快速上线起到了非常大的支撑作用，保守估计 ShardingSphere 至少为我们节省了 4 个月的研发成本。”
 
