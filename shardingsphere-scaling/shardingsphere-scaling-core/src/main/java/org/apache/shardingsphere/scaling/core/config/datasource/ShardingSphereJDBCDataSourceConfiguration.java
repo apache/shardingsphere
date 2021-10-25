@@ -59,11 +59,9 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
     }
     
-    public ShardingSphereJDBCDataSourceConfiguration(final YamlParameterConfiguration parameterConfig) {
+    public ShardingSphereJDBCDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
+        YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules());
         this.parameter = YamlEngine.marshal(parameterConfig);
-        YamlRootConfiguration rootConfig = new YamlRootConfiguration();
-        rootConfig.setDataSources(parameterConfig.getDataSources());
-        rootConfig.setRules(parameterConfig.getRules());
         this.rootConfig = rootConfig;
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));

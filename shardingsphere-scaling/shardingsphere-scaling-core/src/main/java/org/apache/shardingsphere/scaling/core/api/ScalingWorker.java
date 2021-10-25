@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.api;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.yaml.YamlParameterConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.job.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.scaling.core.executor.job.ScalingJobExecutor;
 
@@ -80,16 +80,17 @@ public final class ScalingWorker {
     
     private RuleConfiguration getRuleConfiguration(final StartScalingEvent event) {
         RuleConfiguration result = new RuleConfiguration();
-        YamlParameterConfiguration sourceParameterConfig = getYamlParameterConfiguration(event.getSourceDataSource(), event.getSourceRule());
-        YamlParameterConfiguration targetParameterConfig = getYamlParameterConfiguration(event.getTargetDataSource(), event.getTargetRule());
-        result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceParameterConfig).wrap());
-        result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetParameterConfig).wrap());
+        YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
+        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
+        result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceRootConfig).wrap());
+        result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetRootConfig).wrap());
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private YamlParameterConfiguration getYamlParameterConfiguration(final String dataSources, final String rules) {
-        YamlParameterConfiguration result = new YamlParameterConfiguration();
+    private YamlRootConfiguration getYamlRootConfiguration(final String schemaName, final String dataSources, final String rules) {
+        YamlRootConfiguration result = new YamlRootConfiguration();
+        result.setSchemaName(schemaName);
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
         result.setDataSources(yamlDataSources);
         Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class);

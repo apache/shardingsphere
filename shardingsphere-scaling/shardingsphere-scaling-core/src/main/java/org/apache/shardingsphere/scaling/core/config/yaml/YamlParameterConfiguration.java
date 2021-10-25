@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -30,6 +32,8 @@ import java.util.Map;
 /**
  * YAML parameter configuration.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public final class YamlParameterConfiguration implements YamlConfiguration {
