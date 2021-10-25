@@ -4,8 +4,6 @@ weight = 2
 chapter = true
 +++
 
-## 分布式事务在Sharding-Sphere中的实现
-
 ### 讲师简介
 
 **赵俊**

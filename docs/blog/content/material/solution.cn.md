@@ -4,8 +4,6 @@ weight = 6
 chapter = true
 +++
 
-## 刚柔并济的开源分布式事务解决方案
-
 ### 作者
 
 张亮，京东数科数据研发负责人，Apache ShardingSphere发起人 & PPMC

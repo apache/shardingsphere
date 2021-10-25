@@ -4,8 +4,6 @@ weight = 19
 chapter = true
 +++
 
-# How Can Students Participate in Open-Source Communities?
-
 ![](../../static/img/Blog_19_img_1_community.png)
 
 Having some experience in Open-Source projects or communities is quite common for developers nowadays. Actually, not only adults but students should, and are increasingly likely to get involved in Open-Source projects.

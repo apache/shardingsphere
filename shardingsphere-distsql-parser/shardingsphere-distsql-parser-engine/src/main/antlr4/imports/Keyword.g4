@@ -27,6 +27,10 @@ ADD
     : A D D
     ;
 
+ALL
+    : A L L
+    ;
+
 ALTER
     : A L T E R
     ;
@@ -93,6 +97,10 @@ PROPERTIES
 
 VARIABLE
     : V A R I A B L E
+    ;
+
+VARIABLES
+    : V A R I A B L E S
     ;
 
 HINT

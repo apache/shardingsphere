@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Clear sharding hint statement.
+ * Show all variables statement.
  */
-public final class ClearShardingHintStatement extends HintDistSQLStatement {
+public final class ShowAllVariablesStatement extends ShowDistSQLStatement {
 }

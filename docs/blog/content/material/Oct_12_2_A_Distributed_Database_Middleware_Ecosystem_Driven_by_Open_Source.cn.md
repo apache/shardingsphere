@@ -4,8 +4,6 @@ weight = 18
 chapter = true
 +++
 
-# Apache ShardingSphere：由开源驱动的分布式数据库中间件生态
-
 2021 年 7 月 21 日 2021 亚马逊云科技中国峰会现场，SphereEx 联合创始人、Apache ShardingSphere PMC 潘娟受邀参与此次峰会，以《Apache ShardingSphere 分布式数据库中间件开源生态构建》为主题，围绕开源理念扩散、社区建设、ShardingSphere 如何践行 Apache Way 等方面展开了介绍，本文总结自潘娟内容分享。
 
 ## 在数据库之上与业务之下的新生态

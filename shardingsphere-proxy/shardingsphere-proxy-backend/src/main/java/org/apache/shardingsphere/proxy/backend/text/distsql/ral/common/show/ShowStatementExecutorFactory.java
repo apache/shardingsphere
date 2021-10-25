@@ -19,9 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
 import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
@@ -46,11 +48,14 @@ public final class ShowStatementExecutorFactory {
         if (sqlStatement instanceof ShowInstanceStatement) {
             return new ShowInstanceExecutor();
         }
-        if (sqlStatement instanceof ShowVariableStatement) {
-            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);
-        }
         if (sqlStatement instanceof ShowReadwriteSplittingReadResourcesStatement) {
             return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, backendConnection);
+        }
+        if (sqlStatement instanceof ShowAllVariablesStatement) {
+            return new ShowAllVariablesExecutor(backendConnection);
+        }
+        if (sqlStatement instanceof ShowVariableStatement) {
+            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

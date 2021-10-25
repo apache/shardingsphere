@@ -26,6 +26,7 @@ The shadow table needs to specify the corresponding shadow library mapping and s
 
 **shadow-algorithms**：SQL routing shadow algorithm.
 
+**default-shadow-algorithm-name**：Default shadow algorithm, optional item. For the default matching algorithm that is not configured with the shadow algorithm table.
 
 ## Routing Process
 

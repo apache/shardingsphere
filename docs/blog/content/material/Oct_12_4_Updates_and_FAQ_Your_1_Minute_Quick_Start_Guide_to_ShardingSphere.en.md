@@ -4,8 +4,6 @@ weight = 20
 chapter = true
 +++
 
-# Updates and FAQ — Your 1 Minute Quick Start Guide to ShardingSphere
-
 ## Background
 
 Apache ShardingSphere is an Apache Top-Level project and is one of the most popular open-source big data projects. It was started about 5 years ago, and now ShardingSphere has over 14K+ stars and 270+ contributors in its community.
