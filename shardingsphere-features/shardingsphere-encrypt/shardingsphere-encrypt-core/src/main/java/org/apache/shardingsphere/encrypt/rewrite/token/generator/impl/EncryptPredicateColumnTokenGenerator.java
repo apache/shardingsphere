@@ -84,7 +84,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
                 EncryptTable table = encryptTable.get();
-                if ((table.getQueryWithCipherColumn() != null && !table.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
+                if (Boolean.FALSE.equals(table.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                     if (plainColumn.isPresent()) {
                         result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));

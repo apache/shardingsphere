@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -250,6 +249,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
 
     /**
      * Check the table is support QueryWithCipherColumn.
+     *
      * @param sqlStatementContext sqlStatementContext
      * @return isQueryWithCipherColumn
      */
@@ -257,9 +257,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof SelectStatementContext
                 ? ((TableAvailable) sqlStatementContext).getAllTables()
                 : Collections.emptyList();
-        if (CollectionUtils.isNotEmpty(simpleTables)) {
+        if (!simpleTables.isEmpty()) {
             String tableName = simpleTables.iterator().next().getTableName().getIdentifier().getValue();
-            if (tables.containsKey(tableName) && tables.get(tableName).getQueryWithCipherColumn() != null) {
+            if (tables.containsKey(tableName) && null != tables.get(tableName).getQueryWithCipherColumn()) {
                 return tables.get(tableName).getQueryWithCipherColumn();
             }
         }
