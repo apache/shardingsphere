@@ -178,11 +178,11 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
-        Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
-        if (shardingRuleTableNames.isEmpty()) {
+        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        if (shardingLogicTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
         }
-        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, shardingRuleTableNames, props);
+        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, shardingLogicTableNames, props);
     }
     
     private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
@@ -218,10 +218,9 @@ public final class ShardingRouteEngineFactory {
         if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsPartialDistinctAggregation()) {
             return true;
         }
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(shardingTableNames)) {
+        if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        return shardingTableNames.size() > 1 && !shardingRule.isAllBindingTables(shardingTableNames);
+        return tableNames.size() > 1 && !shardingRule.isAllBindingTables(tableNames);
     }
 }
