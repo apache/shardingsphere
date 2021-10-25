@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
  * Show instance statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShowInstanceStatement extends ShowDistSQLStatement {
 }
