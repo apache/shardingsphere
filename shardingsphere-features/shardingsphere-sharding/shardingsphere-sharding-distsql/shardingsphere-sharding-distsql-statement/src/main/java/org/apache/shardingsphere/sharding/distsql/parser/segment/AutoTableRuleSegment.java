@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 
 import java.util.Collection;
@@ -30,8 +31,10 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
     private final Collection<String> dataSources;
     
+    @Setter
     private String shardingColumn;
     
+    @Setter
     private AlgorithmSegment shardingAlgorithmSegment;
     
     public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources) {

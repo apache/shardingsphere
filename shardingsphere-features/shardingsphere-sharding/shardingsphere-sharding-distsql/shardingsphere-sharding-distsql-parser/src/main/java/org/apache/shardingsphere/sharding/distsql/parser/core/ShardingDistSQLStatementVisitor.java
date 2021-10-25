@@ -95,6 +95,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -258,10 +259,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
         String tableName = getIdentifierValue(ctx.tableName());
         Collection<String> dataSources = getResources(ctx.resources());
-        KeyGenerateSegment keyGenerateSegment = (KeyGenerateSegment) visit(ctx.keyGenerateStrategy());
-        String shardingColumn = getIdentifierValue(ctx.shardingColumn().columnName());
-        AlgorithmSegment shardingAlgorithm = (AlgorithmSegment) visit(ctx.algorithmDefinition());
-        return new AutoTableRuleSegment(tableName, dataSources, shardingColumn, shardingAlgorithm, keyGenerateSegment);
+        AutoTableRuleSegment result = new AutoTableRuleSegment(tableName, dataSources);
+        Optional.ofNullable(ctx.keyGenerateStrategy()).ifPresent(op -> result.setKeyGenerateSegment((KeyGenerateSegment) visit(ctx.keyGenerateStrategy())));
+        Optional.ofNullable(ctx.shardingColumn()).ifPresent(op -> result.setShardingColumn(getIdentifierValue(ctx.shardingColumn().columnName())));
+        Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(op -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
+        return result;
     }
     
     @Override

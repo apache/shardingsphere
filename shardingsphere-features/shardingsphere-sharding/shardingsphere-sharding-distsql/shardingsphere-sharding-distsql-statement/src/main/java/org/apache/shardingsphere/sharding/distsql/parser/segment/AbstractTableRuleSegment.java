@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
@@ -32,6 +33,7 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
     
     private final String logicTable;
     
+    @Setter
     private KeyGenerateSegment keyGenerateSegment;
     
     /**
