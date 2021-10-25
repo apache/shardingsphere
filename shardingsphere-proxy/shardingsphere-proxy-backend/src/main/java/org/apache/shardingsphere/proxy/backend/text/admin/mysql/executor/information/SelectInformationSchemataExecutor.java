@@ -73,14 +73,15 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
     }
     
     @Override
-    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
+    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        String rowValue = null == rows.get(SCHEMA_NAME) ? rows.getOrDefault(SCHEMA_NAME.toLowerCase(), "").toString() : rows.getOrDefault(SCHEMA_NAME, "").toString();
+        String alias = aliasMap.getOrDefault(SCHEMA_NAME, "");
+        String rowValue = rowMap.getOrDefault(alias, "").toString();
         if (catalogs.contains(rowValue)) {
-            rows.replace(SCHEMA_NAME, schemaName);
+            rowMap.replace(alias, schemaName);
         } else {
-            rows.clear();
+            rowMap.clear();
         }
     }
     

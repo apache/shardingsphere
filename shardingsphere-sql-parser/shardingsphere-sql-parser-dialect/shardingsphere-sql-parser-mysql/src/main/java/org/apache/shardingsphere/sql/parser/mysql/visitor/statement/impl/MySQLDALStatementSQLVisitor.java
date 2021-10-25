@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueNoOptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RestartContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetCharacterContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
@@ -83,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
@@ -97,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
@@ -111,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRestartStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinaryLogsStatement;
@@ -453,6 +457,11 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
+    public ASTNode visitBinlog(final BinlogContext ctx) {
+        return new MySQLBinlogStatement(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
+    }
+    
+    @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
@@ -629,7 +638,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getComponents().addAll(components);
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitRestart(final RestartContext ctx) {
+        return new MySQLRestartStatement();
+    }
+
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
         MySQLSetResourceGroupStatement result = new MySQLSetResourceGroupStatement();

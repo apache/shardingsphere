@@ -37,7 +37,6 @@ public final class ShardingRawJavaRangeConfigurationExample {
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = RangeDataSourceFactory.newInstance(shardingType);

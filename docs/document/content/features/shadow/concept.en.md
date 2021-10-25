@@ -1,5 +1,4 @@
 +++
-pre = "<b>4.7.1. </b>"
 title = "Core Concept"
 weight = 1
 +++

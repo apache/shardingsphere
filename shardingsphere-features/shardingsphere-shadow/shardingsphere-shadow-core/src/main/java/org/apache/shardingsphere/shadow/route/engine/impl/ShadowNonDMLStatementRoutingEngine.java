@@ -19,11 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
@@ -48,10 +44,8 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
-    public void route(final RouteContext routeContext, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        if (Boolean.parseBoolean(String.valueOf(props.getProps().get(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey())))) {
-            findShadowDataSourceMappings(shadowRule).ifPresent(stringStringMap -> shadowNonDMLStatementRouteDecorate(routeContext, stringStringMap));
-        }
+    public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
+        findShadowDataSourceMappings(shadowRule).ifPresent(stringStringMap -> shadowRouteDecorate(routeContext, stringStringMap));
     }
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
@@ -76,7 +70,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlNotes) {
-        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.NON_DML);
+        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.NOTE_MATCH);
         return result.initSqlNotes(sqlNotes);
     }
     
@@ -91,19 +85,5 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     
     private boolean isMatchNoteShadowAlgorithm(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
         return ShadowDeterminerFactory.newInstance(noteShadowAlgorithm).isShadow(shadowCondition, shadowRule);
-    }
-    
-    private void shadowNonDMLStatementRouteDecorate(final RouteContext routeContext, final Map<String, String> shadowDataSourceMappings) {
-        Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
-        Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        for (RouteUnit each : routeUnits) {
-            RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            String shadowActualName = shadowDataSourceMappings.get(dataSourceMapper.getActualName());
-            if (null != shadowActualName) {
-                toBeAdded.add(new RouteUnit(new RouteMapper(dataSourceMapper.getLogicName(), shadowActualName), each.getTableMappers()));
-            }
-        }
-        routeUnits.clear();
-        routeUnits.addAll(toBeAdded);
     }
 }
