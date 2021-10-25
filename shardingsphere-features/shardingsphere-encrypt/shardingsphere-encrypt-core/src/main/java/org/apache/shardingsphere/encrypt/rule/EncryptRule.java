@@ -257,13 +257,14 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof SelectStatementContext
                 ? ((TableAvailable) sqlStatementContext).getAllTables()
                 : Collections.emptyList();
+        boolean result = queryWithCipherColumn;
         if (!simpleTables.isEmpty()) {
             String tableName = simpleTables.iterator().next().getTableName().getIdentifier().getValue();
             if (tables.containsKey(tableName) && null != tables.get(tableName).getQueryWithCipherColumn()) {
-                return tables.get(tableName).getQueryWithCipherColumn();
+                result = tables.get(tableName).getQueryWithCipherColumn();
             }
         }
-        return queryWithCipherColumn;
+        return result;
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
