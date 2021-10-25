@@ -24,6 +24,8 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 **影子算法**：SQL 路由影子算法。
 
+**默认影子算法**：默认影子算法，选配项。对于没有配置影子算法表的默认匹配算法。
+
 ## 路由过程
 
 以 INSERT 语句为例，在写入数据时，Apache ShardingSphere 会对 SQL 进行解析，再根据配置文件中的规则，构造一条路由链。在当前版本的功能中，
@@ -177,3 +179,53 @@ shadow-algorithms:
       shadow: true
       foo: bar
 ```
+
+4. 使用默认影子算法
+
+假设对 `t_order` 表压测使用列影子算法，其他相关其他表都需要使用注解影子算法。即,
+
+```sql
+INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
+
+INSERT INTO t_order_item (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*shadow:true,foo:bar,...*/;
+
+SELECT * FROM t_order_item WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+
+SELECT * FROM t_order_xxx WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+```
+都会执行到影子库。
+
+配置如下（YAML 格式展示）：
+
+```yaml
+enable: true
+  data-sources:
+    shadow-data-source:
+      source-data-source-name: ds
+      shadow-data-source-name: ds-shadow
+tables:
+  t_order:
+    data-source-names: shadow-data-source
+    shadow-algorithm-names:
+      - simple-note-algorithm
+      - user-id-match-algorithm
+default-shadow-algorithm-name: simple-note-algorithm
+shadow-algorithms:
+  simple-note-algorithm:
+    type: SIMPLE_NOTE
+    props:
+      shadow: true
+      foo: bar
+  user-id-match-algorithm:
+    type: COLUMN_REGEX_MATCH
+    props:
+      operation: insert
+      column: user_id
+      regex: "[0]"
+      
+props:
+  sql-comment-parse-enabled: true
+```
+我们只需要配置默认影子算法 `default-shadow-algorithm-name`。 除了影子表 `t_order` 其它相关表都会进行默认影子算法的判定。
+
+**注意**：默认影子算法仅支持注解影子算法。

@@ -21,6 +21,7 @@ rules:
           - <shadow-data-source> 
         shadowAlgorithmNames: # Shadow table location shadow algorithm names
           - <shadow-algorithm-name>
+    defaultShadowAlgorithmName: # Default shadow algorithm name
     shadowAlgorithms:
       <shadow-algorithm-name> (+): # Shadow algorithm name
         type: # Shadow algorithm type
