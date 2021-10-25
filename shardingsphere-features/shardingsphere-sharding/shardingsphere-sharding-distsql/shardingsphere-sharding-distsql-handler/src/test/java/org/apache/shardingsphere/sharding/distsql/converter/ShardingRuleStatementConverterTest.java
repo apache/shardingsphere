@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
@@ -48,10 +48,10 @@ public final class ShardingRuleStatementConverterTest {
         assertThat(config.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
     }
     
-    private TableRuleSegment createTableRuleSegment() {
+    private AutoTableRuleSegment createTableRuleSegment() {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
-        return new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id", new AlgorithmSegment("MOD", props), null, null);
+        return new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id", new AlgorithmSegment("MOD", props), null);
     }
 }

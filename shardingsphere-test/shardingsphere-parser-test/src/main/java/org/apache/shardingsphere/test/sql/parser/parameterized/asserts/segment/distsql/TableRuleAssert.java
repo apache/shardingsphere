@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedTableRule;
 
@@ -41,7 +41,7 @@ public final class TableRuleAssert {
      * @param actual actual table rule
      * @param expected expected table rule test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final TableRuleSegment actual, final ExpectedTableRule expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AutoTableRuleSegment actual, final ExpectedTableRule expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual table rule should not exist."), actual);
         } else {
@@ -51,11 +51,12 @@ public final class TableRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDataSources(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getTableStrategyColumn(), is(expected.getTableStrategyColumn()));
+                    actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
+            assertNotNull(assertContext.getText("key generate should exist."), actual.getKeyGenerateSegment());
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getKeyGenerateStrategyColumn(), is(expected.getKeyGenerateStrategyColumn()));
-            AlgorithmAssert.assertIs(assertContext, actual.getTableStrategy(), expected.getTableStrategy());
-            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateStrategy(), expected.getKeyGenerateStrategy());
+                    actual.getKeyGenerateSegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
+            AlgorithmAssert.assertIs(assertContext, actual.getShardingAlgorithmSegment(), expected.getTableStrategy());
+            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment(), expected.getKeyGenerateStrategy());
         }
     }
 }

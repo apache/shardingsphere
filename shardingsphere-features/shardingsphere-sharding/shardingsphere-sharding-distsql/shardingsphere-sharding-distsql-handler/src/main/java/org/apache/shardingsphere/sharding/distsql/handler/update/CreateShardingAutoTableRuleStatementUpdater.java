@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAutoTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule statement updater.
  */
-public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class CreateShardingAutoTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingAutoTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -60,7 +60,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAutoTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         Collection<String> extraResources = getResourcesFromDataSourceContainedRules(shardingSphereMetaData.getRuleMetaData().getRules());
@@ -71,9 +71,9 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkShardingAlgorithmsCompleteness(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
-        for (TableRuleSegment each : sqlStatement.getRules()) {
-            if (null == each.getTableStrategy() || null == each.getTableStrategyColumn()) {
+    private void checkShardingAlgorithmsCompleteness(final CreateShardingAutoTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+        for (AutoTableRuleSegment each : sqlStatement.getRules()) {
+            if (null == each.getShardingAlgorithmSegment() || null == each.getShardingColumn()) {
                 throw new InvalidAlgorithmConfigurationException("sharding");
             }
         }
@@ -88,7 +88,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         return result;
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource, 
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingAutoTableRuleStatement sqlStatement, final ShardingSphereResource resource,
                                           final Collection<String> extraResources) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         notExistedResources.removeIf(extraResources::contains);
@@ -97,7 +97,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         }
     }
     
-    private Collection<String> getToBeCreatedResources(final CreateShardingTableRuleStatement sqlStatement) {
+    private Collection<String> getToBeCreatedResources(final CreateShardingAutoTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getDataSources().forEach(dataSource -> {
             if (InlineExpressionParser.isInlineExpression(dataSource)) {
@@ -109,11 +109,12 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         return result;
     }
     
-    private void checkDuplicateTables(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+    private void checkDuplicateTables(final String schemaName, final CreateShardingAutoTableRuleStatement sqlStatement, 
+                                      final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> shardingTableNames = null == currentRuleConfig ? Collections.emptyList() : getShardingTables(currentRuleConfig);
-        Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
+        Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(AutoTableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(shardingTableNames::contains).collect(Collectors.toSet()));
+        duplicateTableNames.addAll(sqlStatement.getRules().stream().map(AutoTableRuleSegment::getLogicTable).filter(shardingTableNames::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
             throw new DuplicateRuleException("sharding", schemaName, duplicateTableNames);
         }
@@ -126,8 +127,8 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         return result;
     }
     
-    private void checkToBeCreatedShardingAlgorithms(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
-        Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
+    private void checkToBeCreatedShardingAlgorithms(final CreateShardingAutoTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+        Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getShardingAlgorithmSegment().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!notExistedShardingAlgorithms.isEmpty()) {
@@ -135,7 +136,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         }
     }
     
-    private void checkToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+    private void checkToBeCreatedKeyGenerators(final CreateShardingAutoTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> invalidKeyGenerators = getToBeCreatedKeyGenerators(sqlStatement).stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
@@ -144,12 +145,13 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         }
     }
     
-    private Collection<String> getToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
+    private Collection<String> getToBeCreatedKeyGenerators(final CreateShardingAutoTableRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateSegment()))
+                .map(each -> each.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment().getName()).collect(Collectors.toSet());
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingAutoTableRuleStatement sqlStatement) {
         return ShardingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
@@ -169,6 +171,6 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     @Override
     public String getType() {
-        return CreateShardingTableRuleStatement.class.getCanonicalName();
+        return CreateShardingAutoTableRuleStatement.class.getCanonicalName();
     }
 }

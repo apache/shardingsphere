@@ -18,29 +18,32 @@
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+
+import java.util.Collection;
 
 /**
- * Table rule segment.
+ * Auto table rule segment.
  */
 @Getter
-public final class TableRuleSegment extends AbstractTableRuleSegment {
+public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
-    private final String dataSourcesNote;
+    private final Collection<String> dataSources;
     
-    private ShardingStrategySegment tableStrategySegment;
+    private String shardingColumn;
     
-    private ShardingStrategySegment databaseStrategySegment;
+    private AlgorithmSegment shardingAlgorithmSegment;
     
-    public TableRuleSegment(final String logicTable, final String dataSourcesNote) {
+    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources) {
         super(logicTable);
-        this.dataSourcesNote = dataSourcesNote;
+        this.dataSources = dataSources;
     }
     
-    public TableRuleSegment(final String logicTable, final String dataSourcesNote, final ShardingStrategySegment tableStrategy,
-                            final ShardingStrategySegment databaseStrategy, final KeyGenerateSegment keyGenerateSegment) {
+    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final String shardingColumn,
+                                final AlgorithmSegment shardingAlgorithm, final KeyGenerateSegment keyGenerateSegment) {
         super(logicTable, keyGenerateSegment);
-        this.dataSourcesNote = dataSourcesNote;
-        this.tableStrategySegment = tableStrategy;
-        this.databaseStrategySegment = databaseStrategy;
+        this.dataSources = dataSources;
+        this.shardingColumn = shardingColumn;
+        this.shardingAlgorithmSegment = shardingAlgorithm;
     }
 }

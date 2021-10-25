@@ -31,7 +31,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRu
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAutoTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.AlterResourceStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.AlterRuleStatementAssert;
@@ -80,8 +80,8 @@ public final class RDLStatementAssert {
             AlterEncryptRuleStatementAssert.assertIs(assertContext, (AlterEncryptRuleStatement) actual, (AlterEncryptRuleStatementTestCase) expected);
         } else if (actual instanceof AlterShardingBroadcastTableRulesStatement) {
             AlterShardingBroadcastTableRulesStatementAssert.assertIs(assertContext, (AlterShardingBroadcastTableRulesStatement) actual, (AlterShardingBroadcastTableRulesStatementTestCase) expected);
-        } else if (actual instanceof AlterShardingTableRuleStatement) {
-            AlterShardingTableRuleStatementAssert.assertIs(assertContext, (AlterShardingTableRuleStatement) actual, (AlterShardingTableRuleStatementTestCase) expected);
+        } else if (actual instanceof AlterShardingAutoTableRuleStatement) {
+            AlterShardingTableRuleStatementAssert.assertIs(assertContext, (AlterShardingAutoTableRuleStatement) actual, (AlterShardingTableRuleStatementTestCase) expected);
         } else if (actual instanceof CreateRuleStatement) {
             CreateRuleStatementAssert.assertIs(assertContext, (CreateRuleStatement) actual, expected);
         } else if (actual instanceof AddResourceStatement) {

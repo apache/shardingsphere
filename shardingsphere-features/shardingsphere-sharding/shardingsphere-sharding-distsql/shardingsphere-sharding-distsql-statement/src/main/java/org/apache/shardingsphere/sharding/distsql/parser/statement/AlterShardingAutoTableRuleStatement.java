@@ -19,17 +19,17 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 
 import java.util.Collection;
 
 /**
- * Create sharding table rule statement.
+ * Alter sharding table rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingTableRuleStatement extends CreateRuleStatement {
+public final class AlterShardingAutoTableRuleStatement extends AlterRuleStatement {
     
-    private final Collection<TableRuleSegment> rules;
+    private final Collection<AutoTableRuleSegment> rules;
 }
