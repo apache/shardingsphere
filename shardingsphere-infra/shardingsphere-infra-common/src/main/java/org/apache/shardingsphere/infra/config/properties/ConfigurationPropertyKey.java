@@ -116,9 +116,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
     
     /**
-     * Proxy connection num limit. less than 0 or equal 0 means no limit.
+     * Less than or equal to 0 means no limitation.
      */
-    PROXY_FRONTEND_CONNECTION_LIMIT("proxy-frontend-connection-limit", "-1", int.class),
+    PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class),
     
     /**
      * Whether enable sql federation.
