@@ -1,7 +1,6 @@
 +++
-pre = "<b>4.1.3. </b>"
 title = "使用规范"
-weight = 3
+weight = 2
 +++
 
 ## 背景

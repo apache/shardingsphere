@@ -183,3 +183,6 @@ rules:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
           encryptorName: aes_encryptor
+
+props:
+  sql-federation-enabled: true

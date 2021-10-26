@@ -511,4 +511,9 @@
         <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1"/>
         <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
     </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_broadcast_table_and_single_table">
+        <input sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
+        <output sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
+    </rewrite-assertion>
 </rewrite-assertions>

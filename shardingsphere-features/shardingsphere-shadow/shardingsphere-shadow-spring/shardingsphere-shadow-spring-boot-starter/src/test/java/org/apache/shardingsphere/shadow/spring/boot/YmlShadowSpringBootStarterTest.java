@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.spring.boot;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnValueMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -32,7 +33,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,12 +56,18 @@ public class YmlShadowSpringBootStarterTest {
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        ShadowAlgorithm userIdMatchAlgorithm = shadowAlgorithms.get("user-id-match-algorithm");
-        assertThat(userIdMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
-        assertThat(userIdMatchAlgorithm.getType(), is("COLUMN_REGEX_MATCH"));
-        assertThat(userIdMatchAlgorithm.getProps().get("operation"), is("insert"));
-        assertThat(userIdMatchAlgorithm.getProps().get("column"), is("user_id"));
-        assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
+        ShadowAlgorithm userIdRegexMatchAlgorithm = shadowAlgorithms.get("user-id-regex-match-algorithm");
+        assertThat(userIdRegexMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
+        assertThat(userIdRegexMatchAlgorithm.getType(), is("COLUMN_REGEX_MATCH"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().get("operation"), is("insert"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().get("column"), is("user_id"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().get("regex"), is("[1]"));
+        ShadowAlgorithm userIdValueMatchAlgorithm = shadowAlgorithms.get("user-id-value-match-algorithm");
+        assertThat(userIdValueMatchAlgorithm instanceof ColumnValueMatchShadowAlgorithm, is(true));
+        assertThat(userIdValueMatchAlgorithm.getType(), is("COLUMN_VALUE_MATCH"));
+        assertThat(userIdValueMatchAlgorithm.getProps().get("operation"), is("insert"));
+        assertThat(userIdValueMatchAlgorithm.getProps().get("column"), is("user_id"));
+        assertThat(userIdValueMatchAlgorithm.getProps().get("value"), is(1));
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
         assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_NOTE"));
@@ -72,9 +78,9 @@ public class YmlShadowSpringBootStarterTest {
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
         assertThat(shadowTables.get("t_order").getDataSourceNames().size(), is(2));
-        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
+        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-regex-match-algorithm", "simple-note-algorithm")));
         assertThat(shadowTables.get("t_user").getDataSourceNames().size(), is(1));
-        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("user-id-value-match-algorithm", "simple-note-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {

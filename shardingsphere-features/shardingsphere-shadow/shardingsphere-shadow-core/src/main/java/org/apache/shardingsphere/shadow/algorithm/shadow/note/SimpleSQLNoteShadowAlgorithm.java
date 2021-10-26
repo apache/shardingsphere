@@ -50,7 +50,7 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseNoteShadowValue<String> noteShadowValue) {
-        if (ShadowOperationType.NON_DML != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
+        if (ShadowOperationType.NOTE_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
         Optional<Map<String, String>> noteOptional = NoteShadowAlgorithmUtil.parseSimpleSQLNote(noteShadowValue.getSqlNoteValue());

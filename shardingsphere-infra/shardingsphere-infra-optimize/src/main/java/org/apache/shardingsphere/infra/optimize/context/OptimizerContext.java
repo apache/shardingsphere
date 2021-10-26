@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.optimize.metadata.FederationMetaData;
 import java.util.Map;
 
 /**
- * Optimize context.
+ * Optimizer context.
  */
 @RequiredArgsConstructor
 @Getter

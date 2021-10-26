@@ -27,6 +27,10 @@ showVariable
     : SHOW VARIABLE variableName
     ;
 
+showAllVariables
+    : SHOW ALL VARIABLES
+    ;
+
 enableInstance
     :ENABLE INSTANCE IP EQ ip COMMA PORT EQ port
     ;

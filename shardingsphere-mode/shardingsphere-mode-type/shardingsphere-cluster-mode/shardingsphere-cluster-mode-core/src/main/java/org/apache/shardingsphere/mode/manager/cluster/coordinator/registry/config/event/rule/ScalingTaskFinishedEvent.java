@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ScalingTaskFinishedEvent {
     
+    @NonNull
     private final String targetSchemaName;
     
     private final String targetParameter;

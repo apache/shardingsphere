@@ -68,14 +68,16 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         for (String schemaName : schemaNames) {
             getSourceData(schemaName, resultSet -> {
                 while (resultSet.next()) {
-                    Map<String, Object> row = new HashMap<>();
+                    Map<String, Object> rowMap = new HashMap<>();
+                    Map<String, String> aliasMap = new HashMap<>();
                     ResultSetMetaData metaData = resultSet.getMetaData();
                     for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
-                        row.put(resultSet.getMetaData().getColumnLabel(i), resultSet.getString(i));
+                        aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
+                        rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
                     }
-                    rowPostProcessing(schemaName, row);
-                    if (!row.isEmpty()) {
-                        getRows().addFirst(row);
+                    rowPostProcessing(schemaName, rowMap, aliasMap);
+                    if (!rowMap.isEmpty()) {
+                        getRows().addFirst(rowMap);
                     }
                 }
                 return null;
@@ -103,11 +105,12 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     
     /**
      * Get the source object of the row data.
-     *
-     * @param schemaName schema name
-     * @param rows rows
+     * 
+     *  @param schemaName schema name
+     * @param rowMap row 
+     * @param aliasMap alias
      */
-    protected abstract void rowPostProcessing(String schemaName, Map<String, Object> rows);
+    protected abstract void rowPostProcessing(String schemaName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream()
@@ -174,12 +177,13 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         
         /**
          * Custom processing.
-         *
-         * @param schemaName schema name
-         * @param rows row data
+         * 
+         *  @param schemaName schema name
+         * @param rowMap row
+         * @param aliasMap alias
          */
         @Override
-        protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
+        protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         }
     }
 }

@@ -87,3 +87,6 @@ rules:
   keyGenerators:
     test:
       type: TEST
+
+props:
+  sql-federation-enabled: true

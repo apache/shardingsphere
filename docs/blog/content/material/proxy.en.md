@@ -4,8 +4,6 @@ weight = 1
 chapter = true
 +++
 
-## Revealing Sharding-Proxy —— Database Middleware Oriented DBA 
-
 ### Lecturer introduction
 
 **Yonglun Zhang**: Senior software engineer of operation and maintenance department at JD Finance

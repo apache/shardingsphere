@@ -40,6 +40,7 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlConfi
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
             result.getColumns().put(each.getLogicColumn(), columnYamlSwapper.swapToYamlConfiguration(each));
         }
+        result.setQueryWithCipherColumn(data.getQueryWithCipherColumn());
         return result;
     }
     
@@ -51,6 +52,6 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlConfi
             yamlEncryptColumnRuleConfig.setLogicColumn(entry.getKey());
             columns.add(columnYamlSwapper.swapToObject(yamlEncryptColumnRuleConfig));
         }
-        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns);
+        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns, yamlConfig.getQueryWithCipherColumn());
     }
 }

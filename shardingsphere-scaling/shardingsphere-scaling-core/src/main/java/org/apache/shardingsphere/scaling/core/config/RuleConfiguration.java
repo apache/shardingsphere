@@ -17,18 +17,43 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 
 /**
  * Rule configuration.
  */
 @Getter
-@Setter
 public final class RuleConfiguration {
     
     private ScalingDataSourceConfigurationWrap source;
     
     private ScalingDataSourceConfigurationWrap target;
+    
+    /**
+     * Set source.
+     *
+     * @param source source configuration
+     */
+    public void setSource(final ScalingDataSourceConfigurationWrap source) {
+        checkParameters(source);
+        this.source = source;
+    }
+    
+    private void checkParameters(final ScalingDataSourceConfigurationWrap wrap) {
+        Preconditions.checkNotNull(wrap);
+        Preconditions.checkNotNull(wrap.getType());
+        Preconditions.checkNotNull(wrap.getParameter());
+    }
+    
+    /**
+     * Set target.
+     *
+     * @param target target configuration
+     */
+    public void setTarget(final ScalingDataSourceConfigurationWrap target) {
+        checkParameters(target);
+        this.target = target;
+    }
 }

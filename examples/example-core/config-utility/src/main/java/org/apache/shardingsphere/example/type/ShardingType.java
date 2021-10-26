@@ -39,6 +39,8 @@ public enum ShardingType {
     
     SHADOW,
     
+    SHADOW_DEFAULT_ALGORITHM,
+    
     SHARDING_AUTO_TABLES,
 
     SHARDING_HINT_DATABASES_ONLY,

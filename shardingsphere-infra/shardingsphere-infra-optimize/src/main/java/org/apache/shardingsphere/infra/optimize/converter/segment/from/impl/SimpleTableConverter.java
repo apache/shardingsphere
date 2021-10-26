@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -51,8 +51,10 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         if (sqlNode instanceof SqlBasicCall) {
             SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
             if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
-                ImmutableList<String> names = ((SqlIdentifier) sqlBasicCall.getOperandList().get(0)).names;
-                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(names.get(0))));
+                String name = sqlBasicCall.getOperandList().get(0).toString();
+                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(name)));
+                SqlNode alias = sqlBasicCall.getOperandList().get(1);
+                tableSegment.setAlias(new AliasSegment(getStartIndex(alias), getStopIndex(alias), new IdentifierValue(alias.toString())));
                 return Optional.of(tableSegment);
             }
         }

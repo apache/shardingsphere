@@ -140,3 +140,6 @@ rules:
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN
+
+props:
+  sql-federation-enabled: true

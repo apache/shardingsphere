@@ -61,12 +61,12 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment(encryptorName, new Properties()));
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
+        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         return new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null);
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
     }
 }

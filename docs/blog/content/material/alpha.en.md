@@ -3,7 +3,6 @@ title = "After years of stagnation, ElasticJob is back with the first Apache ver
 weight = 13
 chapter = true
 +++
-## After years of stagnation, ElasticJob is back with the first Apache version 3.0.0-alpha
 
 Within a few months ElasticJob as the subproject of Apache ShardingSphere has fixed and merged 535 issues and pull requests. More importantly, the ElasticJob community released the first official version: 3.0.0-alpha after joined Apache Software Foundation.
 

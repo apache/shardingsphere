@@ -1,5 +1,4 @@
 +++
-pre = "<b>5.2.2. </b>"
 title = "Configuration Manual"
 weight = 2
 +++
