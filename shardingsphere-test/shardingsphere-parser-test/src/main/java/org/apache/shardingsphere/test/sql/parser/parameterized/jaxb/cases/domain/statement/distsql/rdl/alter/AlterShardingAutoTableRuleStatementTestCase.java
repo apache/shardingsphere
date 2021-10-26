@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class AlterShardingTableRuleStatementTestCase extends SQLParserTestCase {
+public final class AlterShardingAutoTableRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
     private final List<ExpectedAutoTableRule> rules = new LinkedList<>();

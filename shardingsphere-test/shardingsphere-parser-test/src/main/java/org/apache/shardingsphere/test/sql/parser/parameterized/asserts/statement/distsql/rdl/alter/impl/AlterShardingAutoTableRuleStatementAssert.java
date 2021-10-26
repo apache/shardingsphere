@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AutoTableRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAutoTableRule;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,19 +33,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * alter sharding table rule statement assert.
+ * Alter sharding auto table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterShardingTableRuleStatementAssert {
+public final class AlterShardingAutoTableRuleStatementAssert {
     
     /**
-     * Assert alter sharding table rule statement is correct with expected parser result.
+     * Assert alter sharding auto table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter sharding table rule statement
-     * @param expected expected alter sharding table rule statement test case
+     * @param actual actual alter sharding auto table rule statement
+     * @param expected expected alter sharding auto table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingAutoTableRuleStatement actual, final AlterShardingTableRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingAutoTableRuleStatement actual, final AlterShardingAutoTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
@@ -56,9 +56,9 @@ public final class AlterShardingTableRuleStatementAssert {
     
     private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<AutoTableRuleSegment> actual, final List<ExpectedAutoTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding auto table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding auto table rule should exist."), actual);
             int count = 0;
             for (AutoTableRuleSegment tableRuleSegment : actual) {
                 ExpectedAutoTableRule expectedTableRule = expected.get(count);
