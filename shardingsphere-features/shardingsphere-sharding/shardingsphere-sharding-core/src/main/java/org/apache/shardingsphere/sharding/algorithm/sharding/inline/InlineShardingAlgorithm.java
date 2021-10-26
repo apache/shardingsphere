@@ -49,16 +49,14 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public void init() {
-        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
-        algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
+        algorithmExpression = getAlgorithmExpression();
         allowRangeQuery = isAllowRangeQuery();
     }
     
-    private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        return result;
+    private String getAlgorithmExpression() {
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
+        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
+        return InlineExpressionParser.handlePlaceHolder(expression.trim());
     }
     
     private boolean isAllowRangeQuery() {
@@ -70,6 +68,12 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         Closure<?> closure = createClosure();
         closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return closure.call().toString();
+    }
+    
+    private Closure<?> createClosure() {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        return result;
     }
     
     @Override
