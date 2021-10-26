@@ -65,6 +65,7 @@
         <snakeyaml.version>1.16</snakeyaml.version>
         
         <netty.version>4.1.69.Final</netty.version>
+        <commons-lang3.version>3.8</commons-lang3.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
