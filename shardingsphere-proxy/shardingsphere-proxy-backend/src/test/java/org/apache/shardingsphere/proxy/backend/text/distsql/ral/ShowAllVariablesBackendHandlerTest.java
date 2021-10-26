@@ -59,7 +59,7 @@ public final class ShowAllVariablesBackendHandlerTest {
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         Iterator<Object> rowDataIterator = rowData.iterator();
-        assertThat(rowDataIterator.next(), is("max_connections_size_per_query"));
-        assertThat(rowDataIterator.next(), is("1"));
+        assertThat(rowDataIterator.next(), is("sql_show"));
+        assertThat(rowDataIterator.next(), is(Boolean.FALSE.toString()));
     }
 }

@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Typed property key of configuration.
  */
@@ -130,4 +134,13 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     private final String defaultValue;
     
     private final Class<?> type;
+    
+    /**
+     * Get property key names.
+     *
+     * @return collection of key names
+     */
+    public static Collection<String> getKeyNames() {
+        return Arrays.stream(values()).map(ConfigurationPropertyKey::name).collect(Collectors.toList());
+    }
 }

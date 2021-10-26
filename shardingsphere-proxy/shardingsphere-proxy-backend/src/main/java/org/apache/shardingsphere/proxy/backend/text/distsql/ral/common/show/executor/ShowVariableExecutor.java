@@ -48,18 +48,17 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
-        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
-        return Collections.singletonList(new QueryHeader("", "", variable.name().toLowerCase(), variable.name(), Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
+        return Collections.singletonList(new QueryHeader("", "", sqlStatement.getName().toLowerCase(), sqlStatement.getName(), Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
     }
     
     @Override
     protected MergedResult createMergedResult() {
-        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
-        if (VariableEnum.getPropsVariables().contains(variable)) {
+        if (ConfigurationPropertyKey.getKeyNames().contains(sqlStatement.getName())) {
             ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
-            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(variable.name())).toString();
+            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(sqlStatement.getName())).toString();
             return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(propertyValue)));
         }
+        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()))));
