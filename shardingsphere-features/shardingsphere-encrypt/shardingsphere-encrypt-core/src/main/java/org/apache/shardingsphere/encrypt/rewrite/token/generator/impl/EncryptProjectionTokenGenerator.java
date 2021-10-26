@@ -118,7 +118,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
                 ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
                 if (!shorthandProjection.getActualColumns().isEmpty()) {
-                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
+                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType(), subquery));
                 }
             }
         }
@@ -165,11 +165,16 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final ShorthandProjection shorthandProjection, final String tableName, 
-            final EncryptTable encryptTable, final DatabaseType databaseType) {
+            final EncryptTable encryptTable, final DatabaseType databaseType, final boolean subquery) {
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
-                projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()));
+            	if (subquery) {
+                    projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), null));
+                    projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), findAssistedQueryColumn(tableName, each.getName()).get(), null));
+            	}else {
+                    projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()));
+            	}
             } else {
                 projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), each.getName(), null));
             }
