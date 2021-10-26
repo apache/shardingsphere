@@ -64,8 +64,8 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,  
                                         final RouteContext routeContext, final ConfigurationProperties props, final Collection<String> singleTableNames) {
-        boolean federationExecutorEnabled = props.getValue(ConfigurationPropertyKey.FEDERATION_EXECUTOR_ENABLED);
-        boolean allTablesInSameDataSource = federationExecutorEnabled 
+        boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
+        boolean allTablesInSameDataSource = sqlFederationEnabled 
                 ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames) 
                 : rule.isAllTablesInSameDataSource(routeContext, singleTableNames);
         Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");

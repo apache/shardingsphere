@@ -185,4 +185,4 @@ rules:
           encryptorName: aes_encryptor
 
 props:
-  federation-executor-enabled: true
+  sql-federation-enabled: true

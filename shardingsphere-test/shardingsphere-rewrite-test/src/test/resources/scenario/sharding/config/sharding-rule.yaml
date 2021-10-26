@@ -89,4 +89,4 @@ rules:
       type: TEST
 
 props:
-  federation-executor-enabled: true
+  sql-federation-enabled: true

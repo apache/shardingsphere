@@ -209,8 +209,8 @@ public final class ShardingRouteEngineFactory {
     
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, 
                                                     final ShardingRule shardingRule, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
-        boolean federationExecutorEnabled = props.getValue(ConfigurationPropertyKey.FEDERATION_EXECUTOR_ENABLED);
-        if (!federationExecutorEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
+        boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
+        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;

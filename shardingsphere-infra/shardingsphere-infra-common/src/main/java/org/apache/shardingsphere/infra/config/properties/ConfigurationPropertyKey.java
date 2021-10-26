@@ -121,9 +121,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_CONNECTION_LIMIT("proxy-frontend-connection-limit", "-1", int.class),
     
     /**
-     * Whether enable federation executor.
+     * Whether enable sql federation.
      */
-    FEDERATION_EXECUTOR_ENABLED("federation-executor-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     
