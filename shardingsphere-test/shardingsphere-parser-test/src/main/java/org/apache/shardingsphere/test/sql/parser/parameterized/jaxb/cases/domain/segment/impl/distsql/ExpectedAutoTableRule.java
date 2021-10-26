@@ -30,7 +30,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedAutoTableRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "data-source")
     private Set<String> dataSources;

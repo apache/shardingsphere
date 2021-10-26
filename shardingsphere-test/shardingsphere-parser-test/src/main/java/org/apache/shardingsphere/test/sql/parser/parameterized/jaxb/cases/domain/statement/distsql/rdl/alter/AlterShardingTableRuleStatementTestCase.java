@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedTableRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAutoTableRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,5 +34,5 @@ import java.util.List;
 public final class AlterShardingTableRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
-    private final List<ExpectedTableRule> rules = new LinkedList<>();
+    private final List<ExpectedAutoTableRule> rules = new LinkedList<>();
 }

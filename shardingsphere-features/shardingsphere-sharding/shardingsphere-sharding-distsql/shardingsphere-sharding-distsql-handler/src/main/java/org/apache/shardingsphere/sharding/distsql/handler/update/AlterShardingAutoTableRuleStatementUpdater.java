@@ -47,7 +47,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Alter sharding table rule statement updater.
+ * Alter sharding auto table rule statement updater.
  */
 public final class AlterShardingAutoTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingAutoTableRuleStatement, ShardingRuleConfiguration> {
     

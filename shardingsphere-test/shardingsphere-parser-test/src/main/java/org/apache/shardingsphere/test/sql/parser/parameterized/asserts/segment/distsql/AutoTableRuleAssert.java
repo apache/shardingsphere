@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedTableRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAutoTableRule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,19 +29,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Table rule assert.
+ * Auto table rule assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableRuleAssert {
+public final class AutoTableRuleAssert {
     
     /**
-     * Assert table rule is correct with expected parser result.
+     * Assert auto table rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual table rule
-     * @param expected expected table rule test case
+     * @param actual actual auto table rule
+     * @param expected expected auto table rule test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AutoTableRuleSegment actual, final ExpectedTableRule expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AutoTableRuleSegment actual, final ExpectedAutoTableRule expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual table rule should not exist."), actual);
         } else {

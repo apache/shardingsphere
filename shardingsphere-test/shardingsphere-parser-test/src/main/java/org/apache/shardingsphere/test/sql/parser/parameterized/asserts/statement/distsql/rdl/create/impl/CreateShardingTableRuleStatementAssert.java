@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAutoTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.TableRuleAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedTableRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AutoTableRuleAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAutoTableRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingTableRuleStatementTestCase;
 
 import java.util.Collection;
@@ -54,15 +54,15 @@ public final class CreateShardingTableRuleStatementAssert {
         }
     }
 
-    private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<AutoTableRuleSegment> actual, final List<ExpectedTableRule> expected) {
+    private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<AutoTableRuleSegment> actual, final List<ExpectedAutoTableRule> expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
             int count = 0;
             for (AutoTableRuleSegment tableRuleSegment : actual) {
-                ExpectedTableRule expectedTableRule = expected.get(count);
-                TableRuleAssert.assertIs(assertContext, tableRuleSegment, expectedTableRule);
+                ExpectedAutoTableRule expectedTableRule = expected.get(count);
+                AutoTableRuleAssert.assertIs(assertContext, tableRuleSegment, expectedTableRule);
                 count++;
             }
         }
