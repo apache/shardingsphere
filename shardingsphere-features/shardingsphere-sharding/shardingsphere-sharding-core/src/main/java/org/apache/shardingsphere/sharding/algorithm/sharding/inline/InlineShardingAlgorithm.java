@@ -39,6 +39,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
+    private String algorithmExpression;
+    
     private boolean allowRangeQuery;
     
     @Getter
@@ -47,13 +49,13 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public void init() {
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
+        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
+        algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
         allowRangeQuery = isAllowRangeQuery();
     }
     
     private Closure<?> createClosure() {
-        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
         Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
