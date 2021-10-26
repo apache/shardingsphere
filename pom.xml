@@ -102,7 +102,7 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.11.18</bytebuddy.version>
         
-        <elasticjob.version>3.0.0-beta</elasticjob.version>
+        <elasticjob.version>3.0.1</elasticjob.version>
         
         <calcite.version>1.27.0</calcite.version>
         <embedded-mysql.version>4.6.1</embedded-mysql.version>
