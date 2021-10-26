@@ -87,3 +87,6 @@ rules:
   keyGenerators:
     test:
       type: TEST
+
+props:
+  federation-executor-enabled: true
