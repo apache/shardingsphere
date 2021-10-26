@@ -58,7 +58,7 @@ public enum VariableEnum {
 
     PROXY_BACKEND_EXECUTOR_SUITABLE,
     
-    PROXY_FRONTEND_CONNECTION_LIMIT,
+    PROXY_FRONTEND_MAX_CONNECTIONS,
     
     /**
      * Other variables.
@@ -102,6 +102,6 @@ public enum VariableEnum {
                 VariableEnum.SQL_COMMENT_PARSE_ENABLED,
                 VariableEnum.PROXY_FRONTEND_EXECUTOR_SIZE,
                 VariableEnum.PROXY_BACKEND_EXECUTOR_SUITABLE,
-                VariableEnum.PROXY_FRONTEND_CONNECTION_LIMIT);
+                VariableEnum.PROXY_FRONTEND_MAX_CONNECTIONS);
     }  
 }

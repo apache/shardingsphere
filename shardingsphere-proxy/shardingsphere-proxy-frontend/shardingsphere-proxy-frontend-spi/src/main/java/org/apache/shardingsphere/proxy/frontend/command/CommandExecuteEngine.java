@@ -72,7 +72,7 @@ public interface CommandExecuteEngine {
      * @return error packet
      */
     DatabasePacket<?> getErrorPacket(Exception cause, BackendConnection backendConnection);
-
+    
     /**
      * Get error packet.
      *
@@ -80,7 +80,7 @@ public interface CommandExecuteEngine {
      * @return error packet
      */
     DatabasePacket<?> getErrorPacket(Exception cause);
-
+    
     /**
      * Get other packet.
      *
