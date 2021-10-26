@@ -1,15 +1,15 @@
 +++
-title = "ShardingSphere发布指南"
+title = "ShardingSphere 发布指南"
 weight = 8
 chapter = true
 +++
 
-## GPG设置
+## GPG 设置
 
-**1. 安装GPG**
+**1. 安装 GPG**
 
 在[GnuPG官网](https://www.gnupg.org/download/index.html)下载安装包。
-GnuPG的1.x版本和2.x版本的命令有细微差别，下列说明以`GnuPG-2.1.23`版本为例。
+GnuPG 的 1.x 版本和 2.x 版本的命令有细微差别，下列说明以`GnuPG-2.1.23`版本为例。
 
 安装完成后，执行以下命令查看版本号。
 
@@ -17,9 +17,9 @@ GnuPG的1.x版本和2.x版本的命令有细微差别，下列说明以`GnuPG-2.
 gpg --version
 ```
 
-**2. 创建key**
+**2. 创建 key**
 
-安装完成后，执行以下命令创建key。
+安装完成后，执行以下命令创建 key。
 
 `GnuPG-2.x`可使用：
 
@@ -33,9 +33,9 @@ gpg --full-gen-key
 gpg --gen-key
 ```
 
-根据提示完成key：
+根据提示完成 key：
 
-> 注意：请使用Apache mail生成GPG的Key。
+> 注意：请使用 Apache mail 生成 GPG 的 Key。
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -73,7 +73,7 @@ Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
 You need a Passphrase to protect your secret key. # 输入密码
 ```
 
-**3. 查看生成的key**
+**3. 查看生成的 key**
 
 ```shell
 gpg --list-keys
@@ -87,7 +87,7 @@ uid                  ${用户名} (${注释}) <{邮件地址}>
 sub   4096R/0B7EF5B2 2019-03-20
 ```
 
-其中700E6065为公钥ID。
+其中 700E6065 为公钥 ID。
 
 **4. 将公钥同步到服务器**
 
@@ -99,9 +99,9 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 
 `pool.sks-keyservers.net`为随意挑选的[公钥服务器](https://sks-keyservers.net/status/)，每个服务器之间是自动同步的，选任意一个即可。
 
-## 发布Apache Maven中央仓库
+## 发布 Apache Maven 中央仓库
 
-**1. 设置settings.xml文件**
+**1. 设置 settings.xml文件 **
 
 将以下模板添加到 `~/.m2/settings.xml`中，所有密码需要加密后再填入。
 加密设置可参考[这里](http://maven.apache.org/guides/mini/guide-encryption.html)。
@@ -123,19 +123,9 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 </settings>
 ```
 
-**2. 更新版本说明和示例版本**
+**2. 创建发布分支**
 
-在Github主干上更新如下文件，并提交PR到主干：
-
-```
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
-```
-
-更新`examples`模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
-
-**3. 创建发布分支**
-
-假设从github下载的ShardingSphere源代码在`~/shardingsphere/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
+假设从 github 下载的 ShardingSphere 源代码在`~/shardingsphere/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
 创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
 
 ```shell
@@ -147,17 +137,27 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
+**3. 更新版本说明和示例版本**
+
+在发布分支上更新如下文件，并提交 PR 到发布分支：
+
+```
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
+```
+
+更新`examples`模块的 pom，将版本由`${CURRENT.VERSION}` 替换为`${RELEASE.VERSION}`，并提交 PR 到发布分支。
+
 **4. 发布预校验**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ShardingSphere-Proxy的可执行二进制包。
+-Prelease: 选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
--DdryRun=true：演练，即不产生版本号提交，不生成新的tag。
+-DdryRun=true：演练，即不产生版本号提交，不生成新的 tag。
 
 **5. 准备发布**
 
@@ -168,14 +168,14 @@ mvn release:clean
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
+mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
-和上一步演练的命令基本相同，去掉了-DdryRun=true参数。
+和上一步演练的命令基本相同，去掉了-DdryRun=true 参数。
 
--DpushChanges=false：不要将修改后的版本号和tag自动提交至Github。
+-DpushChanges=false：不要将修改后的版本号和 tag 自动提交至 Github。
 
-将本地文件检查无误后，提交至github。
+将本地文件检查无误后，提交至 github。
 
 ```shell
 git push origin ${RELEASE.VERSION}-release
@@ -185,17 +185,17 @@ git push origin --tags
 **6. 部署发布**
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
+mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
 ```
 
-执行完该命令后，待发布版本会自动上传到Apache的临时筹备仓库(staging repository)。
-访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本，`Repository`列的内容即为${STAGING.REPOSITORY}。
-点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
+执行完该命令后，待发布版本会自动上传到 Apache 的临时筹备仓库(staging repository)。
+访问https://repository.apache.org/#stagingRepositories, 使用 Apache 的 LDAP 账户登录后，就会看到上传的版本，`Repository`列的内容即为 ${STAGING.REPOSITORY}。
+点击`Close`来告诉 Nexus 这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
-## 发布Apache SVN仓库
+## 发布 Apache SVN 仓库
 
-**1. 检出shardingsphere发布目录**
+**1. 检出 shardingsphere 发布目录**
 
 如无本地工作目录，则先创建本地工作目录。
 
@@ -204,14 +204,14 @@ mkdir -p ~/ss_svn/dev/
 cd ~/ss_svn/dev/
 ```
 
-创建完毕后，从Apache SVN检出shardingsphere发布目录。
+创建完毕后，从 Apache SVN 检出 shardingsphere 发布目录。
 
 ```shell
 svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/shardingsphere
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-**2. 添加gpg公钥**
+**2. 添加 gpg 公钥**
 
 仅第一次部署的账号需要添加，只要`KEYS`中包含已经部署过的账户的公钥即可。
 
@@ -219,7 +219,7 @@ cd ~/ss_svn/dev/shardingsphere
 gpg -a --export ${GPG用户名} >> KEYS
 ```
 
-**3. 将待发布的内容添加至SVN目录**
+**3. 将待发布的内容添加至 SVN 目录**
 
 创建版本号目录。
 
@@ -228,7 +228,7 @@ mkdir -p ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
-将源码包、二进制包和ShardingSphere-Proxy可执行二进制包添加至SVN工作目录。
+将源码包、二进制包和 ShardingSphere-Proxy 可执行二进制包添加至 SVN 工作目录。
 
 ```shell
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
@@ -237,7 +237,7 @@ cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribu
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
-**4. 提交Apache SVN**
+**4. 提交 Apache SVN**
 
 ```shell
 svn add *
@@ -246,20 +246,20 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 
 ## 检查发布结果
 
-**检查sha512哈希**
+**检查 sha512 哈希**
 
 ```shell
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
 ```
 
-**检查gpg签名**
+**检查 gpg 签名**
 
-首先导入发布人公钥。从svn仓库导入KEYS到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）
+首先导入发布人公钥。从 svn 仓库导入 KEYS 到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）
 
 ```shell
 curl https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS >> KEYS
 gpg --import KEYS
-gpg --edit-key "${发布人的gpg用户名}"
+gpg --edit-key "${发布人的 gpg 用户名}"
   > trust
 
 Please decide how far you trust this user to correctly verify other users' keys
@@ -277,7 +277,7 @@ Your decision? 5
   > save
 ```
 
-然后进行gpg签名检查。
+然后进行 gpg 签名检查。
 
 ```shell
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
@@ -288,7 +288,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin
 
 **检查发布文件内容**
 
-**对比源码包与Github上tag的内容差异**
+**对比源码包与 Github 上 tag 的内容差异**
 
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip
@@ -299,7 +299,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **检查源码包的文件内容**
 
-- 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
+- 检查源码包是否包含由于包含不必要文件，致使 tarball 过于庞大
 - 存在`LICENSE`和`NOTICE`文件
 - `NOTICE`文件中的年份正确
 - 只存在文本文件，不存在二进制文件
@@ -317,7 +317,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 - 存在`LICENSE`和`NOTICE`文件
 - `NOTICE`文件中的年份正确
-- 所有文本文件开头都有ASF许可证
+- 所有文本文件开头都有 ASF 许可证
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容
   - 所有第三方依赖的许可证都在`LICENSE`文件中声名
@@ -328,14 +328,14 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **投票阶段**
 
-1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PMC需要先按照文档检查版本的正确性，然后再进行投票。
+1. ShardingSphere 社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PMC 需要先按照文档检查版本的正确性，然后再进行投票。
 经过至少72小时并统计到3个`+1 PMC member`票后，即可进入下一阶段的投票。
 
 2. 宣布投票结果,发起投票结果邮件到`dev@shardingsphere.apache.org`。
 
 **投票模板**
 
-1. ShardingSphere社区投票模板
+1. ShardingSphere 社区投票模板
 
 标题：
 
@@ -426,7 +426,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## 完成发布
 
-**1. 将源码、二进制包以及KEYS从svn的dev目录移动到release目录**
+**1. 将源码、二进制包以及 KEYS 从 svn 的 dev 目录移动到 release 目录**
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
@@ -434,9 +434,9 @@ svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "de
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
-**2. 在Apache Staging仓库找到ShardingSphere并点击`Release`**
+**2. 在 Apache Staging 仓库找到 ShardingSphere 并点击`Release`**
 
-**3. 合并Github的release分支到`master`, 合并完成后删除release分支**
+**3. 合并 Github 的 release 分支到`master`, 合并完成后删除 release 分支**
 
 ```shell
 git checkout master
