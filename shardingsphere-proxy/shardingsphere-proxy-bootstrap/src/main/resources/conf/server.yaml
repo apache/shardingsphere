@@ -75,3 +75,4 @@
 #    # if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
 #  proxy-backend-executor-suitable: OLAP
 #  proxy-frontend-connection-limit: -1 # Proxy connection limit, less than 0 or equal 0 means no limit.
+#  sql-federation-enabled: false

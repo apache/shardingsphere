@@ -118,7 +118,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy connection num limit. less than 0 or equal 0 means no limit.
      */
-    PROXY_FRONTEND_CONNECTION_LIMIT("proxy-frontend-connection-limit", "-1", int.class);
+    PROXY_FRONTEND_CONNECTION_LIMIT("proxy-frontend-connection-limit", "-1", int.class),
+    
+    /**
+     * Whether enable sql federation.
+     */
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     
