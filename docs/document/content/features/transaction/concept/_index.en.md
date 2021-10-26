@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.2.1. </b>"
 title = "Core Concept"
 weight = 1
 chapter = true

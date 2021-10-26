@@ -64,7 +64,11 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     @Override
     public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer());
+        boolean isPostgreSQLIdentifierPacket = message instanceof PostgreSQLIdentifierPacket;
+        if (isPostgreSQLIdentifierPacket) {
+            prepareMessageHeader(out, ((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
+        }
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out);
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
@@ -74,15 +78,23 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             // TODO consider what severity to use
             PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, ex.getMessage())
                     .build();
+            isPostgreSQLIdentifierPacket = true;
+            prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);
         } finally {
-            if (message instanceof PostgreSQLIdentifierPacket) {
-                out.writeByte(((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
-                out.writeInt(payload.getByteBuf().readableBytes() + PAYLOAD_LENGTH);
+            if (isPostgreSQLIdentifierPacket) {
+                updateMessageLength(out);
             }
-            out.writeBytes(payload.getByteBuf());
-            payload.close();
         }
+    }
+    
+    private void prepareMessageHeader(final ByteBuf out, final char type) {
+        out.writeByte(type);
+        out.writeInt(0);
+    }
+    
+    private void updateMessageLength(final ByteBuf out) {
+        out.setInt(1, out.readableBytes() - MESSAGE_TYPE_LENGTH);
     }
     
     @Override

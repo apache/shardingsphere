@@ -1,6 +1,6 @@
 +++ 
 title = "提交者选举流程指南" 
-weight = 14
+weight = 13
 chapter = true 
 +++
 

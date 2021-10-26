@@ -72,7 +72,7 @@ public final class TableMetaData {
                 primaryKeyColumns.add(lowerColumnName);
             }
         }
-        return Collections.synchronizedMap(result);
+        return result;
     }
     
     private Map<String, IndexMetaData> getIndexes(final Collection<IndexMetaData> indexMetaDataList) {
@@ -80,7 +80,7 @@ public final class TableMetaData {
         for (IndexMetaData each : indexMetaDataList) {
             result.put(each.getName().toLowerCase(), each);
         }
-        return Collections.synchronizedMap(result);
+        return result;
     }
     
     /**

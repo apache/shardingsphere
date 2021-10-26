@@ -39,6 +39,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(databaseType);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));
+        pipeline.addLast(new FrontendChannelLimitationInboundHandler(databaseProtocolFrontendEngine));
         pipeline.addLast(new FrontendChannelInboundHandler(databaseProtocolFrontendEngine));
     }
 }

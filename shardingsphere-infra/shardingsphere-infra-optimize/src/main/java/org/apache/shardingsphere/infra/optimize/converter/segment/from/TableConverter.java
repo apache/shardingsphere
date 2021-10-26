@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.from;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.JoinTableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.impl.SimpleTableConverter;
@@ -35,14 +40,35 @@ import java.util.Optional;
 public final class TableConverter implements SQLSegmentConverter<TableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final TableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final TableSegment segment) {
         if (segment instanceof SimpleTableSegment) {
-            return new SimpleTableConverter().convert((SimpleTableSegment) segment);
+            return new SimpleTableConverter().convertToSQLNode((SimpleTableSegment) segment);
         } else if (segment instanceof JoinTableSegment) {
-            return new JoinTableConverter().convert((JoinTableSegment) segment);
+            return new JoinTableConverter().convertToSQLNode((JoinTableSegment) segment).map(optional -> optional);
         } else if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableConverter().convert((SubqueryTableSegment) segment);
+            return new SubqueryTableConverter().convertToSQLNode((SubqueryTableSegment) segment).map(optional -> optional);
         }
-        throw new UnsupportedOperationException("Unsupported segment segment type: " + segment.getClass());
+        throw new UnsupportedOperationException("Unsupported segment type: " + segment.getClass());
+    }
+    
+    @Override
+    public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlIdentifier) {
+            return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlJoin) {
+            return new JoinTableConverter().convertToSQLSegment((SqlJoin) sqlNode).map(optional -> optional);
+        } else if (sqlNode instanceof SqlBasicCall) {
+            Optional<SqlNode> existSubquery = ((SqlBasicCall) sqlNode).getOperandList().stream().filter(this::containsSqlSelect).findAny();
+            if (existSubquery.isPresent()) {
+                return new SubqueryTableConverter().convertToSQLSegment((SqlBasicCall) sqlNode).map(optional -> optional);
+            } else {
+                return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported sql node type: " + sqlNode.getClass());
+    }
+    
+    private boolean containsSqlSelect(final SqlNode sqlNode) {
+        return sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy;
     }
 }

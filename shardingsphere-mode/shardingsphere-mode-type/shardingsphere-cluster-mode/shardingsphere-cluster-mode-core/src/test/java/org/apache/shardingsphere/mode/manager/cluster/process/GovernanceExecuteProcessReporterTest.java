@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,10 +42,6 @@ public final class GovernanceExecuteProcessReporterTest {
         GovernanceExecuteProcessReporter reporter = new GovernanceExecuteProcessReporter();
         reporter.report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
         assertThat(subscriber.getValue(), is(executeProcessContext.getExecutionID()));
-        reporter.report("TEST0", mock(SQLExecutionUnit.class, RETURNS_DEEP_STUBS), ExecuteProcessConstants.EXECUTE_ID);
-        assertThat(subscriber.getValue(), is("TEST0"));
-        reporter.report("TEST1", ExecuteProcessConstants.EXECUTE_ID);
-        assertThat(subscriber.getValue(), is("TEST1"));
     }
     
     @SuppressWarnings("unchecked")

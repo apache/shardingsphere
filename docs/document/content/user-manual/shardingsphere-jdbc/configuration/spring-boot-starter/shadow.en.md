@@ -16,6 +16,8 @@ spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-s
 spring.shardingsphere.rules.shadow.tables.<table-name>.data-source-names= # Shadow table location shadow data source names (multiple values are separated by ",")
 spring.shardingsphere.rules.shadow.tables.<table-name>.shadow-algorithm-names= # Shadow table location shadow algorithm names (multiple values are separated by ",")
 
+spring.shardingsphere.rules.shadow.defaultShadowAlgorithmName= # default shadow algorithm name，optional item.
+
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.type= # Shadow algorithm type
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.props.xxx= # Shadow algorithm property configuration
 ```

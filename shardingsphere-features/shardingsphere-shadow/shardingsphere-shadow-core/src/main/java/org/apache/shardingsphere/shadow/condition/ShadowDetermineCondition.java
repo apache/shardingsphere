@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.condition;
 
+import lombok.Getter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 
 import java.util.Collection;
@@ -28,42 +29,30 @@ import java.util.Optional;
  */
 public final class ShadowDetermineCondition {
     
-    private boolean sqlNotesInitialized;
+    @Getter
+    private final String tableName;
     
-    private boolean shadowColumnConditionsInitialized;
-    
+    @Getter
     private final ShadowOperationType shadowOperationType;
     
     private final Collection<ShadowColumnCondition> shadowColumnConditions = new LinkedList<>();
     
     private final Collection<String> sqlNotes = new LinkedList<>();
     
-    public ShadowDetermineCondition(final ShadowOperationType shadowOperationType) {
+    public ShadowDetermineCondition(final String tableName, final ShadowOperationType shadowOperationType) {
+        this.tableName = tableName;
         this.shadowOperationType = shadowOperationType;
-        sqlNotesInitialized = false;
-        shadowColumnConditionsInitialized = false;
     }
     
     /**
      * Initialize SQL notes.
      *
-     * @param notes notes
+     * @param notes sql notes
+     * @return shadow determine condition
      */
-    public void initSqlNotes(final Collection<String> notes) {
-        if (sqlNotesInitialized) {
-            return;
-        }
+    public ShadowDetermineCondition initSqlNotes(final Collection<String> notes) {
         sqlNotes.addAll(notes);
-        sqlNotesInitialized = true;
-    }
-    
-    /**
-     * Is SQL notes initialized.
-     *
-     * @return is initialized or not
-     */
-    public boolean isSqlNotesInitialized() {
-        return sqlNotesInitialized;
+        return this;
     }
     
     /**
@@ -79,22 +68,11 @@ public final class ShadowDetermineCondition {
      * Initialize shadow column condition.
      *
      * @param shadowColumnConditions shadow column conditions
+     * @return shadow determine condition
      */
-    public void initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        if (shadowColumnConditionsInitialized) {
-            return;
-        }
+    public ShadowDetermineCondition initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
         this.shadowColumnConditions.addAll(shadowColumnConditions);
-        shadowColumnConditionsInitialized = true;
-    }
-    
-    /**
-     * Is shadow column conditions initialized.
-     *
-     * @return is initialized or not
-     */
-    public boolean isShadowColumnConditionsInitialized() {
-        return shadowColumnConditionsInitialized;
+        return this;
     }
     
     /**
@@ -104,14 +82,5 @@ public final class ShadowDetermineCondition {
      */
     public Optional<Collection<ShadowColumnCondition>> getShadowColumnConditions() {
         return shadowColumnConditions.isEmpty() ? Optional.empty() : Optional.of(shadowColumnConditions);
-    }
-    
-    /**
-     * Get shadow operation type.
-     *
-     * @return shadow operation type
-     */
-    public ShadowOperationType getShadowOperationType() {
-        return shadowOperationType;
     }
 }

@@ -54,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablesp
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLLoadStatement;
@@ -125,6 +127,9 @@ public final class ShardingRouteEngineFactory {
                 || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof PostgreSQLLoadStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
+        if (isResourceGroupStatement(sqlStatement)) {
+            return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
+        }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
         if (!tableNames.isEmpty() && shardingRuleTableNames.isEmpty()) {
@@ -138,6 +143,11 @@ public final class ShardingRouteEngineFactory {
             return new ShardingUnicastRoutingEngine(shardingRuleTableNames);
         }
         return new ShardingDataSourceGroupBroadcastRoutingEngine();
+    }
+    
+    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
+        // TODO add dropResourceGroupStatement, alterResourceGroupStatement
+        return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
     private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
@@ -168,11 +178,11 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
-        Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
-        if (shardingRuleTableNames.isEmpty()) {
+        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        if (shardingLogicTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
         }
-        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, shardingRuleTableNames, props);
+        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, shardingLogicTableNames, props);
     }
     
     private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
@@ -208,10 +218,9 @@ public final class ShardingRouteEngineFactory {
         if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsPartialDistinctAggregation()) {
             return true;
         }
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(shardingTableNames)) {
+        if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        return shardingTableNames.size() > 1 && !shardingRule.isAllBindingTables(shardingTableNames);
+        return tableNames.size() > 1 && !shardingRule.isAllBindingTables(tableNames);
     }
 }

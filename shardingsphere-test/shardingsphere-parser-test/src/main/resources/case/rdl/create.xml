@@ -289,4 +289,19 @@
         </rule>
     </create-shadow-rule>
     
+    <create-sharding-algorithm sql-case-id="create-sharding-algorithm">
+        <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
+            <algorithm algorithm-name="hash_mod">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
+                </properties>
+            </algorithm>
+        </shardingAlgorithm>
+    </create-sharding-algorithm>
+
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy">
+        <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        </strategy>
+    </create-default-sharding-strategy>
+    
 </sql-parser-test-cases>

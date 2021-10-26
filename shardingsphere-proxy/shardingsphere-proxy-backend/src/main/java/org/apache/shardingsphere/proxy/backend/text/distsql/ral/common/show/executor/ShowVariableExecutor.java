@@ -20,8 +20,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
@@ -52,6 +55,11 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
     @Override
     protected MergedResult createMergedResult() {
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
+        if (VariableEnum.getPropsVariables().contains(variable)) {
+            ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
+            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(variable.name())).toString();
+            return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(propertyValue)));
+        }
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()))));

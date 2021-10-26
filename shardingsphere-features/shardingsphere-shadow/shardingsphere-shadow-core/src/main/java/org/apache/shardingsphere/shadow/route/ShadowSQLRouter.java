@@ -41,11 +41,11 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         if (rule.isEnable()) {
-            doShadowDecorate(routeContext, logicSQL, rule);
+            doShadowDecorate(routeContext, logicSQL, rule, props);
         }
     }
     
-    private void doShadowDecorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule) {
+    private void doShadowDecorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
         ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, rule);
     }
     

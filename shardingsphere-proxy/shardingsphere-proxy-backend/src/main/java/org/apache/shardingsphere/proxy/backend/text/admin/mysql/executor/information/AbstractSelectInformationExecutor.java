@@ -33,6 +33,8 @@ import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedExcep
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -64,7 +66,22 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     public final void execute(final BackendConnection backendConnection) throws SQLException {
         List<String> schemaNames = getSchemaNames();
         for (String schemaName : schemaNames) {
-            constructRowData(schemaName, getSourceData(schemaName));
+            getSourceData(schemaName, resultSet -> {
+                while (resultSet.next()) {
+                    Map<String, Object> rowMap = new HashMap<>();
+                    Map<String, String> aliasMap = new HashMap<>();
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+                    for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
+                        aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
+                        rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
+                    }
+                    rowPostProcessing(schemaName, rowMap, aliasMap);
+                    if (!rowMap.isEmpty()) {
+                        getRows().addFirst(rowMap);
+                    }
+                }
+                return null;
+            });
         }
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
@@ -81,19 +98,19 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
      * Get the source object of the row data.
      *
      * @param schemaName schema name
-     * @return source object of row data
+     * @param callback callback for processing source data of information_schema
      * @throws SQLException SQLException
      */
-    protected abstract Object getSourceData(String schemaName) throws SQLException;
+    protected abstract void getSourceData(String schemaName, FunctionWithException<ResultSet, Void, SQLException> callback) throws SQLException;
     
     /**
-     * Construct row data from source data.
-     *
-     * @param schemaName schema name
-     * @param sourceData source data of row data
-     * @throws SQLException SQLException
+     * Get the source object of the row data.
+     * 
+     *  @param schemaName schema name
+     * @param rowMap row 
+     * @param aliasMap alias
      */
-    protected abstract void constructRowData(String schemaName, Object sourceData) throws SQLException;
+    protected abstract void rowPostProcessing(String schemaName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream()
@@ -145,47 +162,28 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
          * Get the source data of the row data.
          *
          * @param schemaName schema name
-         * @return source data of row data
          * @throws SQLException SQLException
          */
         @Override
-        protected Object getSourceData(final String schemaName) throws SQLException {
+        protected void getSourceData(final String schemaName, final FunctionWithException<ResultSet, Void, SQLException> callback) throws SQLException {
             ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
-            return dataSourceEntry.get().getValue().getConnection().prepareStatement(sql).executeQuery();
-        }
-        
-        /**
-         * Construct row data from source data.
-         *
-         * @param schemaName schema name
-         * @param sourceData source data of row data
-         * @throws SQLException SQLException
-         */
-        @Override
-        protected void constructRowData(final String schemaName, final Object sourceData) throws SQLException {
-            ResultSet resultSet = (ResultSet) sourceData;
-            while (resultSet.next()) {
-                Map<String, Object> row = new HashMap<>();
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
-                    row.put(resultSet.getMetaData().getColumnName(i), resultSet.getString(i));
-                }
-                rowPostProcessing(schemaName, row);
-                if (!row.isEmpty()) {
-                    getRows().addFirst(row);
-                }
+            try (Connection conn = dataSourceEntry.get().getValue().getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                callback.apply(ps.executeQuery());
             }
         }
         
         /**
          * Custom processing.
-         *
-         * @param schemaName schema name
-         * @param rows row data
+         * 
+         *  @param schemaName schema name
+         * @param rowMap row
+         * @param aliasMap alias
          */
-        protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
+        @Override
+        protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         }
     }
 }

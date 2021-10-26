@@ -88,10 +88,11 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void cacheRuleConfiguration(final RuleConfigurationCachedEvent event) {
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
-                repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName())),
-                repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName())),
-                registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
+        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
+        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
+        String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
+        String ruleCacheId = event.getCacheId();
+        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     

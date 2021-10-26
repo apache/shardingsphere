@@ -25,6 +25,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 
 import java.util.Map;
@@ -34,7 +35,7 @@ import java.util.TreeMap;
 /**
  * Aggregation projection converter. 
  */
-public final class AggregationProjectionConverter implements SQLSegmentConverter<AggregationProjectionSegment, SqlNode> {
+public final class AggregationProjectionConverter implements SQLSegmentConverter<AggregationProjectionSegment, SqlBasicCall> {
     
     private static final Map<String, SqlAggFunction> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -51,11 +52,21 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     }
     
     @Override
-    public Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
+    public Optional<SqlBasicCall> convertToSQLNode(final AggregationProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()), new SqlNode[]{SqlIdentifier.star(SqlParserPos.ZERO)}, SqlParserPos.ZERO));
+    }
+    
+    @Override
+    public Optional<AggregationProjectionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+        if (null == sqlBasicCall) {
+            return Optional.empty();    
+        }
+        AggregationType aggregationType = AggregationType.valueOf(sqlBasicCall.getOperator().getName());
+        String innerExpression = sqlBasicCall.toString().replace(sqlBasicCall.getOperator().getName(), "");
+        return Optional.of(new AggregationProjectionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), aggregationType, innerExpression));
     }
     
     private SqlAggFunction convertOperator(final String operator) {

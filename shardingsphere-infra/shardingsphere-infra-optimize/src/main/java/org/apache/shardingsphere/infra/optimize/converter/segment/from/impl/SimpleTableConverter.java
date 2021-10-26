@@ -23,8 +23,10 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -34,7 +36,7 @@ import java.util.Optional;
 public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SimpleTableSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
         SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
@@ -42,5 +44,23 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSQLNode, aliasSQLNode}, SqlParserPos.ZERO));
         }
         return Optional.of(tableNameSQLNode);
+    }
+    
+    @Override
+    public Optional<SimpleTableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlBasicCall) {
+            SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
+            if (sqlBasicCall.getOperator().equals(SqlStdOperatorTable.AS)) {
+                String name = sqlBasicCall.getOperandList().get(0).toString();
+                SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(name)));
+                SqlNode alias = sqlBasicCall.getOperandList().get(1);
+                tableSegment.setAlias(new AliasSegment(getStartIndex(alias), getStopIndex(alias), new IdentifierValue(alias.toString())));
+                return Optional.of(tableSegment);
+            }
+        }
+        if (sqlNode instanceof SqlIdentifier) {
+            return Optional.of(new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(((SqlIdentifier) sqlNode).names.get(0)))));
+        }
+        return Optional.empty();
     }
 }

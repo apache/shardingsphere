@@ -31,6 +31,14 @@ createShardingBroadcastTableRules
     : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
+createShardingAlgorithm
+    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
+createDefaultShardingStrategy
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY shardingStrategy
+    ;
+
 alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
@@ -75,6 +83,14 @@ shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
+shardingAlgorithm
+    : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+shardingStrategy
+    :  LP TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm RP
+    ;
+
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
@@ -91,6 +107,10 @@ bindTableRulesDefinition
     : LP tableName (COMMA tableName)* RP
     ;
 
+shardingAlgorithmDefinition
+    : shardingAlgorithmName LP algorithmDefinition RP
+    ;
+
 algorithmDefinition
     : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
@@ -99,10 +119,18 @@ algorithmName
     : IDENTIFIER
     ;
 
+shardingAlgorithmName
+    : IDENTIFIER
+    ;
+
+strategyType
+    : IDENTIFIER
+    ;
+
 algorithmProperties
     : algorithmProperty (COMMA algorithmProperty)*
     ;
 
 algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;

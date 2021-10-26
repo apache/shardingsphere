@@ -27,6 +27,10 @@ ADD
     : A D D
     ;
 
+ALL
+    : A L L
+    ;
+
 ALTER
     : A L T E R
     ;
@@ -95,6 +99,10 @@ VARIABLE
     : V A R I A B L E
     ;
 
+VARIABLES
+    : V A R I A B L E S
+    ;
+
 HINT
     : H I N T
     ;
@@ -133,4 +141,16 @@ TABLES
 
 LIST
     : L I S T
+    ;
+    
+TABLE
+    : T A B L E
+    ;
+
+RULES
+    : R U L E S
+    ;
+    
+RULE
+    : R U L E
     ;

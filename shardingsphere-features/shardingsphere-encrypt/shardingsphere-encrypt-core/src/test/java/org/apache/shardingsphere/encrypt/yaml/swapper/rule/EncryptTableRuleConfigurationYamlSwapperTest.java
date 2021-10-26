@@ -43,7 +43,7 @@ public final class EncryptTableRuleConfigurationYamlSwapperTest {
                 new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"), 
                 new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"), 
                 new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "test_encryptor_3"));
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs);
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs, null);
         YamlEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = tableRuleConfigYamlSwapper.swapToYamlConfiguration(encryptTableRuleConfig);
         assertNotNull(actualYamlEncryptTableRuleConfig);
         Map<String, YamlEncryptColumnRuleConfiguration> actualColumns = actualYamlEncryptTableRuleConfig.getColumns();

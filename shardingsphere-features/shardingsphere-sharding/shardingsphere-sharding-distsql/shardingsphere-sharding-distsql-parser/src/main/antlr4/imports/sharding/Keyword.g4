@@ -138,3 +138,19 @@ STATUS
 CLEAR
     : C L E A R
     ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+    
+DATABASE
+    : D A T A B A S E
+    ;
+
+SHARDING_ALGORITHM
+    : S H A R D I N G UL_ A L G O R I T H M
+    ;
+
+STRATEGY
+    : S T R A T E G Y
+    ;

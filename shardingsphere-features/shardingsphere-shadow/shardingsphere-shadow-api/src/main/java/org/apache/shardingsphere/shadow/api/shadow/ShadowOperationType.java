@@ -45,9 +45,9 @@ public enum ShadowOperationType {
     SELECT,
     
     /**
-     * non-DML statement shadow operation.
+     * The shadow operation is SQL note match.
      */
-    NON_DML;
+    NOTE_MATCH;
     
     /**
      * Contains operation type.

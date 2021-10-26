@@ -31,4 +31,5 @@
     <sql-case id="select_count_with_sample_seed_clause" value="SELECT COUNT(*) * 10 FROM orders SAMPLE(10) SEED (1)" db-types="Oracle" />
     <sql-case id="select_count_with_in_clause" value="SELECT COUNT(*) FROM t_order WHERE last_value IN (?, ?)" db-types="MySQL"/>
     <sql-case id="select_count_with_not_in_clause" value="SELECT COUNT(*) FROM t_order WHERE category IN (?, ?) AND last_value NOT IN (?, ?)" db-types="MySQL"/>
+    <sql-case id="select_bit_xor" value="SELECT BIT_XOR(user_id) FROM t_order" db-types="MySQL" />
 </sql-cases>

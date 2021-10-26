@@ -56,4 +56,9 @@ public final class AggregationUnitFactoryTest {
     public void assertCreateDistinctAverageAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.AVG, true), instanceOf(DistinctAverageAggregationUnit.class));
     }
+    
+    @Test
+    public void assertCreateBitXorAggregationUnit() {
+        assertThat(AggregationUnitFactory.create(AggregationType.BIT_XOR, false), instanceOf(BitXorAggregationUnit.class));
+    }
 }

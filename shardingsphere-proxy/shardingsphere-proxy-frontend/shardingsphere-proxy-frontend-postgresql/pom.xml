@@ -47,11 +47,6 @@
             <artifactId>shardingsphere-proxy-backend</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
     </dependencies>
     
     <profiles>
@@ -68,6 +63,7 @@
                         <configuration>
                             <excludes>
                                 <!-- TODO Consider refactoring tests which changed Field's modifiers -->
+                                <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortalTest</exclude>
                                 <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutorTest</exclude>
                             </excludes>
                         </configuration>

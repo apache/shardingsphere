@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.scaling.core.config.yaml.YamlParameterConfiguration;
 import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import javax.sql.DataSource;
@@ -58,13 +59,18 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
     }
     
-    public ShardingSphereJDBCDataSourceConfiguration(final String dataSources, final String rules) {
-        this(String.format("%s\n%s", dataSources, rules));
+    public ShardingSphereJDBCDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
+        YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules());
+        this.parameter = YamlEngine.marshal(parameterConfig);
+        this.rootConfig = rootConfig;
+        Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
     }
     
     @Override
     public ScalingDataSourceConfigurationWrap wrap() {
         ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
+        result.setSchemaName(rootConfig.getSchemaName());
         result.setType(TYPE);
         result.setParameter(parameter);
         return result;

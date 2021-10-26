@@ -1,5 +1,4 @@
 +++
-pre = "<b>4.4.2. </b>"
 title = "Manual"
 weight = 2
 +++
@@ -10,7 +9,7 @@ weight = 2
 
 JAVA，JDK 1.8+.
 
-The migration scene we support：
+The migration scene we support:
 
 | Source                     | Target          | Support |
 | -------------------------- | -------------------- | ------- |
@@ -31,6 +30,7 @@ MySQL need to open `binlog`, and `binlog format` should be Row model. Privileges
 +-----------------------------------------+---------------------------------------+
 | log_bin                                 | ON                                    |
 | binlog_format                           | ROW                                   |
+| binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
 
 +------------------------------------------------------------------------------+
@@ -49,7 +49,7 @@ ShardingSphere-Scaling provides a simple HTTP API
 
 #### Start scaling job
 
-Interface description：POST /scaling/job/start
+Interface description: POST /scaling/job/start
 
 Body:
 
@@ -68,9 +68,9 @@ Data source configuration:
 
 *** Notice ***
 
-Currently source type must shardingSphereJdbc
+Currently, source type and target type must be shardingSphereJdbc
 
-Example：
+Example:
 
 ```
 curl -X POST \
@@ -175,7 +175,7 @@ curl -X POST \
       }'
 ```
 
-Response：
+Response:
 
 ```
 {
@@ -188,15 +188,15 @@ Response：
 
 #### Get scaling progress
 
-Interface description：GET /scaling/job/progress/{jobId}
+Interface description: GET /scaling/job/progress/{jobId}
 
-Example：
+Example:
 ```
 curl -X GET \
   http://localhost:8888/scaling/job/progress/1
 ```
 
-Response：
+Response:
 ```
 {
    "success": true,
@@ -250,15 +250,15 @@ Response：
 
 #### List scaling jobs
 
-Interface description：GET /scaling/job/list
+Interface description: GET /scaling/job/list
 
-Example：
+Example:
 ```
 curl -X GET \
   http://localhost:8888/scaling/job/list
 ```
 
-Response：
+Response:
 
 ```
 {
@@ -276,20 +276,20 @@ Response：
 
 #### Stop scaling job
 
-Interface description：GET /scaling/job/stop
+Interface description: GET /scaling/job/stop
 
-Body：
+Body:
 
 | Parameter | Describe |
 | --------- | -------- |
 | jobId     | job id   |
 
-Example：
+Example:
 ```
 curl -X GET \
   http://localhost:8888/scaling/job/stop/1
 ```
-Response：
+Response:
 ```
 {
    "success": true,
@@ -298,8 +298,3 @@ Response：
    "model": null
 }
 ```
-
-### Operate through the UI interface
-
-We provide user interface in ShardingSphere-UI, so all the operations related can be implemented with a click of the UI interface.
-For more information, please refer to the ShardingSphere-UI module.

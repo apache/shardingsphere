@@ -27,8 +27,9 @@
     <xsd:element name="rule">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="data-source" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element ref="data-source" maxOccurs="unbounded" />
                 <xsd:element ref="shadow-table" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element ref="default-shadow-algorithm-name" minOccurs="0" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
             <xsd:attribute name="enable" type="xsd:boolean"/>
@@ -56,6 +57,12 @@
     <xsd:element name="algorithm">
         <xsd:complexType>
             <xsd:attribute name="shadow-algorithm-ref" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="default-shadow-algorithm-name">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 

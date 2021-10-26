@@ -47,10 +47,6 @@
   ],
   "hints": [
     {
-      "name": "spring.shardingsphere.rules.database-discovery.data-sources.keys",
-      "values": []
-    },
-    {
       "name": "spring.shardingsphere.rules.database-discovery.data-sources.values",
       "values": [],
       "providers": [
@@ -61,10 +57,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "spring.shardingsphere.rules.database-discovery.discovery-types.keys",
-      "values": []
     },
     {
       "name": "spring.shardingsphere.rules.database-discovery.discovery-types.values",

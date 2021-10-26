@@ -56,7 +56,7 @@ public final class EncryptRuleStatementConverter {
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             columns.add(createEncryptColumnRuleConfiguration(ruleSegment.getTableName(), each));
         }
-        return new EncryptTableRuleConfiguration(ruleSegment.getTableName(), columns);
+        return new EncryptTableRuleConfiguration(ruleSegment.getTableName(), columns, ruleSegment.getQueryWithCipherColumn());
     }
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {

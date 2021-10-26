@@ -31,7 +31,6 @@
     
     <modules>
         <module>mixed-feature-example</module>
-        <module>other-feature-example</module>
         <module>single-feature-example</module>
     </modules>
 </project>

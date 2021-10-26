@@ -52,10 +52,6 @@
   ],
   "hints": [
     {
-      "name": "spring.shardingsphere.rules.encrypt.tables.keys",
-      "values": []
-    },
-    {
       "name": "spring.shardingsphere.rules.encrypt.tables.values",
       "values": [],
       "providers": [
@@ -66,10 +62,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "spring.shardingsphere.rules.encrypt.encryptors.keys",
-      "values": []
     },
     {
       "name": "spring.shardingsphere.rules.encrypt.encryptors.values",

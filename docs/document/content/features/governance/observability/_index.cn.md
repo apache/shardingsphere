@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.4.2 </b>"
 title = "可观察性"
 weight = 2
 chapter = true
