@@ -24,11 +24,18 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
-    <shadow:shadow-algorithm id="user-id-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-regex-match-algorithm" type="COLUMN_REGEX_MATCH">
         <props>
             <prop key="operation">insert</prop>
             <prop key="column">user_id</prop>
             <prop key="regex">[1]</prop>
+        </props>
+    </shadow:shadow-algorithm>
+    <shadow:shadow-algorithm id="user-id-value-match-algorithm" type="COLUMN_VALUE_MATCH">
+        <props>
+            <prop key="operation">insert</prop>
+            <prop key="column">user_id</prop>
+            <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
     <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_NOTE">
@@ -42,10 +49,11 @@
         <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
         <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds1" shadow-data-source-name="ds1-shadow"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source-0,shadow-data-source-1">
-            <shadow:algorithm shadow-algorithm-ref= "user-id-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref= "user-id-regex-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
         </shadow:shadow-table>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-1">
+            <shadow:algorithm shadow-algorithm-ref= "user-id-value-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>

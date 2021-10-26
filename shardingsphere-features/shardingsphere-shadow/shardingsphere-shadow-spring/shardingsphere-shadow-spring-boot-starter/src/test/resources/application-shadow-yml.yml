@@ -31,19 +31,26 @@ spring:
           t_order:
             data-source-names: shadow-data-source-0,shadow-data-source-1
             shadow-algorithm-names:
-              - user-id-match-algorithm
+              - user-id-regex-match-algorithm
               - simple-note-algorithm
           t_user:
             data-source-names: shadow-data-source-1
             shadow-algorithm-names:
+              - user-id-value-match-algorithm
               - simple-note-algorithm
         shadow-algorithms:
-          user-id-match-algorithm:
+          user-id-regex-match-algorithm:
             type: COLUMN_REGEX_MATCH
             props:
               operation: insert
               column: user_id
               regex: "[1]"
+          user-id-value-match-algorithm:
+            type: COLUMN_VALUE_MATCH
+            props:
+              operation: insert
+              column: user_id
+              value: 1
           simple-note-algorithm:
             type: SIMPLE_NOTE
             props:
