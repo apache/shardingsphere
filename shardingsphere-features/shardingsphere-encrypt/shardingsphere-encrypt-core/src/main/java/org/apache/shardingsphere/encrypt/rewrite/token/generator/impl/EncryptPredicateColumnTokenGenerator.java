@@ -90,7 +90,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
-                if (queryWithCipherColumn && !rewriteMetaDataMap.isEmpty()) {
+                if (!rewriteMetaDataMap.isEmpty()) {
                     Map<String, String> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
                     if (value != null && value.containsKey(column.getIdentifier().getValue())) {
                         result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()))));
@@ -101,8 +101,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                     continue;
                 }
-                int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-                int stopIndex = column.getStopIndex();
                 EncryptTable table = encryptTable.get();
                 if (Boolean.FALSE.equals(table.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
