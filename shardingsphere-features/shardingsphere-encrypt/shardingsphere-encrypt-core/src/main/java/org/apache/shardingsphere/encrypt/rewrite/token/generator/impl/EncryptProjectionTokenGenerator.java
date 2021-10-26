@@ -169,12 +169,12 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
-            	if (subquery) {
+                if (subquery) {
                     projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), null));
                     projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), findAssistedQueryColumn(tableName, each.getName()).get(), null));
-            	}else {
+                } else {
                     projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()));
-            	}
+                }
             } else {
                 projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), each.getName(), null));
             }
