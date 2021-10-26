@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache;
 
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.node.CacheNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-
-import java.util.UUID;
 
 /**
  * Registry cache manager.
@@ -30,26 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class RegistryCacheManager {
     
-    private static final String PATH_SEPARATOR = "/";
-    
     private final ClusterPersistRepository repository;
-    
-    /**
-     * Cache configuration.
-     * 
-     * @param path path
-     * @param configuration configuration
-     * @return cache id
-     */
-    public String cache(final String path, final String configuration) {
-        String cacheId = getCacheId();
-        repository.persist(getCachePath(path, cacheId), configuration);
-        return cacheId;
-    }
-    
-    private String getCacheId() {
-        return UUID.randomUUID().toString().replace("-", "");
-    }
     
     /**
      * Load cached configuration.
@@ -59,7 +37,7 @@ public final class RegistryCacheManager {
      * @return cached configuration
      */
     public String loadCache(final String path, final String cacheId) {
-        return repository.get(getCachePath(path, cacheId));
+        return repository.get(CacheNode.getCachePath(path, cacheId));
     }
     
     /**
@@ -69,10 +47,6 @@ public final class RegistryCacheManager {
      * @param cacheId cache id
      */
     public void deleteCache(final String path, final String cacheId) {
-        repository.delete(getCachePath(path, cacheId));
-    }
-    
-    private String getCachePath(final String path, final String cacheId) {
-        return Joiner.on(PATH_SEPARATOR).join(CacheNode.getCachePath(path), cacheId);
+        repository.delete(CacheNode.getCachePath(path, cacheId));
     }
 }

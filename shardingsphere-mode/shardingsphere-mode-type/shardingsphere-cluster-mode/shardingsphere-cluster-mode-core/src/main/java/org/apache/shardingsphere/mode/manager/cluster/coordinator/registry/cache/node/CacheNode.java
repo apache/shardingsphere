@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,13 +34,15 @@ public final class CacheNode {
     
     private static final String CACHE_NODE = "cache";
     
+    private static final String PATH_SEPARATOR = "/";
+    
     /**
-     * Get cache path.
+     * Get cache node path.
      *
      * @param path path
-     * @return cache path
+     * @return cache node path
      */
-    public static String getCachePath(final String path) {
+    public static String getCacheNodePath(final String path) {
         return Joiner.on("/").join(path, CACHE_NODE);
     }
     
@@ -51,8 +54,28 @@ public final class CacheNode {
      * @return cache id
      */
     public static Optional<String> getCacheId(final String path, final String cachePath) {
-        Pattern pattern = Pattern.compile(getCachePath(path) + "/(\\w+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getCacheNodePath(path) + "/(\\w+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(cachePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get cache id.
+     *
+     * @return cache id
+     */
+    public static String getCacheId() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+    
+    /**
+     * Get cache path.
+     *
+     * @param path path
+     * @param cacheId cache id            
+     * @return cache path
+     */
+    public static String getCachePath(final String path, final String cacheId) {
+        return Joiner.on(PATH_SEPARATOR).join(CacheNode.getCacheNodePath(path), cacheId);
     }
 }
