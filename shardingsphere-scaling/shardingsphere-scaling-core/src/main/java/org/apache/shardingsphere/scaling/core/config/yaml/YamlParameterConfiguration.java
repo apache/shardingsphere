@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
+package org.apache.shardingsphere.scaling.core.config.yaml;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Scaling task finished event.
+ * YAML parameter configuration.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ScalingTaskFinishedEvent {
+@Setter
+public final class YamlParameterConfiguration implements YamlConfiguration {
     
-    @NonNull
-    private final String targetSchemaName;
+    private Map<String, Map<String, Object>> dataSources = new HashMap<>();
     
-    private final String targetParameter;
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }
