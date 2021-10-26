@@ -27,8 +27,8 @@ import static org.junit.Assert.assertTrue;
 public final class CacheNodeTest {
     
     @Test
-    public void assertGetCachePath() {
-        assertThat(CacheNode.getCachePath("/metadata/sharding_db/rules"), 
+    public void assertGetCacheNodePath() {
+        assertThat(CacheNode.getCacheNodePath("/metadata/sharding_db/rules"), 
                 is("/metadata/sharding_db/rules/cache"));
     }
     
@@ -38,5 +38,11 @@ public final class CacheNodeTest {
                 "/metadata/sharding_db/rules/cache/testCacheId");
         assertTrue(cacheId.isPresent());
         assertThat(cacheId.get(), is("testCacheId"));
+    }
+    
+    @Test
+    public void assertGetCachePath() {
+        assertThat(CacheNode.getCachePath("/metadata/sharding_db/rules", "1"),
+                is("/metadata/sharding_db/rules/cache/1"));
     }
 }
