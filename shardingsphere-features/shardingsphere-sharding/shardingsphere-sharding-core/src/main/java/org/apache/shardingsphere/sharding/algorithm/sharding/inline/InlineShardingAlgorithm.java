@@ -70,18 +70,18 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         return closure.call().toString();
     }
     
-    private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        return result;
-    }
-    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         if (allowRangeQuery) {
             return availableTargetNames;
         }
         throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
+    }
+    
+    private Closure<?> createClosure() {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        return result;
     }
     
     @Override
