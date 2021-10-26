@@ -152,7 +152,7 @@
         </rule>
     </alter-encrypt-rule>
 
-    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assistedQueryColumn">
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
                 <encryptor algorithm-name="AES">
@@ -166,7 +166,22 @@
             </column>
         </rule>
     </alter-encrypt-rule>
-
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
+        <rule name="t_encrypt" queryWithCipherColumn="false">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule  table-name="t_order">
