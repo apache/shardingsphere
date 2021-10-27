@@ -59,10 +59,15 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: t_user_extend_inline
+    T_ROLE:
+      actualDataNodes: db.T_ROLE
+    T_ROLE_ADMIN:
+      actualDataNodes: db.T_ROLE_ADMIN
   bindingTables:
     - t_account, t_account_detail
     - t_order, t_order_item
     - t_user, t_user_extend
+    - T_ROLE, T_ROLE_ADMIN
   broadcastTables:
     - t_config
     - t_order_type
