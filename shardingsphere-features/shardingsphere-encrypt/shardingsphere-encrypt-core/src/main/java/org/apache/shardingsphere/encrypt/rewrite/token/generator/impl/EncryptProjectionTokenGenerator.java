@@ -92,8 +92,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
-                        && (isOwnerExistsMatchTableAlias(selectStatementContext, (ColumnProjectionSegment) each,tableName)
-                        || isOwnerExistsMatchTableName(selectStatementContext, (ColumnProjectionSegment) each,tableName)
+                        && (isOwnerExistsMatchTableAlias(selectStatementContext, (ColumnProjectionSegment) each, tableName)
+                        || isOwnerExistsMatchTableName(selectStatementContext, (ColumnProjectionSegment) each, tableName)
                         || isColumnAmbiguous(selectStatementContext, (ColumnProjectionSegment) each))) {
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
                 }
@@ -126,7 +126,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         }
         final AtomicInteger columnCount = new AtomicInteger();
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            getEncryptRule().findEncryptTable(each).map(optional -> optional.getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue())).ifPresent(t -> columnCount.getAndIncrement());
+            getEncryptRule().findEncryptTable(each).map(optional -> optional.getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue()))
+                    .ifPresent(t -> columnCount.getAndIncrement());
             System.out.println(columnCount.get());
             Preconditions.checkState(columnCount.get() <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
         }
