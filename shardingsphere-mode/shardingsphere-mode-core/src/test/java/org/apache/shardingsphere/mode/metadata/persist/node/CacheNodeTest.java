@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.node;
+package org.apache.shardingsphere.mode.metadata.persist.node;
 
 import org.junit.Test;
+
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class CacheNodeTest {
-    
-    @Test
-    public void assertGetCacheNodePath() {
-        assertThat(CacheNode.getCacheNodePath("/metadata/sharding_db/rules"), 
-                is("/metadata/sharding_db/rules/cache"));
-    }
     
     @Test
     public void assertGetCacheId() {
@@ -41,8 +37,14 @@ public final class CacheNodeTest {
     }
     
     @Test
-    public void assertGetCachePath() {
+    public void assertGetCachePathWithPathAndCacheId() {
         assertThat(CacheNode.getCachePath("/metadata/sharding_db/rules", "1"),
                 is("/metadata/sharding_db/rules/cache/1"));
+    }
+    
+    @Test
+    public void assertGetCachePathWithPath() {
+        assertThat(CacheNode.getCachePath("/metadata/sharding_db/rules"),
+                startsWith("/metadata/sharding_db/rules/"));
     }
 }
