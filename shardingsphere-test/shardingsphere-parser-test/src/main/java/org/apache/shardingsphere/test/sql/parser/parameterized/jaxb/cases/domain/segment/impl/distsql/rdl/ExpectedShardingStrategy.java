@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Alter sharding auto table rule statement.
- */
-@RequiredArgsConstructor
 @Getter
-public final class AlterShardingAutoTableRuleStatement extends AlterRuleStatement {
+@Setter
+public final class ExpectedShardingStrategy extends AbstractExpectedIdentifierSQLSegment {
     
-    private final Collection<AutoTableRuleSegment> rules;
+    @XmlAttribute(name = "type")
+    private String type;
+    
+    @XmlAttribute(name = "sharding-column")
+    private String shardingColumn;
+    
+    @XmlAttribute(name = "sharding-algorithm-name")
+    private String shardingAlgorithmName;
 }

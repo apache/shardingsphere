@@ -58,7 +58,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleS
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAutoTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -109,7 +109,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingAutoTableRuleStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

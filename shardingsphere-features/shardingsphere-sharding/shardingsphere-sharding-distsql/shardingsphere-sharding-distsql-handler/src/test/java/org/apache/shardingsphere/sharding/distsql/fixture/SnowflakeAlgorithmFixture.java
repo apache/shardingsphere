@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.sharding.distsql.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Collection;
-
-/**
- * Create sharding auto table rule statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class CreateShardingAutoTableRuleStatement extends CreateRuleStatement {
+public final class SnowflakeAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private final Collection<AutoTableRuleSegment> rules;
+    @Override
+    public void init() {
+    }
+    
+    
+    @Override
+    public String getType() {
+        return "SNOWFLAKE_TEST";
+    }
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return null;
+    }
 }
