@@ -124,17 +124,7 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-**2. Update Release Notes And Example Version**
-
-Update the following file in master branch, and submit a PR to master branch:
-
-```
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
-```
-
-Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
-
-**3. Create Release Branch**
+**2. Create Release Branch**
 
 Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
@@ -147,6 +137,16 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
+
+**3. Update Release Notes And Example Version**
+
+Update the following file in release branch, and submit a PR to release branch:
+
+```
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
+```
+
+Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
 
 **4. Pre-Release Check**
 

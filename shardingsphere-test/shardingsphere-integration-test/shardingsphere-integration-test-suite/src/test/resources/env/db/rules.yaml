@@ -73,3 +73,6 @@ rules:
   keyGenerators:
     constant:
       type: Constant
+
+props:
+  sql-federation-enabled: true

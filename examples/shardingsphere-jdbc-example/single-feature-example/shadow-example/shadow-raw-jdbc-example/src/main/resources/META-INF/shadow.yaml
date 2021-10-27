@@ -48,23 +48,23 @@ rules:
         - simple-note-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: COLUMN_VALUE_MATCH
       props:
         operation: insert
         column: user_id
-        regex: "[1]"
+        value: 1
     user-id-select-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: COLUMN_VALUE_MATCH
       props:
         operation: select
         column: user_id
-        regex: "[1]"
+        value: 1
     user-id-delete-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: COLUMN_VALUE_MATCH
       props:
         operation: delete
         column: user_id
-        regex: "[1]"
+        value: 1
     simple-note-algorithm:
       type: SIMPLE_NOTE
       props:

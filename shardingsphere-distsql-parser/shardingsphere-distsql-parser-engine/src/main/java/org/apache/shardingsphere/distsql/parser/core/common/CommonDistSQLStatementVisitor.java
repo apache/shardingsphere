@@ -147,7 +147,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()));
+        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
     }
     
     @Override

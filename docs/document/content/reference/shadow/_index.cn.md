@@ -80,11 +80,11 @@ shadow-algorithms:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_REGEX_MATCH
+    type: COLUMN_VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      regex: "[0]"
+      value: 0
       
 props:
   sql-comment-parse-enabled: true
@@ -124,11 +124,11 @@ INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_REGEX_MATCH
+    type: COLUMN_VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      regex: "[0]"
+      value: 0
 ```
 
 **注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
@@ -168,11 +168,11 @@ SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_REGEX_MATCH
+    type: COLUMN_VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      regex: "[0]"
+      value: 0
   simple-note-algorithm:
     type: SIMPLE_NOTE
     props:
@@ -217,11 +217,11 @@ shadow-algorithms:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_REGEX_MATCH
+    type: COLUMN_VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      regex: "[0]"
+      value: 0
       
 props:
   sql-comment-parse-enabled: true

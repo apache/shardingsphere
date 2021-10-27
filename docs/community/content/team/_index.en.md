@@ -32,7 +32,7 @@ chapter = true
 
 | Name            | GitHub ID               |
 | :-------------- | :---------------------- |
-| Guangyuan Wang  | wgy8283335              |
+| Xiaoman Wang    | wgy8283335              |
 | Haisheng Sun    | sunbufu                 |
 | Qi Wang         | wqzwh                   |
 | Ya Li           | betterjava              |
