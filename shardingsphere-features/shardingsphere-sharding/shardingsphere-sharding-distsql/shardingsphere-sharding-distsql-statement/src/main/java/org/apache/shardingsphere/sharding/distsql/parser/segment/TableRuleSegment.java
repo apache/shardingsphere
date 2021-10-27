@@ -19,27 +19,25 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
 
+import java.util.Collection;
+
 /**
  * Table rule segment.
  */
 @Getter
 public final class TableRuleSegment extends AbstractTableRuleSegment {
     
-    private final String dataSourcesNote;
-    
     private ShardingStrategySegment tableStrategySegment;
     
     private ShardingStrategySegment databaseStrategySegment;
     
-    public TableRuleSegment(final String logicTable, final String dataSourcesNote) {
-        super(logicTable);
-        this.dataSourcesNote = dataSourcesNote;
+    public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote) {
+        super(TABLE, logicTable, dataSourcesNote);
     }
     
-    public TableRuleSegment(final String logicTable, final String dataSourcesNote, final ShardingStrategySegment tableStrategy,
+    public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote, final ShardingStrategySegment tableStrategy,
                             final ShardingStrategySegment databaseStrategy, final KeyGenerateSegment keyGenerateSegment) {
-        super(logicTable, keyGenerateSegment);
-        this.dataSourcesNote = dataSourcesNote;
+        super(TABLE, logicTable, dataSourcesNote, keyGenerateSegment);
         this.tableStrategySegment = tableStrategy;
         this.databaseStrategySegment = databaseStrategy;
     }

@@ -29,8 +29,6 @@ import java.util.Collection;
 @Getter
 public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
-    private final Collection<String> dataSources;
-    
     @Setter
     private String shardingColumn;
     
@@ -38,15 +36,22 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     private AlgorithmSegment shardingAlgorithmSegment;
     
     public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources) {
-        super(logicTable);
-        this.dataSources = dataSources;
+        super(AUTO_TABLE, logicTable, dataSources);
     }
     
     public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final String shardingColumn,
                                 final AlgorithmSegment shardingAlgorithm, final KeyGenerateSegment keyGenerateSegment) {
-        super(logicTable, keyGenerateSegment);
-        this.dataSources = dataSources;
+        super(AUTO_TABLE, logicTable, dataSources, keyGenerateSegment);
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithmSegment = shardingAlgorithm;
+    }
+    
+    /**
+     * Determine whether there is a complete sharding algorithm.
+     *
+     * @return has datasource or not
+     */
+    public boolean isCompleteShardingAlgorithm() {
+        return null != shardingColumn && null != shardingAlgorithmSegment;
     }
 }

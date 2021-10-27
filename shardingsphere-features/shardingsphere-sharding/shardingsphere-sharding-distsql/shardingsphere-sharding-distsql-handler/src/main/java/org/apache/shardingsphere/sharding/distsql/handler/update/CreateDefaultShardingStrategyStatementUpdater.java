@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 
@@ -67,7 +67,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingStrategyConfiguration strategyConfiguration = ShardingRuleStatementConverter.createStrategyConfiguration(sqlStatement.getStrategyType(),
+        ShardingStrategyConfiguration strategyConfiguration = ShardingTableRuleConverter.createStrategyConfiguration(sqlStatement.getStrategyType(),
                 sqlStatement.getShardingColumn(), sqlStatement.getShardingAlgorithmName());
         setStrategyConfiguration(result, sqlStatement.getDefaultType(), strategyConfiguration);
         return result;

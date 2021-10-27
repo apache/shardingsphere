@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.converter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -38,7 +38,7 @@ public final class ShardingRuleStatementConverterTest {
     
     @Test
     public void assertConvert() {
-        ShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
+        ShardingRuleConfiguration config = ShardingTableRuleConverter.convert(Collections.singleton(createTableRuleSegment()));
         assertTrue(config.getTables().isEmpty());
         assertThat(config.getAutoTables().size(), is(1));
         assertThat(config.getAutoTables().iterator().next().getActualDataSources(), is("ds0,ds1"));

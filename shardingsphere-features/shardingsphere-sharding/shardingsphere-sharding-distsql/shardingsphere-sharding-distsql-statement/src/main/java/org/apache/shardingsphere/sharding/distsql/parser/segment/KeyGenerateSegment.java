@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
  * Key generate segment.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class KeyGenerateSegment implements ASTNode {
     
-    private String keyGenerateColumn;
+    private final String keyGenerateColumn;
     
-    private AlgorithmSegment keyGenerateAlgorithmSegment;
+    private final AlgorithmSegment keyGenerateAlgorithmSegment;
 }

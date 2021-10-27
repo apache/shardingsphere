@@ -36,7 +36,7 @@ createShardingAlgorithm
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY shardingStrategy
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
     ;
 
 alterShardingTableRule
@@ -76,7 +76,7 @@ shardingAutoTableRule
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
@@ -88,7 +88,11 @@ resource
     ;
 
 dataNodes
-    : DATANODES LP (IDENTIFIER | STRING)* RP
+    : DATANODES LP dataNode (COMMA dataNode)* RP
+    ;
+
+dataNode
+    : IDENTIFIER | STRING
     ;
 
 shardingColumn
@@ -100,7 +104,7 @@ shardingAlgorithm
     ;
 
 shardingStrategy
-    :  LP TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm RP
+    :  TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm 
     ;
 
 databaseStrategy

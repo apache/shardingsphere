@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Collection;
+
 /**
  * Abstract table rule segment.
  */
@@ -31,7 +33,17 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 @Getter
 public abstract class AbstractTableRuleSegment implements ASTNode {
     
+    public static final String AUTO_TABLE = "autoTable";
+    
+    public static final String TABLE = "table";
+    
+    public static final String EMPTY = "empty";
+    
+    private final String type;
+    
     private final String logicTable;
+    
+    private final Collection<String> dataSourceNodes;
     
     @Setter
     private KeyGenerateSegment keyGenerateSegment;
@@ -41,7 +53,7 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
      */
     public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
         public EmptyTableRuleSegment() {
-            super(null);
+            super(EMPTY, null, null);
         }
     }
 }
