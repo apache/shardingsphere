@@ -21,6 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -80,14 +82,34 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     /**
-     * Judge whether single table is in same data source or not.
+     * Judge whether single tables are in same data source or not.
      *
-     * @param logicTableNames logic table names
-     * @return whether single table is in same data source or not
+     * @param singleTableNames single table names
+     * @return whether single tables are in same data source or not
      */
-    public boolean isSingleTableInSameDataSource(final Collection<String> logicTableNames) {
-        Set<String> dataSourceNames = logicTableNames.stream().map(singleTableDataNodes::get).filter(Objects::nonNull).map(SingleTableDataNode::getDataSourceName).collect(Collectors.toSet());
+    public boolean isSingleTablesInSameDataSource(final Collection<String> singleTableNames) {
+        Set<String> dataSourceNames = singleTableNames.stream().map(singleTableDataNodes::get).filter(Objects::nonNull).map(SingleTableDataNode::getDataSourceName).collect(Collectors.toSet());
         return dataSourceNames.size() <= 1;
+    }
+    
+    /**
+     * Judge whether all tables are in same data source or not.
+     * 
+     * @param routeContext route context
+     * @param singleTableNames single table names
+     * @return whether all tables are in same data source or not
+     */
+    public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<String> singleTableNames) {
+        if (!isSingleTablesInSameDataSource(singleTableNames)) {
+            return false;
+        }
+        SingleTableDataNode dataNode = singleTableDataNodes.get(singleTableNames.iterator().next());
+        for (RouteUnit each : routeContext.getRouteUnits()) {
+            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

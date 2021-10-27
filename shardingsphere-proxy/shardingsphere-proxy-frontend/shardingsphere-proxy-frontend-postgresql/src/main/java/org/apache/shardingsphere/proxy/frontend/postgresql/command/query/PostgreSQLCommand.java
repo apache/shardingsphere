@@ -138,7 +138,22 @@ public enum PostgreSQLCommand {
      * @return PostgreSQL command
      */
     public static Optional<PostgreSQLCommand> valueOf(final Class<? extends SQLStatement> sqlStatementClass) {
-        return COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
+        return getPostgreSQLCommand(sqlStatementClass);
+    }
+    
+    /**
+     * Refer to https://bugs.openjdk.java.net/browse/JDK-8161372. 
+     * 
+     * @param sqlStatementClass sql statement class
+     * @return optional PostgreSQLCommand
+     */
+    @SuppressWarnings("OptionalAssignedToNull")
+    private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
+        Optional<PostgreSQLCommand> result;
+        if (null == (result = COMPUTED_CLASSES.get(sqlStatementClass))) {
+            result = COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
+        }
+        return result;
     }
     
     private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {

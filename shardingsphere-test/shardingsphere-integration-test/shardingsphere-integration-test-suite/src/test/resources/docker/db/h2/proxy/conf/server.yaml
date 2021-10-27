@@ -42,3 +42,4 @@ props:
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
   sql-show: false
+  sql-federation-enabled: true

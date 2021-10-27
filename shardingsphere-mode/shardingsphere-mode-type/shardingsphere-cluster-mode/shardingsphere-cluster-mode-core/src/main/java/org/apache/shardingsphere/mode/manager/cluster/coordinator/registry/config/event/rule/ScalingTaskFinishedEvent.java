@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 /**
  * Scaling task finished event.
@@ -31,5 +32,12 @@ public final class ScalingTaskFinishedEvent {
     @NonNull
     private final String targetSchemaName;
     
-    private final String targetParameter;
+    private final YamlRootConfiguration targetRootConfig;
+    
+    private final String ruleCacheId;
+    
+    @Override
+    public String toString() {
+        return "ScalingTaskFinishedEvent{" + "targetSchemaName='" + targetSchemaName + '\'' + ", ruleCacheId='" + ruleCacheId + '\'' + '}';
+    }
 }
