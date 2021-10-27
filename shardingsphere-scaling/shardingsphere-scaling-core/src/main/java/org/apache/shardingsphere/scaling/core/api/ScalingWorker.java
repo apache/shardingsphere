@@ -33,9 +33,12 @@ import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.job.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.scaling.core.executor.job.ScalingJobExecutor;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -69,27 +72,51 @@ public final class ScalingWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        Optional<Long> jobId = scalingAPI.start(createJobConfig(event));
+        YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
+        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
+        Optional<YamlShardingRuleConfiguration> sourceShardingConfigOptional = getYamlShardingRuleConfiguration(sourceRootConfig);
+        Optional<YamlShardingRuleConfiguration> targetShardingConfigOptional = getYamlShardingRuleConfiguration(targetRootConfig);
+        if (!sourceShardingConfigOptional.isPresent() || !targetShardingConfigOptional.isPresent()) {
+            log.info("sourceShardingConfig or targetShardingConfig not present, ignore");
+            return;
+        }
+        if (isShardingRulesTheSame(sourceShardingConfigOptional.get(), targetShardingConfigOptional.get())) {
+            log.info("source and target sharding configuration is the same, ignore");
+            return;
+        }
+        JobConfiguration jobConfig = new JobConfiguration(getRuleConfiguration(sourceRootConfig, targetRootConfig), getHandleConfiguration(event));
+        Optional<Long> jobId = scalingAPI.start(jobConfig);
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
             ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }
     
-    private JobConfiguration createJobConfig(final StartScalingEvent event) {
-        JobConfiguration result = new JobConfiguration();
-        result.setRuleConfig(getRuleConfiguration(event));
-        result.setHandleConfig(new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId())));
-        return result;
+    private Optional<YamlShardingRuleConfiguration> getYamlShardingRuleConfiguration(final YamlRootConfiguration rootConfig) {
+        return rootConfig.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
     }
     
-    private RuleConfiguration getRuleConfiguration(final StartScalingEvent event) {
+    private boolean isShardingRulesTheSame(final YamlShardingRuleConfiguration sourceShardingConfig, final YamlShardingRuleConfiguration targetShardingConfig) {
+        for (Entry<String, YamlTableRuleConfiguration> entry : sourceShardingConfig.getTables().entrySet()) {
+            entry.getValue().setLogicTable(null);
+        }
+        for (Entry<String, YamlTableRuleConfiguration> entry : targetShardingConfig.getTables().entrySet()) {
+            entry.getValue().setLogicTable(null);
+        }
+        String sourceShardingConfigYaml = YamlEngine.marshal(sourceShardingConfig);
+        String targetShardingConfigYaml = YamlEngine.marshal(targetShardingConfig);
+        return sourceShardingConfigYaml.equals(targetShardingConfigYaml);
+    }
+    
+    private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         RuleConfiguration result = new RuleConfiguration();
-        YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
-        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
         result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceRootConfig).wrap());
         result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetRootConfig).wrap());
         return result;
+    }
+    
+    private HandleConfiguration getHandleConfiguration(final StartScalingEvent event) {
+        return new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
     }
     
     @SuppressWarnings("unchecked")
