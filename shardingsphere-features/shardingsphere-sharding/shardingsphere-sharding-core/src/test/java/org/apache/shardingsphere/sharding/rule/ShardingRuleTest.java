@@ -48,11 +48,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingRuleTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewShardingRuleWithEmptyDataSourceNames() {
-        new ShardingRule(new ShardingRuleConfiguration(), Collections.emptyList());
-    }
-    
     @Test
     public void assertNewShardingRuleWithMaximumConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
