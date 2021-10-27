@@ -89,14 +89,13 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
-                if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
-                    if (selectStatementContext.getAllTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
-                            && table.getAlias().isPresent() 
-                            && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() 
-                            && ((ColumnProjectionSegment) each).getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get())) 
-                            || !((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
-                        result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
-                    }
+                if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
+                        && (selectStatementContext.getAllTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+                        && table.getAlias().isPresent() 
+                        && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() 
+                        && ((ColumnProjectionSegment) each).getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get())) 
+                        || !((ColumnProjectionSegment) each).getColumn().getOwner().isPresent())) {
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
