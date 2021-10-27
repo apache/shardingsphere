@@ -128,7 +128,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             getEncryptRule().findEncryptTable(each).map(optional -> optional.getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue()))
                     .ifPresent(t -> columnCount.getAndIncrement());
-            System.out.println(columnCount.get());
             Preconditions.checkState(columnCount.get() <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
         }
         return true;
