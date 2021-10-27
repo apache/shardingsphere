@@ -52,7 +52,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
@@ -94,12 +93,6 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
-    
-    @Mock
-    private ShardingSphereTransactionManagerEngine engine;
-    
-    @Mock
-    private Map<String, ShardingSphereTransactionManagerEngine> engines;
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
