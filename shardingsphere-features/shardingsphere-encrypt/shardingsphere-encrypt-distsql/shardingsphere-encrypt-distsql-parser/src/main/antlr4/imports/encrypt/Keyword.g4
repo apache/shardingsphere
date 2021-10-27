@@ -99,3 +99,11 @@ QUERY_WITH_CIPHER_COLUMN
     : Q U E R Y UL_ W I T H UL_ C I P H E R UL_ C O L U M N
     ;
     
+TRUE
+    : T R U E
+    ;
+    
+FALSE
+    : F A L S E
+    ;    
+    
