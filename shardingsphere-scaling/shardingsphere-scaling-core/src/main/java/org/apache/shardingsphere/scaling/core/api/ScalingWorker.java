@@ -72,24 +72,30 @@ public final class ScalingWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
+        Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
+        Optional<Long> jobId = jobConfigOptional.isPresent() ? scalingAPI.start(jobConfigOptional.get()) : Optional.empty();
+        if (!jobId.isPresent()) {
+            log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
+            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
+        }
+    }
+    
+    private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
         Optional<YamlShardingRuleConfiguration> sourceShardingConfigOptional = getYamlShardingRuleConfiguration(sourceRootConfig);
         Optional<YamlShardingRuleConfiguration> targetShardingConfigOptional = getYamlShardingRuleConfiguration(targetRootConfig);
         if (!sourceShardingConfigOptional.isPresent() || !targetShardingConfigOptional.isPresent()) {
             log.info("sourceShardingConfig or targetShardingConfig not present, ignore");
-            return;
+            return Optional.empty();
         }
         if (isShardingRulesTheSame(sourceShardingConfigOptional.get(), targetShardingConfigOptional.get())) {
             log.info("source and target sharding configuration is the same, ignore");
-            return;
+            return Optional.empty();
         }
-        JobConfiguration jobConfig = new JobConfiguration(getRuleConfiguration(sourceRootConfig, targetRootConfig), getHandleConfiguration(event));
-        Optional<Long> jobId = scalingAPI.start(jobConfig);
-        if (!jobId.isPresent()) {
-            log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
-            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
-        }
+        RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
+        HandleConfiguration handleConfig = new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
+        return Optional.of(new JobConfiguration(ruleConfig, handleConfig));
     }
     
     private Optional<YamlShardingRuleConfiguration> getYamlShardingRuleConfiguration(final YamlRootConfiguration rootConfig) {
@@ -113,10 +119,6 @@ public final class ScalingWorker {
         result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceRootConfig).wrap());
         result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetRootConfig).wrap());
         return result;
-    }
-    
-    private HandleConfiguration getHandleConfiguration(final StartScalingEvent event) {
-        return new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
     }
     
     @SuppressWarnings("unchecked")
