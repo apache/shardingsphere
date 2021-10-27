@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -33,7 +34,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionSegment implements ExpressionSegment, AliasAvailable, ProjectionSegment {
+public final class FunctionSegment implements ComplexExpressionSegment, AliasAvailable, ProjectionSegment {
     
     private final int startIndex;
     
@@ -42,6 +43,8 @@ public final class FunctionSegment implements ExpressionSegment, AliasAvailable,
     private final String methodName;
     
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    
+    private final String text;
     
     @Setter
     private AliasSegment alias;

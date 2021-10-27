@@ -40,4 +40,10 @@ public final class ExpectedFunctionSegment extends AbstractExpectedSQLSegment im
 
     @XmlElement(name = "parameter")
     private List<ExpectedExpression> parameters = new LinkedList<>();
+    
+    @XmlAttribute(name = "text")
+    private String text;
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

@@ -827,7 +827,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), text);
         Collection<ExpressionSegment> expressionSegments = calculateParameterCount(ctx.expr());
         result.getParameters().addAll(expressionSegments);
         return result;
@@ -835,15 +836,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitShorthandRegularFunction(final ShorthandRegularFunctionContext ctx) {
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         FunctionSegment result;
         if (null != ctx.CURRENT_TIME()) {
-            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText());
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
             if (null != ctx.NUMBER_()) {
                 result.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
                         new NumberLiteralValue(ctx.NUMBER_().getText())));
             }
         } else {
-            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
         }
         return result;
     }

@@ -57,8 +57,8 @@
 
     <select sql-case-id="select_with_schema_func" >
         <projections start-index="7" stop-index="26">
-            <function method-name="schema" start-index="7" stop-index="14" />
-            <function method-name="database" start-index="17" stop-index="26" />
+            <function method-name="schema" start-index="7" stop-index="14" text="schema()"/>
+            <function method-name="database" start-index="17" stop-index="26" text="database()" />
         </projections>
     </select>
 
@@ -91,7 +91,7 @@
 
     <select sql-case-id="select_with_function_name" >
         <projections start-index="7" stop-index="23">
-            <function method-name="current_timestamp" start-index="7" stop-index="23" />
+            <function method-name="current_timestamp" start-index="7" stop-index="23" text="current_timestamp" />
         </projections>
     </select>
 
@@ -758,7 +758,7 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
-                                                <function method-name="CONCAT">
+                                                <function method-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-start-index="67" literal-stop-index="92">
                                                     <parameter>
                                                         <literal-expression value="%%" start-index="74" stop-index="77" />
                                                     </parameter>
@@ -2576,7 +2576,7 @@
             <simple-table name="t_order" start-index="45" stop-index="51" />
         </from>
         <projections start-index="7" stop-index="38">
-            <function method-name="INTERVAL" alias="func_status" start-index="7" stop-index="26" >
+            <function method-name="INTERVAL" alias="func_status" start-index="7" stop-index="26" text="INTERVAL(status,1,5)" >
                 <column name="status" start-index="16" stop-index="21" />
                 <literal-expression value="1" start-index="23" stop-index="23" />
                 <literal-expression value="5" start-index="25" stop-index="25" />
@@ -2620,9 +2620,9 @@
             <simple-table name="t_order_item" start-index="44" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="37">
-            <function method-name="CONCAT" start-index="7" stop-index="37">
+            <function method-name="CONCAT" start-index="7" stop-index="37" text="CONCAT(LEFT(status, 7), 'test')">
                 <parameter>
-                    <function method-name="LEFT" start-index="14" stop-index="28">
+                    <function method-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
                         <parameter>
                             <column name="status" start-index="19" stop-index="24" />
                         </parameter>
@@ -2651,7 +2651,7 @@
 
     <select sql-case-id="select_database">
         <projections start-index="7" stop-index="16">
-            <function method-name="DATABASE" start-index="7" stop-index="16" />
+            <function method-name="DATABASE" start-index="7" stop-index="16" text="DATABASE()" />
         </projections>
     </select>
 
@@ -2666,7 +2666,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="47">
                     <left>
-                        <function method-name="MOD" start-index="28" stop-index="43">
+                        <function method-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
                             <column name="order_id" start-index="32" stop-index="39" />
                             <literal-expression value="1" start-index="42" stop-index="42" />
                         </function>
@@ -2691,9 +2691,9 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="79">
                     <left>
-                        <function method-name="DATE_FORMAT" start-index="28" stop-index="64">
+                        <function method-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
                             <parameter>
-                                <function method-name="current_date" start-index="40" stop-index="51" />
+                                <function method-name="current_date" start-index="40" stop-index="51" text="current_date"/>
                             </parameter>
                             <parameter>
                                 <literal-expression value="%Y-%m-%d" start-index="54" stop-index="63" />
@@ -2720,9 +2720,9 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="106">
                     <left>
-                        <function method-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101">
+                        <function method-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
                             <parameter>
-                                <function method-name="POINT" start-index="47" stop-index="75">
+                                <function method-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
                                     <parameter>
                                         <literal-expression value="113.358772" start-index="53" stop-index="62" />
                                     </parameter>
@@ -2732,7 +2732,7 @@
                                 </function>
                             </parameter>
                             <parameter>
-                                <function method-name="POINT" start-index="78" stop-index="100">
+                                <function method-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
                                     <parameter>
                                         <column name="user_id" start-index="84" stop-index="90" />
                                     </parameter>
@@ -2742,7 +2742,6 @@
                                 </function>
                             </parameter>
                         </function>
-                        <expression-projection text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))" start-index="28" stop-index="101" />
                     </left>
                     <operator>!=</operator>
                     <right>
@@ -3275,7 +3274,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <function method-name="CURRENT_DATE" start-index="35" stop-index="46" />
+                        <function method-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3297,7 +3296,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <function method-name="CURRENT_DATE" start-index="35" stop-index="48" />
+                        <function method-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3319,7 +3318,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <function method-name="CURRENT_TIME" start-index="35" stop-index="46" />
+                        <function method-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3341,7 +3340,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <function method-name="CURRENT_TIME" start-index="35" stop-index="48" />
+                        <function method-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>

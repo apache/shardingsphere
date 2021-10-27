@@ -52,7 +52,7 @@
             <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69"/>
         </from>
         <projections start-index="7" stop-index="44">
-            <function method-name="DATE" alias="creation_date" start-index="7" stop-index="27">
+            <function method-name="DATE" alias="creation_date" start-index="7" stop-index="27" text="DATE(i.creation_date)">
                 <column name="creation_date" start-index="12" stop-index="26" >
                     <owner name="i" start-index="12" stop-index="12"/>
                 </column>
@@ -1322,7 +1322,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="43">
                     <left>
-                        <function method-name="now" start-index="28" stop-index="32" />
+                        <function method-name="now" start-index="28" stop-index="32" text="now()" />
                     </left>
                     <operator>&lt;</operator>
                     <right>

@@ -286,8 +286,12 @@ public final class ExpressionAssert {
      * @param expected expected function segment
      */
     public static void assertFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunctionSegment expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Function alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         assertThat(assertContext.getText("Function method name assertion error: "), actual.getMethodName(), is(expected.getMethodName()));
+        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
+                ? expected.getLiteralText() : expected.getText();
+        assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
         Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
         while (expectedIterator.hasNext()) {
