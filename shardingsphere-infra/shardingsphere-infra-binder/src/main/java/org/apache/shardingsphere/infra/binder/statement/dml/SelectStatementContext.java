@@ -227,6 +227,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return tablesContext.getOriginalTables();
     }
     
+    /**
+     * Get all unique table segments.
+     *
+     * @return all unique table segments
+     */
     public Collection<SimpleTableSegment> getAllUniqueTables() {
         return tablesContext.getUniqueTables().values();
     }
