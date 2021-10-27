@@ -24,7 +24,9 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Sharding rule builder.
@@ -33,7 +35,8 @@ public final class ShardingRuleBuilder implements SchemaRuleBuilder<ShardingRule
     
     @Override
     public ShardingRule build(final SchemaRulesBuilderMaterials materials, final ShardingRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new ShardingRule(config, materials.getDataSourceMap());
+        Map<String, DataSource> dataSourceMap = materials.getDataSourceMap();
+        return new ShardingRule(config, null != dataSourceMap ? dataSourceMap.keySet() : null);
     }
     
     @Override

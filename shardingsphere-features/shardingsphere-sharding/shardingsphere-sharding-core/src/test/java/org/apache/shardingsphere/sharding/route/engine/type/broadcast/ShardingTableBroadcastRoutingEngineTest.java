@@ -34,12 +34,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -129,10 +127,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         if (isContainBroadcastTable) {
             shardingRuleConfiguration.getBroadcastTables().add("t_order");
         }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        dataSourceMap.put("ds1", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        return new ShardingRule(shardingRuleConfiguration, dataSourceMap);
+        return new ShardingRule(shardingRuleConfiguration, Arrays.asList("ds_0", "ds_1"));
     }
 
     private SQLStatementContext<?> createSQLStatementContext(final Collection<String> tableNames) {
