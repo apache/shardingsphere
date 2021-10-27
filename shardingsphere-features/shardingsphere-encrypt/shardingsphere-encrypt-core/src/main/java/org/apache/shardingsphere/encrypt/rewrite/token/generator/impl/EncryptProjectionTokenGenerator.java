@@ -17,13 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -45,7 +39,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Projection token generator for encrypt.
@@ -91,7 +90,13 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
-                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
+                    if (selectStatementContext.getAllTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+                            && table.getAlias().isPresent() 
+                            && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() 
+                            && ((ColumnProjectionSegment) each).getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get())) 
+                            || !((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
+                        result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
+                    }
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
