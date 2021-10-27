@@ -80,5 +80,8 @@ algorithmProperty
     ;
     
 queryWithCipherColumn
-    : 'true' | 'false'
+    : 'true'
+    | 'false'
+    | 'TRUE'
+    | 'FALSE'
     ;
