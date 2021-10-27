@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.sharding.distsql.handler.checker;
 
 import com.google.common.base.Splitter;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,27 +62,43 @@ public final class ShardingTableRuleChecker {
     private static final String DELIMITER = ".";
     
     /**
-     * Check sharing table rule statement.
+     * Check create sharing table rule statement.
      *
      * @param shardingSphereMetaData ShardingSphere meta data
      * @param rules rules
      * @param currentRuleConfig current rule configuration
-     * @param isCreate whether to create
      * @throws DistSQLException definition violation exception
      */
-    public static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                             final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
+    public static void checkCreation(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+                                     final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(shardingSphereMetaData, rules, currentRuleConfig, true);
+    }
+    
+    /**
+     * Check alter sharing table rule statement.
+     *
+     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param rules rules
+     * @param currentRuleConfig current rule configuration
+     * @throws DistSQLException definition violation exception
+     */
+    public static void checkAlteration(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+                                       final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(shardingSphereMetaData, rules, currentRuleConfig, false);
+    }
+    
+    private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+                              final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkShardingTables(schemaName, rules, currentRuleConfig, isCreate);
         checkResources(schemaName, rules, shardingSphereMetaData);
         checkKeyGenerators(rules);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByType(rules);
-        checkAutoTableStatement(groupedTableRule.getOrDefault(AbstractTableRuleSegment.AUTO_TABLE, Collections.emptyList()));
-        checkTableStatement(schemaName, currentRuleConfig, groupedTableRule.getOrDefault(AbstractTableRuleSegment.TABLE, Collections.emptyList()));
+        checkAutoTableRule(groupedTableRule.getOrDefault(AbstractTableRuleSegment.AUTO_TABLE, Collections.emptyList()));
+        checkTableRule(schemaName, currentRuleConfig, groupedTableRule.getOrDefault(AbstractTableRuleSegment.TABLE, Collections.emptyList()));
     }
     
-    private static void checkResources(final String schemaName, final Collection<AbstractTableRuleSegment> rules,
-                                       final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private static void checkResources(final String schemaName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(rules);
         Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
@@ -161,11 +178,12 @@ public final class ShardingTableRuleChecker {
         DistSQLException.predictionThrow(invalidKeyGenerators.isEmpty(), new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators));
     }
     
-    private static void checkAutoTableStatement(final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        if (rules.isEmpty()) {
-            return;
+    private static void checkAutoTableRule(final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
+        Collection<AutoTableRuleSegment> autoTableRules = ShardingTableRuleConverter.collectionCast(rules, AutoTableRuleSegment.class);
+        Optional<AlgorithmSegment> anyAutoTableRule = autoTableRules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).filter(Objects::nonNull).findAny();
+        if (anyAutoTableRule.isPresent()) {
+            checkShardingAlgorithms(autoTableRules);
         }
-        checkShardingAlgorithms(ShardingTableRuleConverter.collectionCast(rules, AutoTableRuleSegment.class));
     }
     
     private static void checkShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) throws DistSQLException {
@@ -176,19 +194,21 @@ public final class ShardingTableRuleChecker {
         DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
     }
     
-    private static void checkTableStatement(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        if (rules.isEmpty()) {
-            return;
+    private static void checkTableRule(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
+        Collection<TableRuleSegment> tableRules = ShardingTableRuleConverter.collectionCast(rules, TableRuleSegment.class);
+        Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getTableStrategySegment(), each.getTableStrategySegment()))
+                .flatMap(Collection::stream).filter(Objects::nonNull).findAny();
+        if (anyTableRule.isPresent()) {
+            checkStrategy(schemaName, currentRuleConfig, tableRules);
         }
-        checkStrategy(schemaName, currentRuleConfig, ShardingTableRuleConverter.collectionCast(rules, TableRuleSegment.class));
     }
     
     private static void checkStrategy(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
         Set<String> algorithms = currentRuleConfig.getShardingAlgorithms().keySet();
         LinkedList<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
-                .flatMap(Collection::stream).filter(each -> !ShardingStrategyType.contain(each.getType()) || !algorithms.contains(each.getShardingAlgorithmName()))
+                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> !ShardingStrategyType.contain(each.getType()) || !algorithms.contains(each.getShardingAlgorithmName()))
                 .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), new RequiredAlgorithmMissedException(schemaName, invalidAlgorithms));
+        DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(schemaName, invalidAlgorithms));
     }
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByType(final Collection<AbstractTableRuleSegment> rules) {

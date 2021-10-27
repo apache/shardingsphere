@@ -49,7 +49,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException("Sharding", shardingSphereMetaData.getName()));
-        ShardingTableRuleChecker.check(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig, false);
+        ShardingTableRuleChecker.checkAlteration(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override

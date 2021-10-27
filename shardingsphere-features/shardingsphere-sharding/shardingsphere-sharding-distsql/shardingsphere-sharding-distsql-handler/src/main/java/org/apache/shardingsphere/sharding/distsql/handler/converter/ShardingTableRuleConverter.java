@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -35,10 +34,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrateg
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,13 +68,17 @@ public final class ShardingTableRuleConverter {
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createKeyGeneratorConfiguration(final AbstractTableRuleSegment rule) {
-        return Collections.singletonMap(getKeyGeneratorName(rule.getLogicTable(), rule.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment().getName()),
-                createAlgorithmConfiguration(rule.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment()));
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
+        Optional.ofNullable(rule.getKeyGenerateSegment()).ifPresent(op ->
+                result.put(getKeyGeneratorName(rule.getLogicTable(), op.getKeyGenerateAlgorithmSegment().getName()), createAlgorithmConfiguration(op.getKeyGenerateAlgorithmSegment())));
+        return result;
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createAlgorithmConfiguration(final AutoTableRuleSegment rule) {
-        return Collections.singletonMap(getShardingAlgorithmName(rule.getLogicTable(), rule.getShardingAlgorithmSegment().getName()),
-                createAlgorithmConfiguration(rule.getShardingAlgorithmSegment()));
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
+        Optional.ofNullable(rule.getShardingAlgorithmSegment()).ifPresent(op ->
+                result.put(getShardingAlgorithmName(rule.getLogicTable(), op.getName()), createAlgorithmConfiguration(op)));
+        return result;
     }
     
     /**
@@ -89,18 +91,17 @@ public final class ShardingTableRuleConverter {
         return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
-    private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment segment) {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(segment.getLogicTable(), Joiner.on(",").join(segment.getDataSourceNodes()));
-        result.setShardingStrategy(createAutoTableStrategyConfiguration(segment));
-        if (!Strings.isNullOrEmpty(segment.getShardingColumn()) && Objects.nonNull(segment.getKeyGenerateSegment())) {
-            result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(segment.getLogicTable(), segment.getKeyGenerateSegment()));
-        }
+    private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment rule) {
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), Joiner.on(",").join(rule.getDataSourceNodes()));
+        result.setShardingStrategy(createAutoTableStrategyConfiguration(rule));
+        Optional.ofNullable(rule.getKeyGenerateSegment()).ifPresent(op ->
+                result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateSegment())));
         return result;
     }
     
-    private static ShardingStrategyConfiguration createAutoTableStrategyConfiguration(final AutoTableRuleSegment segment) {
+    private static ShardingStrategyConfiguration createAutoTableStrategyConfiguration(final AutoTableRuleSegment rule) {
         return createStrategyConfiguration(ShardingStrategyType.STANDARD.name(),
-                segment.getShardingColumn(), getShardingAlgorithmName(segment.getLogicTable(), segment.getShardingAlgorithmSegment().getName()));
+                rule.getShardingColumn(), getShardingAlgorithmName(rule.getLogicTable(), rule.getShardingAlgorithmSegment().getName()));
     }
     
     private static ShardingTableRuleConfiguration createTableRuleConfiguration(final TableRuleSegment tableRuleSegment) {
