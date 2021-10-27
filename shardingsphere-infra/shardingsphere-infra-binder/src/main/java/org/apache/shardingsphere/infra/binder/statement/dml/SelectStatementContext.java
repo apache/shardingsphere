@@ -227,6 +227,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return tablesContext.getOriginalTables();
     }
     
+    public Collection<SimpleTableSegment> getAllUniqueTables() {
+        return tablesContext.getUniqueTables().values();
+    }
+    
     @Override
     public Optional<WhereSegment> getWhere() {
         return getSqlStatement().getWhere();

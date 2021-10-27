@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -45,6 +46,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Projection token generator for encrypt.
@@ -90,11 +92,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
-                        && (selectStatementContext.getAllTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
-                        && table.getAlias().isPresent() 
-                        && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() 
-                        && ((ColumnProjectionSegment) each).getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get())) 
-                        || !((ColumnProjectionSegment) each).getColumn().getOwner().isPresent())) {
+                        && (isOwnerExistsMatchTableAlias(selectStatementContext, (ColumnProjectionSegment) each,tableName)
+                        || isOwnerExistsMatchTableName(selectStatementContext, (ColumnProjectionSegment) each,tableName)
+                        || isColumnAmbiguous(selectStatementContext, (ColumnProjectionSegment) each))) {
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
                 }
             }
@@ -106,6 +106,31 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             }
         }
         return result;
+    }
+    
+    private boolean isOwnerExistsMatchTableAlias(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
+        return selectStatementContext.getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+                && table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().isPresent() 
+                && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get()));
+    }
+    
+    private boolean isOwnerExistsMatchTableName(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
+        return selectStatementContext.getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+                && !table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().isPresent() 
+                && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getTableName().getIdentifier().getValue()));
+    }
+    
+    private boolean isColumnAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment) {
+        if (columnProjectionSegment.getColumn().getOwner().isPresent()) {
+            return false;
+        }
+        final AtomicInteger columnCount = new AtomicInteger();
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            getEncryptRule().findEncryptTable(each).map(optional -> optional.getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue())).ifPresent(t -> columnCount.getAndIncrement());
+            System.out.println(columnCount.get());
+            Preconditions.checkState(columnCount.get() <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
+        }
+        return true;
     }
     
     private boolean isToGeneratedSQLToken(final ProjectionSegment projectionSegment, final SelectStatementContext selectStatementContext, final String tableName) {
