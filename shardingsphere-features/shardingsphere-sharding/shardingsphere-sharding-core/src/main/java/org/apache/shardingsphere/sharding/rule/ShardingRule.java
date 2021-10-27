@@ -42,7 +42,6 @@ import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -87,9 +86,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
 
     private final String defaultShardingColumn;
     
-    public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
+    public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data source names cannot be empty.");
+        this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -103,9 +102,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
-    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
+    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data source names cannot be empty.");
+        this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));

@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -101,7 +100,7 @@ public final class ShowTableStatusMergedResultTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     private ShardingSphereSchema buildSchema() {

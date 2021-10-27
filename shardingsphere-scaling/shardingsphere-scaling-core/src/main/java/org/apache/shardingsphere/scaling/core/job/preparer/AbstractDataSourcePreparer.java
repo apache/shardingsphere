@@ -97,9 +97,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
-        Map<String, DataSource> dataSourceMap = dataSourceConfigs.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> new DataSourceWrapper(null), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceMap);
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, source.getRootConfig().getDataSources().keySet());
         Collection<String> logicTableNames = getLogicTableNames(ruleConfig);
         Map<String, Map<String, String>> dataSourceNameTableNamesMap = new HashMap<>();
         for (String each : logicTableNames) {
