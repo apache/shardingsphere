@@ -49,27 +49,27 @@
         <property name="password" value=""/>
     </bean>
 
-    <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="COLUMN_VALUE_MATCH">
         <props>
             <prop key="operation">insert</prop>
             <prop key="column">user_type</prop>
-            <prop key="regex">[1]</prop>
+            <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="COLUMN_VALUE_MATCH">
         <props>
             <prop key="operation">delete</prop>
             <prop key="column">user_type</prop>
-            <prop key="regex">[1]</prop>
+            <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="COLUMN_VALUE_MATCH">
         <props>
             <prop key="operation">select</prop>
             <prop key="column">user_type</prop>
-            <prop key="regex">[1]</prop>
+            <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
 
