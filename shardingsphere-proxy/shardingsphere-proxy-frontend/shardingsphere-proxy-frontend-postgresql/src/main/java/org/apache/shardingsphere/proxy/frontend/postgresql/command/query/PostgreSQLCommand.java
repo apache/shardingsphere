@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAutoTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
@@ -92,7 +92,7 @@ public enum PostgreSQLCommand {
     ALTER_TABLESPACE(AlterTablespaceStatement.class),
     ALTER_TABLE(AlterTableStatement.class),
     ALTER_VIEW(AlterViewStatement.class),
-    CREATE(AddResourceStatement.class, CreateShardingAutoTableRuleStatement.class),
+    CREATE(AddResourceStatement.class, CreateShardingTableRuleStatement.class),
     CREATE_DATABASE(CreateDatabaseStatement.class),
     CREATE_FUNCTION(CreateFunctionStatement.class),
     CREATE_INDEX(CreateIndexStatement.class),
