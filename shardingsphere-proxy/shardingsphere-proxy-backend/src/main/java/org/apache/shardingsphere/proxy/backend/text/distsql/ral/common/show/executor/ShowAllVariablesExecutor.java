@@ -53,9 +53,9 @@ public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
     protected MergedResult createMergedResult() {
         List<List<Object>> rows = new LinkedList<>();
         ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
-        VariableEnum.getPropsVariables().stream().forEach(each -> {
-            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each.name())).toString();
-            rows.add(Arrays.asList(each.name().toLowerCase(), propertyValue));
+        ConfigurationPropertyKey.getKeyNames().stream().forEach(each -> {
+            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
+            rows.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
         rows.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString())));
         rows.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), backendConnection.getConnectionSize()));

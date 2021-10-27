@@ -19,50 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums;
 
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * Variable enum.
  */
 public enum VariableEnum {
     
-    /**
-     * Props variables.
-     */
-    MAX_CONNECTIONS_SIZE_PER_QUERY,
-    
-    KERNEL_EXECUTOR_SIZE,
-    
-    PROXY_FRONTEND_FLUSH_THRESHOLD,
-    
-    PROXY_OPENTRACING_ENABLED,
-    
-    PROXY_HINT_ENABLED,
-    
-    SQL_SHOW,
-    
-    CHECK_TABLE_METADATA_ENABLED,
-    
-    LOCK_WAIT_TIMEOUT_MILLISECONDS,
-    
-    SHOW_PROCESS_LIST_ENABLED,
-    
-    PROXY_BACKEND_QUERY_FETCH_SIZE,
-
-    CHECK_DUPLICATE_TABLE_ENABLED,
-
-    SQL_COMMENT_PARSE_ENABLED,
-
-    PROXY_FRONTEND_EXECUTOR_SIZE,
-
-    PROXY_BACKEND_EXECUTOR_SUITABLE,
-    
-    PROXY_FRONTEND_MAX_CONNECTIONS,
-    
-    /**
-     * Other variables.
-     */
     AGENT_PLUGINS_ENABLED, 
     
     CACHED_CONNECTIONS, 
@@ -81,27 +42,4 @@ public enum VariableEnum {
             throw new UnsupportedVariableException(variableName);
         }
     }
-    
-    /**
-     * Get variables classified as props.
-     * @return collection of variable enum
-     */
-    public static Collection<VariableEnum> getPropsVariables() {
-        return Arrays.asList(
-                VariableEnum.MAX_CONNECTIONS_SIZE_PER_QUERY,
-                VariableEnum.KERNEL_EXECUTOR_SIZE,
-                VariableEnum.PROXY_FRONTEND_FLUSH_THRESHOLD,
-                VariableEnum.PROXY_OPENTRACING_ENABLED,
-                VariableEnum.PROXY_HINT_ENABLED,
-                VariableEnum.SQL_SHOW,
-                VariableEnum.CHECK_TABLE_METADATA_ENABLED,
-                VariableEnum.LOCK_WAIT_TIMEOUT_MILLISECONDS,
-                VariableEnum.SHOW_PROCESS_LIST_ENABLED,
-                VariableEnum.PROXY_BACKEND_QUERY_FETCH_SIZE,
-                VariableEnum.CHECK_DUPLICATE_TABLE_ENABLED,
-                VariableEnum.SQL_COMMENT_PARSE_ENABLED,
-                VariableEnum.PROXY_FRONTEND_EXECUTOR_SIZE,
-                VariableEnum.PROXY_BACKEND_EXECUTOR_SUITABLE,
-                VariableEnum.PROXY_FRONTEND_MAX_CONNECTIONS);
-    }  
 }
