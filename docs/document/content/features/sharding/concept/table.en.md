@@ -3,6 +3,9 @@ title = "Table"
 weight = 1
 +++
 
+Table is the core concept of data sharding transparently. 
+There are diversified tables provided for different data sharding requirements by Apache ShardingSphere. 
+
 ## Logic Table
 
 It refers collectively to horizontal sharding databases (tables) with the same logic and data structure. For instance, the order data is divided into 10 tables according to the last number of the primary key, and they are from `t_order_0` to `t_order_9`, whose logic name is `t_order`.
