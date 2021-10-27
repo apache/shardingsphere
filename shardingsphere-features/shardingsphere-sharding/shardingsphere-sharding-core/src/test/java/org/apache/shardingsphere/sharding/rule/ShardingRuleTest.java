@@ -48,11 +48,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingRuleTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewShardingRuleWithEmptyDataSourceNames() {
-        new ShardingRule(new ShardingRuleConfiguration(), Collections.emptyList());
-    }
-    
     @Test
     public void assertNewShardingRuleWithMaximumConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
@@ -272,14 +267,6 @@ public final class ShardingRuleTest {
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), is(Collections.singletonList("LOGIC_TABLE")));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructShardingRuleWithNullDataSourceNames() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "pr_ds_${0..1}.table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        new ShardingRule(shardingRuleConfig, Collections.emptyList());
     }
     
     @Test
