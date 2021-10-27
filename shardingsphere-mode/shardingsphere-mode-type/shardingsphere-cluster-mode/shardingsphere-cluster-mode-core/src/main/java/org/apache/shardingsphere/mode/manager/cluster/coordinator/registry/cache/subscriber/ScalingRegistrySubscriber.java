@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Scaling registry subscriber.
  */
+@Slf4j
 // TODO move to scaling module
 public final class ScalingRegistrySubscriber {
     
@@ -84,12 +86,18 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
+        log.info("scalingTaskFinished, event={}", event);
         YamlRootConfiguration yamlRootConfiguration = event.getTargetRootConfig();
         Map<String, DataSourceConfiguration> dataSourceConfigs = yamlRootConfiguration.getDataSources().entrySet().stream().collect(Collectors.toMap(
                 Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootConfiguration.getRules());
         ClusterSwitchConfigurationEvent switchEvent = new ClusterSwitchConfigurationEvent(event.getTargetSchemaName(), dataSourceConfigs, ruleConfigs);
         ShardingSphereEventBus.getInstance().post(switchEvent);
+        String ruleCacheId = event.getRuleCacheId();
+        if (null != ruleCacheId) {
+            log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
+            registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
+        }
     }
     
     /**
@@ -100,6 +108,7 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void clusterSwitchConfiguration(final ClusterSwitchConfigurationEvent event) {
         String schemaName = event.getTargetSchemaName();
+        log.info("clusterSwitchConfiguration, schemaName={}", schemaName);
         dataSourcePersistService.persist(schemaName, event.getTargetDataSourceConfigs());
         persistService.persist(schemaName, event.getTargetRuleConfigs());
     }

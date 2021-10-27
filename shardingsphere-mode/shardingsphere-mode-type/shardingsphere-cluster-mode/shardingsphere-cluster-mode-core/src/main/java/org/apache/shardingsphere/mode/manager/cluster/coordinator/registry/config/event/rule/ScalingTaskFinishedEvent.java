@@ -33,4 +33,11 @@ public final class ScalingTaskFinishedEvent {
     private final String targetSchemaName;
     
     private final YamlRootConfiguration targetRootConfig;
+    
+    private final String ruleCacheId;
+    
+    @Override
+    public String toString() {
+        return "ScalingTaskFinishedEvent{" + "targetSchemaName='" + targetSchemaName + '\'' + ", ruleCacheId='" + ruleCacheId + '\'' + '}';
+    }
 }

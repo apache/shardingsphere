@@ -260,7 +260,9 @@ public final class ScalingAPIImpl implements ScalingAPI {
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
         ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), yamlRootConfig);
+        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
+        String ruleCacheId = null != workflowConfig ? workflowConfig.getRuleCacheId() : null;
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), yamlRootConfig, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
             each.setStatus(JobStatus.FINISHED);
