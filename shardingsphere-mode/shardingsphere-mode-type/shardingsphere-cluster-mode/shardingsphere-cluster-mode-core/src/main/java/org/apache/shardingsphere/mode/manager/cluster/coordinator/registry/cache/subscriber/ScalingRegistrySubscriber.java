@@ -63,12 +63,12 @@ public final class ScalingRegistrySubscriber {
     }
     
     /**
-     * Cache rule configuration.
+     * Rule configuration cached.
      *
      * @param event rule configuration cached event
      */
     @Subscribe
-    public void cacheRuleConfiguration(final RuleConfigurationCachedEvent event) {
+    public void ruleConfigurationCached(final RuleConfigurationCachedEvent event) {
         String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
         String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
         String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
