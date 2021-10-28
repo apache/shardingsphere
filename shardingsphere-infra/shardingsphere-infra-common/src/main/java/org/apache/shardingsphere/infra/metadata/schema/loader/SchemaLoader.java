@@ -63,7 +63,7 @@ public final class SchemaLoader {
      */
     public Map<String, ShardingSphereSchema> load(final Map<String, Collection<ShardingSphereRule>> rules) throws SQLException {
         Map<String, ShardingSphereSchema> result = new HashMap<>(schemaRuleConfigs.size(), 1);
-        for (String each : rules.keySet()) {
+        for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
             Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules.get(each)), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules.get(each), props));
