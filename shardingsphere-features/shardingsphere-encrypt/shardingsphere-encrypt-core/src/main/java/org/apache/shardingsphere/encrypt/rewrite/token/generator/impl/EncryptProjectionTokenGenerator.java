@@ -91,9 +91,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
-                        && (isOwnerExistsMatchTableAlias(selectStatementContext, (ColumnProjectionSegment) each, tableName)
-                        || isOwnerExistsMatchTableName(selectStatementContext, (ColumnProjectionSegment) each, tableName)
-                        || isColumnAmbiguous(selectStatementContext, (ColumnProjectionSegment) each))) {
+                        && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
                 }
             }
@@ -107,16 +105,26 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
+    private boolean columnMatchTableAndCheckAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
+        return isOwnerExistsMatchTableAlias(selectStatementContext, columnProjectionSegment, tableName) 
+                || isOwnerExistsMatchTableName(selectStatementContext, columnProjectionSegment, tableName) 
+                || isColumnAmbiguous(selectStatementContext, columnProjectionSegment);
+    }
+    
     private boolean isOwnerExistsMatchTableAlias(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
+        if (!columnProjectionSegment.getColumn().getOwner().isPresent()) {
+            return false;
+        }
         return selectStatementContext.getTablesContext().getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
-                && table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().isPresent() 
-                && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get()));
+                && table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get()));
     }
     
     private boolean isOwnerExistsMatchTableName(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
+        if (!columnProjectionSegment.getColumn().getOwner().isPresent()) {
+            return false;
+        }
         return selectStatementContext.getTablesContext().getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
-                && !table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().isPresent() 
-                && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getTableName().getIdentifier().getValue()));
+                && !table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(tableName));
     }
     
     private boolean isColumnAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment) {
