@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,15 +45,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTablesExecutorTest {
+public final class ShowFunctionStatusExecutorTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private ShowTablesExecutor showTablesExecutor;
+    private ShowFunctionStatusExecutor showFunctionStatusExecutor;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement());
+        showFunctionStatusExecutor = new ShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement());
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
@@ -77,11 +77,8 @@ public final class ShowTablesExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        showTablesExecutor.execute(mockBackendConnection());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        while (showTablesExecutor.getMergedResult().next()) {
-            assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is(1));
-        }
+        showFunctionStatusExecutor.execute(mockBackendConnection());
+        assertThat(showFunctionStatusExecutor.getQueryResultMetaData().getColumnCount(), is(11));
     }
     
     private BackendConnection mockBackendConnection() {
