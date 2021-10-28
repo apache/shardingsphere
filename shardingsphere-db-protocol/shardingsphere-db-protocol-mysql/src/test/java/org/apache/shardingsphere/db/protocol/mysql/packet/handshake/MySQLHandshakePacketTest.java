@@ -55,7 +55,7 @@ public final class MySQLHandshakePacketTest {
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper()));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
@@ -76,7 +76,7 @@ public final class MySQLHandshakePacketTest {
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));

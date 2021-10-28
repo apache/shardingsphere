@@ -47,7 +47,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()));
@@ -65,7 +65,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()));
@@ -83,7 +83,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue()));
@@ -101,7 +101,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getMaxPacketSize(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue()));
