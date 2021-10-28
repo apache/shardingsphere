@@ -1,6 +1,6 @@
 +++
 title = "分片"
-weight = 2
+weight = 3
 +++
 
 ## 分片键
