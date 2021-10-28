@@ -82,4 +82,3 @@ algorithmProperty
 queryWithCipherColumn
     : TRUE | FALSE
     ;
-
