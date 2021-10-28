@@ -35,9 +35,9 @@ public final class DropShardingBindingTableRulesStatement extends DropRuleStatem
     private final Collection<BindingTableRuleSegment> rules;
     
     /**
-     * Get binding tables.
+     * Get binding groups.
      *
-     * @return binding tables
+     * @return binding groups
      */
     public Collection<String> getBindingGroups() {
         Collection<String> result = new LinkedList<>();
