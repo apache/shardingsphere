@@ -5,6 +5,18 @@ weight = 5
 
 ## Column Shadow Algorithm
 
+### Column Value Match Shadow Algorithm
+
+Type：COLUMN_VALUE_MATCH
+
+Attributes:
+
+| *Name*      | *DataType* | *Description*  |
+| -------------- | --------- | ------- |
+| column         | String    | Shadow column |
+| operation      | String    | SQL operation type（INSERT, UPDATE, DELETE, SELECT） |
+| value          | String    | Shadow column matching value |
+
 ### Column Regex Match Shadow Algorithm
 
 Type: COLUMN_REGEX_MATCH
@@ -15,7 +27,7 @@ Attributes:
 | -------------- | --------- | ------- |
 | column         | String    | Shadow column |
 | operation      | String    | SQL operation type (insert, update, delete, select) |
-| regex          | String    | Regular expression |
+| regex          | String    | Shadow column matching regular expression |
 
 ## Note Shadow Algorithm
 

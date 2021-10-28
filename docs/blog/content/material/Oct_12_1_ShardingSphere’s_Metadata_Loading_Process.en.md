@@ -4,8 +4,6 @@ weight = 17
 chapter = true
 +++
 
-# ShardingSphere’s Metadata Loading Process
-
 **1. Overview**
 
   Metadata is the data that constitutes the data. In database terms, any data that describes the database is metadata. Column names, database names, usernames, table names, etc. and data customization library tables that store information about database objects are metadata. ShardingSphere core functions such as data sharding, encryption and decryption are all based on the database metadata.

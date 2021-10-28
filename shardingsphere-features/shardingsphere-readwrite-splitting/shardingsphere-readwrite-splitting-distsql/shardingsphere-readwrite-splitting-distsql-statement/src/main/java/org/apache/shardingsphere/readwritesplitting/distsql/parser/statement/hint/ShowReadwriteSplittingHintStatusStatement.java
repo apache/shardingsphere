@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
 /**
  * Show readwrite-splitting hint status statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShowReadwriteSplittingHintStatusStatement extends HintDistSQLStatement {
 }

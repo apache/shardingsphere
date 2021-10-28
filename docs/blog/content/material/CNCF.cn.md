@@ -4,8 +4,6 @@ weight = 8
 chapter = true
 +++
 
-## 快讯！Apache ShardingSphere进入CNCF全景图
-
 ### CNCF
 
 (Cloud Native Computing Foundation)，是由Google牵头创立的云原生计算开源软件基金会。它致力于云原生（Cloud Native）技术的普及和可持续发展。云原生技术是通过一系列的软件、规范和标准帮助企业和组织，在现代的动态环境（如公共云、私有云和混合云）中构建和运行敏捷的、可扩展的应用程序。容器、微服务、微服务治理、声明式API等都是代表性的云原生技术。

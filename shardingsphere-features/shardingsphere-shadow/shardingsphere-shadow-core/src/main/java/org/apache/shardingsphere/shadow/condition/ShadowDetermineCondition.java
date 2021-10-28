@@ -22,17 +22,15 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Shadow determine condition.
  */
+@Getter
 public final class ShadowDetermineCondition {
     
-    @Getter
     private final String tableName;
     
-    @Getter
     private final ShadowOperationType shadowOperationType;
     
     private final Collection<ShadowColumnCondition> shadowColumnConditions = new LinkedList<>();
@@ -56,15 +54,6 @@ public final class ShadowDetermineCondition {
     }
     
     /**
-     * Get SQL notes.
-     *
-     * @return SQL notes
-     */
-    public Optional<Collection<String>> getSqlNotes() {
-        return sqlNotes.isEmpty() ? Optional.empty() : Optional.of(sqlNotes);
-    }
-    
-    /**
      * Initialize shadow column condition.
      *
      * @param shadowColumnConditions shadow column conditions
@@ -73,14 +62,5 @@ public final class ShadowDetermineCondition {
     public ShadowDetermineCondition initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
         this.shadowColumnConditions.addAll(shadowColumnConditions);
         return this;
-    }
-    
-    /**
-     * Get shadow column conditions.
-     *
-     * @return shadow column conditions
-     */
-    public Optional<Collection<ShadowColumnCondition>> getShadowColumnConditions() {
-        return shadowColumnConditions.isEmpty() ? Optional.empty() : Optional.of(shadowColumnConditions);
     }
 }

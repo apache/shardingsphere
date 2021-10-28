@@ -18,44 +18,20 @@
 package org.apache.shardingsphere.integration.scaling.test.mysql.util;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import groovy.lang.Tuple2;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Ok http utils.
  */
 public final class ScalingUtil {
     
-    private static final ScalingUtil OK_HTTP_UTILS = new ScalingUtil();
-    
-    private static final JsonParser JSON_PARSER = new JsonParser();
-    
-    private final OkHttpClient client;
-    
-    private final String scalingUrl;
+    private static final ScalingUtil INSTANCE = new ScalingUtil();
     
     private ScalingUtil() {
-        scalingUrl = IntegrationTestEnvironment.getInstance().getEngineEnvProps().getProperty("scaling.url");
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(10, TimeUnit.SECONDS);
-        builder.readTimeout(10, TimeUnit.SECONDS);
-        builder.writeTimeout(10, TimeUnit.SECONDS);
-        client = builder.build();
     }
     
     /**
@@ -64,24 +40,7 @@ public final class ScalingUtil {
      * @return instance
      */
     public static ScalingUtil getInstance() {
-        return OK_HTTP_UTILS;
-    }
-    
-    private JsonElement get(final String url) throws IOException {
-        Request request = new Request.Builder().url(url).build();
-        Response response = client.newCall(request).execute();
-        assertNotNull(response.body());
-        String result = response.body().string();
-        return JSON_PARSER.parse(result);
-    }
-    
-    private JsonElement post(final String url, final String body) throws IOException {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), body);
-        Request request = new Request.Builder().url(url).post(requestBody).build();
-        Response response = client.newCall(request).execute();
-        assertNotNull(response.body());
-        String result = response.body().string();
-        return JSON_PARSER.parse(result);
+        return INSTANCE;
     }
     
     /**
@@ -91,9 +50,9 @@ public final class ScalingUtil {
      * @return result
      * @throws IOException io exception
      */
-    public Tuple2<Boolean, String> startJob(final String configuration) throws IOException {
-        JsonObject response = getInstance().post(scalingUrl + "/scaling/job/start", configuration).getAsJsonObject();
-        return new Tuple2<>(response.get("success").getAsBoolean(), response.get("model").getAsString());
+    public Pair<Boolean, String> startJob(final String configuration) throws IOException {
+        // TODO startJob
+        return Pair.of(false, "");
     }
     
     /**
@@ -104,8 +63,8 @@ public final class ScalingUtil {
      */
     public String getJobStatus(final String jobId) {
         try {
-            JsonElement response = getInstance().get(scalingUrl + "/scaling/job/progress/" + jobId);
-            return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject("0").get("status").getAsString();
+            // TODO getJobStatus
+            return "";
             //CHECKSTYLE:OFF
         } catch (Exception ignored) {
             //CHECKSTYLE:ON
@@ -120,13 +79,9 @@ public final class ScalingUtil {
      * @return check result
      * @throws IOException io exception
      */
-    public Map<String, Tuple2<Boolean, Boolean>> getJobCheckResult(final String jobId) throws IOException {
-        JsonElement response = getInstance().get(scalingUrl + "/scaling/job/check/" + jobId);
-        return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject().entrySet().stream().collect(Collectors.toMap(Entry::getKey, this::createTaskResult));
-    }
-    
-    private Tuple2<Boolean, Boolean> createTaskResult(final Entry<String, JsonElement> entry) {
-        return new Tuple2<>(entry.getValue().getAsJsonObject().get("countValid").getAsBoolean(), entry.getValue().getAsJsonObject().get("dataValid").getAsBoolean());
+    public Map<String, Pair<Boolean, Boolean>> getJobCheckResult(final String jobId) throws IOException {
+        // TODO getJobCheckResult
+        return Collections.emptyMap();
     }
     
     /**
@@ -136,6 +91,7 @@ public final class ScalingUtil {
      * @throws IOException io exception
      */
     public JsonElement getJobList() throws IOException {
-        return getInstance().get(scalingUrl + "/scaling/job/list");
+        // TODO getJobList
+        return null;
     }
 }

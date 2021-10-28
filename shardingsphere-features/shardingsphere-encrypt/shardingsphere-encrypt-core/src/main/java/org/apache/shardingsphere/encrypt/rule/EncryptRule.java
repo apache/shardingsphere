@@ -27,10 +27,14 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.rewrite.util.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -241,6 +245,26 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+    }
+
+    /**
+     * Check the table is support QueryWithCipherColumn.
+     *
+     * @param sqlStatementContext sqlStatementContext
+     * @return isQueryWithCipherColumn
+     */
+    public boolean isQueryWithCipherColumn(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof SelectStatementContext
+                ? ((TableAvailable) sqlStatementContext).getAllTables()
+                : Collections.emptyList();
+        boolean result = queryWithCipherColumn;
+        if (!simpleTables.isEmpty()) {
+            String tableName = simpleTables.iterator().next().getTableName().getIdentifier().getValue();
+            if (tables.containsKey(tableName) && null != tables.get(tableName).getQueryWithCipherColumn()) {
+                result = tables.get(tableName).getQueryWithCipherColumn();
+            }
+        }
+        return result;
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {

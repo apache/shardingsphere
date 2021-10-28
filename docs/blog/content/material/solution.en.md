@@ -4,8 +4,6 @@ weight = 6
 chapter = true
 +++
 
-## The mixed open-source distributed transaction solution
-
 ### Author
 
 Liang Zhang，Leader of Data R&D of JD.com, initiator & PPMC of Apache ShardingSphere. 

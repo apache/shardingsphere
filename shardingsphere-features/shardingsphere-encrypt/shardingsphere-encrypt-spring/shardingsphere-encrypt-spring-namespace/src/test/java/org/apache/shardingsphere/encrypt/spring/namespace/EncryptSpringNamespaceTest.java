@@ -74,6 +74,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
+        assertThat(tableRuleConfig.getQueryWithCipherColumn(), is(false));
         assertThat(tableRuleConfig.getColumns().size(), is(2));
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn1(columnRuleConfigs.next());

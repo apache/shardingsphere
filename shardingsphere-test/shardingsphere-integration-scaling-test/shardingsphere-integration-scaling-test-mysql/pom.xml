@@ -37,7 +37,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-bootstrap</artifactId>
+            <artifactId>shardingsphere-scaling-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -46,9 +46,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>${okhttp.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

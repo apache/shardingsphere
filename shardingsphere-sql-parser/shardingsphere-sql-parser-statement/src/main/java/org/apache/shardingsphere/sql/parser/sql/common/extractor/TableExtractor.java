@@ -92,19 +92,6 @@ public final class TableExtractor {
         }
     }
     
-    /**
-     * Extract tables with from clause.
-     *
-     * @param selectStatement select statement
-     * @return tables with from clause
-     */
-    public Collection<SimpleTableSegment> extractTablesWithFromClause(final SelectStatement selectStatement) {
-        if (null != selectStatement.getFrom()) {
-            extractTablesFromTableSegment(selectStatement.getFrom());
-        }
-        return rewriteTables;
-    }
-    
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
         if (tableSegment instanceof SimpleTableSegment) {
             tableContext.add(tableSegment);
@@ -122,9 +109,7 @@ public final class TableExtractor {
         if (tableSegment instanceof DeleteMultiTableSegment) {
             DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) tableSegment;
             rewriteTables.addAll(deleteMultiTableSegment.getActualDeleteTables());
-            if (deleteMultiTableSegment.getRelationTable() instanceof JoinTableSegment) {
-                extractTablesFromJoinTableSegment((JoinTableSegment) deleteMultiTableSegment.getRelationTable());
-            }
+            extractTablesFromTableSegment(deleteMultiTableSegment.getRelationTable());
         }
     }
     

@@ -129,7 +129,6 @@ public final class BootstrapInitializer {
         if (null == yamlConfig.getServerConfiguration().getScaling()) {
             return Optional.empty();
         }
-        
         ServerConfiguration result = new ServerConfiguration();
         result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());

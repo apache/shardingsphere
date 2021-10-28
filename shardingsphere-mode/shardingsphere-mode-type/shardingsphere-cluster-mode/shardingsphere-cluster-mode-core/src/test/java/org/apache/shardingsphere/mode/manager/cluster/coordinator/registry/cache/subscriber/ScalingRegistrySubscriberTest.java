@@ -54,15 +54,6 @@ public final class ScalingRegistrySubscriberTest {
     }
     
     @Test
-    public void assertSwitchRuleConfiguration() throws ReflectiveOperationException {
-        // Move to scaling module
-//        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML());
-//        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
-//        scalingRegistrySubscriber.switchRuleConfiguration(event);
-        // TODO finish verify
-    }
-    
-    @Test
     public void assertCacheRuleConfiguration() {
         // TODO finish test case
     }

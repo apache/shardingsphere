@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
-import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendConnectionLimitException;
-import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
+import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
  * Frontend channel limitation inbound handler.
@@ -32,22 +31,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandlerAdapter {
-
+    
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
-
+    
     @Override
-    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-        if (ConnectionLimitContext.getInstance().connect()) {
+    public void channelActive(final ChannelHandlerContext ctx) {
+        if (ConnectionLimitContext.getInstance().connectionAllowed()) {
             ctx.fireChannelActive();
-        } else {
-            log.debug("Close channel {}, The server connections greater than {}", ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getConnectionLimit());
-            ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendConnectionLimitException("The number of connections exceeds the limit")));
-            ctx.close();
+            return;
         }
+        log.debug("Closing channel {} due to the number of server connections has reached max connections {}", ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getMaxConnections());
+        // TODO This is not how actual databases does and should be refactored.
+        ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendTooManyConnectionsException()));
+        ctx.close();
     }
-
+    
     @Override
-    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-        ConnectionLimitContext.getInstance().disconnect();
+    public void channelInactive(final ChannelHandlerContext ctx) {
+        ctx.fireChannelInactive();
+        ConnectionLimitContext.getInstance().connectionInactive();
     }
 }

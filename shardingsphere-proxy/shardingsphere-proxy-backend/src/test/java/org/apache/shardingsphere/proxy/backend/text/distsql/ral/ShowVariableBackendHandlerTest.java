@@ -98,7 +98,7 @@ public final class ShowVariableBackendHandlerTest {
         props.put("sql-show", "true");
         ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
         when(metaDataContexts.getProps()).thenReturn(configurationProperties);
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("sql_show"), backendConnection);
+        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("SQL_SHOW"), backendConnection);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));

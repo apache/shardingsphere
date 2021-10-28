@@ -4,8 +4,6 @@ weight = 24
 chapter = true
 +++
 
-# ShardingSphere x Google Summer of Code: Students, How Was Your Open Source Experience?
-
 ![](../../static/img/Blog_24_img_1_ShardingSphere_GSoC.png)
 
 Recently the ShardingSphere community had the pleasure of contributing to the Google Summer of Code (GSoC), and mentoring the next generation of open source innovators. Our project was select to be part of this brilliant and long running program, to provide students from all over the world with an experience in open source software.

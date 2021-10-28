@@ -4,8 +4,6 @@ weight = 22
 chapter = true
 +++
 
-# 分片利器 AutoTable：为用户带来「管家式」分片配置体验
-
 在[《DistSQL：像数据库一样使用 Apache ShardingSphere》](https://mp.weixin.qq.com/s/fdCtxd_xYNll0_ZdAjDvCA)一文中，Committer 孟浩然为大家介绍了 DistSQL 的设计初衷和语法体系，并通过实战操作**展示了一条 SQL 创建分布式数据库表的强大能力，展现了 Apache ShardingSphere 在新形态下的交互体验。**
 
 在前文发布后，小助手陆续收到热心读者的私信，询问使用 DistSQL 配置分片规则的细节，以及使用 YAML、Namespace 等形式的配置时，是否可以像 DistSQL 一样快速方便的完成分布式表的配置和创建？本文将为大家解答这些疑问。

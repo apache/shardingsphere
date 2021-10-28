@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Column shadow algorithm determiner.
@@ -40,12 +39,10 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     
     @Override
     public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule) {
-        Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowDetermineCondition.getShadowColumnConditions();
-        if (shadowColumnConditions.isPresent()) {
-            for (ShadowColumnCondition each : shadowColumnConditions.get()) {
-                if (isShadowColumn(each, shadowRule, shadowDetermineCondition.getTableName(), shadowDetermineCondition.getShadowOperationType())) {
-                    return true;
-                }
+        Collection<ShadowColumnCondition> shadowColumnConditions = shadowDetermineCondition.getShadowColumnConditions();
+        for (ShadowColumnCondition each : shadowColumnConditions) {
+            if (isShadowColumn(each, shadowRule, shadowDetermineCondition.getTableName(), shadowDetermineCondition.getShadowOperationType())) {
+                return true;
             }
         }
         return false;

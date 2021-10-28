@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.hint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
 /**
  * Clear hint statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ClearHintStatement extends HintDistSQLStatement {
 }
