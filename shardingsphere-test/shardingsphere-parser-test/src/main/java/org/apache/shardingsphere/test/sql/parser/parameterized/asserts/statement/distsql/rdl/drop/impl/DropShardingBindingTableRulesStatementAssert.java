@@ -23,6 +23,11 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingB
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 /**
  * Drop sharding binding table rule statement assert.
  */
@@ -37,5 +42,11 @@ public final class DropShardingBindingTableRulesStatementAssert {
      * @param expected expected drop sharding binding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingBindingTableRulesStatement actual, final DropShardingBindingTableRulesStatementTestCase expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getBindingGroups(), is(expected.getRules()));
+        }
     }
 }
