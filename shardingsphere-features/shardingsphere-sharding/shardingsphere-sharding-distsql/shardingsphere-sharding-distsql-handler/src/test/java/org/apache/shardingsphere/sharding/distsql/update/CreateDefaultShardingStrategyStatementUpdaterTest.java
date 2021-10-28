@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -46,7 +47,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         when(shardingSphereMetaData.getName()).thenReturn("test");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidStrategyType() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDefaultShardingStrategyStatement("TABLE", "invalidType", null, "order_id_algorithm"), null);
     }
