@@ -1480,7 +1480,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
     
-    private String getOriginalText(final ParserRuleContext ctx) {
+    /**
+     * Get original text.
+     *
+     * @param ctx context
+     * @return original text
+     */
+    protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
 }

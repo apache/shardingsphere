@@ -580,7 +580,13 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         return result;
     }
     
-    private String getOriginalText(final ParserRuleContext ctx) {
+    /**
+     * Get original text.
+     *
+     * @param ctx context
+     * @return original text
+     */
+    protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
 }
