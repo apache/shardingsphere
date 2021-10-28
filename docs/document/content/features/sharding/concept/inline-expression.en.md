@@ -7,19 +7,26 @@ weight = 4
 
 Configuration simplicity and unity are two main problems that inline expression intends to solve.
 
-In complex sharding rules, with more data nodes, a large number of configuration repetitions make configurations difficult to maintain. Inline expressions can simplify data node configuration work.
+In complex sharding rules, with more data nodes, a large number of configuration repetitions make configurations difficult to maintain. 
+Inline expressions can simplify data node configuration work.
 
-Java codes are not helpful in the unified management of common configurations. Writing sharding algorithms with inline expressions, users can stored rules together, making them easier to be browsed and stored.
+Java codes are not helpful in the unified management of common configurations. 
+Writing sharding algorithms with inline expressions, users can store rules together, making them easier to be browsed and stored.
 
 ## Syntax Explanation
 
-The use of inline expressions is really direct. Users only need to configure `${ expression }` or `$->{ expression }` to identify them. ShardingSphere currently supports the configurations of data nodes and sharding algorithms. Inline expressions use Groovy syntax, which can support all kinds of operations, including inline expressions. For example:
+The use of inline expressions is really direct. 
+Users only need to configure `${ expression }` or `$->{ expression }` to identify them. 
+ShardingSphere currently supports the configurations of data nodes and sharding algorithms. 
+Inline expressions use Groovy syntax, which can support all kinds of operations, including inline expressions. 
+For example:
 
 `${begin..end}` means range
 
 `${[unit1, unit2, unit_x]}` means enumeration
 
-If there are many continuous `${ expression }` or `$->{ expression }` expressions, according to each sub-expression result, the ultimate result of the whole expression will be in cartesian combination.
+If there are many continuous `${ expression }` or `$->{ expression }` expressions, 
+according to each sub-expression result, the ultimate result of the whole expression will be in cartesian combination.
 
 For example, the following inline expression:
 
@@ -33,16 +40,18 @@ Will be parsed as:
 online_table1, online_table2, online_table3, offline_table1, offline_table2, offline_table3
 ```
 
-## Data Node Configuration
+## Configuration
+
+### Data Node
 
 For evenly distributed data nodes, if the data structure is as follow:
 
 ```
 db0
-  ├── t_order0 
-  └── t_order1 
+  ├── t_order0
+  └── t_order1
 db1
-  ├── t_order0 
+  ├── t_order0
   └── t_order1
 ```
 
@@ -62,8 +71,8 @@ For self-defined data nodes, if the data structure is:
 
 ```
 db0
-  ├── t_order0 
-  └── t_order1 
+  ├── t_order0
+  └── t_order1
 db1
   ├── t_order2
   ├── t_order3
@@ -144,7 +153,7 @@ Or
 db$->{0..1}.t_order_0$->{0..9}, db$->{0..1}.t_order_$->{10..20}
 ```
 
-## Sharding Algorithm Configuration
+### Sharding Algorithm
 
 For single sharding SQL that uses `=` and `IN`, inline expression can replace codes in configuration.
 
