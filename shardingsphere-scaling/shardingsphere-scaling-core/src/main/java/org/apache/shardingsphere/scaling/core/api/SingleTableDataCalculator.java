@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-
-import java.util.Collection;
-
 /**
  * Single table data calculator interface for SPI.
  * <p>
