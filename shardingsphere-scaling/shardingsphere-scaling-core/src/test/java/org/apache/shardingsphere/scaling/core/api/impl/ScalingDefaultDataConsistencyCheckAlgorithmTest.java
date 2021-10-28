@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -34,7 +34,7 @@ public final class ScalingDefaultDataConsistencyCheckAlgorithmTest {
         assertThat(checkAlgorithm.getType(), is(ScalingDefaultDataConsistencyCheckAlgorithm.TYPE));
         assertNotNull(checkAlgorithm.getDescription());
         assertThat(checkAlgorithm.getProvider(), is("ShardingSphere"));
-        assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Arrays.asList("MySQL", "PostgreSQL")));
+        assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
     }
     
     @Test(expected = NullPointerException.class)
