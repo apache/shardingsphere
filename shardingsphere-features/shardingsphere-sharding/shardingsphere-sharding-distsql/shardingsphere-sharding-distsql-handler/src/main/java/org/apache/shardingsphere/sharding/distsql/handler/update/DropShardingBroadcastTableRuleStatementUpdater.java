@@ -43,9 +43,9 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     private void checkBroadCastTableRuleExist(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                               final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!sqlStatement.getTableNames().isEmpty()) {
+        if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
-            LinkedList<String> notExistRules = sqlStatement.getTableNames().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+            LinkedList<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));
             DistSQLException.predictionThrow(notExistRules.isEmpty(), new RequiredRuleMissedException("Broadcast", schemaName, notExistRules));
         }
     }
@@ -56,10 +56,10 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getTableNames().isEmpty()) {
+        if (sqlStatement.getRules().isEmpty()) {
             currentRuleConfig.getBroadcastTables().clear();
         } else {
-            currentRuleConfig.getBroadcastTables().removeIf(sqlStatement.getTableNames()::contains);
+            currentRuleConfig.getBroadcastTables().removeIf(sqlStatement.getRules()::contains);
         }
         return false;
     }

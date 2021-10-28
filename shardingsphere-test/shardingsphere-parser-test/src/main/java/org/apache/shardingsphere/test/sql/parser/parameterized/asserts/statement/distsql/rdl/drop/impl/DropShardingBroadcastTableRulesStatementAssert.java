@@ -46,7 +46,7 @@ public final class DropShardingBroadcastTableRulesStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getTableNames(), is(expected.getTableName()));
+            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getRules(), is(expected.getTableName()));
         }
     }
 }

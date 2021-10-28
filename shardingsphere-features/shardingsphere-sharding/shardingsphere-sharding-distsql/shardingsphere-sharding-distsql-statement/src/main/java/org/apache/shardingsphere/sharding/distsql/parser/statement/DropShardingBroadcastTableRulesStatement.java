@@ -30,5 +30,5 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
     
-    private final Collection<String> tableNames;
+    private final Collection<String> rules;
 }
