@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
@@ -48,7 +48,7 @@ public final class ShardingRuleStatementConverterTest {
     
     @Test
     public void assertConvert() {
-        ShardingRuleConfiguration config = ShardingTableRuleConverter.convert(createTableRuleSegment());
+        ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createTableRuleSegment());
         assertEquals(1, config.getTables().size());
         ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();
         assertEquals("t_order", tableRule.getLogicTable());
@@ -72,18 +72,18 @@ public final class ShardingRuleStatementConverterTest {
     
     private Collection<AbstractTableRuleSegment> createTableRuleSegment() {
         Collection<AbstractTableRuleSegment> result = new LinkedList<>();
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id", 
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")), null);
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), 
-                new ShardingStrategySegment("standard","order_id","order_id_algorithm"), 
-                new ShardingStrategySegment("standard","order_id","order_id_algorithm"),
-                new KeyGenerateSegment("order_id", new AlgorithmSegment("snowflake",newProperties("",""))));
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
+                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
+                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
+                new KeyGenerateSegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))));
         result.add(autoTableRuleSegment);
         result.add(tableRuleSegment);
         return result;
     }
     
-    private static Properties newProperties(String key, String value) {
+    private static Properties newProperties(final String key, final String value) {
         Properties properties = new Properties();
         properties.put(key, value);
         return properties;

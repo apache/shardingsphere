@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
@@ -57,7 +56,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding table rule checker.
  */
-public final class ShardingTableRuleChecker {
+public final class ShardingTableRuleStatementChecker {
     
     private static final String DELIMITER = ".";
     
@@ -93,9 +92,9 @@ public final class ShardingTableRuleChecker {
         checkShardingTables(schemaName, rules, currentRuleConfig, isCreate);
         checkResources(schemaName, rules, shardingSphereMetaData);
         checkKeyGenerators(rules);
-        Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByType(rules);
-        checkAutoTableRule(groupedTableRule.getOrDefault(AbstractTableRuleSegment.AUTO_TABLE, Collections.emptyList()));
-        checkTableRule(schemaName, currentRuleConfig, groupedTableRule.getOrDefault(AbstractTableRuleSegment.TABLE, Collections.emptyList()));
+        Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
+        checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
+        checkTableRule(schemaName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
     }
     
     private static void checkResources(final String schemaName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
@@ -113,7 +112,7 @@ public final class ShardingTableRuleChecker {
     
     private static Collection<String> getRequiredResources(final Collection<AbstractTableRuleSegment> rules) {
         return rules.stream().map(AbstractTableRuleSegment::getDataSourceNodes).flatMap(Collection::stream)
-                .map(ShardingTableRuleChecker::parseDateSource).map(ShardingTableRuleChecker::getDataSourceNames)
+                .map(ShardingTableRuleStatementChecker::parseDateSource).map(ShardingTableRuleStatementChecker::getDataSourceNames)
                 .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
@@ -179,7 +178,7 @@ public final class ShardingTableRuleChecker {
     }
     
     private static void checkAutoTableRule(final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        Collection<AutoTableRuleSegment> autoTableRules = ShardingTableRuleConverter.collectionCast(rules, AutoTableRuleSegment.class);
+        Collection<AutoTableRuleSegment> autoTableRules = rules.stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
         Optional<AlgorithmSegment> anyAutoTableRule = autoTableRules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).filter(Objects::nonNull).findAny();
         if (anyAutoTableRule.isPresent()) {
             checkShardingAlgorithms(autoTableRules);
@@ -195,7 +194,7 @@ public final class ShardingTableRuleChecker {
     }
     
     private static void checkTableRule(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        Collection<TableRuleSegment> tableRules = ShardingTableRuleConverter.collectionCast(rules, TableRuleSegment.class);
+        Collection<TableRuleSegment> tableRules = rules.stream().map(each -> (TableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
         Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getTableStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).findAny();
         if (anyTableRule.isPresent()) {
@@ -211,7 +210,7 @@ public final class ShardingTableRuleChecker {
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(schemaName, invalidAlgorithms));
     }
     
-    private static Map<String, List<AbstractTableRuleSegment>> groupingByType(final Collection<AbstractTableRuleSegment> rules) {
-        return rules.stream().collect(Collectors.groupingBy(AbstractTableRuleSegment::getType));
+    private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {
+        return rules.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
     }
 }

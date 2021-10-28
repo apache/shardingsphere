@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleChecker;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -42,12 +42,12 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
-        return ShardingTableRuleConverter.convert(sqlStatement.getRules());
+        return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override

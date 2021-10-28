@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
- * Expected table rule.
+ * Expected auto table rule.
  */
 @Getter
 @Setter

@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Sharding auto rule configuration.
+ * Sharding rule configuration.
  */
 @Getter
 @Setter

@@ -35,12 +35,12 @@ public final class TableRuleSegment extends AbstractTableRuleSegment {
     private ShardingStrategySegment databaseStrategySegment;
     
     public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote) {
-        super(TABLE, logicTable, dataSourcesNote);
+        super(logicTable, dataSourcesNote);
     }
     
     public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote, final ShardingStrategySegment databaseStrategy,
                             final ShardingStrategySegment tableStrategy, final KeyGenerateSegment keyGenerateSegment) {
-        super(TABLE, logicTable, dataSourcesNote, keyGenerateSegment);
+        super(logicTable, dataSourcesNote, keyGenerateSegment);
         this.tableStrategySegment = tableStrategy;
         this.databaseStrategySegment = databaseStrategy;
     }

@@ -173,7 +173,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         return result;
     }
     
-    private static Properties newProperties(String key, String value) {
+    private static Properties newProperties(final String key, final String value) {
         Properties properties = new Properties();
         properties.put(key, value);
         return properties;

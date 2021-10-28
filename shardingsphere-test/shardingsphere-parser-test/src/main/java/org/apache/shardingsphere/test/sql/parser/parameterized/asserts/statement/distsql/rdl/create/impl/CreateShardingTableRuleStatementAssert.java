@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Create sharding auto table rule statement assert.
+ * Create sharding table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateShardingTableRuleStatementAssert {
@@ -49,8 +49,8 @@ public final class CreateShardingTableRuleStatementAssert {
      * Assert create sharding binding table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create sharding auto table rule statement
-     * @param expected expected create sharding auto table rule statement test case
+     * @param actual actual create sharding table rule statement
+     * @param expected expected create sharding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingTableRuleStatement actual, final SQLParserTestCase expected) {
         if (null == expected) {
@@ -85,9 +85,9 @@ public final class CreateShardingTableRuleStatementAssert {
     
     private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<TableRuleSegment> actual, final List<ExpectedTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding auto table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding auto table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
             int count = 0;
             for (TableRuleSegment tableRuleSegment : actual) {
                 ExpectedTableRule expectedTableRule = expected.get(count);

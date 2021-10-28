@@ -33,14 +33,6 @@ import java.util.Collection;
 @Getter
 public abstract class AbstractTableRuleSegment implements ASTNode {
     
-    public static final String AUTO_TABLE = "autoTable";
-    
-    public static final String TABLE = "table";
-    
-    public static final String EMPTY = "empty";
-    
-    private final String type;
-    
     private final String logicTable;
     
     private final Collection<String> dataSourceNodes;
@@ -53,7 +45,7 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
      */
     public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
         public EmptyTableRuleSegment() {
-            super(EMPTY, null, null);
+            super(null, null);
         }
     }
 }

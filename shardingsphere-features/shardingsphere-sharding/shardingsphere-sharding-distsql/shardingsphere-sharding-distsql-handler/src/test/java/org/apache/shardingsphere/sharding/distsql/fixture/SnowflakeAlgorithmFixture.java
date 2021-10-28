@@ -25,7 +25,6 @@ public final class SnowflakeAlgorithmFixture implements KeyGenerateAlgorithm {
     public void init() {
     }
     
-    
     @Override
     public String getType() {
         return "SNOWFLAKE_TEST";

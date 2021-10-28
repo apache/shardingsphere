@@ -35,16 +35,14 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegmen
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding table rule converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTableRuleConverter {
+public final class ShardingTableRuleStatementConverter {
     
     /**
      * Convert sharding table rule segments to sharding rule configuration.
@@ -143,21 +141,5 @@ public final class ShardingTableRuleConverter {
     
     private static String getKeyGeneratorName(final String tableName, final String columnName) {
         return String.format("%s_%s", tableName, columnName);
-    }
-    
-    /**
-     * Convert the type of Class in the collection.
-     *
-     * @param rules rule collection
-     * @param clz class
-     * @param <T> target type
-     * @return target type
-     */
-    public static <T extends AbstractTableRuleSegment> Collection<T> collectionCast(final Collection<AbstractTableRuleSegment> rules, final Class<T> clz) {
-        return rules.stream().map(each -> castTo(each, clz)).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private static <T extends AbstractTableRuleSegment> T castTo(final AbstractTableRuleSegment abstractTableRuleSegment, final Class<T> clz) {
-        return (T) abstractTableRuleSegment;
     }
 }

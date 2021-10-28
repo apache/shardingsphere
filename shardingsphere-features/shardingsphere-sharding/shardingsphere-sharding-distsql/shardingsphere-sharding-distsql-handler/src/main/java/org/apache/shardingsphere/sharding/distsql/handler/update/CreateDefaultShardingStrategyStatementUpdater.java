@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 
@@ -47,7 +48,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private void checkAlgorithm(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final CreateDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
-        ShardingStrategyType.getValueOf(sqlStatement.getStrategyType());
+        DistSQLException.predictionThrow(ShardingStrategyType.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         boolean isAlgorithmExist = currentRuleConfig.getShardingAlgorithms().containsKey(sqlStatement.getShardingAlgorithmName());
         DistSQLException.predictionThrow(isAlgorithmExist, new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getShardingAlgorithmName())));
     }
@@ -67,7 +68,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingStrategyConfiguration strategyConfiguration = ShardingTableRuleConverter.createStrategyConfiguration(sqlStatement.getStrategyType(),
+        ShardingStrategyConfiguration strategyConfiguration = ShardingTableRuleStatementConverter.createStrategyConfiguration(sqlStatement.getStrategyType(),
                 sqlStatement.getShardingColumn(), sqlStatement.getShardingAlgorithmName());
         setStrategyConfiguration(result, sqlStatement.getDefaultType(), strategyConfiguration);
         return result;

@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Alter sharding table rule statement test case.
+ * Alter sharding auto table rule statement test case.
  */
 @Getter
 @Setter

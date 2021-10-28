@@ -28,13 +28,12 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleChecker;
+import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
@@ -90,40 +89,39 @@ public final class ShardingRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
         rules.clear();
         rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleChecker.checkAlteration(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkAlteration(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
-
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckCreationWithDuplicated() throws DistSQLException {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
                 new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")),
                 new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckCreationWithIdentical() throws DistSQLException {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
                 new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckAlterationWithRuleRequiredMissed() throws DistSQLException {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
                 new AutoTableRuleSegment("t_order_required_missed", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleChecker.checkAlteration(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkAlteration(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckCreationWithResourceRequiredMissed() throws DistSQLException {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
                 new AutoTableRuleSegment("t_product", Arrays.asList("ds_required_missed", "ds_1")));
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -131,7 +129,7 @@ public final class ShardingRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("invalid", newProperties("invalid", "invalid"))));
         List<AbstractTableRuleSegment> rules = Arrays.asList(autoTableRuleSegment);
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -140,7 +138,7 @@ public final class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("invalid", newProperties("", "")));
         List<AbstractTableRuleSegment> rules = Arrays.asList(autoTableRuleSegment);
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -148,7 +146,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("invalid", "product_id", "t_order_algorithm"));
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -156,7 +154,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid"));
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
-        ShardingTableRuleChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -173,12 +171,11 @@ public final class ShardingRuleStatementCheckerTest {
         return result;
     }
     
-    private static Properties newProperties(String key, String value) {
+    private static Properties newProperties(final String key, final String value) {
         Properties properties = new Properties();
         properties.put(key, value);
         return properties;
     }
-    
     
     private static Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>();
@@ -186,7 +183,6 @@ public final class ShardingRuleStatementCheckerTest {
         result.put("ds_1", mock(DataSource.class));
         return result;
     }
-    
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
         AutoTableRuleSegment result = new AutoTableRuleSegment("t_product_0", Arrays.asList("ds_0", "ds_1"));
@@ -205,23 +201,6 @@ public final class ShardingRuleStatementCheckerTest {
     }
     
     private static Collection<ShardingSphereRule> createShardingSphereRule() {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(new MockDataSourceContainedRule());
-        return result;
-    }
-    
-    private static class MockDataSourceContainedRule implements DataSourceContainedRule {
-        
-        @Override
-        public String getType() {
-            return "mock";
-        }
-        
-        @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            Map<String, Collection<String>> result = new HashMap<>();
-            result.put("logic_ds", null);
-            return result;
-        }
+        return Collections.emptyList();
     }
 }

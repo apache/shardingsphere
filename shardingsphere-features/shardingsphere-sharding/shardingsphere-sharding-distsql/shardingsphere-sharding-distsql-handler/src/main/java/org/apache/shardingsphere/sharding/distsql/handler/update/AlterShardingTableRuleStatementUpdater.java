@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleChecker;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -49,12 +49,12 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException("Sharding", shardingSphereMetaData.getName()));
-        ShardingTableRuleChecker.checkAlteration(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkAlteration(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override
     public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement) {
-        return ShardingTableRuleConverter.convert(sqlStatement.getRules());
+        return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override

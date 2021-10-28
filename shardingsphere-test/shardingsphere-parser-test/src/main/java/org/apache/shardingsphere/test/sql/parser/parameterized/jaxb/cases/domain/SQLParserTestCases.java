@@ -473,7 +473,7 @@ public final class SQLParserTestCases {
     private final List<AlterShardingAutoTableRuleStatementTestCase> alterShardingTableRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-table-rule")
-    private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleStatementTestCases = new LinkedList<>();
+    private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database-discovery-rule")
     private final List<CreateDataBaseDiscoveryRuleStatementTestCase> createDataBaseDiscoveryRuleTestCase = new LinkedList<>();
@@ -494,7 +494,7 @@ public final class SQLParserTestCases {
     private final List<CreateShardingAutoTableRuleStatementTestCase> createShardingTableRuleTestCase = new LinkedList<>();
   
     @XmlElement(name = "create-sharding-table-rule")
-    private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleStatementTestCases = new LinkedList<>();
+    private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-database-discovery-rule")
     private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCase = new LinkedList<>();
@@ -842,8 +842,8 @@ public final class SQLParserTestCases {
         putAll(repairTableStatementTestCases, result);
         putAll(createShardingAlgorithmStatementTestCases, result);
         putAll(createDefaultShardingStrategyStatementTestCases, result);
-        putAll(createShardingTableRuleStatementTestCases, result);
-        putAll(alterShardingTableRuleStatementTestCases, result);
+        putAll(createShardingTableRuleTestCases, result);
+        putAll(alterShardingTableRuleTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

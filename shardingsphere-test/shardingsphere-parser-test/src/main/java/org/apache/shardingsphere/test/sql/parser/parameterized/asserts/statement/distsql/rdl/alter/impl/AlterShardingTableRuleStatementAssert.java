@@ -40,17 +40,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Alter sharding auto table rule statement assert.
+ * Alter sharding table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterShardingTableRuleStatementAssert {
     
     /**
-     * Assert alter sharding auto table rule statement is correct with expected parser result.
+     * Assert alter sharding table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter sharding auto table rule statement
-     * @param expected expected alter sharding auto table rule statement test case
+     * @param actual actual alter sharding table rule statement
+     * @param expected expected alter sharding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingTableRuleStatement actual, final SQLParserTestCase expected) {
         if (null == expected) {
@@ -86,9 +86,9 @@ public final class AlterShardingTableRuleStatementAssert {
     
     private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<TableRuleSegment> actual, final List<ExpectedTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding auto table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding auto table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
             int count = 0;
             for (TableRuleSegment tableRuleSegment : actual) {
                 ExpectedTableRule expectedTableRule = expected.get(count);
