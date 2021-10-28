@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -141,7 +142,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     private Config createConfig(final DatabaseType databaseType) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createSQLDialectProperties(databaseType));
-        return SqlParser.config().withLex(connectionConfig.lex())
+        return SqlParser.config().withLex(connectionConfig.lex()).withUnquotedCasing(Casing.UNCHANGED)
                 .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH).withConformance(connectionConfig.conformance()).withParserFactory(SqlParserImpl.FACTORY);
     }
     
