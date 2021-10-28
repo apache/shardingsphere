@@ -34,7 +34,7 @@ public final class MySQLServerInfo {
     /**
      * Charset code 0x21 is utf8_general_ci.
      */
-    public static final int CHARSET = 0x21;
+    public static final MySQLCharacterSet DEFAULT_CHARSET = MySQLCharacterSet.UTF8MB4;
     
     private static final String DEFAULT_MYSQL_VERSION = "5.7.22";
     

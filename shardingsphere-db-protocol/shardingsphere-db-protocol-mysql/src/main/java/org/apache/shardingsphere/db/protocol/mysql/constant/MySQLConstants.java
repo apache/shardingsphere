@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.payload;
+package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import io.netty.buffer.ByteBuf;
-
-import java.nio.charset.Charset;
+import io.netty.util.AttributeKey;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Packet payload.
+ * MySQL constants.
  */
-public interface PacketPayload extends AutoCloseable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MySQLConstants {
     
-    /**
-     * Get byte buf.
-     * 
-     * @return byte buf
-     */
-    ByteBuf getByteBuf();
-    
-    /**
-     * Get charset.
-     * 
-     * @return charset
-     */
-    Charset getCharset();
+    public static final AttributeKey<MySQLCharacterSet> MYSQL_CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSet.class.getName());
 }

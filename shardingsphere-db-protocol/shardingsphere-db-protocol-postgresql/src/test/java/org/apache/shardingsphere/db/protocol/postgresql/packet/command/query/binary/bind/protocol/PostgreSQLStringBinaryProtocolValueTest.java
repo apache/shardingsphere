@@ -23,8 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,17 +45,20 @@ public final class PostgreSQLStringBinaryProtocolValueTest {
     @Mock
     private ByteBuf byteBuf;
     
+    @Spy
+    private Charset charset = StandardCharsets.UTF_8;
+    
     @Test
     public void assertNewInstance() {
         doAnswer((Answer<ByteBuf>) invocation -> {
-            ((byte[]) invocation.getArguments()[0])[0] = 97;
+            ((byte[]) invocation.getArguments()[0])[0] = 'a';
             return byteBuf;
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
         assertThat(actual.getColumnLength("str"), is("str".length()));
         assertThat(actual.read(payload, "a".length()), is("a"));
         actual.write(payload, "a");
-        verify(byteBuf).writeBytes("a".getBytes());
+        verify(byteBuf).writeBytes("a".getBytes(StandardCharsets.UTF_8));
         actual.write(payload, new byte[1]);
         verify(byteBuf).writeBytes(new byte[1]);
     }
