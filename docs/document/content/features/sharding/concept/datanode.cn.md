@@ -18,7 +18,7 @@ db0
   ├── t_order0
   └── t_order1
 db1
-  ├── t_order0 
+  ├── t_order0
   └── t_order1
 ```
 
@@ -35,8 +35,8 @@ db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1
 
 ```
 db0
-  ├── t_order0 
-  └── t_order1 
+  ├── t_order0
+  └── t_order1
 db1
   ├── t_order2
   ├── t_order3
