@@ -141,8 +141,12 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
 
 DROP SHARDING TABLE RULE t_order, t_order_item;
 
-CREATE SHARDING ALGORITHM algorithmName(
-    TYPE(NAME=hash_mod,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+CREATE DEFAULT SHARDING DATABASE STRATEGY (
+TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
+);
+
+CREATE SHARDING ALGORITHM algorithmName (
+TYPE(NAME=hash_mod,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 );
 
 DROP SHARDING ALGORITHM t_order_hash_mod;
