@@ -11,7 +11,7 @@ weight = 4
 
 | *名称* | *数据类型* | *说明* | *默认值* |
 | ------ | ---------- | ------ | -------- |
-| enable | boolean    | 影子库功能开关。可选值：true/false |false|
+| enable | boolean    | 影子库开关。可选值：true/false |false|
 | dataSources | Map\<String, ShadowDataSourceConfiguration\> | 影子数据源映射名称和配置 |无|
 | tables | Map\<String, ShadowTableConfiguration\> | 影子表名称和配置 |无|
 | defaultShadowAlgorithmName | String | 默认影子算法名称 | 选配项 |
