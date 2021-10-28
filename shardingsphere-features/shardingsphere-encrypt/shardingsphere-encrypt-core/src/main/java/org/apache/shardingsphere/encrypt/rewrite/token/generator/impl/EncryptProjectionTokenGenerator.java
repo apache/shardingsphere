@@ -46,7 +46,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Projection token generator for encrypt.
@@ -124,11 +123,14 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         if (columnProjectionSegment.getColumn().getOwner().isPresent()) {
             return false;
         }
-        final AtomicInteger columnCount = new AtomicInteger();
+        int columnCount = 0;
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            getEncryptRule().findEncryptTable(each).map(optional -> optional.getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue()))
-                    .ifPresent(t -> columnCount.getAndIncrement());
-            Preconditions.checkState(columnCount.get() <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
+            Optional<EncryptTable> encryptTable;
+            if ((encryptTable = getEncryptRule().findEncryptTable(each)).isPresent() 
+                    && encryptTable.get().getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue())) {
+                columnCount++;
+            }
+            Preconditions.checkState(columnCount <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
         }
         return true;
     }
