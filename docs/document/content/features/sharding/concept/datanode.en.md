@@ -1,6 +1,6 @@
 +++
-title = "Configuration"
-weight = 3
+title = "Data Node"
+weight = 2
 +++
 
 As the atomic unit of sharding, it consists of data source name and actual table name, e.g. `ds_0.t_order_0`.
