@@ -32,7 +32,7 @@ dropEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
+    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)* RP (COMMA QUERY_WITH_CIPHER_COLUMN EQ queryWithCipherColumn)? RP
     ;
 
 tableName
@@ -77,4 +77,8 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+    
+queryWithCipherColumn
+    : TRUE | FALSE
     ;
