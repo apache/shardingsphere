@@ -19,15 +19,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,14 +37,15 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLStringBinaryProtocolValueTest {
     
-    @InjectMocks
-    private PostgreSQLPacketPayload payload;
-    
     @Mock
     private ByteBuf byteBuf;
     
-    @Spy
-    private Charset charset = StandardCharsets.UTF_8;
+    private PostgreSQLPacketPayload payload;
+    
+    @Before
+    public void setup() {
+        payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+    }
     
     @Test
     public void assertNewInstance() {
