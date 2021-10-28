@@ -46,10 +46,8 @@ public interface SingleTableDataCalculator {
     /**
      * Calculate table data, usually checksum.
      *
-     * @param dataSourceConfig data source configuration
-     * @param logicTableName logic table name
-     * @param columnNames column names
+     * @param dataCalculateParameter data calculate parameter
      * @return calculated result, it will be used to check equality.
      */
-    Object dataCalculate(ScalingDataSourceConfiguration dataSourceConfig, String logicTableName, Collection<String> columnNames);
+    Object dataCalculate(DataCalculateParameter dataCalculateParameter);
 }
