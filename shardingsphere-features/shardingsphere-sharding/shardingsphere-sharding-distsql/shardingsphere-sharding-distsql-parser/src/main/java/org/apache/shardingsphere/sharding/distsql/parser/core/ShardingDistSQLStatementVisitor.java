@@ -29,8 +29,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ClearShardingHintContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateDefaultShardingStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableRuleContext;
@@ -57,11 +57,11 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegmen
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
@@ -82,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Properties;
@@ -148,9 +149,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitCreateDefaultShardingStrategy(final CreateDefaultShardingStrategyContext ctx) {
         ShardingStrategyContext shardingStrategyContext = ctx.shardingStrategy();
-        return new CreateDefaultShardingStrategyStatement(new IdentifierValue(ctx.type.getText()).getValue().toLowerCase(), 
+        return new CreateDefaultShardingStrategyStatement(new IdentifierValue(ctx.type.getText()).getValue().toLowerCase(),
                 getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase(),
-                getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase(), 
+                getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase(),
                 getIdentifierValue(shardingStrategyContext.shardingAlgorithm().shardingAlgorithmName()).toLowerCase());
     }
     
@@ -181,7 +182,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
-        return new DropShardingBroadcastTableRulesStatement();
+        Collection<String> tableNames = ctx.tableName() == null ? Collections.emptyList()
+                : ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return new DropShardingBroadcastTableRulesStatement(tableNames);
     }
     
     @Override
@@ -191,7 +194,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
-        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()), 
+        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()),
                 null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
