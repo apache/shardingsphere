@@ -118,7 +118,6 @@ public final class CuratorZookeeperRepositoryTest {
     @Mock
     private InterProcessLock interProcessLock;
     
-    
     @Before
     @SneakyThrows
     public void init() {
