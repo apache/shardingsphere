@@ -19,22 +19,17 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Function segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionSegment implements ComplexExpressionSegment, AliasAvailable, ProjectionSegment {
+public final class FunctionSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
@@ -46,11 +41,4 @@ public final class FunctionSegment implements ComplexExpressionSegment, AliasAva
     
     private final String text;
     
-    @Setter
-    private AliasSegment alias;
-    
-    @Override
-    public Optional<String> getAlias() {
-        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
-    }
 }

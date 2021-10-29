@@ -680,7 +680,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.intervalValue().expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     @Override
@@ -1303,8 +1303,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return projection;
         }
         if (projection instanceof FunctionSegment) {
-            ((FunctionSegment) projection).setAlias(alias);
-            return projection;
+            FunctionSegment functionSegment = (FunctionSegment) projection;
+            ExpressionProjectionSegment expr = new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
+            expr.setAlias(alias);
+            return expr;
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;
