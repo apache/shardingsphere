@@ -99,8 +99,23 @@
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.cipher_certificate_number AS certificate_number FROM (select cipher_certificate_number, assisted_query_certificate_number from t_account) o, t_account u where o.assisted_query_certificate_number=u.assisted_query_certificate_number and u.assisted_query_password=?" parameters="assisted_query_1" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_with_expression_notnested_subquery">
+    <rewrite-assertion id="select_with_expression_notnested_subquery1">
         <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c where u.certificate_number=(select certificate_number from t_account where password=?) and u.password=?" parameters="1, 2" />-->
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c where u.assisted_query_certificate_number=(select assisted_query_certificate_number from t_account where assisted_query_password=?) and u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_expression_notnested_subquery2">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c where (select certificate_number from t_account where password=?)=u.certificate_number and u.password=?" parameters="1, 2" />-->
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c where (select assisted_query_certificate_number from t_account where assisted_query_password=?)=u.assisted_query_certificate_number and u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_expression_notnested_subquery3">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c where (select certificate_number from t_account where password=?)=(select certificate_number from t_account_bak where password=?) and u.password=?" parameters="1, 2, 3" />-->
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c where (select assisted_query_certificate_number from t_account where assisted_query_password=?)=(select assisted_query_certificate_number from t_account_bak where assisted_query_password=?) and u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2, assisted_query_3" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_expression_notnested_subquery4">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c where u.certificate_number in (select certificate_number from t_account where password=?) and u.password=?" parameters="1, 2" />-->
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c where u.assisted_query_certificate_number in (select assisted_query_certificate_number from t_account where assisted_query_password=?) and u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
     </rewrite-assertion>
 </rewrite-assertions>

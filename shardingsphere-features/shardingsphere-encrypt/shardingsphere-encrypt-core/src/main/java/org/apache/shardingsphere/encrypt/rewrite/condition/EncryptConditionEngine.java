@@ -75,21 +75,21 @@ public final class EncryptConditionEngine {
         }
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        	if (selectStatementContext.isContainsSubquery()) {
+            if (selectStatementContext.isContainsSubquery()) {
                 SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> {
-                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
+                    SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
                             selectStatementContext.getSchemaName());
-                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                    result.addAll(createEncryptConditions(subSelectStatementContext));
                 });
                 SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> {
-                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSubquery().getSelect(), 
-                            selectStatementContext.getSchemaName());
-                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                    SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), 
+                    		each.getSubquery().getSelect(), selectStatementContext.getSchemaName());
+                    result.addAll(createEncryptConditions(subSelectStatementContext));
                 });
                 SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> {
-                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
+                    SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
                             selectStatementContext.getSchemaName());
-                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                    result.addAll(createEncryptConditions(subSelectStatementContext));
                 });
             }
         }
