@@ -30,12 +30,12 @@ import com.zaxxer.hikari.HikariDataSource;
  * Close hikari data source.
  */
 public final class HikariDataSourceKiller implements DataSourceKiller {
-
+    
     @Override
     public String getType() {
         return "com.zaxxer.hikari.HikariDataSource";
     }
-
+    
     @Override
     public void closeDataSource(final DataSource dataSource) {
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;

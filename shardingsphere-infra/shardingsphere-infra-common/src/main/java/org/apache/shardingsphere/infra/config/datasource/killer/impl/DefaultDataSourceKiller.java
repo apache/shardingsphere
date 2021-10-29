@@ -27,12 +27,12 @@ import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller
  * Close hikari data source.
  */
 public final class DefaultDataSourceKiller implements DataSourceKiller {
-
+    
     @Override
     public String getType() {
         return "Default";
     }
-
+    
     @Override
     public void closeDataSource(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AutoCloseable) {
@@ -45,7 +45,7 @@ public final class DefaultDataSourceKiller implements DataSourceKiller {
             }
         }
     }
-
+    
     @Override
     public boolean isDefault() {
         return true;

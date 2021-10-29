@@ -28,7 +28,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
  * Close data source.
  */
 public interface DataSourceKiller extends TypedSPI, RequiredSPI {
-
+    
     /**
      * Gracefully close the dataSource.
      * 
