@@ -31,8 +31,9 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 |stop scaling xx                                     | 停止运行任务，xx：任务id                                         | stop scaling 12345                              |  
 |drop scaling xx                                     | 移除任务，xx：任务id                                            | drop scaling 1234                              |  
 |reset scaling xx                                    | 重置任务进度，xx：任务id                                         | reset scaling 1234                             |  
-|check scaling xx                                    | 数据一致性校验，xx：任务id                                        | check scaling 1234                             |  
+|check scaling xx                                    | 数据一致性校验，使用`server.yaml`里的校验算法，xx：任务id            | check scaling 1234                             |  
 |show scaling check algorithms                       | 展示可用的一致性校验算法                                          | show scaling check algorithms                  |  
+|check scaling {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                                  | check scaling 1234 by type(name=DEFAULT)       |  
 |stop scaling source writing xx                      | 旧的 ShardingSphere 数据源停写，xx：任务id                        | stop scaling source writing 1234               |  
 |checkout scaling xx                                 | 切换至新的 ShardingSphere 数据源，xx：任务id                      | checkout scaling 1234                         |  
 

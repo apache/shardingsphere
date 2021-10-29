@@ -5,7 +5,7 @@ weight = 1
 
 ## 部署启动
 
-1. 执行以下命令，编译生成 ShardingSphere-Scaling 和 ShardingSphere-Proxy 二进制包：
+1. 执行以下命令，编译生成 ShardingSphere-Proxy 二进制包：
 
 ```
 git clone --depth 1 https://github.com/apache/shardingsphere.git
@@ -14,49 +14,11 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 ```
 
 发布包：
-- /shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz
 - /shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-2. 解压缩 scaling 发布包，修改配置文件 `conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，同时修改断点续传服务（可选）地址即可：
-
-```yaml
-scaling:
-  port: 8888
-  blockQueueSize: 10000
-  workerThread: 30
-
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: governance_ds
-      server-lists: localhost:2181
-```
-
-3. 启动 ShardingSphere-Scaling：
-
-```
-sh bin/server_start.sh
-```
-
-4. 查看 scaling 日志 `logs/stdout.log`，确保启动成功。
-
-5. 使用 curl 命令再次确认 scaling 正常运行。
-
-```
-curl -X GET http://localhost:8888/scaling/job/list
-```
-
-响应应为：
-
-```
-{"success":true,"errorCode":0,"errorMsg":null,"model":[]}
-```
-
-6. 解压缩 proxy 发布包，修改配置文件 `conf/server.yaml`，这里主要是开启 `scaling` 和 `mode` 配置：
+2. 解压缩 proxy 发布包，修改配置文件 `conf/server.yaml`，这里主要是开启 `scaling` 和 `mode` 配置：
 ```yaml
 scaling:
   blockQueueSize: 10000
@@ -82,21 +44,25 @@ mode:
   overwrite: false
 ```
 
-7. 启动 ShardingSphere-Proxy：
+打开`clusterAutoSwitchAlgorithm`配置代表开启自动检测任务是否完成及切换配置，目前系统提供了`IDLE`类型实现。
+
+打开`dataConsistencyCheckAlgorithm`配置设置数据校验算法，目前系统提供了`DEFAULT`类型实现。`DEFAULT`算法目前支持的数据库：`MySQL`。其他数据库还不能打开这个配置项。其他数据库的支持还在开发中。
+
+可以通过`ScalingClusterAutoSwitchAlgorithm`接口自定义一个SPI实现。
+
+可以通过`ScalingDataConsistencyCheckAlgorithm`接口自定义一个SPI实现。
+
+详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+
+3. 启动 ShardingSphere-Proxy：
 
 ```
 sh bin/start.sh
 ```
 
-8. 查看 proxy 日志 `logs/stdout.log`，确保启动成功。
+4. 查看 proxy 日志 `logs/stdout.log`，确保启动成功。
 
 ## 结束
-
-### ShardingSphere-Scaling
-
-```
- sh bin/server_stop.sh
-```
 
 ### ShardingSphere-Proxy
 
@@ -112,7 +78,5 @@ sh bin/start.sh
 
 | 名称           | 说明                                    | 默认值 |
 | -------------- | -------------------------------------- | ------ |
-| port           | HTTP服务监听端口                         | 8888   |
 | blockQueueSize | 数据传输通道队列大小                      | 10000  |
-| workerThread   | 工作线程池大小，允许同时运行的迁移任务线程数 | 30     |
- 
+| workerThread   | 工作线程池大小，允许同时运行的迁移任务线程数 | 40     |
