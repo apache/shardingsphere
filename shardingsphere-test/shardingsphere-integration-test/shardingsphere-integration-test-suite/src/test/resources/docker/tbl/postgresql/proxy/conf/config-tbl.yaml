@@ -19,7 +19,7 @@ schemaName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:postgresql://postgresql.tbl.host:5432/tbl?serverTimezone=UTC&useSSL=false
+    url: jdbc:postgresql://postgresql.tbl.host:5432/tbl
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000

@@ -26,7 +26,7 @@
 #
 #dataSources:
 #  ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -35,7 +35,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #  ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
