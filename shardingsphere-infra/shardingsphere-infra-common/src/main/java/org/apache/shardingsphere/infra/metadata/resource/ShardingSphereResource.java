@@ -85,7 +85,7 @@ public final class ShardingSphereResource {
      * @throws SQLException exception
      */
     public void close(final DataSource dataSource) throws SQLException {
-        DataSourceKiller dataSourceCloser = DataSourceKillerFactory.getDataSourceCloser(dataSource.getClass().getName());
-        dataSourceCloser.closeDataSource(dataSource);
+        DataSourceKiller dataSourceKiller = DataSourceKillerFactory.getDataSourceKiller(dataSource.getClass().getName());
+        dataSourceKiller.closeDataSource(dataSource);
     }
 }

@@ -38,7 +38,7 @@ public final class DataSourceKillerFactory {
      * @param dataSourceClassName data source class name
      * @return data source closer
      */
-    public static DataSourceKiller getDataSourceCloser(final String dataSourceClassName) {
+    public static DataSourceKiller getDataSourceKiller(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourceKiller.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceKiller.class));
     }
 }
