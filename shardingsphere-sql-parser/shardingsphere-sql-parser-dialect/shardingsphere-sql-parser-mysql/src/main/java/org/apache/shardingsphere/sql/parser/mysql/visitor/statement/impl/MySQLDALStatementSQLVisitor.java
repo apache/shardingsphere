@@ -301,14 +301,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
         MySQLCloneStatement result = new MySQLCloneStatement();
         result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitCloneAction(final CloneActionContext ctx) {
         CloneActionSegment result = new CloneActionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -445,14 +445,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
         MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
         result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
         MySQLCreateResourceGroupStatement result = new MySQLCreateResourceGroupStatement();
@@ -526,7 +526,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setName(((IdentifierValue) visit(ctx.userName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
@@ -534,7 +534,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getVariableAssigns().addAll(variableAssigns);
         return result;
     }
-
+    
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
         if (null != ctx.optionValueNoOptionType()) {
@@ -555,7 +555,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private VariableAssignSegment getVariableAssign(final OptionValueNoOptionTypeContext ctx) {
         VariableAssignSegment result = new VariableAssignSegment();
         result.setStartIndex(ctx.start.getStartIndex());
@@ -580,7 +580,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private VariableAssignSegment getVariableAssign(final OptionValueContext ctx) {
         VariableAssignSegment result = new VariableAssignSegment();
         result.setStartIndex(ctx.start.getStartIndex());
@@ -596,7 +596,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
@@ -613,7 +613,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitVariable(final VariableContext ctx) {
         return super.visitVariable(ctx);
     }
-
+    
     @Override
     public ASTNode visitUserVariable(final UserVariableContext ctx) {
         VariableSegment result = new VariableSegment();
@@ -670,12 +670,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getComponents().addAll(components);
         return result;
     }
-
+    
     @Override
     public ASTNode visitRestart(final RestartContext ctx) {
         return new MySQLRestartStatement();
     }
-
+    
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
         MySQLSetResourceGroupStatement result = new MySQLSetResourceGroupStatement();

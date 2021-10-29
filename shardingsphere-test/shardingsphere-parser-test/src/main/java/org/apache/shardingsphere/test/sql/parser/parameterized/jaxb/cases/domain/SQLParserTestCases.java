@@ -37,7 +37,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowFunctionStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
@@ -309,15 +311,21 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-tables")
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-function-status")
+    private final List<ShowFunctionStatusStatementTestCase> showFunctionStatusStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-procedure-status")
+    private final List<ShowProcedureStatusStatementTestCase> showProcedureStatusStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-columns")
     private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-table")
     private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-create-trigger")
     private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-resource-group")
     private final List<CreateResourceGroupStatementTestCase> createResourceGroupStatementTestCases = new LinkedList<>();
     
@@ -718,6 +726,8 @@ public final class SQLParserTestCases {
         putAll(describeTestCases, result);
         putAll(showDatabasesTestCases, result);
         putAll(showTablesTestCases, result);
+        putAll(showFunctionStatusStatementTestCases, result);
+        putAll(showProcedureStatusStatementTestCases, result);
         putAll(showColumnsTestCases, result);
         putAll(showCreateTableTestCases, result);
         putAll(showCreateTriggerTestCases, result);
