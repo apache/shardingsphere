@@ -249,11 +249,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                     }
                 }).build();
             cache.listenable().addListener(curatorCacheListener);
+            start(cache);
         }
     }
     
-    private void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath);
+    private void start(final CuratorCache cache) {
         try {
             cache.start();
             // CHECKSTYLE:OFF
@@ -261,6 +261,10 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
+    }
+    
+    private void addCacheData(final String cachePath) {
+        CuratorCache cache = CuratorCache.build(client, cachePath);
         caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
