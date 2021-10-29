@@ -37,20 +37,20 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
     
     @Override
     public ShardingRuleConfiguration preprocess(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        ShardingRuleConfiguration preAlteredRuleConfig = new ShardingRuleConfiguration();
-        preAlteredRuleConfig.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
-        preAlteredRuleConfig.setAutoTables(currentRuleConfig.getAutoTables());
-        preAlteredRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
-        preAlteredRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
-        preAlteredRuleConfig.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
-        preAlteredRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        preAlteredRuleConfig.setTables(currentRuleConfig.getTables());
-        preAlteredRuleConfig.setBroadcastTables(currentRuleConfig.getBroadcastTables());
-        preAlteredRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
-        preAlteredRuleConfig.setKeyGenerators(currentRuleConfig.getKeyGenerators());
-        dropRuleConfiguration(preAlteredRuleConfig, toBeAlteredRuleConfig);
-        addRuleConfiguration(preAlteredRuleConfig, toBeAlteredRuleConfig);
-        return preAlteredRuleConfig;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
+        result.setAutoTables(currentRuleConfig.getAutoTables());
+        result.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
+        result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+        result.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
+        result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        result.setTables(currentRuleConfig.getTables());
+        result.setBroadcastTables(currentRuleConfig.getBroadcastTables());
+        result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
+        result.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        dropRuleConfiguration(result, toBeAlteredRuleConfig);
+        addRuleConfiguration(result, toBeAlteredRuleConfig);
+        return result;
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration preAlteredRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
