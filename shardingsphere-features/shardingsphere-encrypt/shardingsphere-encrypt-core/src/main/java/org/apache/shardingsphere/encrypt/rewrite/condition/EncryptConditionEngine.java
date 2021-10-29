@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.And
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +72,26 @@ public final class EncryptConditionEngine {
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.addAll(createEncryptConditionsOnWhereSegment(selectStatementContext));
+        }
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        	if (selectStatementContext.isContainsSubquery()) {
+                SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).forEach(each -> {
+                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
+                            selectStatementContext.getSchemaName());
+                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                });
+                SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> {
+                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSubquery().getSelect(), 
+                            selectStatementContext.getSchemaName());
+                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                });
+                SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> {
+                	SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
+                            selectStatementContext.getSchemaName());
+                	result.addAll(createEncryptConditions(subSelectStatementContext));
+                });
+            }
         }
         return result;
     }

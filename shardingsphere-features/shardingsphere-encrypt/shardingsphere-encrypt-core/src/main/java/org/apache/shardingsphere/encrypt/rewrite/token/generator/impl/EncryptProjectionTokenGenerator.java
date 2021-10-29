@@ -164,9 +164,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         }
         if (SubqueryKind.ProjectionSubqery.equals(subqueryKind)) {
             result.add(columnProjection(null, encryptColumnName, null));
-            if (SubqueryKind.NestedProjectionTabsegmentSubquery.equals(subqueryKind)) {
-                result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, rewriteMetaDataMap));
-            }
+        }
+        if (SubqueryKind.NestedProjectionTabsegmentSubquery.equals(subqueryKind)) {
+            result.add(columnProjection(null, encryptColumnName, null));
+            result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, rewriteMetaDataMap));
         }
         if (SubqueryKind.ExpressionSubqery.equals(subqueryKind)) {
             result.addAll(getColumnProjectionsForInExpression(segment, tableName));
