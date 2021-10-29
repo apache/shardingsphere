@@ -23,9 +23,9 @@
     <sql-case id="alter_login_name" value="ALTER LOGIN login_dev WITH NAME = login_dev_new" db-types="SQLServer" />
     <sql-case id="alter_login_passwd" value="ALTER LOGIN login_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <sql-case id="alter_user_name_with_name" value="ALTER USER user_dev WITH NAME = user_dev_new" db-types="SQLServer" />
-    <sql-case id="alter_user_name_rename" value="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL" />
+    <sql-case id="alter_user_name_rename" value="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_user_passwd_with_equality" value="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
-    <sql-case id="alter_user_passwd_without_equality" value="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
+    <sql-case id="alter_user_passwd_without_equality" value="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_user" value="ALTER USER user1" db-types="MySQL" />
     <sql-case id="alter_users" value="ALTER USER user1, user2" db-types="MySQL" />
     <sql-case id="alter_user_if_exists" value="ALTER USER IF EXISTS user1" db-types="MySQL" />
@@ -48,21 +48,21 @@
     <sql-case id="alter_user_grant_proxy_with_option" value="ALTER USER user1 GRANT CONNECT THROUGH user2 WITH ROLE role1" db-types="Oracle" />
     <sql-case id="alter_user_revoke_proxy" value="ALTER USER user1 REVOKE CONNECT THROUGH user2" db-types="Oracle" />
     <sql-case id="alter_user_proxys" value="ALTER USER user1 GRANT CONNECT THROUGH user2 REVOKE CONNECT THROUGH user3" db-types="Oracle" />
-    <sql-case id="alter_user_with_password_postgresql" value="ALTER USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-    <sql-case id="alter_current_user_with_password" value="ALTER USER CURRENT_USER WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-    <sql-case id="alter_user_with_option" value="ALTER USER user1 WITH SUPERUSER" db-types="PostgreSQL" />
-    <sql-case id="alter_user_with_options_postgresql" value="ALTER USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
-    <sql-case id="alter_user_set_config" value="ALTER USER user1 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
-    <sql-case id="alter_all_users_set_config" value="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
-    <sql-case id="alter_user_set_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
-    <sql-case id="alter_user_set_config_from_current_user" value="ALTER USER user1 SET client_min_messages FROM CURRENT" db-types="PostgreSQL" />
-    <sql-case id="alter_user_reset_config" value="ALTER USER user1 RESET client_min_messages" db-types="PostgreSQL" />
-    <sql-case id="alter_all_users_reset_config" value="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL" />
-    <sql-case id="alter_user_reset_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL" />
-    <sql-case id="alter_user_reset_all_config" value="ALTER USER user1 RESET ALL" db-types="PostgreSQL" />
+    <sql-case id="alter_user_with_password_postgresql" value="ALTER USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_current_user_with_password" value="ALTER USER CURRENT_USER WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_with_option" value="ALTER USER user1 WITH SUPERUSER" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_with_options_postgresql" value="ALTER USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config" value="ALTER USER user1 SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_all_users_set_config" value="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_config_from_current_user" value="ALTER USER user1 SET client_min_messages FROM CURRENT" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_config" value="ALTER USER user1 RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_all_users_reset_config" value="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_reset_all_config" value="ALTER USER user1 RESET ALL" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_user_set_password" value="ALTER USER user1 WITH PASSWORD = 'password'" db-types="SQLServer" />
     <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" db-types="SQLServer" />
     <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
     <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" db-types="SQLServer" />
-    <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL" />
+    <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL,openGauss" />
 </sql-cases>

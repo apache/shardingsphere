@@ -38,7 +38,7 @@
         </from>
         <projections start-index="7" stop-index="31">
             <!-- 'text' is different from other database -->
-            <expression-projection text="o.order_id+1*2" alias="exp" start-index="7" stop-index="31"/>
+            <expression-projection text="o.order_id + 1 * 2" alias="exp" start-index="7" stop-index="31"/>
         </projections>
         <order-by>
             <column-item name="order_id" start-index="60" stop-index="69">

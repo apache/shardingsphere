@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL, SQLServer" />
+    <sql-case id="drop_view" value="DROP VIEW kinds" db-types="PostgreSQL,openGauss, SQLServer" />
 </sql-cases>

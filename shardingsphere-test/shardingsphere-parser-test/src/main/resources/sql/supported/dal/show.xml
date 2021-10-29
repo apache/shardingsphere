@@ -28,9 +28,9 @@
     <sql-case id="show_create_table" value="SHOW CREATE TABLE `t_order`" db-types="MySQL" />
     <sql-case id="show_create_trigger" value="SHOW CREATE TRIGGER `trigger1`" db-types="MySQL" />
     <sql-case id="show_create_user" value="SHOW CREATE USER `user1`" db-types="MySQL" />
-    <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL" />
-    <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL" />
-    <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL" />
+    <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL,openGauss" />
+    <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL,openGauss" />
+    <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_tables" value="SHOW FULL TABLES FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_tables_with_filter" value="SHOW FULL TABLES FROM `sharding_db` LIKE 't_order'" db-types="MySQL" />
     <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL" />
