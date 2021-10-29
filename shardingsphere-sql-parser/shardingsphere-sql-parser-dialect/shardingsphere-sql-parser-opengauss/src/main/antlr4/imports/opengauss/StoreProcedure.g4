@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+grammar StoreProcedure;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import Keyword, BaseRule;
 
-/**
- * SQL parser facade for openGauss.
- */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
-}
+call
+    : CALL funcName LP_ callClauses? RP_
+    ;
+
+callClauses
+    : (ALL | DISTINCT)? funcArgList sortClause?
+    | VARIADIC funcArgExpr sortClause
+    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
+    | ASTERISK_
+    ;

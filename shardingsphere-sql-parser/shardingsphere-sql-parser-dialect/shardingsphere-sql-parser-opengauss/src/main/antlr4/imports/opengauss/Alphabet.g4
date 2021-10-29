@@ -15,29 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+lexer grammar Alphabet;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+FOR_GENERATOR: 'DO NOT MATCH ANY THING, JUST FOR GENERATOR';
 
-/**
- * SQL parser facade for openGauss.
- */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
-}
+fragment A:   [Aa];
+fragment B:   [Bb];
+fragment C:   [Cc];
+fragment D:   [Dd];
+fragment E:   [Ee];
+fragment F:   [Ff];
+fragment G:   [Gg];
+fragment H:   [Hh];
+fragment I:   [Ii];
+fragment J:   [Jj];
+fragment K:   [Kk];
+fragment L:   [Ll];
+fragment M:   [Mm];
+fragment N:   [Nn];
+fragment O:   [Oo];
+fragment P:   [Pp];
+fragment Q:   [Qq];
+fragment R:   [Rr];
+fragment S:   [Ss];
+fragment T:   [Tt];
+fragment U:   [Uu];
+fragment V:   [Vv];
+fragment W:   [Ww];
+fragment X:   [Xx];
+fragment Y:   [Yy];
+fragment Z:   [Zz];
+fragment UL_: '_';

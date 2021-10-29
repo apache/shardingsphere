@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss drop index statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+@Getter
+@Setter
+@ToString
+public final class OpenGaussDropIndexStatement extends DropIndexStatement implements OpenGaussStatement {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+    private boolean containsExistClause;
 }

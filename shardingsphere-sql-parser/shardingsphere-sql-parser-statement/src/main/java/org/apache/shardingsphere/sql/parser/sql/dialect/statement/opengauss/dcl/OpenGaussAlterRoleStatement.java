@@ -15,29 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss alter role statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+@ToString
+public final class OpenGaussAlterRoleStatement extends AlterRoleStatement implements OpenGaussStatement {
 }

@@ -17,27 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.parser;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import lombok.Setter;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser facade for openGauss.
+ * SQL parser for openGauss.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+@Setter
+public final class OpenGaussParser extends OpenGaussStatementParser implements SQLParser {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
+    private boolean sqlCommentParseEnabled;
+    
+    public OpenGaussParser(final TokenStream input) {
+        super(input);
     }
     
     @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    public ASTNode parse() {
+        return sqlCommentParseEnabled ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
     }
 }

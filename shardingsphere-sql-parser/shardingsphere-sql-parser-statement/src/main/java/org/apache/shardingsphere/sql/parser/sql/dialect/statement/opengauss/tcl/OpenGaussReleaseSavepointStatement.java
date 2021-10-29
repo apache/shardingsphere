@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss release savepoint statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+public final class OpenGaussReleaseSavepointStatement extends ReleaseSavepointStatement implements OpenGaussStatement {
 }

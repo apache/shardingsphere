@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss insert statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+@Setter
+@ToString
+public final class OpenGaussInsertStatement extends InsertStatement implements OpenGaussStatement {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    private WithSegment withSegment;
+
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
 }

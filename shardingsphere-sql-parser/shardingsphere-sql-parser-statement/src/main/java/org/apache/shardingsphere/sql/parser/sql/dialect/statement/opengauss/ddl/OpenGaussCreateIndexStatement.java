@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss create index statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+@Setter
+@ToString
+public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
+    private Integer generatedIndexStartIndex;
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    /**
+     * Get generated index start index.
+     *
+     * @return generated index start index
+     */
+    public Optional<Integer> getGeneratedIndexStartIndex() {
+        return Optional.ofNullable(generatedIndexStartIndex);
     }
 }

@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
- * SQL parser facade for openGauss.
+ * OpenGauss alter index statement.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+@Setter
+@ToString
+public final class OpenGaussAlterIndexStatement extends AlterIndexStatement implements OpenGaussStatement {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
+    private IndexSegment renameIndex;
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    /**
+     * Get rename index segment.
+     *
+     * @return rename index segment
+     */
+    public Optional<IndexSegment> getRenameIndex() {
+        return Optional.ofNullable(renameIndex);
     }
 }

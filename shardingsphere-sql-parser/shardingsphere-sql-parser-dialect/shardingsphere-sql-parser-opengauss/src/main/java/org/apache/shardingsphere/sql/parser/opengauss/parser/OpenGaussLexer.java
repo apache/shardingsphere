@@ -17,27 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.parser;
 
+import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementLexer;
 
 /**
- * SQL parser facade for openGauss.
+ * SQL lexer for openGauss.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+public final class OpenGaussLexer extends OpenGaussStatementLexer implements SQLLexer {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return OpenGaussLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return OpenGaussParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    public OpenGaussLexer(final CharStream input) {
+        super(input);
     }
 }
