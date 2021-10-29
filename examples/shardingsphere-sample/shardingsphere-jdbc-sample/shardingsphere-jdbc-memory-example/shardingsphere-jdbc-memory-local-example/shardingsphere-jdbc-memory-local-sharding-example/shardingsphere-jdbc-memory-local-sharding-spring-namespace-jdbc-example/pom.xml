@@ -38,10 +38,5 @@
             <artifactId>spring-context</artifactId>
             <version>5.1.5.RELEASE</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-raw-jdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
