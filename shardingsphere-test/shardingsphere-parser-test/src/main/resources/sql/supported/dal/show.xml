@@ -25,16 +25,16 @@
     <sql-case id="show_index_with_database_back_quotes" value="SHOW INDEXES FROM t_order FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_index_with_back_quotes" value="SHOW KEYS FROM `sharding_db`.`t_order`" db-types="MySQL" />
     <sql-case id="show_columns_from_table" value="SHOW COLUMNS FROM `t_order`" db-types="MySQL" />
-    <sql-case id="show_create_table" value="SHOW CREATE TABLE `t_order`" db-types="MySQL"/>
-    <sql-case id="show_create_trigger" value="SHOW CREATE TRIGGER `trigger1`" db-types="MySQL"/>
-    <sql-case id="show_create_user" value="SHOW CREATE USER `user1`" db-types="MySQL"/>
-    <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL"/>
-    <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL"/>
-    <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL"/>
-    <sql-case id="show_tables" value="SHOW FULL TABLES FROM `sharding_db`" db-types="MySQL"/>
-    <sql-case id="show_tables_with_filter" value="SHOW FULL TABLES FROM `sharding_db` LIKE 't_order'" db-types="MySQL"/>
-    <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL"/>
-    <sql-case id="show_databases_with_like" value="SHOW DATABASES LIKE 'sharding_db'" db-types="MySQL"/>
-    <sql-case id="show_function_status" value="SHOW FUNCTION STATUS" db-types="MySQL"/>
-    <sql-case id="show_procedure_status" value="SHOW PROCEDURE STATUS" db-types="MySQL"/>
+    <sql-case id="show_create_table" value="SHOW CREATE TABLE `t_order`" db-types="MySQL" />
+    <sql-case id="show_create_trigger" value="SHOW CREATE TRIGGER `trigger1`" db-types="MySQL" />
+    <sql-case id="show_create_user" value="SHOW CREATE USER `user1`" db-types="MySQL" />
+    <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL" />
+    <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL" />
+    <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL" />
+    <sql-case id="show_tables" value="SHOW FULL TABLES FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_tables_with_filter" value="SHOW FULL TABLES FROM `sharding_db` LIKE 't_order'" db-types="MySQL" />
+    <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL" />
+    <sql-case id="show_databases_with_like" value="SHOW DATABASES LIKE 'sharding_db'" db-types="MySQL" />
+    <sql-case id="show_function_status" value="SHOW FUNCTION STATUS" db-types="MySQL" />
+    <sql-case id="show_procedure_status" value="SHOW PROCEDURE STATUS" db-types="MySQL" />
 </sql-cases>
