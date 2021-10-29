@@ -136,57 +136,11 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final boolean insertSelect, 
             final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression, final Map<String, Map<String, String>> rewriteMetaDataMap) {
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
-        Collection<ColumnProjection> projections = getColumnProjections(segment, tableName, alias, encryptColumnName, insertSelect, subquery, inProjectionOrTabSegment, inExpression, rewriteMetaDataMap);
+        Collection<ColumnProjection> projections = getColumnProjections(segment, tableName, alias, encryptColumnName, insertSelect, subquery, inProjectionOrTabSegment, inExpression, 
+                rewriteMetaDataMap);
         return segment.getColumn().getOwner().isPresent() 
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections) 
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
-    }
-    
-    private Collection<ColumnProjection> getColumnProjections(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final String encryptColumnName, 
-    		final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression, final Map<String, Map<String, String>> rewriteMetaDataMap) {
-        Collection<ColumnProjection> result = new LinkedList<>();
-    	if (insertSelect) {
-    		result.addAll(getColumnProjectionsForInsertSelect(segment, tableName, encryptColumnName));
-        }
-        if (subquery) {
-        	result.add(columnProjection(null, encryptColumnName, null));
-            if (inProjectionOrTabSegment) {
-            	result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, rewriteMetaDataMap));
-            }
-        }
-        if (inExpression) {
-        	result.addAll(getColumnProjectionsForInExpression(segment, tableName));
-        }
-        if (!insertSelect && !subquery && !inExpression) {
-        	result.add(columnProjection(null, encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue())));
-        }
-        return result;
-    }
-    
-    private Collection<ColumnProjection> getColumnProjectionsForInsertSelect(final ColumnProjectionSegment segment, final String tableName, final String encryptColumnName) {
-    	Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(columnProjection(null, encryptColumnName, null));
-        assistedQueryColumnProjection(segment, tableName).ifPresent(result::add);
-        plainColumnProjection(segment, tableName).ifPresent(result::add);
-        return result;
-    }
-    
-    private Collection<ColumnProjection> getColumnProjectionsForInExpression(final ColumnProjectionSegment segment, final String tableName) {
-    	Collection<ColumnProjection> result = new LinkedList<>();
-    	assistedQueryColumnProjection(segment, tableName).ifPresent(result::add);
-        return result;
-    }
-    
-    private Collection<ColumnProjection> getColumnProjectionsForSubqueryProjectionOrTabSegment(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, 
-    		final Map<String, Map<String, String>> rewriteMetaDataMap) {
-    	Collection<ColumnProjection> result = new LinkedList<>();
-    	String plainColumn = segment.getColumn().getIdentifier().getValue();
-        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, plainColumn);
-        assistedQueryColumn.ifPresent(each -> result.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
-        alias.ifPresent(item -> {
-            rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn.get()));
-        });
-        return result;
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final ShorthandProjection shorthandProjection, final String tableName, 
@@ -194,7 +148,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
-            	projections.addAll(getShorthandProjectionForSubquery(each, tableName, subquery));
+                projections.addAll(getShorthandProjectionForSubquery(each, tableName, subquery));
             } else {
                 projections.add(columnProjection(each, each.getName(), null));
             }
@@ -203,13 +157,60 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
     }
     
+    private Collection<ColumnProjection> getColumnProjections(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final String encryptColumnName, 
+            final boolean insertSelect, final boolean subquery, final boolean inProjectionOrTabSegment, final boolean inExpression, final Map<String, Map<String, String>> rewriteMetaDataMap) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        if (insertSelect) {
+            result.addAll(getColumnProjectionsForInsertSelect(segment, tableName, encryptColumnName));
+        }
+        if (subquery) {
+            result.add(columnProjection(null, encryptColumnName, null));
+            if (inProjectionOrTabSegment) {
+                result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, rewriteMetaDataMap));
+            }
+        }
+        if (inExpression) {
+            result.addAll(getColumnProjectionsForInExpression(segment, tableName));
+        }
+        if (!insertSelect && !subquery && !inExpression) {
+            result.add(columnProjection(null, encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue())));
+        }
+        return result;
+    }
+    
+    private Collection<ColumnProjection> getColumnProjectionsForInsertSelect(final ColumnProjectionSegment segment, final String tableName, final String encryptColumnName) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        result.add(columnProjection(null, encryptColumnName, null));
+        assistedQueryColumnProjection(segment, tableName).ifPresent(result::add);
+        plainColumnProjection(segment, tableName).ifPresent(result::add);
+        return result;
+    }
+    
+    private Collection<ColumnProjection> getColumnProjectionsForInExpression(final ColumnProjectionSegment segment, final String tableName) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        assistedQueryColumnProjection(segment, tableName).ifPresent(result::add);
+        return result;
+    }
+    
+    private Collection<ColumnProjection> getColumnProjectionsForSubqueryProjectionOrTabSegment(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, 
+            final Map<String, Map<String, String>> rewriteMetaDataMap) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        String plainColumn = segment.getColumn().getIdentifier().getValue();
+        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, plainColumn);
+        assistedQueryColumn.ifPresent(each -> result.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
+        alias.ifPresent(item -> {
+            rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, assistedQueryColumn.get()));
+        });
+        return result;
+    }
+    
     private Collection<ColumnProjection> getShorthandProjectionForSubquery(final ColumnProjection each, final String tableName, final boolean subquery) {
-    	Collection<ColumnProjection> result = new LinkedList<>();
-    	if (subquery) {
-    		result.add(columnProjection(each, getEncryptColumnName(tableName, each.getName()), null));
-    		result.add(columnProjection(each, findAssistedQueryColumn(tableName, each.getName()).get(), null));
+        Collection<ColumnProjection> result = new LinkedList<>();
+        if (subquery) {
+            result.add(columnProjection(each, getEncryptColumnName(tableName, each.getName()), null));
+            result.add(columnProjection(each, findAssistedQueryColumn(tableName, each.getName()).get(), null));
         } else {
-        	result.add(columnProjection(each, getEncryptColumnName(tableName, each.getName()), each.getName()));
+            result.add(columnProjection(each, getEncryptColumnName(tableName, each.getName()), each.getName()));
         }
         return result;
     }
