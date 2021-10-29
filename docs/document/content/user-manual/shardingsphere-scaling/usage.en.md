@@ -15,6 +15,7 @@ The migration scene we support:
 | -------------------------- | -------------------- |
 | MySQL(5.1.15 ~ 5.7.x)      | MySQL                |
 | PostgreSQL(9.4 ~ )         | PostgreSQL           |
+| openGauss(2.1.0)           | openGauss            |
 
 **Attention**: 
 
