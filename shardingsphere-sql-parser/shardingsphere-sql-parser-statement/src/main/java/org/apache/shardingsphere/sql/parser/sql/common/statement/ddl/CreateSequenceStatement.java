@@ -32,4 +32,3 @@ public abstract class CreateSequenceStatement extends AbstractSQLStatement imple
 
     private String sequenceName;
 }
-
