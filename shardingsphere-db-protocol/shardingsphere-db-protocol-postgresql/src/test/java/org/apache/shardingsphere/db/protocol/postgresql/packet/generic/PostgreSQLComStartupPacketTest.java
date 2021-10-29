@@ -43,6 +43,7 @@ public final class PostgreSQLComStartupPacketTest {
         PostgreSQLComStartupPacket actual = new PostgreSQLComStartupPacket(payload);
         assertThat(actual.getDatabase(), is("test_db"));
         assertThat(actual.getUser(), is("postgres"));
+        assertThat(actual.getClientEncoding(), is("UTF8"));
         assertThat(byteBuf.writerIndex(), is(packetMessageLength));
     }
     
@@ -50,6 +51,7 @@ public final class PostgreSQLComStartupPacketTest {
         Map<String, String> result = new LinkedHashMap<>(2, 1);
         result.put("database", "test_db");
         result.put("user", "postgres");
+        result.put("client_encoding", "UTF8");
         return result;
     }
     
