@@ -83,7 +83,7 @@ public final class EncryptConditionEngine {
                 });
                 SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).forEach(each -> {
                     SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), 
-                    		each.getSubquery().getSelect(), selectStatementContext.getSchemaName());
+                        each.getSubquery().getSelect(), selectStatementContext.getSchemaName());
                     result.addAll(createEncryptConditions(subSelectStatementContext));
                 });
                 SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> {
