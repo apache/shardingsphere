@@ -28,7 +28,9 @@ import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
 @Getter
 public enum CommonDistSQLErrorCode implements SQLErrorCode {
     
-    UNSUPPORTED_VARIABLE(11002, "S11002", "Could not support variable [%s].");
+    UNSUPPORTED_VARIABLE(11002, "S11002", "Could not support variable [%s]."),
+    
+    INVALID_VALUE(11002, "S11002", "Invalid value [%s].");
     
     private final int errorCode;
     
@@ -45,6 +47,9 @@ public enum CommonDistSQLErrorCode implements SQLErrorCode {
     public static CommonDistSQLErrorCode valueOf(final CommonDistSQLException exception) {
         if (exception instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
+        }
+        if (exception instanceof InvalidValueException) {
+            return INVALID_VALUE;
         }
         throw new UnsupportedOperationException("Cannot find common dist sql error code from exception: %s", exception);
     }

@@ -15,50 +15,16 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception;
 
-import Keyword, Literals, Symbol;
-
-setVariable
-    : SET VARIABLE variableName EQ variableValue
-    ;
-
-showVariable
-    : SHOW VARIABLE variableName
-    ;
-
-showAllVariables
-    : SHOW ALL VARIABLES
-    ;
-
-enableInstance
-    :ENABLE INSTANCE IP EQ ip COMMA PORT EQ port
-    ;
-
-disableInstance
-    :DISABLE INSTANCE IP EQ ip COMMA PORT EQ port
-    ;
-
-showInstance
-    : SHOW INSTANCE LIST
-    ;
-
-clearHint
-    : CLEAR HINT
-    ;
-
-variableName
-    : IDENTIFIER
-    ;
-
-variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT 
-    ;
-
-ip
-    : IDENTIFIER | NUMBER+
-    ;
-
-port
-    : INT
-    ;
+/**
+ * Invalid value exception.
+ */
+public final class InvalidValueException extends CommonDistSQLException {
+    
+    private static final long serialVersionUID = 1840341880422454371L;
+    
+    public InvalidValueException(final String value) {
+        super(value);
+    }
+}
