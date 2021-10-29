@@ -92,7 +92,7 @@ public final class MetaDataChangedWatcherTest {
     @Test
     public void assertCreateCachedEvent() {
         String key = "/metadata/sharding_db/rules/cache/cacheId";
-        Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.UPDATED);
+        Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.ADDED);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RuleConfigurationCachedEvent.class));
         RuleConfigurationCachedEvent event = (RuleConfigurationCachedEvent) actual.get();
