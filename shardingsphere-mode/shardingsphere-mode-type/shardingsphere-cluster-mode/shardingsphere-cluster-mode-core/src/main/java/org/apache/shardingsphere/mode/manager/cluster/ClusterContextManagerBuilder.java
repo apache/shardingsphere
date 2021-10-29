@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -97,8 +99,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
         Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties clusterProps = metaDataPersistService.getPropsService().load();
-        Map<String, ShardingSphereSchema> schemas = loadAndPersistSchema(clusterDataSources, clusterSchemaRuleConfigs, clusterProps);
-        metaDataContexts = new MetaDataContextsBuilder(clusterDataSources, clusterSchemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, clusterProps)
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(clusterDataSources, clusterSchemaRuleConfigs, clusterProps);
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(clusterDataSources, clusterSchemaRuleConfigs, rules, clusterProps).load();
+        persistMetaData(schemas);
+        metaDataContexts = new MetaDataContextsBuilder(clusterDataSources, clusterSchemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, clusterProps)
                 .build(metaDataPersistService);
         transactionContexts = createTransactionContexts(metaDataContexts);
     }
@@ -237,13 +241,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private String getDataSourceName(final String disabledDataSource) {
         return new QualifiedSchema(disabledDataSource).getDataSourceName();
-    }
-    
-    private Map<String, ShardingSphereSchema> loadAndPersistSchema(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
-                                                           final Properties props) throws SQLException {
-        Map<String, ShardingSphereSchema> result = new SchemaLoader(dataSources, schemaRuleConfigs, props).load();
-        persistMetaData(result);
-        return result;
     }
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
