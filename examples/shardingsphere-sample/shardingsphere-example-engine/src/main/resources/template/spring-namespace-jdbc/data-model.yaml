@@ -18,5 +18,5 @@
 mode: memory
 transaction: local
 feature: sharding
-framework: springnamespace-jdbc
+framework: spring-namespace-jdbc
 
