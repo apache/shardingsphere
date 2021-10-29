@@ -27,7 +27,7 @@ import java.util.Map;
 public interface ExportableRule extends ShardingSphereRule {
     
     /**
-     * Get data map.
+     * Export data map.
      *
      * @return data map
      */
