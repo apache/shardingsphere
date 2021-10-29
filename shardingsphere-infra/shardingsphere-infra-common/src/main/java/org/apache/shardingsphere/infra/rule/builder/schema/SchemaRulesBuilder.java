@@ -55,10 +55,10 @@ public final class SchemaRulesBuilder {
     
     /**
      * Build rules.
-     * @param dataSources dataSources
-     * @param schemaRuleConfigs schemaRule config
-     * @param props Properties
-     * @return rules
+     * @param dataSources data source map
+     * @param schemaRuleConfigs schema rule config map
+     * @param props properties
+     * @return ShardingSphere rules
      */
     public static Map<String, Collection<ShardingSphereRule>> buildRules(final Map<String, Map<String, DataSource>> dataSources,
                                                                          final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
