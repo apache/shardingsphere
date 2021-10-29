@@ -10,7 +10,7 @@ weight = 2
 ```sql
 CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
-CREATE DEFAULT SHARDING [DATABASE | TABLE] STRATEGY (shardingStrategy)
+CREATE DEFAULT SHARDING strategyType STRATEGY (shardingStrategy)
 
 ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
@@ -49,6 +49,9 @@ algorithmDefinition:
 
 keyGenerateStrategy:
     GENERATED_KEY(COLUMN=columnName, strategyDefinition)
+
+strategyType:
+    DATABASE | TABLE
 
 databaseStrategy:
     DATABASE_STRATEGY(shardingStrategy)
