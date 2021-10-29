@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -58,6 +60,9 @@ public final class AlterIndexStatementHandler implements SQLStatementHandler {
     public static Optional<IndexSegment> getRenameIndexSegment(final AlterIndexStatement alterIndexStatement) {
         if (alterIndexStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLAlterIndexStatement) alterIndexStatement).getRenameIndex();
+        }
+        if (alterIndexStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussAlterIndexStatement) alterIndexStatement).getRenameIndex();
         }
         return Optional.empty();
     }

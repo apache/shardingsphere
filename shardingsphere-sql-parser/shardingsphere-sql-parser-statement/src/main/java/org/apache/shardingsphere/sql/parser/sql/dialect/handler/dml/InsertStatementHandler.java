@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -82,6 +84,9 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         }
         if (insertStatement instanceof SQLServerStatement) {
             return ((SQLServerInsertStatement) insertStatement).getWithSegment();
+        }
+        if (insertStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussInsertStatement) insertStatement).getWithSegment();
         }
         return Optional.empty();
     }

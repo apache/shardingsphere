@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss.parser.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussTCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
 /**
@@ -37,27 +37,27 @@ public final class OpenGaussStatementSQLVisitorFacade implements SQLVisitorFacad
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        return PostgreSQLDMLStatementSQLVisitor.class;
+        return OpenGaussDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        return PostgreSQLDDLStatementSQLVisitor.class;
+        return OpenGaussDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        return PostgreSQLTCLStatementSQLVisitor.class;
+        return OpenGaussTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        return PostgreSQLDCLStatementSQLVisitor.class;
+        return OpenGaussDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        return PostgreSQLDALStatementSQLVisitor.class;
+        return OpenGaussDALStatementSQLVisitor.class;
     }
     
     @Override
