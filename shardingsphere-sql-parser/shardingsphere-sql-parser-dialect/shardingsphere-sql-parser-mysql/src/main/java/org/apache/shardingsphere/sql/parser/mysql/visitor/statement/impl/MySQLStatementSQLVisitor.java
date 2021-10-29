@@ -201,6 +201,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * MySQL Statement SQL visitor.
@@ -809,35 +810,33 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        if (null != ctx.completeRegularFunction()) {
-            return visit(ctx.completeRegularFunction());
-        }
-        return visit(ctx.shorthandRegularFunction());
+        FunctionSegment functionSegment = null != ctx.completeRegularFunction() ? (FunctionSegment) visit(ctx.completeRegularFunction()) : (FunctionSegment) visit(ctx.shorthandRegularFunction());
+        // TODO Function call should return function segment.
+        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
     }
     
     @Override
     public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
-        String text = getOriginalText(ctx);
-        FunctionSegment functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), text);
-        Collection<ExpressionSegment> expressionSegments = calculateParameterCount(ctx.expr());
-        functionSegment.getParameters().addAll(expressionSegments);
-        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), text, functionSegment);
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     @Override
     public ASTNode visitShorthandRegularFunction(final ShorthandRegularFunctionContext ctx) {
         String text = getOriginalText(ctx);
-        FunctionSegment functionSegment;
+        FunctionSegment result;
         if (null != ctx.CURRENT_TIME()) {
-            functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
             if (null != ctx.NUMBER_()) {
-                functionSegment.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
+                result.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
                         new NumberLiteralValue(ctx.NUMBER_().getText())));
             }
         } else {
-            functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
         }
-        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), text, functionSegment);
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
@@ -864,12 +863,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
-    private Collection<ExpressionSegment> calculateParameterCount(final Collection<ExprContext> exprContexts) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
+    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
         for (ExprContext each : exprContexts) {
-            result.add((ExpressionSegment) visit(each));
+            visit(each);
         }
-        return result;
     }
     
     @Override
@@ -1304,9 +1301,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (projection instanceof FunctionSegment) {
             FunctionSegment functionSegment = (FunctionSegment) projection;
-            ExpressionProjectionSegment expr = new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
-            expr.setAlias(alias);
-            return expr;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
+            result.setAlias(alias);
+            return result;
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;

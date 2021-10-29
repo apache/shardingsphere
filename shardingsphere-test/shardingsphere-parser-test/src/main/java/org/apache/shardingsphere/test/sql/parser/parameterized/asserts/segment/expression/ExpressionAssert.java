@@ -288,7 +288,7 @@ public final class ExpressionAssert {
      */
     public static void assertFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunctionSegment expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
-        assertThat(assertContext.getText("Function method name assertion error: "), actual.getMethodName(), is(expected.getMethodName()));
+        assertThat(assertContext.getText("Function method name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText() : expected.getText();
         assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));

@@ -35,10 +35,9 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     
     private final int stopIndex;
     
-    private final String methodName;
+    private final String functionName;
     
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     private final String text;
-    
 }

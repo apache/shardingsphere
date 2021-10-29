@@ -32,8 +32,8 @@ import java.util.List;
 @Setter
 public final class ExpectedFunctionSegment extends AbstractExpectedSQLSegment implements ExpectedProjection {
 
-    @XmlAttribute(name = "method-name")
-    private String methodName;
+    @XmlAttribute(name = "function-name")
+    private String functionName;
 
     @XmlElement(name = "parameter")
     private List<ExpectedExpression> parameters = new LinkedList<>();

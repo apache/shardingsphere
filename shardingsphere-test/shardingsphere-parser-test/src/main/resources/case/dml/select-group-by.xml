@@ -281,7 +281,7 @@
         <projections start-index="7" stop-index="84">
             <expression-projection text="date_format(creation_date,  '%y-%m-%d')" alias="creation_date" start-index="7" stop-index="62">
                 <expr>
-                    <function method-name="date_format" alias="creation_date" start-index="7" stop-index="45" text="date_format(creation_date,  '%y-%m-%d')" >
+                    <function function-name="date_format" alias="creation_date" start-index="7" stop-index="45" text="date_format(creation_date,  '%y-%m-%d')" >
                         <parameter>
                             <column name="creation_date" start-index="19" stop-index="31" />
                             <literal-expression value="%y-%m-%d" start-index="35" stop-index="44" />

@@ -59,12 +59,12 @@
         <projections start-index="7" stop-index="26">
             <expression-projection text="schema()" start-index="7" stop-index="14">
                 <expr>
-                    <function method-name="schema" start-index="7" stop-index="14" text="schema()"/>
+                    <function function-name="schema" start-index="7" stop-index="14" text="schema()"/>
                 </expr>
             </expression-projection>
             <expression-projection text="database()" start-index="17" stop-index="26">
                 <expr>
-                    <function method-name="database" start-index="17" stop-index="26" text="database()" />
+                    <function function-name="database" start-index="17" stop-index="26" text="database()" />
                 </expr>
             </expression-projection>
         </projections>
@@ -101,7 +101,7 @@
         <projections start-index="7" stop-index="23">
             <expression-projection text="current_timestamp" start-index="7" stop-index="23">
                 <expr>
-                    <function method-name="current_timestamp" start-index="7" stop-index="23" text="current_timestamp" />
+                    <function function-name="current_timestamp" start-index="7" stop-index="23" text="current_timestamp" />
                 </expr>
             </expression-projection>
         </projections>
@@ -2578,7 +2578,7 @@
         <projections start-index="7" stop-index="38">
             <expression-projection text="INTERVAL(status,1,5)" alias="func_status" start-index="7" stop-index="38">
                 <expr>
-                    <function method-name="INTERVAL" alias="func_status" start-index="7" stop-index="26" text="INTERVAL(status,1,5)" >
+                    <function function-name="INTERVAL" alias="func_status" start-index="7" stop-index="26" text="INTERVAL(status,1,5)" >
                         <column name="status" start-index="16" stop-index="21" />
                         <literal-expression value="1" start-index="23" stop-index="23" />
                         <literal-expression value="5" start-index="25" stop-index="25" />
@@ -2626,11 +2626,11 @@
         <projections start-index="7" stop-index="37">
             <expression-projection text="CONCAT(LEFT(status, 7), 'test')" start-index="7" stop-index="37">
                 <expr>
-                    <function method-name="CONCAT" start-index="7" stop-index="37" text="CONCAT(LEFT(status, 7), 'test')">
+                    <function function-name="CONCAT" start-index="7" stop-index="37" text="CONCAT(LEFT(status, 7), 'test')">
                         <parameter>
                             <expression-projection start-index="14" stop-index="28" text="LEFT(status, 7)">
                                 <expr>
-                                    <function method-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
+                                    <function function-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
                                         <parameter>
                                             <column name="status" start-index="19" stop-index="24" />
                                         </parameter>
@@ -2665,7 +2665,7 @@
         <projections start-index="7" stop-index="16">
             <expression-projection text="DATABASE()" start-index="7" stop-index="16">
                 <expr>
-                    <function method-name="DATABASE" start-index="7" stop-index="16" text="DATABASE()" />
+                    <function function-name="DATABASE" start-index="7" stop-index="16" text="DATABASE()" />
                 </expr>
             </expression-projection>
         </projections>
@@ -2684,7 +2684,7 @@
                     <left>
                         <expression-projection text="MOD(order_id, 1)" start-index="28" stop-index="43">
                             <expr>
-                                <function method-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
+                                <function function-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
                                     <column name="order_id" start-index="32" stop-index="39" />
                                     <literal-expression value="1" start-index="42" stop-index="42" />
                                 </function>
@@ -2713,11 +2713,11 @@
                     <left>
                         <expression-projection text="DATE_FORMAT(current_date, '%Y-%m-%d')" start-index="28" stop-index="64">
                             <expr>
-                                <function method-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
+                                <function function-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
                                     <parameter>
                                         <expression-projection text="current_date" start-index="40" stop-index="51">
                                             <expr>
-                                                <function method-name="current_date" start-index="40" stop-index="51" text="current_date"/>
+                                                <function function-name="current_date" start-index="40" stop-index="51" text="current_date"/>
                                             </expr>
                                         </expression-projection>
                                     </parameter>
@@ -2750,11 +2750,11 @@
                     <left>
                         <expression-projection text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))" start-index="28" stop-index="101">
                             <expr>
-                                <function method-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
+                                <function function-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
                                     <parameter>
                                         <expression-projection start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
                                             <expr>
-                                                <function method-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
+                                                <function function-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
                                                     <parameter>
                                                         <literal-expression value="113.358772" start-index="53" stop-index="62" />
                                                     </parameter>
@@ -2768,7 +2768,7 @@
                                     <parameter>
                                         <expression-projection start-index="78" stop-index="100" text="POINT(user_id,order_id)">
                                             <expr>
-                                                <function method-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
+                                                <function function-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
                                                     <parameter>
                                                         <column name="user_id" start-index="84" stop-index="90" />
                                                     </parameter>
@@ -3316,7 +3316,7 @@
                     <right>
                         <expression-projection text="CURRENT_DATE" start-index="35" stop-index="46">
                             <expr>
-                                <function method-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
+                                <function function-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
                             </expr>
                         </expression-projection>
                     </right>
@@ -3342,7 +3342,7 @@
                     <right>
                         <expression-projection text="CURRENT_DATE()" start-index="35" stop-index="48">
                             <expr>
-                                <function method-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
+                                <function function-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
                             </expr>
                         </expression-projection>
                     </right>
@@ -3368,7 +3368,7 @@
                     <right>
                         <expression-projection text="CURRENT_TIME" start-index="35" stop-index="46">
                             <expr>
-                                <function method-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
+                                <function function-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
                             </expr>
                         </expression-projection>
                     </right>
@@ -3394,7 +3394,7 @@
                     <right>
                         <expression-projection text="CURRENT_TIME()" start-index="35" stop-index="48">
                             <expr>
-                                <function method-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
+                                <function function-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
                             </expr>
                         </expression-projection>
                     </right>
