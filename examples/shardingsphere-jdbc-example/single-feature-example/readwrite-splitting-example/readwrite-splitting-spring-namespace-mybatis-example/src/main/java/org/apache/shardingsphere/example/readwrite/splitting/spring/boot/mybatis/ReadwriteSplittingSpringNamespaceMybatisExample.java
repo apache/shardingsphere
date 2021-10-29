@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
+package org.apache.shardingsphere.example.readwrite.splitting.spring.boot.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -24,11 +24,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class ShardingSpringNamespaceMybatisExample {
+public final class ReadwriteSplittingSpringNamespaceMybatisExample {
     
-    private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
+    private static final String CONFIG_FILE = "META-INF/application-readwrite-splitting.xml";
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
