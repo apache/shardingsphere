@@ -74,16 +74,16 @@
     </show-tables>
 
     <show-tables sql-case-id="show_tables_with_filter">
-        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34"/>
-        <like pattern="t_order" start-index="36" stop-index="49"/>
+        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
+        <like pattern="t_order" start-index="36" stop-index="49" />
     </show-tables>
 
-    <show-databases sql-case-id="show_databases"/>
+    <show-databases sql-case-id="show_databases" />
 
     <show-databases sql-case-id="show_databases_with_like">
-        <like pattern="sharding_db" start-index="15" stop-index="32"/>
+        <like pattern="sharding_db" start-index="15" stop-index="32" />
     </show-databases>
 
-    <show-function-status sql-case-id="show_function_status"/>
-    <show-procedure-status sql-case-id="show_procedure_status"/>
+    <show-function-status sql-case-id="show_function_status" />
+    <show-procedure-status sql-case-id="show_procedure_status" />
 </sql-parser-test-cases>
