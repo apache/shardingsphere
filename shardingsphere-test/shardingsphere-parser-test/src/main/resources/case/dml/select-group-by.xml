@@ -284,6 +284,8 @@
                     <function function-name="date_format" alias="creation_date" start-index="7" stop-index="45" text="date_format(creation_date,  '%y-%m-%d')" >
                         <parameter>
                             <column name="creation_date" start-index="19" stop-index="31" />
+                        </parameter>
+                        <parameter>
                             <literal-expression value="%y-%m-%d" start-index="35" stop-index="44" />
                         </parameter>
                     </function>

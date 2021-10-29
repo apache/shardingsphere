@@ -55,9 +55,11 @@
             <expression-projection text="DATE(i.creation_date)" alias="creation_date" start-index="7" stop-index="44">
                 <expr>
                     <function function-name="DATE" alias="creation_date" start-index="7" stop-index="27" text="DATE(i.creation_date)">
-                        <column name="creation_date" start-index="12" stop-index="26" >
-                            <owner name="i" start-index="12" stop-index="12"/>
-                        </column>
+                        <parameter>
+                            <column name="creation_date" start-index="12" stop-index="26" >
+                                <owner name="i" start-index="12" stop-index="12"/>
+                            </column>
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
