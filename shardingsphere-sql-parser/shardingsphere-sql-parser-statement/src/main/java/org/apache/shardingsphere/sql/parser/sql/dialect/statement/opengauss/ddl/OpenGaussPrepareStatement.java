@@ -17,68 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
-
-import java.util.Optional;
 
 /**
  * OpenGauss prepare statement.
  */
 @ToString
-@Getter
-@Setter
-public final class OpenGaussPrepareStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
-    
-    private SelectStatement select;
-    
-    private InsertStatement insert;
-    
-    private UpdateStatement update;
-    
-    private DeleteStatement delete;
-    
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
-    }
-    
-    /**
-     * Get insert statement.
-     *
-     * @return insert statement
-     */
-    public Optional<InsertStatement> getInsert() {
-        return Optional.ofNullable(insert);
-    }
-    
-    /**
-     * Get update statement.
-     *
-     * @return update statement
-     */
-    public Optional<UpdateStatement> getUpdate() {
-        return Optional.ofNullable(update);
-    }
-    
-    /**
-     * Get delete statement.
-     *
-     * @return delete statement
-     */
-    public Optional<DeleteStatement> getDelete() {
-        return Optional.ofNullable(delete);
-    }
+public final class OpenGaussPrepareStatement extends PrepareStatement implements OpenGaussStatement {
 }

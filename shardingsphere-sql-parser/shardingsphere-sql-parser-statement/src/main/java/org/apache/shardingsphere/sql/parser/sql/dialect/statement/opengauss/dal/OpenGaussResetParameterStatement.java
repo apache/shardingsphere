@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss reset parameter statement.
  */
 @ToString
-public final class OpenGaussResetParameterStatement extends AbstractSQLStatement implements DALStatement, OpenGaussStatement {
+public final class OpenGaussResetParameterStatement extends ResetParameterStatement implements OpenGaussStatement {
 }

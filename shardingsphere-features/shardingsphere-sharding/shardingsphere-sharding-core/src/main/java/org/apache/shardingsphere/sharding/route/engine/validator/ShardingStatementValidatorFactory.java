@@ -47,12 +47,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 
 import java.util.Optional;
 
@@ -110,7 +110,7 @@ public final class ShardingStatementValidatorFactory {
         if (sqlStatement instanceof DropIndexStatement) {
             return Optional.of(new ShardingDropIndexStatementValidator());
         }
-        if (sqlStatement instanceof PostgreSQLPrepareStatement) {
+        if (sqlStatement instanceof PrepareStatement) {
             return Optional.of(new ShardingPrepareStatementValidator());
         }
         return Optional.empty();

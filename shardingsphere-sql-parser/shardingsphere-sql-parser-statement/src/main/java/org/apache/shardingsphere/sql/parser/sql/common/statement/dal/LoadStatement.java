@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * OpenGauss load statement.
+ * Load statement.
  */
-@ToString
-public final class OpenGaussLoadStatement extends LoadStatement implements OpenGaussStatement {
+public abstract class LoadStatement extends AbstractSQLStatement implements DALStatement {
 }
