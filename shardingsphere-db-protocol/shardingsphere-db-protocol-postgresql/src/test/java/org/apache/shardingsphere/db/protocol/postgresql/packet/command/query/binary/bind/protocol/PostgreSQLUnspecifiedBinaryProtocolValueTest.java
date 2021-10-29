@@ -46,7 +46,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         byteBuf.writeInt(timestampStr.length());
         byteBuf.writeCharSequence(timestampStr, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
         assertNotNull(result);
         assertTrue(result instanceof PostgreSQLTypeUnspecifiedSQLParameter);

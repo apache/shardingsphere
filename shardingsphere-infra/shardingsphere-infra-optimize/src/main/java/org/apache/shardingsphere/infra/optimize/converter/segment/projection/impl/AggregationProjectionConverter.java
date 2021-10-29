@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
@@ -26,11 +27,16 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Aggregation projection converter. 
@@ -56,17 +62,24 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         if (null == segment) {
             return Optional.empty();
         }
-        return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()), new SqlNode[]{SqlIdentifier.star(SqlParserPos.ZERO)}, SqlParserPos.ZERO));
+        List<String> parameters = Splitter.on(",").trimResults().splitToList(SQLUtil.getExpressionWithoutOutsideParentheses(segment.getInnerExpression()));
+        return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()), 
+                new SqlNode[]{SqlIdentifier.star(parameters, SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
     }
     
     @Override
     public Optional<AggregationProjectionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
         if (null == sqlBasicCall) {
-            return Optional.empty();    
+            return Optional.empty();
         }
         AggregationType aggregationType = AggregationType.valueOf(sqlBasicCall.getOperator().getName());
-        String innerExpression = sqlBasicCall.toString().replace(sqlBasicCall.getOperator().getName(), "");
+        String innerExpression = getInnerExpression(sqlBasicCall);
         return Optional.of(new AggregationProjectionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), aggregationType, innerExpression));
+    }
+    
+    private String getInnerExpression(final SqlBasicCall sqlBasicCall) {
+        String params = sqlBasicCall.getOperandList().stream().map(SqlNode::toString).collect(Collectors.joining(", "));
+        return QuoteCharacter.PARENTHESES.wrap(params);
     }
     
     private SqlAggFunction convertOperator(final String operator) {

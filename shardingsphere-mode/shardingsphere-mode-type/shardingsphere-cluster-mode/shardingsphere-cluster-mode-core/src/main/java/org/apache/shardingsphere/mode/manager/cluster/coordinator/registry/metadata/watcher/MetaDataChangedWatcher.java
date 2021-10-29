@@ -18,26 +18,26 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.metadata.persist.node.CacheNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.mode.metadata.persist.node.CacheNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -71,10 +71,15 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
-        if (DataChangedEvent.Type.UPDATED != event.getType()) {
-            return Optional.empty();
+        if (Type.ADDED == event.getType() && !Strings.isNullOrEmpty(event.getValue())) {
+            schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
+            Optional<String> ruleCacheId = getRuleCacheId(schemaName, event.getKey());
+            return ruleCacheId.isPresent() ? Optional.of(new RuleConfigurationCachedEvent(ruleCacheId.get(), schemaName)) : Optional.empty();
         }
-        return buildGovernanceEvent(event);
+        if (DataChangedEvent.Type.UPDATED == event.getType()) {
+            return buildGovernanceEvent(event);
+        }
+        return Optional.empty();
     }
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final String schemaName, final DataChangedEvent event) {
@@ -100,10 +105,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         if (isSchemaChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createSchemaChangedEvent(schemaName, event));
-        }
-        Optional<String> ruleCacheId = getRuleCacheId(schemaName, event.getKey());
-        if (ruleCacheId.isPresent()) {
-            return Optional.of(new RuleConfigurationCachedEvent(ruleCacheId.get(), schemaName));
         }
         return Optional.empty();
     }

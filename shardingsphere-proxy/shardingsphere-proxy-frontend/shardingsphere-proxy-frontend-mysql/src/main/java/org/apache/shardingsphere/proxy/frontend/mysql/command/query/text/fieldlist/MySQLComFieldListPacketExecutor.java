@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldlist;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
@@ -52,6 +53,8 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    private final int characterSet;
+    
     private int currentSequenceId;
     
     public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final BackendConnection backendConnection) {
@@ -64,6 +67,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, schemaName);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override
@@ -77,7 +81,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
-                    ++currentSequenceId, schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
+                    ++currentSequenceId, characterSet, schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

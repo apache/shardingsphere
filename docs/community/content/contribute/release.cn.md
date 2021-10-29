@@ -234,7 +234,6 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 **4. 提交 Apache SVN**
@@ -283,7 +282,6 @@ Your decision? 5
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz
 ```
 
 **检查发布文件内容**
@@ -303,7 +301,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 - 存在`LICENSE`和`NOTICE`文件
 - `NOTICE`文件中的年份正确
 - 只存在文本文件，不存在二进制文件
-- 所有文件的开头都有ASF许可证
+- 所有文件的开头都有 ASF 许可证
 - 能够正确编译，单元测试可以通过 (./mvnw -T 1C install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
@@ -311,8 +309,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 解压缩
 `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`和
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz`
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
@@ -329,7 +326,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 **投票阶段**
 
 1. ShardingSphere 社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PMC 需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个`+1 PMC member`票后，即可进入下一阶段的投票。
+经过至少 72 小时并统计到 3 个`+1 PMC member`票后，即可进入下一阶段的投票。
 
 2. 宣布投票结果,发起投票结果邮件到`dev@shardingsphere.apache.org`。
 

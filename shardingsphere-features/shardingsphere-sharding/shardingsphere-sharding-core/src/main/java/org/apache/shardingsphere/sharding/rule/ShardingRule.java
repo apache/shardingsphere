@@ -102,7 +102,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data source names cannot be empty.");
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());

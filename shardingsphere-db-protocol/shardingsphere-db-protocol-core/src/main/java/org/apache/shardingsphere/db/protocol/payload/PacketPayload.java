@@ -19,6 +19,8 @@ package org.apache.shardingsphere.db.protocol.payload;
 
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.Charset;
+
 /**
  * Packet payload.
  */
@@ -30,4 +32,11 @@ public interface PacketPayload extends AutoCloseable {
      * @return byte buf
      */
     ByteBuf getByteBuf();
+    
+    /**
+     * Get charset.
+     * 
+     * @return charset
+     */
+    Charset getCharset();
 }

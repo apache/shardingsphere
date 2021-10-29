@@ -91,6 +91,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -115,11 +116,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
-        Collection<BindingTableRuleSegment> rules = new LinkedList<>();
-        for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
-        }
-        return new CreateShardingBindingTableRulesStatement(rules);
+        return new CreateShardingBindingTableRulesStatement(createBindingTableRuleSegment(ctx.bindTableRulesDefinition()));
+    }
+    
+    private Collection<BindingTableRuleSegment> createBindingTableRuleSegment(final List<BindTableRulesDefinitionContext> contexts) {
+        return contexts.stream().map(each -> Joiner.on(",").join(each.tableName().stream().map(t -> getIdentifierValue(t)).collect(Collectors.toList())))
+                .map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -163,15 +165,17 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBindingTableRules(final DropShardingBindingTableRulesContext ctx) {
-        return new DropShardingBindingTableRulesStatement();
+        Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList()
+                : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
+        return new DropShardingBindingTableRulesStatement(tableNames);
     }
     
     @Override
     public ASTNode visitCreateDefaultShardingStrategy(final CreateDefaultShardingStrategyContext ctx) {
         ShardingStrategyContext shardingStrategyContext = ctx.shardingStrategy();
-        return new CreateDefaultShardingStrategyStatement(new IdentifierValue(ctx.type.getText()).getValue().toLowerCase(), 
+        return new CreateDefaultShardingStrategyStatement(new IdentifierValue(ctx.type.getText()).getValue().toLowerCase(),
                 getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase(),
-                getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase(), 
+                getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase(),
                 getIdentifierValue(shardingStrategyContext.shardingAlgorithm().shardingAlgorithmName()).toLowerCase());
     }
     
@@ -202,7 +206,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
-        return new DropShardingBroadcastTableRulesStatement();
+        Collection<String> tableNames = ctx.tableName() == null ? Collections.emptyList()
+                : ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return new DropShardingBroadcastTableRulesStatement(tableNames);
     }
     
     @Override
@@ -212,7 +218,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
-        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()), 
+        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()),
                 null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     

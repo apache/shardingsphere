@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -43,6 +44,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
+    private final int characterSet;
+    
     @Getter
     private volatile ResponseType responseType;
     
@@ -50,6 +53,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final BackendConnection backendConnection) throws SQLException {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), backendConnection);
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override
@@ -60,7 +64,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
         currentSequenceId = result.size();
         return result;
     }

@@ -19,9 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -32,10 +35,10 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -83,6 +86,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         authResponse = packet.getAuthResponse();
         sequenceId = packet.getSequenceId();
+        MySQLCharacterSet mySQLCharacterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCharacterSet.getCharset());
+        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCharacterSet);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().schemaExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();

@@ -2917,7 +2917,7 @@
             <simple-table name="tb_content_json" start-index="59" stop-index="73" />
         </from>
         <projections start-index="7" stop-index="52">
-            <expression-projection text="content_json::jsonb@?'$.keyword[*]?(@==&quot;ss&quot;)'" start-index="7" stop-index="52" />
+            <expression-projection text="content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)'" start-index="7" stop-index="52" />
         </projections>
     </select>
 

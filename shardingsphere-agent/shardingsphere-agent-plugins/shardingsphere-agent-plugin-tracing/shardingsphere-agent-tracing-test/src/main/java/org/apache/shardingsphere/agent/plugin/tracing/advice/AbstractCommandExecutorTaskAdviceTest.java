@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
+import io.netty.util.DefaultAttributeMap;
 import lombok.Getter;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
@@ -34,7 +35,7 @@ public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTes
     @SuppressWarnings("ConstantConditions")
     @Override
     public final void prepare() {
-        Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
+        Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE, new DefaultAttributeMap()), null, null);
         targetObject = (AdviceTargetObject) executorTask;
     }
 }

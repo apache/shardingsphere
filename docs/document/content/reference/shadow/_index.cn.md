@@ -20,11 +20,11 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 **影子库映射**：生产数据源名称和影子数据源名称映射关系。
 
-**影子表**：压测相关的表，影子库中必须包含影子表。影子表需要指定对应的影子库映射和影子算法。
+**影子表**：压测相关的影子表。影子表必须存在于指定的影子库中，并且需要指定影子算法。
 
 **影子算法**：SQL 路由影子算法。
 
-**默认影子算法**：默认影子算法，选配项。对于没有配置影子算法表的默认匹配算法。
+**默认影子算法**：默认影子算法。选配项，对于没有配置影子算法表的默认匹配算法。
 
 ## 路由过程
 
@@ -33,19 +33,19 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 执行影子路由判定流程，判定执行SQL满足影子规则的配置，数据路由到与之对应的影子库，生产数据则维持不变。
 
 ## 影子判定流程
-影子库开关开启时，会对执行的 SQL 语句进行影子判定。影子判定目前支持两种类型算法，用户可根据实际业务需求选择一种或者组合使用。
+影子库开关开启时，会对执行的 SQL 语句进行影子判定。影子判定支持两种类型算法，用户可根据实际业务需求选择一种或者组合使用。
 
 ### DML 语句
 
-支持两种算法。影子判定会首先判断执行 SQL 关联的表是否和影子表有交集。如果有交集，对交集部分影子表关联的影子算法依次判定。如果影子表关联影子算法有任何一个判定成功。SQL 语句路由到影子库。
-没有交集或者影子算法判定不成功，SQL 语句路由到生产库。
+支持两种算法。影子判定会首先判断执行 SQL 相关表与配置的影子表是否有交集。如果有交集，依次判定交集部分影子表关联的影子算法，有任何一个判定成功。SQL 语句路由到影子库。
+影子表没有交集或者影子算法判定不成功，SQL 语句路由到生产库。
 
 ### DDL 语句
 
-仅支持注解影子算法。一般不会对 DDL 语句的压力测试。主要做为影子库环境的初始化或者影子表调整时执行。
+仅支持注解影子算法。在压测场景下，DDL 语句一般不需要测试。主要在初始化或者修改影子库中影子表时使用。
 
-影子判定会首先判断执行 SQL 是否包含注解，如果包含注解对影子规则中的注解影子算法依次判定。如果注解影子算法有任何一个判定成功。SQL 语句路由到影子库。
-没有 SQL 不包含注解或者注解影子算法判定不成功，路由到生产库。
+影子判定会首先判断执行 SQL 是否包含注解。如果包含注解，影子规则中配置的注解影子算法依次判定。有任何一个判定成功。SQL 语句路由到影子库。
+执行 SQL 不包含注解或者注解影子算法判定不成功，SQL 语句路由到生产库。
 
 ## 影子算法
 
@@ -55,7 +55,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ### 场景需求
 
-假设一个电商网站要对下单业务进行压测，对订单表 `t_order` 进行压测。生产数据执行到生产库，即：ds。测试数据执行到影子库，即：ds-shadow。
+假设一个电商网站要对下单业务进行压测。压测相关表 `t_order` 为影子表，生产数据执行到 `ds` 生产数据库，压测数据执行到数据库 `ds_shadow` 影子库。
 
 ### 影子库配置
 
@@ -90,28 +90,26 @@ props:
   sql-comment-parse-enabled: true
 ```
 
-**注意**：
-- 如果使用注解影子算法，需要打开解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认为关闭状态。
-  请参考[属性配置]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
+**注意**： 如果使用注解影子算法，需要开启解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认关闭。 
+请参考 [配置项说明]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
 
+### 影子库环境
 
-### 影子库环境准备
+* 创建影子库 `ds_shadow`。
 
-* 创建影子库 `ds-shadow`。
-
-* 创建压测相关影子表，影子表结构与生产环境对应表结构必须一致。假设需要在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`。即：
+* 创建影子表，表结构与生产环境必须一致。假设在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`。即：
 
 ```sql
 CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/
 ``` 
+
 执行到影子库。
 
 ### 影子算法使用
    
 1. 列影子算法使用
 
-假设 `t_order` 表中包含字段下单用户ID的 `user_id`。 如果实现的效果，当用户ID为 `0` 的用户创建订单产生的数据。 即：
-
+假设 `t_order` 表中包含下单用户ID的 `user_id` 列。 实现的效果，当用户ID为 `0` 的用户创建订单产生的数据。 即：
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 ```
@@ -135,11 +133,13 @@ shadow-algorithms:
 
 2. 使用注解影子算法
 
-假设 `t_order` 表中没有存储可以对值进行控制的列。或者控制的值不包含在执行 SQL 的中。可以添加一条注解到执行的 SQL 中，即：
+假设 `t_order` 表中不包含可以对值进行匹配的列。添加注解 `/*shadow:true,foo:bar,...*/` 到执行 SQL 中，即：
+
 ```sql
 SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/ 
 ```
-会执行到影子库。
+
+会执行到影子库，其他数据执行到生产库。
 
 算法配置如下（YAML 格式展示）：
 
@@ -154,14 +154,15 @@ shadow-algorithms:
 
 3. 混合使用影子模式
 
-假设对 `t_order` 表压测以上两种场景都需要覆盖。 即，
+假设对 `t_order` 表压测需要覆盖以上两种场景，即，
 
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
 SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 ```
-满足对复杂场景压力测试支持。
+
+都会执行到影子库，其他数据执行到生产库。
 
 算法配置如下（YAML 格式展示）：
 
@@ -187,13 +188,14 @@ shadow-algorithms:
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
-INSERT INTO t_order_item (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*shadow:true,foo:bar,...*/;
+INSERT INTO t_xxx_1 (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*shadow:true,foo:bar,...*/;
 
-SELECT * FROM t_order_item WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 
-SELECT * FROM t_order_xxx WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_3 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 ```
-都会执行到影子库。
+
+都会执行到影子库，其他数据执行到生产库。
 
 配置如下（YAML 格式展示）：
 
@@ -226,6 +228,5 @@ shadow-algorithms:
 props:
   sql-comment-parse-enabled: true
 ```
-我们只需要配置默认影子算法 `default-shadow-algorithm-name`。 除了影子表 `t_order` 其它相关表都会进行默认影子算法的判定。
 
 **注意**：默认影子算法仅支持注解影子算法。

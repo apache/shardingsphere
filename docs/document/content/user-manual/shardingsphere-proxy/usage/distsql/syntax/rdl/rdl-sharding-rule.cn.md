@@ -91,11 +91,11 @@ algorithmProperty:
 ### Sharding Binding Table Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES(bindTableRulesDefinition [, bindTableRulesDefinition] ...)
+CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
-ALTER SHARDING BINDING TABLE RULES(bindTableRulesDefinition [, bindTableRulesDefinition] ...)
+ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
-DROP SHARDING BINDING TABLE RULES
+DROP SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
 bindTableRulesDefinition:
     (tableName [, tableName] ... )
@@ -109,7 +109,7 @@ CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 
 ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 
-DROP SHARDING BROADCAST TABLE RULES
+DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 ```
 - `ALTER` 会使用新的配置直接覆盖数据库内的广播表配置
 
@@ -158,16 +158,13 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 ### Sharding Binding Table Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES (
-(t_order,t_order_item),
-(t_1,t_2)
-);
+CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_1,t_2);
 
-ALTER SHARDING BINDING TABLE RULES (
-(t_order,t_order_item)
-);
+ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item);
 
 DROP SHARDING BINDING TABLE RULES;
+
+DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
 ### Sharding Broadcast Table Rule
@@ -178,4 +175,6 @@ CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
 ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
 
 DROP SHARDING BROADCAST TABLE RULES;
+
+DROP SHARDING BROADCAST TABLE RULES t_b;
 ```

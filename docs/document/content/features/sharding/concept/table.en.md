@@ -15,10 +15,6 @@ For instance, the data of order is divided into 10 tables according to the last 
 
 The physical table that really exists in the horizontal sharding database, i.e., `t_order_0` to `t_order_9` in the instance above.
 
-## Data Node
-
-As the atomic unit of sharding, it consists of data source name and actual table name, e.g. `ds_0.t_order_0`.
-
 ## Binding Table
 
 It refers to the primary table and the joiner table with the same sharding rules.

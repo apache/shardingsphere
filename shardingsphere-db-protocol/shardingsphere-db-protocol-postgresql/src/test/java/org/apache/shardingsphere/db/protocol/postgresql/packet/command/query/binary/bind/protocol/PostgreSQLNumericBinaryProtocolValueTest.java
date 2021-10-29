@@ -50,7 +50,7 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         byteBuf.writeInt(columnLength);
         byteBuf.writeBytes(decimalText.getBytes(StandardCharsets.UTF_8));
         byteBuf.readInt();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = binaryProtocolValue.read(payload, columnLength);
         assertNotNull(result);
         assertTrue(result instanceof BigDecimal);
@@ -65,7 +65,7 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         BigDecimal decimal = new BigDecimal(decimalText);
         int columnLength = binaryProtocolValue.getColumnLength(decimal);
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(columnLength);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         binaryProtocolValue.write(payload, decimal);
         byte[] actualBytes = new byte[columnLength];
         byteBuf.readBytes(actualBytes);

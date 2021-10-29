@@ -61,10 +61,10 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
         ShadowExtractor.extractColumn(expressionSegment).ifPresent(columnSegment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(extractTableName(columnSegment), columnSegment.getIdentifier().getValue(), values))));
+                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(extractOwnerName(columnSegment), columnSegment.getIdentifier().getValue(), values))));
     }
     
-    private String extractTableName(final ColumnSegment columnSegment) {
+    private String extractOwnerName(final ColumnSegment columnSegment) {
         Optional<OwnerSegment> owner = columnSegment.getOwner();
         return owner.isPresent() ? getTableAliasNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasNameMappings().keySet().iterator().next();
     }

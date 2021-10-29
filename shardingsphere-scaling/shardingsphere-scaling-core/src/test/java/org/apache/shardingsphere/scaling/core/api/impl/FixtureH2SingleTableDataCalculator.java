@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-
-import java.util.Collection;
 
 public final class FixtureH2SingleTableDataCalculator implements SingleTableDataCalculator {
     
@@ -35,7 +33,7 @@ public final class FixtureH2SingleTableDataCalculator implements SingleTableData
     }
     
     @Override
-    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
+    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
         return true;
     }
 }

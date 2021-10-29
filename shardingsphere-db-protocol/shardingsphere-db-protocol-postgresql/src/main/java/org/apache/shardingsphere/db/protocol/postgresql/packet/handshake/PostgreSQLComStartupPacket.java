@@ -32,6 +32,8 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
     private static final String USER_NAME_KEY = "user";
     
+    private static final String CLIENT_ENCODING_KEY = "client_encoding";
+    
     private final Map<String, String> parametersMap = new HashMap<>();
     
     public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {
@@ -57,6 +59,15 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
      */
     public String getUser() {
         return parametersMap.get(USER_NAME_KEY);
+    }
+    
+    /**
+     * Get client encoding.
+     * 
+     * @return client encoding
+     */
+    public String getClientEncoding() {
+        return parametersMap.get(CLIENT_ENCODING_KEY);
     }
     
     @Override

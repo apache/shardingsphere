@@ -41,7 +41,7 @@ Judge the inserted column and inserted value of `INSERT` operation
 
 * SELECT/UPDATE/DELETE statement
 
-Judge the fields and values included in the `WHERE` condition
+Judge the column and values included in the `WHERE` condition
 
 | *Condition* | *SQL* | *Support* |
 | -------- | --------- | --------- |

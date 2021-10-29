@@ -52,8 +52,6 @@ public final class ScalingWorker {
     @Getter
     private static boolean enabled;
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
     /**
      * Init scaling worker.
      */
@@ -73,7 +71,7 @@ public final class ScalingWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        Optional<Long> jobId = jobConfigOptional.isPresent() ? scalingAPI.start(jobConfigOptional.get()) : Optional.empty();
+        Optional<Long> jobId = jobConfigOptional.isPresent() ? ScalingAPIFactory.getScalingAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());

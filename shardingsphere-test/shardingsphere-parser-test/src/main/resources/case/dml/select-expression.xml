@@ -1237,7 +1237,7 @@
                     </left>
                     <operator>+</operator>
                     <right>
-                        <expression-projection text="INTERVAL1SECOND" start-index="47" stop-index="63" />
+                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1261,7 +1261,7 @@
                     </left>
                     <operator>-</operator>
                     <right>
-                        <expression-projection text="INTERVAL1SECOND" start-index="47" stop-index="63" />
+                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
                     </right>
                 </binary-operation-expression>
             </expr>

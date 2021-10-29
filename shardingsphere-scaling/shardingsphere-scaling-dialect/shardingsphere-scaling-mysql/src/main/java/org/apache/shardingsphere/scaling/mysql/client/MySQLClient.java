@@ -38,6 +38,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLCo
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLCommandPacketDecoder;
@@ -82,6 +83,7 @@ public final class MySQLClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
+                        socketChannel.pipeline().addLast(new ChannelAttrInitializer());
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
                         socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
