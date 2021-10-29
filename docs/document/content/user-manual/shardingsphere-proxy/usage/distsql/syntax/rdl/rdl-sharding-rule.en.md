@@ -59,11 +59,11 @@ algorithmProperty:
 ### Sharding Binding Table Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES(bindTableRulesDefinition [, bindTableRulesDefinition] ...)
+CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
-ALTER SHARDING BINDING TABLE RULES(bindTableRulesDefinition [, bindTableRulesDefinition] ...)
+ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
-DROP SHARDING BINDING TABLE RULES
+DROP SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
 
 bindTableRulesDefinition:
     (tableName [, tableName] ... )
@@ -108,16 +108,13 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 ### Sharding Binding Table Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES (
-(t_order,t_order_item),
-(t_1,t_2)
-);
+CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_1,t_2);
 
-ALTER SHARDING BINDING TABLE RULES (
-(t_order,t_order_item)
-);
+ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item);
 
 DROP SHARDING BINDING TABLE RULES;
+
+DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
 ### Sharding Broadcast Table Rule
