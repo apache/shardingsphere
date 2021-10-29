@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
@@ -28,9 +30,11 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +47,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLBinlogEventPacketDecoderTest {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ChannelHandlerContext channelHandlerContext;
     
     @Mock
     private ByteBuf byteBuf;
@@ -58,25 +65,26 @@ public final class MySQLBinlogEventPacketDecoderTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4);
         binlogContext = ReflectionUtil.getFieldValue(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
+        when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     
     @Test(expected = RuntimeException.class)
     public void assertDecodeWithPacketError() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 255);
-        binlogEventPacketDecoder.decode(null, byteBuf, null);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, null);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertDecodeWithReadError() {
         when(byteBuf.isReadable()).thenReturn(true);
-        binlogEventPacketDecoder.decode(null, byteBuf, new LinkedList<>());
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, new LinkedList<>());
     }
     
     @Test
     public void assertDecodeRotateEvent() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.ROTATE_EVENT.getValue());
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getFileName(), is(""));
     }
@@ -86,7 +94,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue(), (short) 19);
         when(byteBuf.readUnsignedShortLE()).thenReturn(4);
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getChecksumLength(), is(4));
     }
@@ -95,7 +103,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     public void assertDecodeTableMapEvent() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 0, (short) MySQLBinlogEventType.TABLE_MAP_EVENT.getValue(), (short) 0);
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getTableMap().size(), is(1));
         assertThat(binlogContext.getTableMap().get(0L), instanceOf(MySQLBinlogTableMapEventPacket.class));
@@ -108,7 +116,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(WriteRowsEvent.class));
     }
@@ -120,7 +128,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(UpdateRowsEvent.class));
     }
@@ -132,7 +140,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogContext.getTableMap().put(0L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(Collections.emptyList());
         List<Object> decodedEvents = new LinkedList<>();
-        binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(DeleteRowsEvent.class));
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowVariableBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Test
     public void assertShowTransactionType() throws SQLException {

@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.payload;
+package org.apache.shardingsphere.db.protocol;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.util.AttributeKey;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.nio.charset.Charset;
 
 /**
- * Packet payload.
+ * Common constants for protocol.
  */
-public interface PacketPayload extends AutoCloseable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CommonConstants {
     
-    /**
-     * Get byte buf.
-     * 
-     * @return byte buf
-     */
-    ByteBuf getByteBuf();
-    
-    /**
-     * Get charset.
-     * 
-     * @return charset
-     */
-    Charset getCharset();
+    public static final AttributeKey<Charset> CHARSET_ATTRIBUTE_KEY = AttributeKey.valueOf(Charset.class.getName());
 }

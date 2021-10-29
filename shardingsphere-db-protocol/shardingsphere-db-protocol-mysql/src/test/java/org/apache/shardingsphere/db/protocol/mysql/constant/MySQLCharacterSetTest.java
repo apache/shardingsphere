@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.payload;
+package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import io.netty.buffer.ByteBuf;
+import org.junit.Test;
 
-import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 
-/**
- * Packet payload.
- */
-public interface PacketPayload extends AutoCloseable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLCharacterSetTest {
     
-    /**
-     * Get byte buf.
-     * 
-     * @return byte buf
-     */
-    ByteBuf getByteBuf();
+    @Test
+    public void assertFoundCharsetById() {
+        MySQLCharacterSet actual = MySQLCharacterSet.findById(255);
+        assertThat(actual, is(MySQLCharacterSet.UTF8MB4));
+    }
     
-    /**
-     * Get charset.
-     * 
-     * @return charset
-     */
-    Charset getCharset();
+    @Test(expected = UnsupportedCharsetException.class)
+    public void assertCharsetNotFoundById() {
+        MySQLCharacterSet.findById(-1);
+    }
+    
+    @Test(expected = UnsupportedCharsetException.class)
+    public void assertFoundUnsupportedCharsetById() {
+        MySQLCharacterSet.findById(63);
+    }
 }

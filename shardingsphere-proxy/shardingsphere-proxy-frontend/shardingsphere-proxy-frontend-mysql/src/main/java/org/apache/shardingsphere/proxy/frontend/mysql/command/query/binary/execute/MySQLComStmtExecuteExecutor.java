@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
@@ -61,6 +62,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    private final int characterSet;
+    
     @Getter
     private volatile ResponseType responseType;
     
@@ -80,6 +83,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(schemaName), schemaName, metaDataContexts.getMetaDataMap(), backendConnection.getGrantee());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), backendConnection);
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
@@ -97,7 +101,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
         currentSequenceId = result.size();
         return result;
     }

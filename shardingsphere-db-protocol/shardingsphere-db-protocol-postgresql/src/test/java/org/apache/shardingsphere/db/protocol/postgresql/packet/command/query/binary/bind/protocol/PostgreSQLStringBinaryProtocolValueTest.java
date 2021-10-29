@@ -19,12 +19,14 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,23 +37,27 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLStringBinaryProtocolValueTest {
     
-    @InjectMocks
-    private PostgreSQLPacketPayload payload;
-    
     @Mock
     private ByteBuf byteBuf;
+    
+    private PostgreSQLPacketPayload payload;
+    
+    @Before
+    public void setup() {
+        payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+    }
     
     @Test
     public void assertNewInstance() {
         doAnswer((Answer<ByteBuf>) invocation -> {
-            ((byte[]) invocation.getArguments()[0])[0] = 97;
+            ((byte[]) invocation.getArguments()[0])[0] = 'a';
             return byteBuf;
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
         assertThat(actual.getColumnLength("str"), is("str".length()));
         assertThat(actual.read(payload, "a".length()), is("a"));
         actual.write(payload, "a");
-        verify(byteBuf).writeBytes("a".getBytes());
+        verify(byteBuf).writeBytes("a".getBytes(StandardCharsets.UTF_8));
         actual.write(payload, new byte[1]);
         verify(byteBuf).writeBytes(new byte[1]);
     }

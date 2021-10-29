@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.payload;
+package org.apache.shardingsphere.db.protocol.netty;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 
 import java.nio.charset.Charset;
 
 /**
- * Packet payload.
+ * Channel attributes initializer.
  */
-public interface PacketPayload extends AutoCloseable {
+public final class ChannelAttrInitializer extends ChannelInboundHandlerAdapter {
     
-    /**
-     * Get byte buf.
-     * 
-     * @return byte buf
-     */
-    ByteBuf getByteBuf();
-    
-    /**
-     * Get charset.
-     * 
-     * @return charset
-     */
-    Charset getCharset();
+    @Override
+    public void channelActive(final ChannelHandlerContext ctx) {
+        ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).setIfAbsent(Charset.defaultCharset());
+        ctx.fireChannelActive();
+    }
 }
