@@ -77,6 +77,24 @@ public class EncryptProjectionTokenGeneratorTest {
     }
     
     @Test
+    public void assertOwnerExistsMatchTableNameGenerateSQLTokens() {
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projectionsSegment);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor", "doctor1"));
+        List<SimpleTableSegment> allUniqueTables = buildAllUniqueTables(false);
+        when(sqlStatementContext.getTablesContext().getAllUniqueTables()).thenReturn(allUniqueTables);
+        IdentifierValue identifierValue = new IdentifierValue("mobile");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
+        OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("doctor"));
+        columnSegment.setOwner(ownerSegment);
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(columnProjectionSegment));
+        Collection<SubstitutableColumnNameToken> tokens = encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
+        assertThat(tokens.size(), is(1));
+    }
+    
+    @Test
     public void assertColumnAmbiguousGenerateSQLTokens() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("column `mobile` is ambiguous in encrypt rules");
@@ -94,16 +112,22 @@ public class EncryptProjectionTokenGeneratorTest {
     }
     
     private List<SimpleTableSegment> buildAllUniqueTables() {
+        return buildAllUniqueTables(true);
+    }
+    
+    private List<SimpleTableSegment> buildAllUniqueTables(boolean hasAlias) {
         SimpleTableSegment table1 = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         when(table1.getTableName().getIdentifier().getValue()).thenReturn("doctor");
-        when(table1.getAlias()).thenReturn(Optional.of("a"));
         SimpleTableSegment table2 = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         when(table2.getTableName().getIdentifier().getValue()).thenReturn("doctor1");
-        when(table2.getAlias()).thenReturn(Optional.of("b"));
+        if (hasAlias) {
+            when(table1.getAlias()).thenReturn(Optional.of("a"));
+            when(table2.getAlias()).thenReturn(Optional.of("b"));
+        }
         return Arrays.asList(table1, table2);
     }
     
-    private EncryptRule buildEncryptRule(){
+    private EncryptRule buildEncryptRule() {
         EncryptRule encryptRule = mock(EncryptRule.class);
         EncryptTable encryptTable1 = mock(EncryptTable.class);
         EncryptTable encryptTable2 = mock(EncryptTable.class);
