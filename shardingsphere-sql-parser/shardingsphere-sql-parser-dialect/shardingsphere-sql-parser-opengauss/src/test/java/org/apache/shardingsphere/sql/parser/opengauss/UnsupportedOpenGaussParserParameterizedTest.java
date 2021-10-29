@@ -26,9 +26,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class UnsupportedPostgreSQLParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
+public final class UnsupportedOpenGaussParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
     
-    public UnsupportedPostgreSQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+    public UnsupportedOpenGaussParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
         super(sqlCaseId, databaseType, sqlCaseType);
     }
     
