@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.node.CacheNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.CacheNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**

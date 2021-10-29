@@ -93,13 +93,13 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     private boolean isShadowTable(final String tableName, final ShadowRule shadowRule, final ShadowOperationType shadowOperationType) {
         ShadowDetermineCondition shadowCondition = new ShadowDetermineCondition(tableName, shadowOperationType);
-        if (isShadowSqlNote(tableName, shadowRule, shadowCondition)) {
+        if (isContainsShadowInSqlNotes(tableName, shadowRule, shadowCondition)) {
             return true;
         }
-        return isShadowColumn(tableName, shadowRule, shadowCondition);
+        return isContainsShadowInColumns(tableName, shadowRule, shadowCondition);
     }
     
-    private boolean isShadowSqlNote(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
+    private boolean isContainsShadowInSqlNotes(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
         return parseSqlNotes().filter(strings -> shadowRule.getRelatedNoteShadowAlgorithms(tableName)
                 .filter(shadowAlgorithms -> isMatchAnyNoteShadowAlgorithms(shadowAlgorithms, shadowCondition.initSqlNotes(strings), shadowRule)).isPresent()).isPresent();
     }
@@ -117,7 +117,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
         return ShadowDeterminerFactory.newInstance(noteShadowAlgorithm).isShadow(shadowCondition, shadowRule);
     }
     
-    private boolean isShadowColumn(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
+    private boolean isContainsShadowInColumns(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
         return shadowRule.getRelatedColumnShadowAlgorithms(tableName, shadowCondition.getShadowOperationType()).filter(shadowAlgorithms -> parseShadowColumnConditions()
                 .filter(columnConditions -> isMatchAnyColumnShadowAlgorithms(shadowAlgorithms, shadowCondition.initShadowColumnCondition(columnConditions), shadowRule)).isPresent()).isPresent();
     }

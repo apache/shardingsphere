@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.node;
+package org.apache.shardingsphere.mode.metadata.persist.node;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
@@ -37,16 +37,6 @@ public final class CacheNode {
     private static final String PATH_SEPARATOR = "/";
     
     /**
-     * Get cache node path.
-     *
-     * @param path path
-     * @return cache node path
-     */
-    public static String getCacheNodePath(final String path) {
-        return Joiner.on("/").join(path, CACHE_NODE);
-    }
-    
-    /**
      * Get cache id by cache path.
      * 
      * @param path patch
@@ -59,12 +49,7 @@ public final class CacheNode {
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
-    /**
-     * Get cache id.
-     *
-     * @return cache id
-     */
-    public static String getCacheId() {
+    private static String getCacheId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
     
@@ -76,6 +61,20 @@ public final class CacheNode {
      * @return cache path
      */
     public static String getCachePath(final String path, final String cacheId) {
-        return Joiner.on(PATH_SEPARATOR).join(CacheNode.getCacheNodePath(path), cacheId);
+        return Joiner.on(PATH_SEPARATOR).join(getCacheNodePath(path), cacheId);
+    }
+    
+    /**
+     * Get cache path.
+     *
+     * @param path path     
+     * @return cache path
+     */
+    public static String getCachePath(final String path) {
+        return Joiner.on(PATH_SEPARATOR).join(getCacheNodePath(path), getCacheId());
+    }
+    
+    private static String getCacheNodePath(final String path) {
+        return Joiner.on("/").join(path, CACHE_NODE);
     }
 }

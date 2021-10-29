@@ -292,28 +292,54 @@
     </select>
 
     <select sql-case-id="select_with_projection_subquery">
-        <projections start-index="7" stop-index="93">
+        <projections start-index="7" stop-index="99">
             <column-projection name="order_id" start-index="7" stop-index="31">
                 <owner start-index="7" stop-index="22" name="t_order_federate"/>
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
                 <owner start-index="34" stop-index="49" name="t_order_federate"/>
             </column-projection>
-            <subquery-projection start-index="60" stop-index="93" text="(SELECT COUNT(*) FROM t_user_info)">
+            <subquery-projection start-index="60" stop-index="99" text="(SELECT COUNT(user_id) FROM t_user_info)">
                 <subquery>
                     <select>
-                        <projections start-index="68" stop-index="75">
-                            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="68" stop-index="75" />
+                        <projections start-index="68" stop-index="81">
+                            <aggregation-projection type="COUNT" inner-expression="(user_id)" start-index="68" stop-index="81" />
                         </projections>
-                        <from start-index="77" stop-index="80">
-                            <simple-table name="t_user_info" start-index="82" stop-index="92" />
+                        <from start-index="83" stop-index="98">
+                            <simple-table name="t_user_info" start-index="88" stop-index="98" />
                         </from>
                     </select>
                 </subquery>
             </subquery-projection>
         </projections>
-        <from start-index="95" stop-index="115">
-            <simple-table name="t_order_federate" start-index="100" stop-index="115" />
+        <from start-index="101" stop-index="121">
+            <simple-table name="t_order_federate" start-index="106" stop-index="121" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_projection_subquery_and_multiple_parameters">
+        <projections start-index="7" stop-index="110">
+            <column-projection name="order_id" start-index="7" stop-index="31">
+                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+            </column-projection>
+            <column-projection name="user_id" start-index="34" stop-index="57">
+                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+            </column-projection>
+            <subquery-projection start-index="60" stop-index="110" text="(SELECT CONCAT(order_id, user_id) FROM t_user_info)">
+                <subquery>
+                    <select>
+                        <projections start-index="68" stop-index="92">
+                            <expression-projection text="CONCAT(order_id, user_id)" start-index="68" stop-index="92" />
+                        </projections>
+                        <from start-index="94" stop-index="109">
+                            <simple-table name="t_user_info" start-index="99" stop-index="109" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+        <from start-index="112" stop-index="132">
+            <simple-table name="t_order_federate" start-index="117" stop-index="132" />
         </from>
     </select>
 

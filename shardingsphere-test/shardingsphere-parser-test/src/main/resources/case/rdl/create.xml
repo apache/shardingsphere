@@ -227,7 +227,7 @@
         </rule>
     </create-encrypt-rule>
     
-    <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted_query_column">
+    <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
                 <encryptor algorithm-name="AES">
@@ -241,6 +241,19 @@
             </column>
         </rule>
     </create-encrypt-rule>
+    
+    <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
+        <rule name="encrypt" queryWithCipherColumn="false">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+            </column>
+        </rule>
+    </create-encrypt-rule>
+    
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule  table-name="t_order">

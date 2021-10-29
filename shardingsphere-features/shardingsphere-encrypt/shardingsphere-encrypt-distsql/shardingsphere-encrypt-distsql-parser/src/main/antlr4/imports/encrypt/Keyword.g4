@@ -95,3 +95,15 @@ ASSISTED_QUERY_COLUMN
     : A S S I S T E D UL_ Q U E R Y UL_ C O L U M N
     ;
     
+QUERY_WITH_CIPHER_COLUMN
+    : Q U E R Y UL_ W I T H UL_ C I P H E R UL_ C O L U M N
+    ;
+    
+TRUE
+    : T R U E
+    ;
+    
+FALSE
+    : F A L S E
+    ;    
+    
