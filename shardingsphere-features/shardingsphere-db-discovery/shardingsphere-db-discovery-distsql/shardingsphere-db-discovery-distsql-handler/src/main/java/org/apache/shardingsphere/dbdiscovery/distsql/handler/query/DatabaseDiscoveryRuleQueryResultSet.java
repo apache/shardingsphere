@@ -72,7 +72,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
         String name = dataSourceRuleConfig.getName();
         String primaryDataSourceName = null == primaryDataSources.get(name) ? "" : primaryDataSources.get(name);
-        return Arrays.asList(name, primaryDataSourceName, String.join(",", dataSourceRuleConfig.getDataSourceNames()),
+        return Arrays.asList(name, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, 
                 discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getType(), PropertiesConverter.convert(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getProps()));
     }
     

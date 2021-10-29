@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.util.Map;
 
 /**
- * ShardingSphere rule which support exporting data.
+ * ShardingSphere rule which supports exporting data.
  */
 public interface ExportableRule extends ShardingSphereRule {
     
