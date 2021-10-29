@@ -46,13 +46,9 @@ mode:
 
 Enable `clusterAutoSwitchAlgorithm` indicate system will detect when scaling job is finished and switch cluster configuration automatically. Currently, system supply `IDLE` type implementation.
 
-Enable `dataConsistencyCheckAlgorithm` indicate system will use this defined algorithm to do data consistency check when it's emitted. Currently, system supply `DEFAULT` type implementation. `DEFAULT` type algorithm support following database types: `MySQL`, you could not enable it if you're running other database types for now. Support of other database types is under development.
+Enable `dataConsistencyCheckAlgorithm` indicate system will use this defined algorithm to do data consistency check when it's emitted, if it's disabled, then data consistency check will be ignored. Currently, system supply `DEFAULT` type implementation, it supports following database types: `MySQL`, you could not enable it if you're running other database types for now, support of other database types is under development.
 
-You could customize an auto switch algorithm by implementing `ScalingClusterAutoSwitchAlgorithm` SPI interface.
-
-You could customize a check algorithm by implementing `ScalingDataConsistencyCheckAlgorithm` SPI interface.
-
-Please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/).
+You could customize an auto switch algorithm by implementing `ScalingClusterAutoSwitchAlgorithm` SPI interface, and customize a check algorithm by implementing `ScalingDataConsistencyCheckAlgorithm` SPI interface. Please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
 
 3. Start up ShardingSphere-Proxy:
 
@@ -64,15 +60,11 @@ sh bin/start.sh
 
 ## Shutdown
 
-### ShardingSphere-Proxy
-
 ```
 sh bin/stop.sh
 ```
 
 ## Configuration
-
-### ShardingSphere-Scaling
 
 The existing configuration items are as follows, we can modify them in `conf/server.yaml`:
 

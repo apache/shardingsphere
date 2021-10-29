@@ -5,7 +5,7 @@ weight = 10
 chapter = true
 +++
 
-### ScalingEntry
+## ScalingEntry
 
 | *SPI Name*             | *Description*               |
 | ---------------------- | --------------------------- |

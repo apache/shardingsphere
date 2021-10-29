@@ -6,7 +6,7 @@ weight = 3
 
 ## 1. Rule Configuration
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`. Please refer to [Build Manual](/en/user-manual/shardingsphere-scaling/build/) for more details.
 
 > %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /Users/ss/shardingsphere-proxy-bin/
 
@@ -26,7 +26,7 @@ sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 
 Use DistSQL interface to manage the migration jobs.
 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 
+Please refer to [Usage Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 
 
 ## 5. Related documents
 - [Features#Scaling](/en/features/scaling/) : Core Concept, User Norms
