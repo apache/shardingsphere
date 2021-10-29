@@ -39,7 +39,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import java.util.Optional;
 import java.util.Properties;
 
-
 /**
  * Set variable statement executor.
  */
