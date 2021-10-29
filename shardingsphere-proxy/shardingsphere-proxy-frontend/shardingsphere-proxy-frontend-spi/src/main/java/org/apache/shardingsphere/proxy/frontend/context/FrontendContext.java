@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class FrontendContext {
     
-    private final boolean occupyThreadForPerConnection;
+    private final boolean requiredSameThreadForConnection;
     
     private final boolean flushForPerCommandPacket;
 }
