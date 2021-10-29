@@ -104,7 +104,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys, final DatabaseMetaData metaData)
             throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
-        String dataType = subStringLp(resultSet.getString("DATA_TYPE"));
+        String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = versionContainsIdentityColumn(metaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
@@ -112,7 +112,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
-    private String subStringLp(final String dataType) {
+    private String getOriginalDataType(final String dataType) {
         int index = dataType.indexOf("(");
         if (index > 0) {
             return dataType.substring(0, index);
