@@ -81,7 +81,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public final class CuratorZookeeperRepositoryTest {
     
     private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
