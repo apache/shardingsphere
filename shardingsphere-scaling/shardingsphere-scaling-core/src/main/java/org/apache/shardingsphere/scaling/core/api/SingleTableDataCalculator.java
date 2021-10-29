@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-
-import java.util.Collection;
-
 /**
  * Single table data calculator interface for SPI.
  * <p>
@@ -46,10 +42,8 @@ public interface SingleTableDataCalculator {
     /**
      * Calculate table data, usually checksum.
      *
-     * @param dataSourceConfig data source configuration
-     * @param logicTableName logic table name
-     * @param columnNames column names
+     * @param dataCalculateParameter data calculate parameter
      * @return calculated result, it will be used to check equality.
      */
-    Object dataCalculate(ScalingDataSourceConfiguration dataSourceConfig, String logicTableName, Collection<String> columnNames);
+    Object dataCalculate(DataCalculateParameter dataCalculateParameter);
 }

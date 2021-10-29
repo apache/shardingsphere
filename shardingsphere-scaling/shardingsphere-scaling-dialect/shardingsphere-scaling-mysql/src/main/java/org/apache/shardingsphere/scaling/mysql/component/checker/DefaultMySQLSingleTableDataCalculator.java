@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
 import javax.sql.DataSource;
@@ -30,7 +30,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -52,10 +51,11 @@ public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleT
     }
     
     @Override
-    public Object dataCalculate(final ScalingDataSourceConfiguration dataSourceConfig, final String logicTableName, final Collection<String> columnNames) {
+    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+        String logicTableName = dataCalculateParameter.getLogicTableName();
         MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(new HashMap<>());
-        try (DataSourceWrapper dataSource = getDataSource(dataSourceConfig)) {
-            return columnNames.stream().map(each -> {
+        try (DataSourceWrapper dataSource = getDataSource(dataCalculateParameter.getDataSourceConfig())) {
+            return dataCalculateParameter.getColumnNames().stream().map(each -> {
                 String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
                 return sumCrc32(dataSource, sql);
             }).collect(Collectors.toList());
