@@ -64,12 +64,12 @@ releaseSavepoint
     ;
 
 xa
-    : XA ((START | BEGIN) xid (JOIN | RESUME)
+    : XA ((START | BEGIN) xid (JOIN | RESUME)?
         | END xid (SUSPEND (FOR MIGRATE)?)?
         | PREPARE xid
         | COMMIT xid (ONE PHASE)?
         | ROLLBACK xid
-        | RECOVER (CONVERT xid)?
+        | RECOVER (CONVERT XID)?
     )
     ;
 
@@ -90,5 +90,17 @@ lockOption
     ;
 
 xid
-    : string_ (COMMA_ string_)* numberLiterals?
+    : gtrid ((COMMA_ bqual) (COMMA_ formatID)?)?
+    ;
+
+gtrid
+    : string_ | HEX_DIGIT_ | BIT_NUM_
+    ;
+
+bqual
+    : string_ | HEX_DIGIT_ | BIT_NUM_
+    ;
+
+formatID
+    : NUMBER_
     ;

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.transaction.xa.XATransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -50,6 +52,8 @@ public final class TransactionBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final BackendConnection backendConnection) {
         TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
+        BroadcastDatabaseBackendHandler broadcastDatabaseBackendHandler = new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, backendConnection);
+
         if (tclStatement instanceof BeginTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
         }
@@ -75,6 +79,9 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, backendConnection);
         }
-        return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, backendConnection);
+        if (tclStatement instanceof XAStatement) {
+            return new XATransactionBackendHandler((XAStatement) tclStatement, broadcastDatabaseBackendHandler, backendConnection);
+        }
+        return broadcastDatabaseBackendHandler;
     }
 }

@@ -99,6 +99,12 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitXa(final XaContext ctx) {
-        return new MySQLXAStatement();
+        MySQLXAStatement xa = new MySQLXAStatement();
+
+        xa.setOp(ctx.getChild(1).getText().toUpperCase());
+        if (null != ctx.xid()) {
+            xa.setXid(ctx.xid().getText());
+        }
+        return xa;
     }
 }

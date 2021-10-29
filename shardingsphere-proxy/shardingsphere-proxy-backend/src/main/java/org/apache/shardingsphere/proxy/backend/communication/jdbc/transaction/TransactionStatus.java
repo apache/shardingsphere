@@ -34,6 +34,9 @@ public final class TransactionStatus {
     
     @Setter
     private volatile boolean inTransaction;
+
+    @Setter
+    private volatile boolean inXA;
     
     private volatile TransactionType transactionType;
     

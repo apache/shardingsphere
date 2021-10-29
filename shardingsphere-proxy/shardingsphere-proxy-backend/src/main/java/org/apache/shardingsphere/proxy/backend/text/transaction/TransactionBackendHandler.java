@@ -39,17 +39,24 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private final TCLStatement tclStatement;
     
     private final TransactionOperationType operationType;
-    
+
+    private final BackendConnection backendConnection;
+
     private final BackendTransactionManager backendTransactionManager;
-    
+
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
+        this.backendConnection = backendConnection;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
+        if (backendConnection.getTransactionStatus().isInXA()) {
+            throw new SQLException("There is an active XA transaction");
+        }
+
         switch (operationType) {
             case BEGIN:
                 backendTransactionManager.begin();
