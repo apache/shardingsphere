@@ -21,6 +21,7 @@
     <distsql-case id="drop-resource-ignore-single-tables" value="DROP RESOURCE ds_0,ds_1 ignore single tables;" />
     <distsql-case id="drop-sharding-table-rule" value="DROP SHARDING TABLE RULE t_order,t_order_item" />
     <distsql-case id="drop-sharding-binding-table-rules" value="DROP SHARDING BINDING TABLE RULES" />
+    <distsql-case id="drop-sharding-binding-table-specified-rules" value="DROP SHARDING BINDING TABLE RULES (t_1,t_2)" />
     <distsql-case id="drop-sharding-broadcast-table-rules" value="DROP SHARDING BROADCAST TABLE RULES" />
     <distsql-case id="drop-sharding-broadcast-table-specified-table" value="DROP SHARDING BROADCAST TABLE RULES t_order" />
     <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />

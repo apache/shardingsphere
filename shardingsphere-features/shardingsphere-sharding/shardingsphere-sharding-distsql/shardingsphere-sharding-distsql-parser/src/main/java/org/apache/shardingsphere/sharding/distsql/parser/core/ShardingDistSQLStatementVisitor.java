@@ -84,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -100,11 +101,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
-        Collection<BindingTableRuleSegment> rules = new LinkedList<>();
-        for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
-        }
-        return new CreateShardingBindingTableRulesStatement(rules);
+        return new CreateShardingBindingTableRulesStatement(createBindingTableRuleSegment(ctx.bindTableRulesDefinition()));
+    }
+    
+    private Collection<BindingTableRuleSegment> createBindingTableRuleSegment(final List<BindTableRulesDefinitionContext> contexts) {
+        return contexts.stream().map(each -> Joiner.on(",").join(each.tableName().stream().map(t -> getIdentifierValue(t)).collect(Collectors.toList())))
+                .map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -143,7 +145,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBindingTableRules(final DropShardingBindingTableRulesContext ctx) {
-        return new DropShardingBindingTableRulesStatement();
+        Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList()
+                : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
+        return new DropShardingBindingTableRulesStatement(tableNames);
     }
     
     @Override

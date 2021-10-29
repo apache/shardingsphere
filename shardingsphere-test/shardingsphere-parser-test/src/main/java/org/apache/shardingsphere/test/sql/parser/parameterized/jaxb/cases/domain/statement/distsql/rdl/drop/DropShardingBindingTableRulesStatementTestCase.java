@@ -17,10 +17,21 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Drop sharding binding table rules statement test case.
  */
+@Setter
+@Getter
 public final class DropShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "rule")
+    private final List<String> rules = new LinkedList<>();
 }

@@ -24,7 +24,7 @@ createShardingTableRule
     ;
 
 createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 createShardingBroadcastTableRules
@@ -44,7 +44,7 @@ alterShardingTableRule
     ;
 
 alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 alterShardingBroadcastTableRules
@@ -56,7 +56,7 @@ dropShardingTableRule
     ;
 
 dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES
+    : DROP SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
