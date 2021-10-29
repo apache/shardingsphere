@@ -17,31 +17,35 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Table rule segment.
+ * Abstract table rule segment.
  */
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class TableRuleSegment extends AbstractTableRuleSegment {
+public abstract class AbstractTableRuleSegment implements ASTNode {
+    
+    private final String logicTable;
+    
+    private final Collection<String> dataSourceNodes;
     
     @Setter
-    private ShardingStrategySegment tableStrategySegment;
+    private KeyGenerateSegment keyGenerateSegment;
     
-    @Setter
-    private ShardingStrategySegment databaseStrategySegment;
-    
-    public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote) {
-        super(logicTable, dataSourcesNote);
-    }
-    
-    public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote, final ShardingStrategySegment databaseStrategy,
-                            final ShardingStrategySegment tableStrategy, final KeyGenerateSegment keyGenerateSegment) {
-        super(logicTable, dataSourcesNote, keyGenerateSegment);
-        this.tableStrategySegment = tableStrategy;
-        this.databaseStrategySegment = databaseStrategy;
+    /**
+     * Empty table rule segment.
+     */
+    public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
+        public EmptyTableRuleSegment() {
+            super(null, null);
+        }
     }
 }

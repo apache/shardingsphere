@@ -109,6 +109,8 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData("schema");
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }

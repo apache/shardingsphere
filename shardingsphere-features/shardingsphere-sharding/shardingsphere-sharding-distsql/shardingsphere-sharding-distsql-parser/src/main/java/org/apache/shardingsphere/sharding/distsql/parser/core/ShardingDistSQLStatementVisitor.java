@@ -34,15 +34,19 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DataNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.KeyGenerateStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SetShardingHintDatabaseValueContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAutoTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingBindingTableRulesContext;
@@ -51,8 +55,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment.EmptyTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
@@ -86,6 +95,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -96,7 +106,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {
-        return new CreateShardingTableRuleStatement(ctx.shardingTableRuleDefinition().stream().map(each -> (TableRuleSegment) visit(each)).collect(Collectors.toList()));
+        List<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream().map(each -> (AbstractTableRuleSegment) visit(each))
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (tableRuleSegments.isEmpty()) {
+            return new EmptyTableRuleSegment();
+        }
+        return new CreateShardingTableRuleStatement(tableRuleSegments);
     }
     
     @Override
@@ -116,7 +131,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlterShardingTableRule(final AlterShardingTableRuleContext ctx) {
-        return new AlterShardingTableRuleStatement(ctx.shardingTableRuleDefinition().stream().map(each -> (TableRuleSegment) visit(each)).collect(Collectors.toList()));
+        List<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream().map(each -> (AbstractTableRuleSegment) visit(each))
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (tableRuleSegments.isEmpty()) {
+            return new EmptyTableRuleSegment();
+        }
+        return new AlterShardingTableRuleStatement(tableRuleSegments);
     }
     
     @Override
@@ -209,24 +229,59 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
+        if (null != ctx.shardingTableRule()) {
+            return visit(ctx.shardingTableRule());
+        }
+        if (null != ctx.shardingAutoTableRule()) {
+            return visit(ctx.shardingAutoTableRule());
+        }
+        return null;
+    }
+    
+    @Override
+    public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
+        String tableName = getIdentifierValue(ctx.tableName());
+        Collection<String> dataNodes = getDataNodes(ctx.dataNodes());
+        ShardingStrategySegment tableStrategy = (ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy());
+        ShardingStrategySegment databaseStrategy = (ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy());
+        KeyGenerateSegment keyGenerateSegment = (KeyGenerateSegment) visit(ctx.keyGenerateStrategy());
+        return new TableRuleSegment(tableName, dataNodes, databaseStrategy, tableStrategy, keyGenerateSegment);
+    }
+    
+    @Override
+    public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
+        String tableName = getIdentifierValue(ctx.tableName());
         Collection<String> dataSources = getResources(ctx.resources());
-        String tableStrategyColumn = null;
-        AlgorithmSegment tableStrategy = null;
-        if (null != ctx.algorithmDefinition()) {
-            tableStrategyColumn = getIdentifierValue(ctx.shardingColumn().columnName());
-            tableStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
+        AutoTableRuleSegment result = new AutoTableRuleSegment(tableName, dataSources);
+        Optional.ofNullable(ctx.keyGenerateStrategy()).ifPresent(op -> result.setKeyGenerateSegment((KeyGenerateSegment) visit(ctx.keyGenerateStrategy())));
+        Optional.ofNullable(ctx.shardingColumn()).ifPresent(op -> result.setShardingColumn(getIdentifierValue(ctx.shardingColumn().columnName())));
+        Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(op -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitKeyGenerateStrategy(final KeyGenerateStrategyContext ctx) {
+        if (ctx == null) {
+            return null;
         }
-        String keyGenerateStrategyColumn = null;
-        AlgorithmSegment keyGenerateStrategy = null;
-        if (null != ctx.keyGenerateStrategy()) {
-            keyGenerateStrategyColumn = getIdentifierValue(ctx.keyGenerateStrategy().columnName());
-            keyGenerateStrategy = (AlgorithmSegment) visit(ctx.keyGenerateStrategy().algorithmDefinition());
+        return new KeyGenerateSegment(getIdentifierValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitShardingStrategy(final ShardingStrategyContext ctx) {
+        if (ctx == null) {
+            return null;
         }
-        return new TableRuleSegment(getIdentifierValue(ctx.tableName()), dataSources, tableStrategyColumn, tableStrategy, keyGenerateStrategyColumn, keyGenerateStrategy);
+        return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), 
+                getIdentifierValue(ctx.shardingColumn().columnName()), getIdentifierValue(ctx.shardingAlgorithm().shardingAlgorithmName()));
     }
     
     private Collection<String> getResources(final ResourcesContext ctx) {
-        return ctx.resource().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet());
+        return ctx.resource().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    private Collection<String> getDataNodes(final DataNodesContext ctx) {
+        return ctx.dataNode().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override

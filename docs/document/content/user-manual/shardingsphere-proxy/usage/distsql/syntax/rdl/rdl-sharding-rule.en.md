@@ -10,37 +10,69 @@ weight = 2
 ```sql
 CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
-CREATE DEFAULT SHARDING (DATABASE | TABLE) STRATEGY shardingStrategy
+CREATE DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
 
 ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
 DROP SHARDING TABLE RULE tableName [, tableName] ...
 
+CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [,  shardingAlgorithmDefinition] ...
+
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
 
 shardingTableRuleDefinition:
-    tableName(resources [, shardingColumn] [, algorithmDefinition] [, keyGenerateStrategy])
+    shardingAutoTableRule | shardingTableRule
+   
+shardingAutoTableRule:
+    tableName(resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)?)
+    
+shardingTableRule:
+    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?)
 
 resources:
-    RESOURCES(resourceName [, resourceName] ...))
+    RESOURCES(resource [, resource] ...)
+
+dataNodes:
+    DATANODES(dataNode [, dataNode] ...)
+
+resource:
+    resourceName | inlineExpression
+
+dataNode:
+    resourceName | inlineExpression
 
 shardingColumn:
     SHARDING_COLUMN=columnName
 
 algorithmDefinition:
-    TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties])])
 
 keyGenerateStrategy:
     GENERATED_KEY(COLUMN=columnName, strategyDefinition)
 
-shardingStrategy:
-    (TYPE=strategyType, shardingColumn, shardingAlgorithm )
+shardingScope:
+    DATABASE | TABLE
 
-shardingAlgorithm
-    : SHARDING_ALGORITHM=shardingAlgorithmName
+databaseStrategy:
+    DATABASE_STRATEGY(shardingStrategy)
+
+tableStrategy:
+    TABLE_STRATEGY(shardingStrategy)
+
+shardingStrategy:
+    TYPE=strategyType, shardingColumn, shardingAlgorithm
+
+shardingColumn:
+    SHARDING_COLUMN=columnName
+    
+shardingAlgorithm:
+    SHARDING_ALGORITHM=shardingAlgorithmName
 
 strategyDefinition:
-    TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
+
+shardingAlgorithmDefinition:
+    shardingAlgorithmName(algorithmDefinition)
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -91,6 +123,11 @@ RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+),t_order_item (
+DATANODES("resource_${0..1}.t_order${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline),
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 
 ALTER SHARDING TABLE RULE t_order (
@@ -98,9 +135,22 @@ RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+),t_order_item (
+DATANODES("resource_0.t_order${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline),
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
 );
 
 DROP SHARDING TABLE RULE t_order, t_order_item;
+
+CREATE DEFAULT SHARDING DATABASE STRATEGY (
+TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
+);
+
+CREATE SHARDING ALGORITHM algorithmName (
+TYPE(NAME=hash_mod,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+);
 
 DROP SHARDING ALGORITHM t_order_hash_mod;
 ```

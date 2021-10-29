@@ -20,32 +20,30 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingStrategy;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
- * Expected table rule.
+ * Expected auto table rule.
  */
 @Getter
 @Setter
-public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedAutoTableRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "data-source")
     private List<String> dataSources;
-
-    @XmlElement(name = "table-strategy")
-    private ExpectedShardingStrategy tableStrategy;
     
-    @XmlElement(name = "database-strategy")
-    private ExpectedShardingStrategy dataStrategy;
+    @XmlAttribute(name = "table-strategy-column")
+    private String tableStrategyColumn;
     
     @XmlAttribute(name = "key-generate-strategy-column")
     private String keyGenerateStrategyColumn;
     
+    @XmlElement(name = "table-strategy")
+    private ExpectedAlgorithm tableStrategy;
+    
     @XmlElement(name = "key-generate-strategy")
     private ExpectedAlgorithm keyGenerateStrategy;
-    
 }

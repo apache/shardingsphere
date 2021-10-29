@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAutoTableRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Create sharding table rule statement.
+ * Create sharding auto table rule statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateShardingTableRuleStatement extends CreateRuleStatement {
+@Setter
+public final class CreateShardingAutoTableRuleStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<AbstractTableRuleSegment> rules;
+    @XmlElement(name = "rule")
+    private final List<ExpectedAutoTableRule> rules = new LinkedList<>();
 }

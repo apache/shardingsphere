@@ -63,7 +63,7 @@
         </data-source>
     </alter-resource>
     
-    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
@@ -78,9 +78,9 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </alter-sharding-table-rule>
+    </alter-sharding-auto-table-rule>
 
-    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-inline-expression">
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-inline-expression">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy algorithm-name="hash_mod">
@@ -94,8 +94,21 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </alter-sharding-table-rule>
+    </alter-sharding-auto-table-rule>
 
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+    
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
         <rule table-groups="t_order,t_order_item"/>
         <rule table-groups="t_1,t_2"/>
