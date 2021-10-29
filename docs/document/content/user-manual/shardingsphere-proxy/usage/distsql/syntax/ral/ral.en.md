@@ -30,8 +30,9 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 |stop scaling xx                                     | Stop scaling, xx：jobId                                             | stop scaling 1234                              |  
 |drop scaling xx                                     | Drop scaling, xx：jobId                                             | drop scaling 1234                              |  
 |reset scaling xx                                    | reset progress, xx：jobId                                           | reset scaling 1234                             |  
-|check scaling xx                                    | Data consistency check, xx：jobId                                   | check scaling 1234                             |  
+|check scaling xx                                    | Data consistency check with algorithm in `server.yaml`, xx: jobId   | check scaling 1234                             |  
 |show scaling check algorithms                       | Show available consistency check algorithms                         | show scaling check algorithms                  |  
+|check scaling {jobId} by type(name={algorithmType}) | Data consistency check with defined algorithm                       | check scaling 1234 by type(name=DEFAULT)       |  
 |stop scaling source writing xx                      | The source ShardingSphere data source is discontinued, xx：jobId     | stop scaling source writing 1234               |  
 |checkout scaling xx                                 | Switch to target ShardingSphere data source, xx：jobId               | checkout scaling 1234                          |  
 
