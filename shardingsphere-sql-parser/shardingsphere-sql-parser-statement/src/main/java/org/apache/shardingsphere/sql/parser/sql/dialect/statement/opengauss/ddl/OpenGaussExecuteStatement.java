@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss execute statement.
  */
 @ToString
-@Getter
-@Setter
-public final class OpenGaussExecuteStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
+public final class OpenGaussExecuteStatement extends ExecuteStatement implements OpenGaussStatement {
 }

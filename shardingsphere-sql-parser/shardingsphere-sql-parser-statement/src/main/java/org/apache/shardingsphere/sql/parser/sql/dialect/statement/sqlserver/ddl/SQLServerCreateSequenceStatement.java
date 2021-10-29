@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create sequence statement.
  */
 @ToString
-public class SQLServerCreateSequenceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public class SQLServerCreateSequenceStatement extends CreateSequenceStatement implements SQLServerStatement {
 }

@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss vacuum statement.
  */
 @ToString
-public final class OpenGaussVacuumStatement extends AbstractSQLStatement implements DALStatement, OpenGaussStatement {
+public final class OpenGaussVacuumStatement extends VacuumStatement implements OpenGaussStatement {
 }
