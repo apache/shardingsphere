@@ -45,23 +45,25 @@ public final class SchemaLoader {
     
     private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
     
+    private final Map<String, Collection<ShardingSphereRule>> rules;
+    
     private final ConfigurationProperties props;
     
     public SchemaLoader(final Map<String, Map<String, DataSource>> dataSources,
-                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
+                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
         this.dataSources = dataSources;
         this.schemaRuleConfigs = schemaRuleConfigs;
+        this.rules = rules;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
     }
     
     /**
      * Load schema.
      *
-     * @param rules rules
      * @return schema
      * @throws SQLException SQL exception
      */
-    public Map<String, ShardingSphereSchema> load(final Map<String, Collection<ShardingSphereRule>> rules) throws SQLException {
+    public Map<String, ShardingSphereSchema> load() throws SQLException {
         Map<String, ShardingSphereSchema> result = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);

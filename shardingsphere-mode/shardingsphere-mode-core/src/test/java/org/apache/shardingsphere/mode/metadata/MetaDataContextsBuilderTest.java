@@ -56,8 +56,9 @@ public final class MetaDataContextsBuilderTest {
                 new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap("logic_db", Collections.emptyMap()),
                 Collections.singletonMap("logic_db", Collections.singletonList(new FixtureRuleConfiguration())),
-                Collections.singleton(authorityRuleConfig), Collections.singletonMap("logic_db", mock(ShardingSphereSchema.class)), props)
-                .build(mock(MetaDataPersistService.class), Collections.singletonMap("logic_db", Arrays.asList(mock(FixtureRule.class))));
+                Collections.singleton(authorityRuleConfig), Collections.singletonMap("logic_db", mock(ShardingSphereSchema.class)),
+                Collections.singletonMap("logic_db", Arrays.asList(mock(FixtureRule.class))), props)
+                .build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -66,8 +67,9 @@ public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithoutGlobalRuleConfigurations() throws SQLException {
-        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(), new Properties())
-                .build(mock(MetaDataPersistService.class), Collections.emptyMap());
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(),
+                Collections.emptyMap(), new Properties())
+                .build(mock(MetaDataPersistService.class));
         assertThat(actual.getGlobalRuleMetaData().getRules().size(), is(2));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));

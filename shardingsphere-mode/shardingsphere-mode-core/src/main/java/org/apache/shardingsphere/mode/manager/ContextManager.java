@@ -169,9 +169,9 @@ public final class ContextManager implements AutoCloseable {
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getRuleMetaData().getConfigurations());
         Properties props = metaDataContexts.getProps().getProps();
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props).load(rules);
-        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), schemas, props)
-                .build(metaDataContexts.getMetaDataPersistService().orElse(null), rules);
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), schemas, rules, props)
+                .build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
@@ -197,8 +197,8 @@ public final class ContextManager implements AutoCloseable {
         Properties props = metaDataContexts.getProps().getProps();
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(schemaName, new ShardingSphereSchema());
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
-        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), schemas, props)
-                .build(metaDataContexts.getMetaDataPersistService().orElse(null), rules);
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), schemas, rules, props)
+                .build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
     private void closeDataSources(final ShardingSphereMetaData removeMetaData) {

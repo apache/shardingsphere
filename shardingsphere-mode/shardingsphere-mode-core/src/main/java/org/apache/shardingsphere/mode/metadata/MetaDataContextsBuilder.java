@@ -62,17 +62,20 @@ public final class MetaDataContextsBuilder {
     
     private final Map<String, ShardingSphereSchema> schemas;
     
+    private final Map<String, Collection<ShardingSphereRule>> rules;
+    
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
-                                   final Map<String, ShardingSphereSchema> schemas, final Properties props) {
+                                   final Map<String, ShardingSphereSchema> schemas, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
         this.dataSources = dataSources;
         this.schemaRuleConfigs = schemaRuleConfigs;
         this.globalRuleConfigs = globalRuleConfigs;
         this.schemas = schemas;
+        this.rules = rules;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
     }
@@ -81,11 +84,10 @@ public final class MetaDataContextsBuilder {
      * Build meta data contexts.
      * 
      * @param metaDataPersistService persist service
-     * @param rules rules
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public MetaDataContexts build(final MetaDataPersistService metaDataPersistService, final Map<String, Collection<ShardingSphereRule>> rules) throws SQLException {
+    public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> kernelMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, ShardingSphereMetaData> federationMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
