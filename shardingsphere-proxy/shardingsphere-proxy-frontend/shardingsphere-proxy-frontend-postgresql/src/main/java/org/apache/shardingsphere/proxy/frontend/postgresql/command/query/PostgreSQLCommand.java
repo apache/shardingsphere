@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
@@ -56,7 +57,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTablespaceStatement;
@@ -84,7 +84,7 @@ public enum PostgreSQLCommand {
     CALL(CallStatement.class),
     DO(DoStatement.class),
     ANALYZE(AnalyzeTableStatement.class),
-    VACUUM(PostgreSQLVacuumStatement.class),
+    VACUUM(VacuumStatement.class),
     ALTER_FUNCTION(AlterFunctionStatement.class),
     ALTER_INDEX(AlterIndexStatement.class),
     ALTER_PROCEDURE(AlterProcedureStatement.class),

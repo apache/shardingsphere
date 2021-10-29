@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * SQLServer alter sequence statement.
+ * Show statement.
  */
-@ToString
-public class SQLServerAlterSequenceStatement extends AlterSequenceStatement implements SQLServerStatement {
+public abstract class ShowStatement extends AbstractSQLStatement implements DALStatement {
 }

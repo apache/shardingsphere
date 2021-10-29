@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="start_transaction" value="START TRANSACTION" db-types="PostgreSQL" />
-    <sql-case id="start_read_committed" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
-    <sql-case id="start_read_only" value="START TRANSACTION READ ONLY" db-types="PostgreSQL" />
-    <sql-case id="start_with_transaction_mode" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
+    <sql-case id="start_transaction" value="START TRANSACTION" db-types="PostgreSQL,openGauss" />
+    <sql-case id="start_read_committed" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL,openGauss" />
+    <sql-case id="start_read_only" value="START TRANSACTION READ ONLY" db-types="PostgreSQL,openGauss" />
+    <sql-case id="start_with_transaction_mode" value="START TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL,openGauss" />
 </sql-cases>

@@ -17,20 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss alter sequence statement.
  */
 @ToString
-@Getter
-@Setter
-public final class OpenGaussAlterSequenceStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
-
-    private String sequenceName;
+public final class OpenGaussAlterSequenceStatement extends AlterSequenceStatement implements OpenGaussStatement {
 }

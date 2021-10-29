@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="reset_all" value="RESET ALL"  db-types="PostgreSQL" />
-    <sql-case id="reset_timezone" value="RESET timezone"  db-types="PostgreSQL" />
+    <sql-case id="reset_all" value="RESET ALL"  db-types="PostgreSQL,openGauss" />
+    <sql-case id="reset_timezone" value="RESET timezone"  db-types="PostgreSQL,openGauss" />
 </sql-cases>

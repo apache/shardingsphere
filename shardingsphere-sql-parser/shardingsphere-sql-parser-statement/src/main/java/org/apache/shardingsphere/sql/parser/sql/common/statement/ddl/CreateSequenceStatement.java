@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * SQLServer alter sequence statement.
+ * Create sequence statement.
  */
 @ToString
-public class SQLServerAlterSequenceStatement extends AlterSequenceStatement implements SQLServerStatement {
+@Getter
+@Setter
+public abstract class CreateSequenceStatement extends AbstractSQLStatement implements DDLStatement {
+
+    private String sequenceName;
 }
