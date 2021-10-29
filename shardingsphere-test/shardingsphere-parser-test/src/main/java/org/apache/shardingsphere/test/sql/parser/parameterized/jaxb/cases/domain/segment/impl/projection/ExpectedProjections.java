@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.ExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunctionSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
@@ -59,9 +58,6 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     @XmlElement(name = "expression-projection")
     private final Collection<ExpectedExpressionProjection> expressionProjections = new LinkedList<>();
     
-    @XmlElement(name = "function")
-    private final Collection<ExpectedFunctionSegment> functions = new LinkedList<>();
-    
     @XmlElement(name = "top-projection")
     private final Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
     
@@ -75,7 +71,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
      */
     public int getSize() {
         return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() 
-                + expressionProjections.size() + topProjections.size() + subqueryProjections.size() + functions.size();
+                + expressionProjections.size() + topProjections.size() + subqueryProjections.size();
     }
     
     /**
@@ -92,7 +88,6 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
         result.addAll(expressionProjections);
         result.addAll(topProjections);
         result.addAll(subqueryProjections);
-        result.addAll(functions);
         result.sort(Comparator.comparingInt(ExpectedSQLSegment::getStartIndex));
         return result;
     }

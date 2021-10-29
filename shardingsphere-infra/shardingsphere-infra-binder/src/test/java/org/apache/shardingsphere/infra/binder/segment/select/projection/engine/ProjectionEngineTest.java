@@ -22,14 +22,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.FunctionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -112,14 +110,6 @@ public final class ProjectionEngineTest {
         Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(mock(TableSegment.class), expressionProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ExpressionProjection.class));
-    }
-    
-    @Test
-    public void assertCreateProjectionWhenProjectionSegmentInstanceOfFunctionSegment() {
-        FunctionSegment functionSegment = new FunctionSegment(0, 18, "DATE", "DATE(creation_time)");
-        Optional<Projection> actual = new ProjectionEngine(schema, databaseType).createProjection(mock(TableSegment.class), functionSegment);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FunctionProjection.class));
     }
     
     @Test

@@ -35,9 +35,6 @@ public final class ExpectedFunctionSegment extends AbstractExpectedSQLSegment im
     @XmlAttribute(name = "method-name")
     private String methodName;
 
-    @XmlAttribute(name = "alias")
-    private String alias;
-
     @XmlElement(name = "parameter")
     private List<ExpectedExpression> parameters = new LinkedList<>();
     

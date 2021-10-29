@@ -52,11 +52,15 @@
             <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69"/>
         </from>
         <projections start-index="7" stop-index="44">
-            <function method-name="DATE" alias="creation_date" start-index="7" stop-index="27" text="DATE(i.creation_date)">
-                <column name="creation_date" start-index="12" stop-index="26" >
-                    <owner name="i" start-index="12" stop-index="12"/>
-                </column>
-            </function>
+            <expression-projection text="DATE(i.creation_date)" alias="creation_date" start-index="7" stop-index="44">
+                <expr>
+                    <function method-name="DATE" alias="creation_date" start-index="7" stop-index="27" text="DATE(i.creation_date)">
+                        <column name="creation_date" start-index="12" stop-index="26" >
+                            <owner name="i" start-index="12" stop-index="12"/>
+                        </column>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <order-by>
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100"/>
@@ -1322,7 +1326,11 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="43">
                     <left>
-                        <function method-name="now" start-index="28" stop-index="32" text="now()" />
+                        <expression-projection text="now()" start-index="28" stop-index="32">
+                            <expr>
+                                <function method-name="now" start-index="28" stop-index="32" text="now()" />
+                            </expr>
+                        </expression-projection>
                     </left>
                     <operator>&lt;</operator>
                     <right>

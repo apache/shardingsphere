@@ -817,27 +817,27 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), text);
+        String text = getOriginalText(ctx);
+        FunctionSegment functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), text);
         Collection<ExpressionSegment> expressionSegments = calculateParameterCount(ctx.expr());
-        result.getParameters().addAll(expressionSegments);
-        return result;
+        functionSegment.getParameters().addAll(expressionSegments);
+        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), text, functionSegment);
     }
     
     @Override
     public ASTNode visitShorthandRegularFunction(final ShorthandRegularFunctionContext ctx) {
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        FunctionSegment result;
+        String text = getOriginalText(ctx);
+        FunctionSegment functionSegment;
         if (null != ctx.CURRENT_TIME()) {
-            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
+            functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
             if (null != ctx.NUMBER_()) {
-                result.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
+                functionSegment.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
                         new NumberLiteralValue(ctx.NUMBER_().getText())));
             }
         } else {
-            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
+            functionSegment = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
         }
-        return result;
+        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), text, functionSegment);
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {

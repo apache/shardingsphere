@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.e
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunctionSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
@@ -111,9 +109,6 @@ public final class ProjectionAssert {
         } else if (actual instanceof SubqueryProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedSubqueryProjection.class));
             assertSubqueryProjection(assertContext, (SubqueryProjectionSegment) actual, (ExpectedSubqueryProjection) expected);
-        } else if (actual instanceof FunctionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedFunctionSegment.class));
-            ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, (ExpectedFunctionSegment) expected);
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
