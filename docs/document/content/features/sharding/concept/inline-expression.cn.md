@@ -40,7 +40,7 @@ online_table1, online_table2, online_table3, offline_table1, offline_table2, off
 
 ## 配置
 
-###数据节点
+### 数据节点
 
 对于均匀分布的数据节点，如果数据结构如下：
 
