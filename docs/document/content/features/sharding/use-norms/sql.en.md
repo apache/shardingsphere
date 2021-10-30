@@ -3,38 +3,7 @@ title = "SQL"
 weight = 1
 +++
 
-Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query scenarios, SQLs incompatible with stand-alone databases are hard to avoid.
-
-This document has listed identified supported SQL types and unsupported SQL types, trying to avoid traps for users.
-
-It is inevitably to have some unlisted SQLs, welcome to supplement for that. 
-We will also try to support those unavailable SQLs in future versions.
-
-## Parse Engine
-
-Parse engine used to parse SQL into an abstract syntax tree.
-It supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss and SQL that conform to the SQL92 specification. 
-However, due to the complexity of SQL syntax, there are still a little of SQL that the parse engine does not support.
-
-The list is as follows:
-
-| MySQL                                                        |
-| ------------------------------------------------------------ |
-| FLUSH PRIVILEGES                                             |
-| CLONE LOCAL DATA DIRECTORY = 'clone_dir'                     |
-| INSTALL COMPONENT 'file://component1', 'file://component2'   |
-| UNINSTALL COMPONENT 'file://component1', 'file://component2' |
-| SHOW CREATE USER user                                        |
-| REPAIR TABLE t_order                                         |
-| OPTIMIZE TABLE t_order                                       |
-| CHECKSUM TABLE t_order                                       |
-| CHECK TABLE t_order                                          |
-| SET RESOURCE GROUP group_name                                |
-| DROP RESOURCE GROUP group_name                               |
-| CREATE RESOURCE GROUP group_name TYPE = SYSTEM               |
-| ALTER RESOURCE GROUP rg1 VCPU = 0-63                         |
-
-## Data Sharding
+## SQL Supporting Status
 
 Compatible with all regular SQL when **routing to single data node**;
 **The SQL routing to multiple data nodes** is pretty complex, it divides the scenarios as totally supported, experimental supported and unsupported.
