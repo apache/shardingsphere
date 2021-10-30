@@ -11,14 +11,15 @@ weight = 2
 
 支持迁移场景如下：
 
-| 源端                  | 目标端                | 是否支持 |
-| --------------------- | -------------------- | ------- |
-| MySQL(5.1.15 ~ 5.7.x) | ShardingSphere-Proxy | 是      |
-| PostgreSQL(9.4 ~ )    | ShardingSphere-Proxy | 是      |
+| 源端                   | 目标端                |
+| --------------------- | -------------------- |
+| MySQL(5.1.15 ~ 5.7.x) | MySQL                |
+| PostgreSQL(9.4 ~ )    | PostgreSQL           |
+| openGauss(2.1.0)      | openGauss            |
 
 **注意**：
 
-如果后端连接 MySQL 数据库，请下载 [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar)，并将其放入 `${shardingsphere-proxy}\lib` 目录。
+如果后端连接 MySQL 数据库，请下载 [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )，并将其放入 `${shardingsphere-proxy}/lib` 目录。
 
 ### 权限要求
 
@@ -71,6 +72,7 @@ mysql> preview select count(1) from t_order;
 #### 创建迁移任务
 
 1. 添加新的数据源
+
 详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/)。
 
 示例：
@@ -85,6 +87,7 @@ ADD RESOURCE ds_2 (
 ```
 
 2. 修改分片规则
+
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
 
 示例：
@@ -100,6 +103,7 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 比如说`RESOURCES`和`sharding-count`修改了会触发迁移。
 
 #### 查询所有迁移任务
+
 详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 示例：

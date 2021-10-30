@@ -6,7 +6,7 @@ weight = 3
 
 ## 1. 规则配置
 
-编辑`%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`。详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
+编辑`%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`。详情请参见[运行部署](/cn/user-manual/shardingsphere-scaling/build/)。
 
 > %SHARDINGSPHERE_PROXY_HOME% 为 Proxy 解压后的路径，例：/Users/ss/shardingsphere-proxy-bin/
 

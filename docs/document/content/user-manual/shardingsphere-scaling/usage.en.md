@@ -11,14 +11,15 @@ JAVA，JDK 1.8+.
 
 The migration scene we support:
 
-| Source                     | Target          | Support |
-| -------------------------- | -------------------- | ------- |
-| MySQL(5.1.15 ~ 5.7.x)      | ShardingSphere-Proxy | Yes     |
-| PostgreSQL(9.4 ~ )         | ShardingSphere-Proxy | Yes     |
+| Source                     | Target               |
+| -------------------------- | -------------------- |
+| MySQL(5.1.15 ~ 5.7.x)      | MySQL                |
+| PostgreSQL(9.4 ~ )         | PostgreSQL           |
+| openGauss(2.1.0)           | openGauss            |
 
 **Attention**: 
 
-If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `${shardingsphere-scaling}\lib directory`.
+If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `${shardingsphere-proxy}/lib directory`.
 
 ### Privileges
 
@@ -71,7 +72,8 @@ mysql> preview select count(1) from t_order;
 #### Start scaling job
 
 1. Add new data source resources
-Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/).
+
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
 
 Example:
 ```sql
@@ -85,7 +87,8 @@ ADD RESOURCE ds_2 (
 ```
 
 2. Alter sharding table rule
-Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/).
+
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
 
 Example:
 ```sql
@@ -100,7 +103,8 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted.
 
 #### List scaling jobs
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling).
+
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.
 
 Example:
 ```sql
@@ -177,4 +181,4 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### Other DistSQL
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling).
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.

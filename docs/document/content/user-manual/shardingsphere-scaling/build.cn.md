@@ -46,13 +46,9 @@ mode:
 
 打开`clusterAutoSwitchAlgorithm`配置代表开启自动检测任务是否完成及切换配置，目前系统提供了`IDLE`类型实现。
 
-打开`dataConsistencyCheckAlgorithm`配置设置数据校验算法，目前系统提供了`DEFAULT`类型实现。`DEFAULT`算法目前支持的数据库：`MySQL`。其他数据库还不能打开这个配置项。其他数据库的支持还在开发中。
+打开`dataConsistencyCheckAlgorithm`配置设置数据校验算法，关闭该配置系统将不进行数据校验。目前系统提供了`DEFAULT`类型实现，`DEFAULT`算法目前支持的数据库：`MySQL`。其他数据库还不能打开这个配置项，相关支持还在开发中。
 
-可以通过`ScalingClusterAutoSwitchAlgorithm`接口自定义一个SPI实现。
-
-可以通过`ScalingDataConsistencyCheckAlgorithm`接口自定义一个SPI实现。
-
-详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+可以通过`ScalingClusterAutoSwitchAlgorithm`接口自定义一个SPI实现，通过`ScalingDataConsistencyCheckAlgorithm`接口自定义一个SPI实现。详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
 
 3. 启动 ShardingSphere-Proxy：
 
@@ -64,15 +60,11 @@ sh bin/start.sh
 
 ## 结束
 
-### ShardingSphere-Proxy
-
 ```
  sh bin/stop.sh
 ```
 
 ## 应用配置项
-
-### ShardingSphere-Scaling
 
 应用现有配置项如下，相应的配置可在 `conf/server.yaml` 中修改：
 
