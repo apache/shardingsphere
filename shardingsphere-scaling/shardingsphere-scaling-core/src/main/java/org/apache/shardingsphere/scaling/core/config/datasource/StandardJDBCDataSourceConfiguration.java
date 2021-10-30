@@ -49,7 +49,19 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     
     public StandardJDBCDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
-        hikariConfig = YamlEngine.unmarshal(parameter, HikariConfig.class);
+        Map<String, Object> yamlConfig = YamlEngine.unmarshal(parameter, Map.class);
+        // TODO support other properties for HikariConfig
+        HikariConfig hikariConfig = getHikariConfig((String) yamlConfig.get("jdbcUrl"), (String) yamlConfig.get("username"), (String) yamlConfig.get("password"));
+        if (yamlConfig.containsKey("minPoolSize")) {
+            hikariConfig.setMinimumIdle(((Number) yamlConfig.get("minPoolSize")).intValue());
+        }
+        if (yamlConfig.containsKey("maxPoolSize")) {
+            hikariConfig.setMaximumPoolSize(((Number) yamlConfig.get("maxPoolSize")).intValue());
+        }
+        if (yamlConfig.containsKey("maxLifetime")) {
+            hikariConfig.setMaxLifetime(((Number) yamlConfig.get("maxLifetime")).longValue());
+        }
+        this.hikariConfig = hikariConfig;
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
     }
     
