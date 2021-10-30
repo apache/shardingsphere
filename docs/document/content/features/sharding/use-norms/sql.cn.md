@@ -3,37 +3,7 @@ title = "SQL"
 weight = 1
 +++
 
-由于 SQL 语法灵活复杂，面向分布式的数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的 SQL 出现。
-
-本文详细罗列出已明确可支持的 SQL 种类以及已明确不支持的 SQL 种类，供使用者参考。
-
-其中有未涉及到的 SQL 欢迎补充，未支持的 SQL 也尽量会在未来的版本中支持。
-
-## 解析引擎
-
-解析引擎负责将 SQL 字符串解析为抽象语法树。
-目前支持 MySQL, PostgreSQL, SQLServer, Oracle, openGauss 以及符合 SQL92 规范的 SQL。
-由于 SQL 语法的复杂性，目前仍然存在少量解析引擎不支持的 SQL。
-
-清单如下：
-
-| MySQL                                                        |
-| ------------------------------------------------------------ |
-| FLUSH PRIVILEGES                                             |
-| CLONE LOCAL DATA DIRECTORY = 'clone_dir'                     |
-| INSTALL COMPONENT 'file://component1', 'file://component2'   |
-| UNINSTALL COMPONENT 'file://component1', 'file://component2' |
-| SHOW CREATE USER user                                        |
-| REPAIR TABLE t_order                                         |
-| OPTIMIZE TABLE t_order                                       |
-| CHECKSUM TABLE t_order                                       |
-| CHECK TABLE t_order                                          |
-| SET RESOURCE GROUP group_name                                |
-| DROP RESOURCE GROUP group_name                               |
-| CREATE RESOURCE GROUP group_name TYPE = SYSTEM               |
-| ALTER RESOURCE GROUP rg1 VCPU = 0-63                         |
-
-## 数据分片
+## SQL 支持程度
 
 兼容全部常用的**路由至单数据节点**的 SQL；
 **路由至多数据节点**的 SQL 由于场景复杂，分为稳定支持、实验性支持和不支持这三种情况。
