@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -46,10 +47,16 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ExportableRule exportableRule = mock(ExportableRule.class);
+        when(exportableRule.export()).thenReturn(Collections.emptyMap());
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(exportableRule));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
+        Collection<String> columnNames = resultSet.getColumnNames();
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(4));
+        assertThat(columnNames.size(), is(5));
+        columnNames.containsAll(Arrays.asList("name", "data_source_names", "primary_data_source_name", "discover_type", "discover_props"));
+        assertThat(actual.size(), is(5));
         assertTrue(actual.contains("ms_group"));
         assertTrue(actual.contains("ds_0,ds_1"));
         assertTrue(actual.contains("MGR"));
