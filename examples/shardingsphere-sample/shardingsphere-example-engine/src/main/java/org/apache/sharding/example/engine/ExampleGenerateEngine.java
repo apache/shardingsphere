@@ -63,16 +63,16 @@ public final class ExampleGenerateEngine {
             CONFIGURATION.setDefaultEncoding("UTF-8");
             
             RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
-            RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
+            RENAME_TEMPLATE_MAP.put("ExampleService", "spring-namespace-jdbc/ExampleService.ftl");
             
             UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
             UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
-            UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-            UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderRepository", "repository/OrderRepository.java");
+            //UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+            //UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderRepository", "repository/OrderRepository.java");
 
-            RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-            RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
-            RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
+            //RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+            //RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+            RESOURCE_TEMPLATE_MAP.put("xml/application", "application.xml");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,7 +131,7 @@ public final class ExampleGenerateEngine {
     
     public static void main(String[] args) {
         Yaml yaml = new Yaml();
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/springboot-starter-mybatis/data-model.yaml");
+        InputStream in = ExampleGenerateEngine.class.getResourceAsStream("/template/spring-namespace-jdbc/data-model.yaml");
         Map<String, String> dataModel = yaml.loadAs(in, Map.class);
         generateJavaCode(dataModel);
         generateResourcesFile(dataModel);
