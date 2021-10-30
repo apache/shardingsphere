@@ -1,5 +1,5 @@
 +++
-title = "XA Transaction"
+title = "XA"
 weight = 1
 +++
 
