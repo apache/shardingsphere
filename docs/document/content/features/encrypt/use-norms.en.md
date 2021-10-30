@@ -3,13 +3,13 @@ title = "Use Norms"
 weight = 2
 +++
 
-## Supported Items
+## Supported
 
 * The back-end databases are MySQL, Oracle, PostgreSQL, and SQLServer;
 * The user needs to encrypt one or more columns in the database table (data encryption & decryption);
 * Compatible with all commonly used SQL.
 
-## Unsupported Items
+## Unsupported
 
 * Users need to deal with the original inventory data and wash numbers in the database;
 * Use encryption function + sub-database sub-table function, some special SQL is not supported, please refer to [SQL specification]( https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/);

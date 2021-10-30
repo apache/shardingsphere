@@ -3,13 +3,13 @@ title = "Use Norms"
 weight = 2
 +++
 
-## Supported Items
+## Supported
 
 * Provide the readwrite-splitting configuration of one primary database with multiple replica databases, which can be used alone or with sharding table and database;
 * Support SQL pass-through in independent use of readwrite-splitting;
 * Forcible primary database route based on SQL Hint;
 
-## Unsupported Items
+## Unsupported
 
 * Data replication between the primary and the replica databases;
 * Data inconsistency caused by replication delay between databases;
@@ -17,7 +17,7 @@ weight = 2
 * The data for transaction across primary and replica nodes are inconsistent. 
 In the readwrite-splitting model, the primary nodes need to be used for both reading and writing in the transaction.
 
-## Optional Items
+## Optional
 
 | Item            | Description                                                                                                                                                                                 | Default | Range Of Application |
 |:--------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:------- |:-------------------- |
