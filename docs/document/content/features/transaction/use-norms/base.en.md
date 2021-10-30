@@ -1,19 +1,19 @@
 +++
-title = "Seata BASE transaction"
+title = "BASE"
 weight = 3
 +++
 
-## Supported Items
+## Supported
 
 * Support cross-database transactions after sharding;
 * Support RC isolation level;
 * Rollback transaction according to undo log;
 * Support recovery committing transaction automatically after the service is down.
 
-## Unsupported Items
+## Unsupported
 
 * Do not support other isolation level except RC.
 
-## To Be Optimized Items
+## To Be Optimized
 
-* SQL will be parsed twice by Apache ShardingSphere and Seata.
+* SQL parsed twice by Apache ShardingSphere and SEATA.

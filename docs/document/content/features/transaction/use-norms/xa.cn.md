@@ -1,5 +1,5 @@
 +++
-title = "XA两阶段事务"
+title = "XA 事务"
 weight = 2
 +++
 
