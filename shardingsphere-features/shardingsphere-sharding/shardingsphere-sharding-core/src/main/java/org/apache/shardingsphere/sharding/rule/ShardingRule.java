@@ -86,6 +86,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
 
     private final String defaultShardingColumn;
     
+    /**
+     * 
+     * @param config configuration-shardingRule
+     * @param dataSourceNames data source names
+     */
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
@@ -101,6 +106,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultShardingColumn = config.getDefaultShardingColumn();
     }
     
+    /**
+     * 
+     * @param config configuration-algorithm provided shardingRule
+     * @param dataSourceNames data source names
+     */
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
