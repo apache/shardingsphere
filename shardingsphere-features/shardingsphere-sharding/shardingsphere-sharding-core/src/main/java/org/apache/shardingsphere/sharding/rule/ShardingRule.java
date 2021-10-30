@@ -87,6 +87,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private final String defaultShardingColumn;
     
     /**
+     * Provide variable values
      * 
      * @param config configuration-shardingRule
      * @param dataSourceNames data source names
@@ -107,6 +108,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
+     * Provide variable values
      * 
      * @param config configuration-algorithm provided shardingRule
      * @param dataSourceNames data source names
