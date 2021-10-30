@@ -45,7 +45,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EncryptProjectionTokenGeneratorTest {
+public final class EncryptProjectionTokenGeneratorTest {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -115,7 +115,7 @@ public class EncryptProjectionTokenGeneratorTest {
         return buildAllUniqueTables(true);
     }
     
-    private List<SimpleTableSegment> buildAllUniqueTables(boolean hasAlias) {
+    private List<SimpleTableSegment> buildAllUniqueTables(final boolean hasAlias) {
         SimpleTableSegment table1 = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         when(table1.getTableName().getIdentifier().getValue()).thenReturn("doctor");
         SimpleTableSegment table2 = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
