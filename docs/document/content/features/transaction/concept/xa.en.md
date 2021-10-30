@@ -1,5 +1,5 @@
 +++
-title = "XA Transaction"
+title = "XA"
 weight = 1
 +++
 
@@ -9,7 +9,7 @@ TM and RM use XA protocol for bidirectional streaming.
 Compared with traditional local transactions, XA transactions have a prepared phase, where the database cannot only passively receive commands, but also notify the submitter whether the transaction can be accepted. 
 TM can collect all the prepared results of branch transactions before submitting all of them together, which has guaranteed the distributed consistency.
 
-![2PC XA model](https://shardingsphere.apache.org/document/current/img/transaction/2pc-tansaction-modle.png)
+![2PC XA model](https://shardingsphere.apache.org/document/current/img/transaction/2pc-tansaction.png)
 
 Java implements the XA model through defining a JTA interface, in which `ResourceManager` requires an XA driver provided by database manufacturers and `TransactionManager` is provided by transaction manager manufacturers. 
 Traditional transaction managers need to be bound with application server, which poises a high use cost. Built-in transaction managers have already been able to provide services through jar packages. 
