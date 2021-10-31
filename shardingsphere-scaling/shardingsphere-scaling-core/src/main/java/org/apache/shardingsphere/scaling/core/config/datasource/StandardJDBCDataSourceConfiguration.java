@@ -24,6 +24,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -47,29 +50,26 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     
     private final DatabaseType databaseType;
     
+    @SuppressWarnings("unchecked")
     public StandardJDBCDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
-        Map<String, Object> yamlConfig = YamlEngine.unmarshal(parameter, Map.class);
-        // TODO support other properties for HikariConfig
-        HikariConfig hikariConfig = getHikariConfig((String) yamlConfig.get("jdbcUrl"), (String) yamlConfig.get("username"), (String) yamlConfig.get("password"));
-        if (yamlConfig.containsKey("minPoolSize")) {
-            hikariConfig.setMinimumIdle(((Number) yamlConfig.get("minPoolSize")).intValue());
-        }
-        if (yamlConfig.containsKey("maxPoolSize")) {
-            hikariConfig.setMaximumPoolSize(((Number) yamlConfig.get("maxPoolSize")).intValue());
-        }
-        if (yamlConfig.containsKey("maxLifetime")) {
-            hikariConfig.setMaxLifetime(((Number) yamlConfig.get("maxLifetime")).longValue());
-        }
-        this.hikariConfig = hikariConfig;
+        Map<String, Object> dataSourceConfig = YamlEngine.unmarshal(parameter, Map.class);
+        dataSourceConfig.remove("dataSourceClassName");
+        hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(dataSourceConfig), HikariConfig.class);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
     }
     
     public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        HikariConfig hikariConfig = getHikariConfig(jdbcUrl, username, password);
-        this.hikariConfig = hikariConfig;
+        this.hikariConfig = getHikariConfig(jdbcUrl, username, password);
         this.parameter = wrapParameter(jdbcUrl, username, password);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+    }
+    
+    private <T> T unmarshalSkipMissingProperties(final String yamlContent, final Class<T> classType) {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        Yaml yaml = new Yaml(new Constructor(classType), representer);
+        return yaml.loadAs(yamlContent, classType);
     }
     
     private String wrapParameter(final String jdbcUrl, final String username, final String password) {

@@ -18,3 +18,12 @@
 jdbcUrl: jdbc:h2:mem:test_ds_3;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
 username: root
 password: root
+dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+minimumIdle: 1
+minPoolSize: 1
+maxPoolSize: 50
+maximumPoolSize: 50
+readOnly: false
+idleTimeout: 60000
+connectionTimeout: 30000
+maxLifetime: 1800000
