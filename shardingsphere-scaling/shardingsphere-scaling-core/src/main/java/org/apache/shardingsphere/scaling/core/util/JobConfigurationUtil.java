@@ -188,6 +188,7 @@ public final class JobConfigurationUtil {
     
     private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final HandleConfiguration handleConfig) {
         if (null == handleConfig.getShardingTables()) {
+            log.info("shardingTables null");
             return;
         }
         Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(handleConfig));
