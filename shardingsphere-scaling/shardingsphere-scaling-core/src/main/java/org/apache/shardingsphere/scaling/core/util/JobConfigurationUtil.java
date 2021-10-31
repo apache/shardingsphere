@@ -40,6 +40,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -272,6 +273,11 @@ public final class JobConfigurationUtil {
             Set<String> shardingColumns = new HashSet<>();
             shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
             shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
+            result.put(each.getLogicTable(), shardingColumns);
+        }
+        for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.getAutoTables()) {
+            ShardingStrategyConfiguration shardingStrategy = each.getShardingStrategy();
+            Set<String> shardingColumns = new HashSet<>(extractShardingColumns(shardingStrategy));
             result.put(each.getLogicTable(), shardingColumns);
         }
         return result;
