@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.optimize.converter.segment.projection.impl;
 
-import org.apache.calcite.sql.SqlCharStringLiteral;
+import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Optional;
@@ -31,9 +32,16 @@ import java.util.Optional;
 public final class ExpressionProjectionConverter implements SQLSegmentConverter<ExpressionProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
-        // TODO expression has not been parsed now.
-        String expression = segment.getText();
-        return Optional.of(SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO));
+    public Optional<SqlNode> convertToSQLNode(final ExpressionProjectionSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionConverter().convertToSQLNode(segment.getExpr());
+    }
+    
+    @Override
+    public Optional<ExpressionProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (sqlNode instanceof SqlBasicCall) {
+            ExpressionSegment expressionSegment = new ExpressionConverter().convertToSQLSegment(sqlNode).orElse(null);
+            return Optional.of(new ExpressionProjectionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), sqlNode.toString(), expressionSegment));
+        }
+        return Optional.empty();
     }
 }

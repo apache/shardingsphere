@@ -11,9 +11,10 @@ Attributes:
 
 | *Name* | *DataType* | *Description* | *Default Value* |
 | ------ | ---------- | ------------- | --------------- |
-| enable | boolean    | Shadow DB function switch. Optional values: true/false |false|
+| enable | boolean    | Shadow DB switch. Optional values: true/false |false|
 | dataSources | Map\<String, ShadowDataSourceConfiguration\> | Shadow data source mapping name and configuration | None |
 | tables | Map\<String, ShadowTableConfiguration\> | Shadow table name and configuration | None |
+| defaultShadowAlgorithmName | String | default shadow algorithm name | Option item |
 | shadowAlgorithms | Map\<String, ShardingSphereAlgorithmConfiguration\> | Shadow algorithm name and configuration | None |
 
 ## Shadow Data Source Configuration

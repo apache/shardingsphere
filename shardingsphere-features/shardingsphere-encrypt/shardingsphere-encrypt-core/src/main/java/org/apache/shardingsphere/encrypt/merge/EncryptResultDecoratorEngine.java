@@ -42,7 +42,7 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
                                        final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(schema, 
-                    encryptRule, (SelectStatementContext) sqlStatementContext), encryptRule.isQueryWithCipherColumn());
+                    encryptRule, (SelectStatementContext) sqlStatementContext), encryptRule.isQueryWithCipherColumn(sqlStatementContext));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();

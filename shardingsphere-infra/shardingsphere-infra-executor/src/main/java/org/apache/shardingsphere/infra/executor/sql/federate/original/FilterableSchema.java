@@ -46,7 +46,7 @@ public final class FilterableSchema extends AbstractSchema {
     private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
         Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
-            result.put(each.getName(), new FilterableTable(each, executor));
+            result.put(each.getName(), new FilterableTable(each, executor, new FederationTableStatistic()));
         }
         return result;
     }

@@ -21,13 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
@@ -61,17 +58,8 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expressionSegment);
-        if (1 == columnSegments.size()) {
-            ColumnSegment columnSegment = columnSegments.iterator().next();
-            ShadowExtractor.extractValues(expressionSegment, parameters).ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(getSingleTableName(),
-                    columnSegment.getIdentifier().getValue(), values)));
-        }
-    }
-    
-    @Override
-    protected ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition(ShadowOperationType.UPDATE);
+        ShadowExtractor.extractColumn(expressionSegment).ifPresent(columnSegment -> ShadowExtractor.extractValues(expressionSegment, parameters)
+                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(getSingleTableName(), columnSegment.getIdentifier().getValue(), values))));
     }
     
     @Override
@@ -79,7 +67,11 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
         return updateStatementContext.getAllTables();
     }
     
-    // FIXME refactor the method when sql parses the note and puts it in the statement context
+    @Override
+    protected ShadowOperationType getShadowOperationType() {
+        return ShadowOperationType.UPDATE;
+    }
+    
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();

@@ -17,10 +17,11 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 
 \<encrypt:table />
 
-| *Name*    | *Type*     | *Description*                |
-| --------- | ---------- | ---------------------------- |
-| name       | Attribute | Encrypt table name           |
-| column (+) | Tag       | Encrypt column configuration |
+| *Name*                          | *Type*    | *Description*                                                                                            |
+| ------------------------------- | --------- | -------------------------------------------------------------------------------------------------------- |
+| name                            | Attribute | Encrypt table name                                                                                       |
+| column (+)                      | Tag       | Encrypt column configuration                                                                             |
+| query-with-cipher-column(?) (?) | Attribute | Whether the table query with cipher column for data encrypt. User you can use plaintext to query if have |
 
 \<encrypt:column />
 

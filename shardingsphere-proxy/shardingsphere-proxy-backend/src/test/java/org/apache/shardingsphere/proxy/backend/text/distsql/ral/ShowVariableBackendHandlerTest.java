@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
@@ -29,14 +34,17 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShowVariableBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Test
     public void assertShowTransactionType() throws SQLException {
@@ -63,7 +71,7 @@ public final class ShowVariableBackendHandlerTest {
     }
     
     @Test(expected = UnsupportedVariableException.class)
-    public void assertShowCachedConnectionFailed() {
+    public void assertShowCachedConnectionFailed() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connectionss"), backendConnection).execute();
     }
@@ -78,5 +86,25 @@ public final class ShowVariableBackendHandlerTest {
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(Boolean.FALSE.toString()));
+    }
+    
+    @Test
+    public void assertShowPropsVariable() throws SQLException {
+        backendConnection.setCurrentSchema("schema");
+        ContextManager contextManager = mock(ContextManager.class);
+        ProxyContext.getInstance().init(contextManager);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        Properties props = new Properties();
+        props.put("sql-show", "true");
+        ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
+        when(metaDataContexts.getProps()).thenReturn(configurationProperties);
+        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("SQL_SHOW"), backendConnection);
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        backendHandler.next();
+        Collection<Object> rowData = backendHandler.getRowData();
+        assertThat(rowData.iterator().next(), is("true"));
     }
 }

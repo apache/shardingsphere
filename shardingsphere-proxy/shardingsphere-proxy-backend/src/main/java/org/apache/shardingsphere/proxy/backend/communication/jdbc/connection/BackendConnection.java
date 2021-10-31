@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import io.netty.util.AttributeMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
@@ -58,21 +60,20 @@ import java.util.stream.Collectors;
  * Backend connection.
  */
 @Getter
+@Setter
 public final class BackendConnection implements ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     
+    @Setter(AccessLevel.NONE)
     private volatile String schemaName;
     
-    @Setter
     private volatile int connectionId;
     
-    @Setter
     private volatile Grantee grantee;
     
-    @Setter
     private volatile FederationExecutor federationExecutor;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -91,10 +92,13 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
-    public BackendConnection(final TransactionType initialTransactionType) {
+    private final AttributeMap attributeMap;
+    
+    public BackendConnection(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);
         fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
                 .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+        this.attributeMap = attributeMap;
     }
     
     /**

@@ -10,8 +10,8 @@ chapter = true
 ## 安装步骤（ Mac 为例）
 ## 1.JDK 安装
 - 下方链接获取适合自己环境的安装包（ mac 选取 .dmg 格式）
--	https://www.oracle.com/java
-	![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
+- https://www.oracle.com/java
+  ![JDK.png](https://shardingsphere.apache.org/community/image/download_source/JDK.png)
 - 下载完成后直接安装即可
 ## 2.设置环境变量
 ```shell
@@ -37,7 +37,7 @@ source ~/.zprofile
 ## 4.Idea clone 代码
 - 进入 Idea
 - 工具栏-->Git-->Clone-->Url(https://github.com/apache/shardingsphere.git)
-	![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
+ ![Idea.png](https://shardingsphere.apache.org/community/image/download_source/Idea.png)
 - 等待结束就有刚刚克隆的最新的代码了
 ## 5.项目编译
 ```shell

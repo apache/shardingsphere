@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComDescribePacketTest {
@@ -36,11 +36,16 @@ public final class PostgreSQLComDescribePacketTest {
     
     @Test
     public void assertNewInstance() {
+        when(payload.readInt1()).thenReturn((int) 'P');
+        when(payload.readStringNul()).thenReturn("P_1");
         PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
-        actual.write(payload);
+        assertThat(actual.getType(), is('P'));
+        assertThat(actual.getName(), is("P_1"));
+    }
+    
+    @Test
+    public void assertIdentifier() {
+        PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.DESCRIBE_COMMAND));
-        verify(payload).readInt4();
-        verify(payload).readInt1();
-        verify(payload).readStringNul();
     }
 }

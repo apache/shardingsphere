@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Typed property key of configuration.
  */
@@ -113,11 +117,30 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
      * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
      */
-    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class);
+    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
+    
+    /**
+     * Less than or equal to 0 means no limitation.
+     */
+    PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class),
+    
+    /**
+     * Whether enable sql federation.
+     */
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     
     private final String defaultValue;
     
     private final Class<?> type;
+    
+    /**
+     * Get property key names.
+     *
+     * @return collection of key names
+     */
+    public static Collection<String> getKeyNames() {
+        return Arrays.stream(values()).map(ConfigurationPropertyKey::name).collect(Collectors.toList());
+    }
 }

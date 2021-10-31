@@ -36,6 +36,11 @@ public class SchemaMetaDataNodeTest {
     }
     
     @Test
+    public void assertGetSchemaNameWithLine() {
+        assertThat(SchemaMetaDataNode.getSchemaName("/metadata/logic-db-test/rules"), is("logic-db-test"));
+    }
+    
+    @Test
     public void assertGetSchemaNamePath() {
         assertThat(SchemaMetaDataNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
     }

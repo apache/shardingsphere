@@ -3,7 +3,6 @@ title = "成为Apache官方认可的Committer有什么优势"
 weight = 5
 chapter = true
 +++
-## 成为Apache官方认可的Committer有什么优势
 
 ### 什么是Apache软件基金会？
 

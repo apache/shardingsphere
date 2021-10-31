@@ -73,6 +73,7 @@ public class EncryptSpringBootStarterTest {
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
         assertThat(tableRuleConfig.getColumns().size(), is(2));
+        assertThat(tableRuleConfig.getQueryWithCipherColumn(), is(false));
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn2(columnRuleConfigs.next());
         assertEncryptColumn1(columnRuleConfigs.next());

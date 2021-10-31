@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 
 /**
  * Show sharding hint status statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShowShardingHintStatusStatement extends HintDistSQLStatement {
 }

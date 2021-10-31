@@ -12,8 +12,9 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow
 | *Name* | *Type*  | *Description* |
 | ------ | ------- | ------------- |
 | id     | Attribute | Spring Bean Id |
-| enable | Attribute | Shadow function switch. Optional values: true/false, the default is false |
+| enable | Attribute | Shadow DB switch. Optional values: true/false, the default is false |
 | data-source(?)  | Tag | Shadow data source configuration |
+| default-shadow-algorithm-name(?)  | Tag  | Default shadow algorithm configuration |
 | shadow-table(?) | Tag | Shadow table configuration |
 
 \<shadow:data-source />
@@ -23,6 +24,11 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow
 | id | Attribute | Spring Bean Id |
 | source-data-source-name | Attribute | Production data source name |
 | shadow-data-source-name | Attribute | Shadow data source name |
+
+\<shadow:default-shadow-algorithm-name />
+| *Name* | *Type*  | *Description* |
+| ----- | ------ | ------ |
+| name | Attribute | Default shadow algorithm name |
 
 \<shadow:shadow-table />
 
@@ -40,8 +46,8 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow
 
 \<shadow:shadow-algorithm />
 
-| *名称*    | *类型* | *说明*        |
+| *Name*    | *Type* | *Description*        |
 | --------- | ----- | ------------- |
-| id        | 属性  | Shadow algorithm name |
-| type      | 属性  | Shadow algorithm type |
-| props (?) | 标签  | Shadow algorithm property configuration |
+| id        | Attribute  | Shadow algorithm name |
+| type      | Attribute  | Shadow algorithm type |
+| props (?) | Attribute  | Shadow algorithm property configuration |

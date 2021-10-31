@@ -262,6 +262,26 @@ public enum SQLVisitorRule {
     
     LOAD("Load", SQLStatementType.DAL),
     
+    INSTALL("Install", SQLStatementType.DAL),
+    
+    UNINSTALL("Uninstall", SQLStatementType.DAL),
+    
+    FLUSH("Flush", SQLStatementType.DAL),
+
+    Restart("Restart", SQLStatementType.DAL),
+
+    CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
+    
+    SET_RESOURCE_GROUP("SetResourceGroup", SQLStatementType.DAL),
+    
+    BINLOG("Binlog", SQLStatementType.DAL),
+    
+    OPTIMIZE_TABLE("OptimizeTable", SQLStatementType.DAL),
+
+    CLONE("Clone", SQLStatementType.DAL),
+    
+    REPAIR_TABLE("RepairTable", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

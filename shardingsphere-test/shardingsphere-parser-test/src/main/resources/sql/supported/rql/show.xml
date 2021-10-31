@@ -30,4 +30,5 @@
     <distsql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" />
     <distsql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" />
     <distsql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" />
+    <distsql-case id="show-single-table-rules" value="SHOW SINGLE TABLE RULE t_order FROM single_table_db" />
 </sql-cases>

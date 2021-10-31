@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -43,12 +45,12 @@ public final class PostgreSQLDoubleBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readDouble()).thenReturn(1D);
-        assertThat(new PostgreSQLDoubleBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf), 8), is(1D));
+        assertThat(new PostgreSQLDoubleBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 8), is(1D));
     }
     
     @Test
     public void assertWrite() {
-        new PostgreSQLDoubleBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf), 1D);
+        new PostgreSQLDoubleBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1D);
         verify(byteBuf).writeDouble(1.0d);
     }
 }

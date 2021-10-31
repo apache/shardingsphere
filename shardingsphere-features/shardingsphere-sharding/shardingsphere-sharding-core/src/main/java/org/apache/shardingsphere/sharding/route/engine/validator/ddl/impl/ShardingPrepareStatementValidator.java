@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,15 +32,15 @@ import java.util.stream.Collectors;
 /**
  * Sharding prepare statement validator.
  */
-public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator<PostgreSQLPrepareStatement> {
+public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator<PrepareStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (routeContext.getRouteUnits().isEmpty()) {
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");

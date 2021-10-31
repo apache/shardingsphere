@@ -123,6 +123,10 @@ AVG
     : A V G
     ;
 
+BIT_XOR
+    : B I T UL_ X O R
+    ;
+
 AVG_ROW_LENGTH
     : A V G UL_ R O W UL_ L E N G T H
     ;

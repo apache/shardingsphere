@@ -21,6 +21,8 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.optimize.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Optional;
 
@@ -30,10 +32,22 @@ import java.util.Optional;
 public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
+    public Optional<SqlNode> convertToSQLNode(final SubqueryExpressionSegment expression) {
         if (null == expression) {
             return Optional.empty();
         }
-        return Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
+        return Optional.of(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect()));
+    }
+    
+    @Override
+    public Optional<SubqueryExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (null == sqlNode) {
+            return Optional.empty();
+        }
+        SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(sqlNode);
+        // FIXME subquery projection position returned by the CalCite parser does not contain two brackets
+        int startIndex = getStartIndex(sqlNode) - 1;
+        int stopIndex = getStopIndex(sqlNode) + 1;
+        return Optional.of(new SubqueryExpressionSegment(new SubquerySegment(startIndex, stopIndex, selectStatement)));
     }
 }

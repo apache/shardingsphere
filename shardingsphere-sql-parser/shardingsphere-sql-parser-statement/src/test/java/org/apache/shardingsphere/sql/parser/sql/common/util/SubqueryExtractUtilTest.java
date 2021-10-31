@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
@@ -144,5 +147,21 @@ public final class SubqueryExtractUtilTest {
         Iterator<SubquerySegment> iterator = result.iterator();
         assertThat(iterator.next(), is(leftSubquerySegment.getSubquery()));
         assertThat(iterator.next(), is(rightSubquerySegment.getSubquery()));
+    }
+    
+    @Test
+    public void assertGetSubquerySegmentsWithMultiNestedSubquery() {
+        SelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
+        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        assertThat(result.size(), is(2));
+    }
+    
+    private SubquerySegment createSubquerySegmentForFrom() {
+        SelectStatement selectStatement = new MySQLSelectStatement();
+        ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0, 
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement())), false)));
+        return new SubquerySegment(0, 0, selectStatement);
     }
 }

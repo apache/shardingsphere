@@ -29,4 +29,8 @@ public final class DuplicateRuleException extends RuleDefinitionViolationExcepti
     public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
         super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
     }
+    
+    public DuplicateRuleException(final String type, final String schemaName) {
+        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
+    }
 }

@@ -34,23 +34,22 @@ Original 潘娟 SphereEx 6/22
 ### 1. 亮点功能
 
 #### 全新定义的分布式数据库操作语言—DistSQL
-	
+
 SQL 是一种用于存取数据以及查询、更新和管理关系数据库系统的数据库查询和程序设计语言。1986 年 10 月，美国国家标准学会将 SQL 作为关系式数据库管理系统的标准语言。现有通用数据库系统在其实践过程中都对 SQL 规范作了部分改写和扩充，具有更高灵活性和更丰富的功能，使其适用于自身的数据库系统。
-	
+
 DistSQL（Distributed SQL）是 Apache ShardingSphere 提出的，特有的一种内置 SQL 语言，能够提供标准 SQL 之外的增量功能操作能力。DistSQL 让用户可以像操作数据库一样操作 ShardingSphere，使其从面向开发人员的框架和中间件转变为面向运维人员的基础设施产品。
-	
+
 在 ShardingSphere 中， DistSQL 目前主要划分为 RDL、RQL 和 RAL 三种具体类型：
-	
+
 * RDL（Resource & Rule Definition Language）：资源和规则的创建、修改和删除；
 * RQL（Resource & Rule Query Language）：资源和规则的查询和展现； 
 * RAL（Resource & Rule Administration Language）：Hint、事务类型切换、分片执行计划查询等增量功能操作。
-	
-ShardingSphere 推出 Database Plus 理念，为传统数据库赋能，构建具备分布式、高安全、可管控等的数据库增强生态，打造兼具数据库且贴合实际业务需求的开源分布式数据库体系。与该分布式数据库体系搭配使用的分布式 SQL（Distributed SQL）将传统通过配置文件驱动的分布式数据库代理端 ShardingSphere-Proxy，变成真正意义上通过 SQL 驱动的“分布式数据库”。
-	
-在 5.0.0-beta 版本中，用户可一键启动 ShardingSphere-Proxy，并通过 DistSQL 在线动态创建、修改、删除分布式数据库表，加密数据库表，动态注入数据库实例资源，创建主从轮询规则，展示全局配置信息，开启分布式事务，启动动态迁移分布式库表作业等功能。
-	
-DistSQL 这种数据库态产品，让用户用最规范、标准、熟悉的查询方式操纵及管理 ShardingSphere 分布式数据库生态所有数据库资源及元数据信息。未来我们将通过 DistSQL 打破中间件和数据库之间的界限，让开发者真正像使用数据库一样原生的使用 ShardingSphere。
 
+ShardingSphere 推出 Database Plus 理念，为传统数据库赋能，构建具备分布式、高安全、可管控等的数据库增强生态，打造兼具数据库且贴合实际业务需求的开源分布式数据库体系。与该分布式数据库体系搭配使用的分布式 SQL（Distributed SQL）将传统通过配置文件驱动的分布式数据库代理端 ShardingSphere-Proxy，变成真正意义上通过 SQL 驱动的“分布式数据库”。
+
+在 5.0.0-beta 版本中，用户可一键启动 ShardingSphere-Proxy，并通过 DistSQL 在线动态创建、修改、删除分布式数据库表，加密数据库表，动态注入数据库实例资源，创建主从轮询规则，展示全局配置信息，开启分布式事务，启动动态迁移分布式库表作业等功能。
+
+DistSQL 这种数据库态产品，让用户用最规范、标准、熟悉的查询方式操纵及管理 ShardingSphere 分布式数据库生态所有数据库资源及元数据信息。未来我们将通过 DistSQL 打破中间件和数据库之间的界限，让开发者真正像使用数据库一样原生的使用 ShardingSphere。
 
 #### 全面对接 PostgreSQL 生态
 
@@ -59,7 +58,6 @@ PostgreSQL 是世界领先的开源数据库，被业界称为最强大的企业
 ShardingSphere-JDBC 和 ShardingSphere-Proxy 共同构成 ShardingSphere 的接入端体系。ShardingSphere-Proxy 又包括 MySQL 和 PostgreSQL 两个协议版本。在 MySQL 协议日益成熟及广泛采用的同时，ShardingSphere 团队开始将注意力放在 PostgreSQL 协议。本次发行的版本，特别针对 PostgreSQL 在其 SQL 解析层、SQL 兼容层、协议接入层、权限控制层进行大规模开发及提升。作为本次发布的主打产品，提升后的 ShardingSphere-Proxy PostgreSQL 版本将真正踏上联动 PostgreSQL 开源生态之路，并在未来将有更多持续提升。
 
 PostgreSQL 作为开源界的明星数据库产品，ShardingSphere 与 PostgreSQL 的链接，将为考虑将 PostgreSQL 分布式化、水平拓展化、安全加密化、细粒度权限控制化的用户提供更为完善和持续维护的解决方案。
-
 
 #### ShardingSphere 可插拔架构
 
@@ -117,7 +115,7 @@ ShardingSphere 在功能不断完善、新功能不断开发的进程中，一�
 
 除了上述列举的功能外，本次发布还进行了其他方面的功能增强、性能优化、缺陷修复等处理。在后续的系列文章中，我们将会持续为大家带来 Apache ShardingSphere 5.0.0-beta 的正式发布报道、各个特性及功能的深度技术文章，欢迎锁定我们的系列更新！
 
-**🔗	ShardingSphere GitHub 地址：**
+**🔗 ShardingSphere GitHub 地址：**
 
 <https://github.com/apache/shardingsphere>
 

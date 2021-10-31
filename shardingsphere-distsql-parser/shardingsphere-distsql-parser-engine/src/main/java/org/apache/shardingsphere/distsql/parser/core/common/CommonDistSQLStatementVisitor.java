@@ -31,17 +31,23 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SetVariableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowAllVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowResourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSinglesTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -95,6 +101,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowInstance(final ShowInstanceContext ctx) {
+        return new ShowInstanceStatement();
+    }
+    
+    @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
         return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
     }
@@ -129,8 +140,19 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowSinglesTableRules(final ShowSinglesTableRulesContext ctx) {
+        return new ShowSingleTableRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()),
+                null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    }
+    
+    @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()));
+        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
+    }
+    
+    @Override
+    public ASTNode visitShowAllVariables(final ShowAllVariablesContext ctx) {
+        return new ShowAllVariablesStatement();
     }
     
     private String getIdentifierValue(final ParseTree context) {

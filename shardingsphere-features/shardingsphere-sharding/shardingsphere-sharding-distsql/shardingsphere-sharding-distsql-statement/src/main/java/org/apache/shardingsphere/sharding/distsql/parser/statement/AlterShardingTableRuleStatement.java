@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 
 import java.util.Collection;
 
@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class AlterShardingTableRuleStatement extends AlterRuleStatement {
     
-    private final Collection<TableRuleSegment> rules;
+    private final Collection<AbstractTableRuleSegment> rules;
 }

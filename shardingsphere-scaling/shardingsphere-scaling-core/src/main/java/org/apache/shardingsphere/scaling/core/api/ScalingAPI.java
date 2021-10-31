@@ -40,6 +40,14 @@ public interface ScalingAPI {
     List<JobInfo> list();
     
     /**
+     * Get uncompleted job ids of schema.
+     *
+     * @param schemaName schema name
+     * @return uncompleted job ids
+     */
+    List<Long> getUncompletedJobIds(String schemaName);
+    
+    /**
      * Start scaling job by id.
      *
      * @param jobId job id

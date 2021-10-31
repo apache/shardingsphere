@@ -17,10 +17,33 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop sharding binding table rules statement.
  */
+@RequiredArgsConstructor
+@Getter
 public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
+    
+    private final Collection<BindingTableRuleSegment> rules;
+    
+    /**
+     * Get binding groups.
+     *
+     * @return binding groups
+     */
+    public Collection<String> getBindingGroups() {
+        Collection<String> result = new LinkedList<>();
+        for (BindingTableRuleSegment each : rules) {
+            result.add(each.getTableGroups());
+        }
+        return result;
+    }
 }

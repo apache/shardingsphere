@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.variable.SetVariableStatement;
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -59,7 +60,7 @@ public final class SetVariableBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {

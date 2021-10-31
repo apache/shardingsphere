@@ -27,8 +27,8 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  MySQL:
-    name: DB
+  integration-test-docker:
+    name: Integration Test in Docker
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -36,8 +36,20 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        database: [ MySQL ]
+        database: [ MySQL, PostgreSQL ]
         scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting,empty_rules ]
+        exclude:
+          - adapter: jdbc
+            database: PostgreSQL
+          - adapter: proxy
+            database: PostgreSQL
+            scenario: tbl
+          - adapter: proxy
+            database: PostgreSQL
+            scenario: dbtbl_with_readwrite_splitting_and_encrypt
+          - adapter: proxy
+            database: PostgreSQL
+            scenario: empty_rules
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2

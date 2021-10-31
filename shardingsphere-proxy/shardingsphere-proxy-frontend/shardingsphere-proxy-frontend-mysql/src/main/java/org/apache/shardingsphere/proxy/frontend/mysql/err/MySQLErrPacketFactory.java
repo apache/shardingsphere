@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
+import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
@@ -115,6 +116,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof ScalingJobNotFoundException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
+        }
+        if (cause instanceof FrontendTooManyConnectionsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());
         }
         if (cause instanceof RuntimeException) {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());

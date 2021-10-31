@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -43,12 +45,12 @@ public final class PostgreSQLFloatBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readFloat()).thenReturn(1F);
-        assertThat(new PostgreSQLFloatBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf), 4), is(1.0F));
+        assertThat(new PostgreSQLFloatBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 4), is(1.0F));
     }
     
     @Test
     public void assertWrite() {
-        new PostgreSQLFloatBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf), 1F);
+        new PostgreSQLFloatBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1F);
         verify(byteBuf).writeFloat(1.0f);
     }
 }

@@ -39,6 +39,7 @@
                 <xsd:element ref="column" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="query-with-cipher-column" type="xsd:boolean" />
         </xsd:complexType>
     </xsd:element>
      <xsd:element name="column">

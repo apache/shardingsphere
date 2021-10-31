@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
+import java.nio.charset.Charset;
+
 /**
  * Payload operation for PostgreSQL packet data types.
  *
@@ -32,6 +34,8 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 public final class PostgreSQLPacketPayload implements PacketPayload {
     
     private final ByteBuf byteBuf;
+    
+    private final Charset charset;
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
@@ -132,7 +136,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
         byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
         byteBuf.readBytes(result);
         byteBuf.skipBytes(1);
-        return new String(result);
+        return new String(result, charset);
     }
     
     /**
@@ -141,7 +145,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @param value null terminated string
      */
     public void writeStringNul(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
         byteBuf.writeByte(0);
     }
     
@@ -151,7 +155,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @param value rest of packet string
      */
     public void writeStringEOF(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
     
     /**

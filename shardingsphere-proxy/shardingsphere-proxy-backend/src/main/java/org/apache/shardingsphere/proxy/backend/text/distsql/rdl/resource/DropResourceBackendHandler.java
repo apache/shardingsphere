@@ -55,7 +55,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables());
         drop(schemaName, toBeDroppedResourceNames);
-        // TODO update meta data context in memory
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(
             optional -> optional.getDataSourceService().drop(schemaName, toBeDroppedResourceNames));
         return new UpdateResponseHeader(sqlStatement);

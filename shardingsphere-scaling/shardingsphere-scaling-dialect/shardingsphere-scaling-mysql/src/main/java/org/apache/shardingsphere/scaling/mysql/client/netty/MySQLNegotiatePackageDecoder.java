@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.mysql.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -39,7 +40,7 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        MySQLPacketPayload payload = new MySQLPacketPayload(in);
+        MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         if (!handshakeReceived) {
             out.add(decodeHandshakePacket(payload));
             handshakeReceived = true;

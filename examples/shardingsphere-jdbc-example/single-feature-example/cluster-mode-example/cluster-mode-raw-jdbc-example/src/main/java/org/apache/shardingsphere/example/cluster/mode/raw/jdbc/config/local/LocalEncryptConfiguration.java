@@ -51,7 +51,7 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor");
-        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig));
+        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig), null);
     }
     
     private ShardingSphereAlgorithmConfiguration createEncryptAlgorithmConfiguration() {

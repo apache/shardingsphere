@@ -93,12 +93,14 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         result.add("");
         result.add(getDatabaseStrategyType(shardingTableRuleConfig));
         result.add(getDatabaseShardingColumn(shardingTableRuleConfig));
-        result.add(getAlgorithmType(getDatabaseShardingStrategy(shardingTableRuleConfig)));
-        result.add(getAlgorithmProps(getDatabaseShardingStrategy(shardingTableRuleConfig)));
+        Optional<ShardingStrategyConfiguration> databaseShardingStrategyConfig = getDatabaseShardingStrategy(shardingTableRuleConfig);
+        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getTableStrategyType(shardingTableRuleConfig.getTableShardingStrategy()));
         result.add(getTableShardingColumn(shardingTableRuleConfig.getTableShardingStrategy()));
-        result.add(getAlgorithmType(getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy())));
-        result.add(getAlgorithmProps(getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy())));
+        Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy());
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
@@ -116,8 +118,9 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         result.add("");
         result.add(getTableStrategyType(shardingAutoTableRuleConfig.getShardingStrategy()));
         result.add(getTableShardingColumn(shardingAutoTableRuleConfig.getShardingStrategy()));
-        result.add(getAlgorithmType(getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy())));
-        result.add(getAlgorithmProps(getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy())));
+        Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy());
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
+        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
@@ -145,14 +148,13 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         return "";
     }
     
-    private String getAlgorithmType(final Optional<ShardingStrategyConfiguration> databaseShardingStrategy) {
-        return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
-                ? getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getType() : "";
+    private String getAlgorithmType(final ShardingStrategyConfiguration databaseShardingStrategy) {
+        return databaseShardingStrategy instanceof NoneShardingStrategyConfiguration ? "" : getAlgorithmConfiguration(databaseShardingStrategy.getShardingAlgorithmName()).getType();
     }
     
-    private String getAlgorithmProps(final Optional<ShardingStrategyConfiguration> databaseShardingStrategy) {
-        return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
-                ? PropertiesConverter.convert(getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getProps()) : "";
+    private String getAlgorithmProperties(final ShardingStrategyConfiguration databaseShardingStrategy) {
+        return databaseShardingStrategy instanceof NoneShardingStrategyConfiguration
+                ? "" : PropertiesConverter.convert(getAlgorithmConfiguration(databaseShardingStrategy.getShardingAlgorithmName()).getProps());
     }
     
     private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {

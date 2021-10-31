@@ -34,9 +34,9 @@ import java.util.Properties;
 /**
  * Abstract range sharding algorithm.
  */
-public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
+public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private volatile Map<Integer, Range<Long>> partitionRange;
+    private volatile Map<Integer, Range<Comparable<?>>> partitionRange;
     
     @Getter
     @Setter
@@ -47,15 +47,15 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         partitionRange = calculatePartitionRange(props);
     }
     
-    protected abstract Map<Integer, Range<Long>> calculatePartitionRange(Properties props);
+    protected abstract Map<Integer, Range<Comparable<?>>> calculatePartitionRange(Properties props);
     
     @Override
-    public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
+    public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return availableTargetNames.stream().filter(each -> each.endsWith(String.valueOf(getPartition(shardingValue.getValue())))).findFirst().orElse(null);
     }
     
     @Override
-    public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
+    public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
@@ -69,21 +69,25 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         return result;
     }
     
-    private int getFirstPartition(final Range<Long> valueRange) {
+    private int getFirstPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasLowerBound() ? getPartition(valueRange.lowerEndpoint()) : 0;
     }
     
-    private int getLastPartition(final Range<Long> valueRange) {
+    private int getLastPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasUpperBound() ? getPartition(valueRange.upperEndpoint()) : partitionRange.size() - 1;
     }
     
-    private Integer getPartition(final Long value) {
-        for (Entry<Integer, Range<Long>> entry : partitionRange.entrySet()) {
-            if (entry.getValue().contains(value)) {
+    private Integer getPartition(final Comparable<?> value) {
+        for (Entry<Integer, Range<Comparable<?>>> entry : partitionRange.entrySet()) {
+            if (entry.getValue().contains(getLongValue(value))) {
                 return entry.getKey();
             }
         }
         throw new UnsupportedOperationException("");
+    }
+    
+    private Long getLongValue(final Comparable<?> value) {
+        return Long.parseLong(value.toString());
     }
     
     @Override

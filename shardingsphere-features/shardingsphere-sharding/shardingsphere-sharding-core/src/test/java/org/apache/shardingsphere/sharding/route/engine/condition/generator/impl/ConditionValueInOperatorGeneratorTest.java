@@ -22,17 +22,22 @@ import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -55,5 +60,30 @@ public final class ConditionValueInOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertThat(((ListShardingConditionValue) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void assertGenerateConditionValueWithParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ListExpression right = new ListExpression(0, 0);
+        right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
+        InExpression predicate = new InExpression(0, 0, left, right, false);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Collections.singletonList(1));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ListShardingConditionValue.class));
+        ListShardingConditionValue<Integer> conditionValue = (ListShardingConditionValue<Integer>) actual.get();
+        assertThat(conditionValue.getTableName(), is("tbl"));
+        assertThat(conditionValue.getColumnName(), is("id"));
+        assertThat(conditionValue.getValues(), is(Collections.singletonList(1)));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGenerateConditionValueWithoutParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        ListExpression right = new ListExpression(0, 0);
+        right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
+        InExpression predicate = new InExpression(0, 0, left, right, false);
+        generator.generate(predicate, column, new LinkedList<>());
     }
 }

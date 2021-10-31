@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -42,8 +41,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     @Override
     protected Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions() {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
-        Collection<String> columnNames = parseColumnNames();
-        Iterator<String> columnNamesIt = columnNames.iterator();
+        Iterator<String> columnNamesIt = parseColumnNames().iterator();
         List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
         int index = 0;
         while (columnNamesIt.hasNext()) {
@@ -73,16 +71,15 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition(ShadowOperationType.INSERT);
-    }
-    
-    @Override
     protected Collection<SimpleTableSegment> getAllTables() {
         return insertStatementContext.getAllTables();
     }
     
-    // FIXME refactor the method when sql parses the note and puts it in the statement context
+    @Override
+    protected ShadowOperationType getShadowOperationType() {
+        return ShadowOperationType.INSERT;
+    }
+    
     @Override
     protected Optional<Collection<String>> parseSqlNotes() {
         Collection<String> result = new LinkedList<>();

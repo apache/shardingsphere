@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
@@ -54,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -69,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -81,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.List;
@@ -176,8 +178,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DropViewStatement) {
             return new DropViewStatementContext((DropViewStatement) sqlStatement);
         }
-        if (sqlStatement instanceof PostgreSQLPrepareStatement) {
-            return new PrepareStatementContext((PostgreSQLPrepareStatement) sqlStatement);
+        if (sqlStatement instanceof PrepareStatement) {
+            return new PrepareStatementContext((PrepareStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }
@@ -216,6 +218,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof FlushStatement) {
+            return new FlushStatementContext((FlushStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

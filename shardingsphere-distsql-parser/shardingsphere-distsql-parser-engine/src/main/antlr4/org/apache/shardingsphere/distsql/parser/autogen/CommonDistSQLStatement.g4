@@ -26,8 +26,11 @@ execute
     | showResources
     | setVariable
     | showVariable
+    | showAllVariables
     | clearHint
     | enableInstance
     | disableInstance
+    | showInstance
+    | showSinglesTableRules
     ) SEMI?
     ;

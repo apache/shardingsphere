@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_user_without_hostname" value="DROP USER user_dev" db-types="Oracle,PostgreSQL,SQLServer"/>
+    <sql-case id="drop_user_without_hostname" value="DROP USER user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer"/>
     <sql-case id="drop_user_with_hostname" value="DROP USER user_dev@localhost" db-types="MySQL,Oracle" />
     <sql-case id="drop_user_cascade" value="DROP USER user_dev CASCADE" db-types="Oracle" />
-    <sql-case id="drop_user" value="DROP USER user1" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
-    <sql-case id="drop_users" value="DROP USER user1, user2" db-types="MySQL,PostgreSQL" />
-    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="drop_user" value="DROP USER user1" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_users" value="DROP USER user1, user2" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
 </sql-cases>

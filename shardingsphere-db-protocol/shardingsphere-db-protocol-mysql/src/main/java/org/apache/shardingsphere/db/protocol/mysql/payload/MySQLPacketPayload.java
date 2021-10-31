@@ -23,6 +23,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
+import java.nio.charset.Charset;
+
 /**
  * MySQL payload operation for MySQL packet data types.
  *
@@ -33,6 +35,8 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 public final class MySQLPacketPayload implements PacketPayload {
     
     private final ByteBuf byteBuf;
+    
+    private final Charset charset;
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
@@ -120,7 +124,6 @@ public final class MySQLPacketPayload implements PacketPayload {
      */
     public void writeInt4(final int value) {
         byteBuf.writeIntLE(value);
-    
     }
     
     /**
@@ -145,7 +148,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      *
      * @param value 6 byte fixed length integer
      */
-    public void writeInt6(final int value) {
+    public void writeInt6(final long value) {
         // TODO
     }
     
@@ -169,7 +172,6 @@ public final class MySQLPacketPayload implements PacketPayload {
      */
     public void writeInt8(final long value) {
         byteBuf.writeLongLE(value);
-        
     }
     
     /**
@@ -248,7 +250,7 @@ public final class MySQLPacketPayload implements PacketPayload {
         int length = (int) readIntLenenc();
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
-        return new String(result);
+        return new String(result, charset);
     }
     
     /**
@@ -278,7 +280,7 @@ public final class MySQLPacketPayload implements PacketPayload {
             return;
         }
         writeIntLenenc(value.getBytes().length);
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
     
     /**
@@ -307,7 +309,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     public String readStringFix(final int length) {
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
-        return new String(result);
+        return new String(result, charset);
     }
     
     /**
@@ -333,7 +335,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param value fixed length string
      */
     public void writeStringFix(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
     
     /**
@@ -381,7 +383,7 @@ public final class MySQLPacketPayload implements PacketPayload {
         byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
         byteBuf.readBytes(result);
         byteBuf.skipBytes(1);
-        return new String(result);
+        return new String(result, charset);
     }
     
     /**
@@ -406,7 +408,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param value null terminated string
      */
     public void writeStringNul(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
         byteBuf.writeByte(0);
     }
     
@@ -433,7 +435,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     public String readStringEOF() {
         byte[] result = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(result);
-        return new String(result);
+        return new String(result, charset);
     }
     
     /**
@@ -444,7 +446,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param value rest of packet string
      */
     public void writeStringEOF(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
     
     /**
@@ -462,9 +464,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param length length of reserved
      */
     public void writeReserved(final int length) {
-        for (int i = 0; i < length; i++) {
-            byteBuf.writeByte(0);
-        }
+        byteBuf.writeZero(length);
     }
     
     @Override

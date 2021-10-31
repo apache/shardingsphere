@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement, DDLStatement;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
 
 show
     : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF
@@ -84,18 +84,6 @@ explainOptionName
 
 analyzeKeyword
     : ANALYZE | ANALYSE
-    ;
-
-setConstraints
-    : SET CONSTRAINTS constraintsSetList constraintsSetMode
-    ;
-
-constraintsSetMode
-    : DEFERRED | IMMEDIATE
-    ;
-
-constraintsSetList
-    : ALL | qualifiedNameList
     ;
 
 analyzeTable

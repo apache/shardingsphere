@@ -66,6 +66,11 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+        return MySQLErrPacketFactory.newInstance(cause);
+    }
+    
+    @Override
     public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         return Optional.empty();
     }
