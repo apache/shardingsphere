@@ -122,6 +122,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompleteRegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
@@ -172,6 +174,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -198,6 +201,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * MySQL Statement SQL visitor.
@@ -806,10 +810,33 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        if (null != ctx.completeRegularFunction()) {
-            calculateParameterCount(ctx.completeRegularFunction().expr());
+        FunctionSegment functionSegment = null != ctx.completeRegularFunction() ? (FunctionSegment) visit(ctx.completeRegularFunction()) : (FunctionSegment) visit(ctx.shorthandRegularFunction());
+        // TODO Function call should return function segment.
+        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
+    }
+    
+    @Override
+    public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShorthandRegularFunction(final ShorthandRegularFunctionContext ctx) {
+        String text = getOriginalText(ctx);
+        FunctionSegment result;
+        if (null != ctx.CURRENT_TIME()) {
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.CURRENT_TIME().getText(), text);
+            if (null != ctx.NUMBER_()) {
+                result.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(),
+                        new NumberLiteralValue(ctx.NUMBER_().getText())));
+            }
+        } else {
+            result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), text);
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
@@ -1271,6 +1298,12 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (projection instanceof ExpressionProjectionSegment) {
             ((ExpressionProjectionSegment) projection).setAlias(alias);
             return projection;
+        }
+        if (projection instanceof FunctionSegment) {
+            FunctionSegment functionSegment = (FunctionSegment) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
+            result.setAlias(alias);
+            return result;
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;

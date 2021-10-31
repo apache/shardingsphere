@@ -52,7 +52,17 @@
             <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69"/>
         </from>
         <projections start-index="7" stop-index="44">
-            <expression-projection text="DATE(i.creation_date)" alias="creation_date" start-index="7" stop-index="44"/>
+            <expression-projection text="DATE(i.creation_date)" alias="creation_date" start-index="7" stop-index="44">
+                <expr>
+                    <function function-name="DATE" alias="creation_date" start-index="7" stop-index="27" text="DATE(i.creation_date)">
+                        <parameter>
+                            <column name="creation_date" start-index="12" stop-index="26" >
+                                <owner name="i" start-index="12" stop-index="12"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <order-by>
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100"/>
@@ -1318,7 +1328,11 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="43">
                     <left>
-                        <expression-projection text="now()" start-index="28" stop-index="32" />
+                        <expression-projection text="now()" start-index="28" stop-index="32">
+                            <expr>
+                                <function function-name="now" start-index="28" stop-index="32" text="now()" />
+                            </expr>
+                        </expression-projection>
                     </left>
                     <operator>&lt;</operator>
                     <right>
