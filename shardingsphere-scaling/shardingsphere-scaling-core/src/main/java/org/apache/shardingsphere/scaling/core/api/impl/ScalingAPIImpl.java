@@ -34,6 +34,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
+import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobCreationException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -137,9 +138,9 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfigurationUtil.fillInProperties(jobConfig);
         if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
             log.warn("Invalid scaling job config!");
-            return Optional.empty();
+            throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
-        log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
+        log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());

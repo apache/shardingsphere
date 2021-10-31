@@ -15,32 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.config.datasource;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
+import org.junit.Test;
 
-import java.util.Map;
-
-/**
- * Dumper configuration.
- */
-@Getter
-@Setter
-@ToString(exclude = "dataSourceConfig")
-public class DumperConfiguration {
+public final class StandardJDBCDataSourceConfigurationTest {
     
-    private String dataSourceName;
-    
-    private ScalingDataSourceConfiguration dataSourceConfig;
-    
-    private ScalingPosition<?> position;
-    
-    /**
-     * Table name map. Key is actual table name, value is logic table name.
-     */
-    private Map<String, String> tableNameMap;
+    @Test
+    public void assertConstructionByParameter() {
+        String parameter = ResourceUtil.readFileAndIgnoreComments("config_standard_jdbc_target.yaml");
+        new StandardJDBCDataSourceConfiguration(parameter);
+    }
 }

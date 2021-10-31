@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.common.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-
-import java.util.Map;
 
 /**
- * Dumper configuration.
+ * Scaling job creation exception.
  */
 @Getter
-@Setter
-@ToString(exclude = "dataSourceConfig")
-public class DumperConfiguration {
+public final class ScalingJobCreationException extends RuntimeException {
     
-    private String dataSourceName;
+    private static final long serialVersionUID = 1L;
     
-    private ScalingDataSourceConfiguration dataSourceConfig;
+    public ScalingJobCreationException() {
+    }
     
-    private ScalingPosition<?> position;
+    public ScalingJobCreationException(final String message) {
+        super(message);
+    }
     
-    /**
-     * Table name map. Key is actual table name, value is logic table name.
-     */
-    private Map<String, String> tableNameMap;
+    public ScalingJobCreationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
+    public ScalingJobCreationException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public ScalingJobCreationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

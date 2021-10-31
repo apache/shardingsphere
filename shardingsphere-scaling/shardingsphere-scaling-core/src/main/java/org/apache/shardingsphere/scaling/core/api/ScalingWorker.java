@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -33,6 +37,7 @@ import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.job.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.scaling.core.executor.job.ScalingJobExecutor;
+import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
@@ -126,9 +131,23 @@ public final class ScalingWorker {
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setSchemaName(schemaName);
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
+        disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
         Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class);
         result.setRules(yamlRuleConfigs);
         return result;
+    }
+    
+    private void disableSSLForMySQL(final Map<String, Map<String, Object>> yamlDataSources) {
+        String jdbcUrl = (String) yamlDataSources.entrySet().iterator().next().getValue().get("jdbcUrl");
+        DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        if (!(databaseType instanceof MySQLDatabaseType)) {
+            return;
+        }
+        Map<String, String> parameters = ImmutableMap.of("useSSL", "false");
+        for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
+            jdbcUrl = (String) entry.getValue().get("jdbcUrl");
+            entry.getValue().put("jdbcUrl", JDBCUtil.appendJDBCParameter(jdbcUrl, parameters));
+        }
     }
 }

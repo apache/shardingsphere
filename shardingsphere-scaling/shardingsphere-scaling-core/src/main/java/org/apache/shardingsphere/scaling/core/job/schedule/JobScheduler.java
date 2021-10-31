@@ -111,6 +111,7 @@ public final class JobScheduler implements Runnable {
     
     private synchronized void executeIncrementalTask() {
         if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobContext.getStatus()) {
+            log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
             return;
         }
         log.info("-------------- Start incremental task --------------");
