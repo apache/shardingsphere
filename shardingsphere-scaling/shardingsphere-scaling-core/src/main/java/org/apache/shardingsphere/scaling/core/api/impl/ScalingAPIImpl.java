@@ -140,7 +140,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
-        log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
+        log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());

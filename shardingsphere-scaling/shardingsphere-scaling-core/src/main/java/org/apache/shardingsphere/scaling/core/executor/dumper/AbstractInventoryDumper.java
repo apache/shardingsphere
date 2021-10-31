@@ -86,9 +86,11 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
     private void dump() {
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
             String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfig.getTableName(), getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPosition()));
+            log.info("inventory dump, sql={}", sql);
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
+            int rowCount = 0;
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
                 record.setType(ScalingConstant.INSERT);
@@ -97,7 +99,9 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }
                 pushRecord(record);
+                rowCount++;
             }
+            log.info("dump, rowCount={}", rowCount);
             pushRecord(new FinishedRecord(new FinishedPosition()));
         } catch (final SQLException ex) {
             stop();

@@ -62,8 +62,10 @@ public final class JobSchedulerCenter {
         Map<Integer, JobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
         int shardingItem = jobContext.getShardingItem();
         if (schedulerMap.containsKey(shardingItem)) {
+            log.warn("schedulerMap does not contain shardingItem {}, ignore", shardingItem);
             return;
         }
+        log.info("start JobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
         JobScheduler jobScheduler = new JobScheduler(jobContext);
         jobScheduler.start();
         schedulerMap.put(shardingItem, jobScheduler);

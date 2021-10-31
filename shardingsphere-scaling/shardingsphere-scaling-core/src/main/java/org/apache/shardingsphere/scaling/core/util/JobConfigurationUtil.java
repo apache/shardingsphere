@@ -153,7 +153,9 @@ public final class JobConfigurationUtil {
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
             ImporterConfiguration importerConfig = createImporterConfig(jobConfig, shardingColumnsMap);
-            result.add(new TaskConfiguration(jobConfig.getHandleConfig(), dumperConfig, importerConfig));
+            TaskConfiguration taskConfig = new TaskConfiguration(jobConfig.getHandleConfig(), dumperConfig, importerConfig);
+            log.info("toTaskConfigs, dataSourceName={}, taskConfig={}", entry.getKey(), taskConfig);
+            result.add(taskConfig);
         }
         return result;
     }

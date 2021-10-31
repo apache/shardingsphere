@@ -86,6 +86,8 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     
     @Override
     public final void write() {
+        log.info("importer write");
+        int rowCount = 0;
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(1024, 3);
             if (null != records && !records.isEmpty()) {
@@ -99,7 +101,9 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
                 }
             }
             channel.ack();
+            rowCount++;
         }
+        log.info("importer write, rowCount={}", rowCount);
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {

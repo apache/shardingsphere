@@ -98,16 +98,20 @@ public final class MySQLIncrementalDumper extends AbstractScalingExecutor implem
     
     private void dump() {
         HikariConfig hikariConfig = ((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
+        log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
         JdbcUri uri = new JdbcUri(hikariConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
+        int rowCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
                 handleEvent(uri, event);
+                rowCount++;
             }
         }
+        log.info("incremental dump, rowCount={}", rowCount);
         pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@ToString(exclude = "dataSourceConfig")
 public final class ImporterConfiguration {
     
     private ScalingDataSourceConfiguration dataSourceConfig;

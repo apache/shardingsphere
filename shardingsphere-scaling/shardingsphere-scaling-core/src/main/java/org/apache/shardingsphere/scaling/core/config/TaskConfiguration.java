@@ -19,12 +19,14 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Task configuration.
  */
 @Getter
 @RequiredArgsConstructor
+@ToString
 public final class TaskConfiguration {
     
     private final HandleConfiguration handleConfig;
