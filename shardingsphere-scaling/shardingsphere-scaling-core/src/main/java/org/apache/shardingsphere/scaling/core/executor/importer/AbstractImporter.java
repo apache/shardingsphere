@@ -91,6 +91,7 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(1024, 3);
             if (null != records && !records.isEmpty()) {
+                rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 if (null != importerListener) {
                     importerListener.recordsImported(records);
@@ -101,7 +102,6 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
                 }
             }
             channel.ack();
-            rowCount++;
         }
         log.info("importer write, rowCount={}", rowCount);
     }
