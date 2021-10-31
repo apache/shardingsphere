@@ -18,7 +18,7 @@ Therefore, the system can still run normally, even though any database is down o
 
 Different from the sharding that separates data to all nodes according to sharding keys, readwrite-splitting routes read and write separately to primary database and replica databases according SQL analysis.
 
-![Readwrite-splitting](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/readwrite-splitting-standalone.png)
+![Background](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/background.png)
 
 Data in readwrite-splitting nodes are consistent, whereas that in shards is not.
 The combined use of sharding and readwrite-splitting will effectively enhance the system performance.
@@ -29,7 +29,7 @@ Though readwrite-splitting can enhance system throughput and availability, it al
 What's more, it also brings the same problem as data sharding, complicating developer and operator's maintenance and operation.
 The following diagram has shown the complex topological relations between applications and database groups when sharding used together with readwrite-splitting.
 
-![Sharding + Readwrite-splitting](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/sharding-and-readwrite-splitting.png)
+![Challenges](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/challenges.png)
 
 ## Goal
 
