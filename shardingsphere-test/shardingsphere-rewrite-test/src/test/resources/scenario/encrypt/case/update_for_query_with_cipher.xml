@@ -36,4 +36,14 @@
         <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="UPDATE t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', plain_certificate_number = '111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="update_subquery_projections">
+        <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = (select certificate_number from t_account where certificate_number='111X'), password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, certificate_number = (select cipher_certificate_number, assisted_query_certificate_number from t_account where assisted_query_certificate_number='assisted_query_111X'), cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="update_subquery_expression">
+        <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = (select certificate_number from t_account where certificate_number='111X') AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', plain_certificate_number = '111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = (select assisted_query_certificate_number from t_account where assisted_query_certificate_number='assisted_query_111X') AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+    </rewrite-assertion>
 </rewrite-assertions>

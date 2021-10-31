@@ -32,8 +32,10 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLT
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.And
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import lombok.Setter;
@@ -64,8 +67,12 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
             || (sqlStatementContext instanceof SelectStatementContext && (((SelectStatementContext) sqlStatementContext).isContainsJoinQuery() 
-                    || ((SelectStatementContext) sqlStatementContext).isContainsSubquery()))
-            || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
+            || ((SelectStatementContext) sqlStatementContext).isContainsSubquery()))
+            || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext())
+            || ((sqlStatementContext instanceof UpdateStatementContext) 
+                && !(SubqueryExtractUtil.getSubquerySegments(((UpdateStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()))
+            || ((sqlStatementContext instanceof DeleteStatementContext) 
+                && !(SubqueryExtractUtil.getSubquerySegments(((DeleteStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()));
     }
     
     @Override
@@ -137,6 +144,27 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.addAll(getWhereSegmentsFromWhereAvailable(selectStatementContext));
+        }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            SubqueryExtractUtil.getSubquerySegmentsFromSetAssignmentSegment(updateStatementContext.getSqlStatement().getSetAssignment()).forEach(each -> {
+                SelectStatementContext subSelectStatementContext = new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), 
+                    each.getSelect(), updateStatementContext.getSchemaName());
+                result.addAll(getWhereSegmentsFromWhereAvailable(subSelectStatementContext));
+            });
+            SubqueryExtractUtil.getSubquerySegmentsFromExpression(updateStatementContext.getWhere().get().getExpr()).forEach(each -> {
+                SelectStatementContext subSelectStatementContext = new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(), 
+                    updateStatementContext.getSchemaName());
+                result.addAll(getWhereSegmentsFromWhereAvailable(subSelectStatementContext));
+            });
+        }
+        if (sqlStatementContext instanceof DeleteStatementContext) {
+            DeleteStatementContext deleteStatementContext = (DeleteStatementContext) sqlStatementContext;
+            SubqueryExtractUtil.getSubquerySegmentsFromExpression(deleteStatementContext.getWhere().get().getExpr()).forEach(each -> {
+                SelectStatementContext subSelectStatementContext = new SelectStatementContext(deleteStatementContext.getMetaDataMap(), deleteStatementContext.getParameters(), each.getSelect(), 
+                    deleteStatementContext.getSchemaName());
+                result.addAll(getWhereSegmentsFromWhereAvailable(subSelectStatementContext));
+            });
         }
         return result;
     }

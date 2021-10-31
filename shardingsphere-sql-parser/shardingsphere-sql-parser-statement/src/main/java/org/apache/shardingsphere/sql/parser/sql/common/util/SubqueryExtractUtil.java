@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -34,7 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -57,6 +61,52 @@ public final class SubqueryExtractUtil {
         result.addAll(getSubquerySegmentsFromTableSegment(selectStatement.getFrom()));
         if (selectStatement.getWhere().isPresent()) {
             result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery segment from UpdateStatement.
+     *
+     * @param updateStatement UpdateStatement
+     * @return subquery segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegments(final UpdateStatement updateStatement) {
+        Collection<SubquerySegment> result = new LinkedList<>();
+        result.addAll(getSubquerySegmentsFromSetAssignmentSegment(updateStatement.getSetAssignment()));
+        if (updateStatement.getWhere().isPresent()) {
+            result.addAll(getSubquerySegmentsFromExpression(updateStatement.getWhere().get().getExpr()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery segment from DeleteStatement.
+     *
+     * @param deleteStatement DeleteStatement
+     * @return subquery segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegments(final DeleteStatement deleteStatement) {
+        Collection<SubquerySegment> result = new LinkedList<>();
+        if (deleteStatement.getWhere().isPresent()) {
+            result.addAll(getSubquerySegmentsFromExpression(deleteStatement.getWhere().get().getExpr()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery segment from SetAssignment.
+     *
+     * @param setAssignmentSegment SetAssignmentSegment
+     * @return subquery segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegmentsFromSetAssignmentSegment(final SetAssignmentSegment setAssignmentSegment) {
+        if (null == setAssignmentSegment || setAssignmentSegment.getAssignments().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<SubquerySegment> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignmentSegment.getAssignments()) {
+            result.addAll(getSubquerySegmentsFromExpression(each.getValue()));
         }
         return result;
     }

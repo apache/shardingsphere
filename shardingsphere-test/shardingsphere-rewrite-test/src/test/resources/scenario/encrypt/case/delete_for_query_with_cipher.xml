@@ -36,4 +36,9 @@
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="delete_subquery">
+        <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = (select password from t_account where password='aaa') AND amount = 1000 AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND assisted_query_password = (select assisted_query_password from t_account where assisted_query_password='assisted_query_aaa') AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+    </rewrite-assertion>
 </rewrite-assertions>

@@ -127,10 +127,10 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext(metaDataMap, parameters, (SelectStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement, defaultSchemaName);
+            return new UpdateStatementContext(metaDataMap, parameters, (UpdateStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement, defaultSchemaName);
+            return new DeleteStatementContext(metaDataMap, parameters, (DeleteStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);

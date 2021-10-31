@@ -34,8 +34,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -64,7 +66,11 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty())
-                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
+                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext())
+                || ((sqlStatementContext instanceof UpdateStatementContext) 
+                    && !(SubqueryExtractUtil.getSubquerySegments(((UpdateStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()))
+                || ((sqlStatementContext instanceof DeleteStatementContext) 
+                    && !(SubqueryExtractUtil.getSubquerySegments(((DeleteStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()));
     }
     
     @Override
@@ -90,6 +96,21 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                                 selectStatementContext.getSchemaName()), Optional.empty(), SubqueryKind.ExpressionSubqery, rewriteMetaDataMap)));
             }
         }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            SubqueryExtractUtil.getSubquerySegmentsFromSetAssignmentSegment(updateStatementContext.getSqlStatement().getSetAssignment()).forEach(each -> result.addAll(generateSQLTokens(
+                new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(), 
+                    updateStatementContext.getSchemaName()), Optional.empty(), SubqueryKind.NestedProjectionTabsegmentSubquery, rewriteMetaDataMap)));
+            SubqueryExtractUtil.getSubquerySegmentsFromExpression(updateStatementContext.getWhere().get().getExpr()).forEach(each -> result.addAll(generateSQLTokens(
+                new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(), 
+                    updateStatementContext.getSchemaName()), Optional.empty(), SubqueryKind.ExpressionSubqery, rewriteMetaDataMap)));
+        }
+        if (sqlStatementContext instanceof DeleteStatementContext) {
+            DeleteStatementContext deleteStatementContext = (DeleteStatementContext) sqlStatementContext;
+            SubqueryExtractUtil.getSubquerySegmentsFromExpression(deleteStatementContext.getWhere().get().getExpr()).forEach(each -> result.addAll(generateSQLTokens(
+                new SelectStatementContext(deleteStatementContext.getMetaDataMap(), deleteStatementContext.getParameters(), each.getSelect(), 
+                    deleteStatementContext.getSchemaName()), Optional.empty(), SubqueryKind.ExpressionSubqery, rewriteMetaDataMap)));
+        }
         return result;
     }
     
@@ -99,7 +120,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional, alias, subqueryKind, 
-                    rewriteMetaDataMap)).ifPresent(result::addAll);
+                rewriteMetaDataMap)).ifPresent(result::addAll);
         }
         selectStatementContext.setRewriteMetaDataMap(rewriteMetaDataMap);
         return result;
