@@ -18,4 +18,4 @@ Because of the asynchrony of primary-replica synchronization, there may be short
 
 ## Load Balance Strategy
 
-Through this strategy, queries are separated to different replica databases.
+Through this strategy, queries separated to different replica databases.
