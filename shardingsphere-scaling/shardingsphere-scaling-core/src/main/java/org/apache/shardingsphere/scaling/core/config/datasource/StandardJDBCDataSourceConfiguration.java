@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.scaling.core.config.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -44,7 +46,11 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
      */
     public static final String TYPE = "JDBC";
     
+    private static final String DATA_SOURCE_CLASS_NAME = "dataSourceClassName";
+    
     private final String parameter;
+    
+    private final DataSourceConfiguration dataSourceConfig;
     
     private final HikariConfig hikariConfig;
     
@@ -53,16 +59,18 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     @SuppressWarnings("unchecked")
     public StandardJDBCDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
-        Map<String, Object> dataSourceConfig = YamlEngine.unmarshal(parameter, Map.class);
-        dataSourceConfig.remove("dataSourceClassName");
-        hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(dataSourceConfig), HikariConfig.class);
+        Map<String, Object> yamlConfig = YamlEngine.unmarshal(parameter, Map.class);
+        if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
+            yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        }
+        dataSourceConfig = new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(yamlConfig);
+        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
+        hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(yamlConfig), HikariConfig.class);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
     }
     
     public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this.hikariConfig = getHikariConfig(jdbcUrl, username, password);
-        this.parameter = wrapParameter(jdbcUrl, username, password);
-        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        this(wrapParameter(jdbcUrl, username, password));
     }
     
     private <T> T unmarshalSkipMissingProperties(final String yamlContent, final Class<T> classType) {
@@ -72,20 +80,12 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
         return yaml.loadAs(yamlContent, classType);
     }
     
-    private String wrapParameter(final String jdbcUrl, final String username, final String password) {
+    private static String wrapParameter(final String jdbcUrl, final String username, final String password) {
         Map<String, String> parameter = new HashMap<>(3, 1);
         parameter.put("jdbcUrl", jdbcUrl);
         parameter.put("username", username);
         parameter.put("password", password);
         return YamlEngine.marshal(parameter);
-    }
-    
-    private HikariConfig getHikariConfig(final String jdbcUrl, final String username, final String password) {
-        HikariConfig result = new HikariConfig();
-        result.setJdbcUrl(jdbcUrl);
-        result.setUsername(username);
-        result.setPassword(password);
-        return result;
     }
     
     @Override
@@ -98,6 +98,6 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     
     @Override
     public DataSource toDataSource() {
-        return new HikariDataSource(hikariConfig);
+        return DataSourceConverter.getDataSource(dataSourceConfig);
     }
 }
