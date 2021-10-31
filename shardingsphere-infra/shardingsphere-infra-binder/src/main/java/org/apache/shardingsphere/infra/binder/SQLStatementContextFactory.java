@@ -71,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -83,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.List;
@@ -178,8 +178,8 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DropViewStatement) {
             return new DropViewStatementContext((DropViewStatement) sqlStatement);
         }
-        if (sqlStatement instanceof PostgreSQLPrepareStatement) {
-            return new PrepareStatementContext((PostgreSQLPrepareStatement) sqlStatement);
+        if (sqlStatement instanceof PrepareStatement) {
+            return new PrepareStatementContext((PrepareStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

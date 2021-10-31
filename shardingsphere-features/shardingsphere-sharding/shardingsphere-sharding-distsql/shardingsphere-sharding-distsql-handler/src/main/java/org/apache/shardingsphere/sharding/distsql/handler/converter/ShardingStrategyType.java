@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
+import java.util.Arrays;
+
 /**
  * Sharding strategy type.
  */
@@ -72,5 +74,14 @@ public enum ShardingStrategyType {
         } catch (IllegalArgumentException e) {
             throw new UnsupportedOperationException(String.format("unsupported strategy type %s", name));
         }
+    }
+    
+    /**
+     * Determine whether the specified type is included.
+     * @param name name
+     * @return have data or not
+     */
+    public static boolean contain(final String name) {
+        return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(name));
     }
 }

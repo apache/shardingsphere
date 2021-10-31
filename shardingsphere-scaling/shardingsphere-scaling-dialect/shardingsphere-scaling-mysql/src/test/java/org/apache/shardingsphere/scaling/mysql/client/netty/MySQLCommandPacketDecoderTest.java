@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.scaling.mysql.client.InternalResultSet;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,14 +43,22 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLCommandPacketDecoderTest {
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ChannelHandlerContext channelHandlerContext;
+    
     @Mock
     private ByteBuf byteBuf;
     
+    @Before
+    public void setup() {
+        when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+    }
+    
     @Test
-    public void assertDecodeOkPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDecodeOkPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
-        commandPacketDecoder.decode(null, mockOkPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockOkPacket(), actual);
         assertPacketByType(actual, MySQLOKPacket.class);
     }
     
@@ -56,10 +69,10 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     @Test
-    public void assertDecodeErrPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDecodeErrPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
-        commandPacketDecoder.decode(null, mockErrPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockErrPacket(), actual);
         assertPacketByType(actual, MySQLErrPacket.class);
     }
     
@@ -70,14 +83,14 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     @Test
-    public void assertDecodeQueryCommPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDecodeQueryCommPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
-        commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
-        commandPacketDecoder.decode(null, mockFieldDefinition41Packet(), actual);
-        commandPacketDecoder.decode(null, mockEofPacket(), actual);
-        commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
-        commandPacketDecoder.decode(null, mockEofPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockEmptyResultSetPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockFieldDefinition41Packet(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockEofPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockEmptyResultSetPacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockEofPacket(), actual);
         assertPacketByType(actual, InternalResultSet.class);
     }
     

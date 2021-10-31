@@ -279,7 +279,18 @@
             <simple-table  name="t_order_item" start-delimiter="`" end-delimiter="`" start-index="91" stop-index="104" />
         </from>
         <projections start-index="7" stop-index="84">
-            <expression-projection text="date_format(creation_date,  '%y-%m-%d')" alias="creation_date" start-index="7" stop-index="62" />
+            <expression-projection text="date_format(creation_date,  '%y-%m-%d')" alias="creation_date" start-index="7" stop-index="62">
+                <expr>
+                    <function function-name="date_format" alias="creation_date" start-index="7" stop-index="45" text="date_format(creation_date,  '%y-%m-%d')" >
+                        <parameter>
+                            <column name="creation_date" start-index="19" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="%y-%m-%d" start-index="35" stop-index="44" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
             <aggregation-projection type="COUNT" inner-expression="(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="129" literal-stop-index="135">

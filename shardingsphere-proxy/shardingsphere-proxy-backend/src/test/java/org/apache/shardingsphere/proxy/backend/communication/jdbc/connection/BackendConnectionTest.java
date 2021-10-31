@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
+import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -81,7 +82,7 @@ public final class BackendConnectionTest {
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     public void setUp() throws ReflectiveOperationException {

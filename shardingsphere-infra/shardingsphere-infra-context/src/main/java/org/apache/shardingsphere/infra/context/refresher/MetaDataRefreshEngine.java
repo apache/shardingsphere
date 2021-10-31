@@ -31,6 +31,8 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -95,7 +97,8 @@ public final class MetaDataRefreshEngine {
     private ShardingSphereSchema loadActualSchema(final ShardingSphereMetaData schemaMetaData) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getRuleMetaData().getConfigurations());
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props.getProps()).load();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props.getProps());
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props.getProps()).load();
         return schemas.get(schemaMetaData.getName());
     }
 }

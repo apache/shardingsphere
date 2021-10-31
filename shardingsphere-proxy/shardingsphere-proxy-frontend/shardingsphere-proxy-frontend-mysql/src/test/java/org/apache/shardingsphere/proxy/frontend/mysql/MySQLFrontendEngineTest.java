@@ -19,11 +19,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
@@ -89,6 +92,9 @@ public final class MySQLFrontendEngineTest {
     @Before
     public void setUp() {
         resetConnectionIdGenerator();
+        when(context.channel()).thenReturn(channel);
+        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -109,10 +115,10 @@ public final class MySQLFrontendEngineTest {
     public void assertAuthWhenLoginSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         initProxyContext(new ShardingSphereUser("root", "", ""));
+        when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
-        when(context.channel()).thenReturn(channel);
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
@@ -124,10 +130,10 @@ public final class MySQLFrontendEngineTest {
     public void assertAuthWhenLoginFailure() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         initProxyContext(new ShardingSphereUser("root", "error", ""));
+        when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
-        when(context.channel()).thenReturn(channel);
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
@@ -139,9 +145,9 @@ public final class MySQLFrontendEngineTest {
     public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         initProxyContext(new ShardingSphereUser("root", "error", ""));
+        when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
-        when(context.channel()).thenReturn(channel);
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
         assertThat(actual.getUsername(), is("root"));

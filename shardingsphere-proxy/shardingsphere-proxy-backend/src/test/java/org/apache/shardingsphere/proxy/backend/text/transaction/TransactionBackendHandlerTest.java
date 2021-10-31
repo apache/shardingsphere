@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
+import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class TransactionBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)

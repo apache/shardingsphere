@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Note shadow algorithm determiner.
@@ -50,8 +51,7 @@ public final class NoteShadowAlgorithmDeterminer implements ShadowAlgorithmDeter
     private Collection<PreciseNoteShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
         ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
         String tableName = shadowDetermineCondition.getTableName();
-        Collection<PreciseNoteShadowValue<Comparable<?>>> result = new LinkedList<>();
-        shadowDetermineCondition.getSqlNotes().ifPresent(notes -> notes.forEach(each -> result.add(new PreciseNoteShadowValue<>(tableName, shadowOperationType, each))));
-        return result;
+        return shadowDetermineCondition.getSqlNotes().stream().<PreciseNoteShadowValue<Comparable<?>>>map(each -> new PreciseNoteShadowValue<>(tableName, shadowOperationType, each))
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }

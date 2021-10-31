@@ -78,7 +78,7 @@ public final class ShowTablesExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         showTablesExecutor.execute(mockBackendConnection());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         while (showTablesExecutor.getMergedResult().next()) {
             assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is(1));
         }

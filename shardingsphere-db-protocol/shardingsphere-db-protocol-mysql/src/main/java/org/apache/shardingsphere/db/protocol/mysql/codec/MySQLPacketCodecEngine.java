@@ -19,12 +19,14 @@ package org.apache.shardingsphere.db.protocol.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -54,7 +56,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     
     @Override
     public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
-        MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex());
+        MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
@@ -77,7 +79,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     }
     
     @Override
-    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
-        return new MySQLPacketPayload(message);
+    public MySQLPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
+        return new MySQLPacketPayload(message, charset);
     }
 }

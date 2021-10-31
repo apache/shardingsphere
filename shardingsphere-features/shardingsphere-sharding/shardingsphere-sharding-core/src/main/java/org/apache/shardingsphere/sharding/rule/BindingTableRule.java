@@ -68,7 +68,7 @@ public final class BindingTableRule {
         }
         Optional<TableRule> tableRule = Optional.ofNullable(tableRules.get(logicTable.toLowerCase()));
         if (tableRule.isPresent()) {
-            return tableRule.get().getActualDataNodes().get(index).getTableName().toLowerCase();
+            return tableRule.get().getActualDataNodes().get(index).getTableName();
         }
         throw new ShardingSphereConfigurationException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
     }

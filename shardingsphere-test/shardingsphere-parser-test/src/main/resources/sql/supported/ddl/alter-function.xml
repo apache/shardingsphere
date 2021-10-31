@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_function_rename" value="ALTER FUNCTION sqrt(integer) RENAME TO square_root" db-types="PostgreSQL"/>
-    <sql-case id="alter_function_set" value="ALTER FUNCTION check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL" />
-    <sql-case id="alter_function_owner" value="ALTER FUNCTION sqrt(integer) OWNER TO joe" db-types="PostgreSQL" />
-    <sql-case id="alter_function_set_schema" value="ALTER FUNCTION sqrt(integer) SET SCHEMA maths" db-types="PostgreSQL" />
-    <sql-case id="alter_function_reset" value="ALTER FUNCTION check_password(text) RESET search_path" db-types="PostgreSQL" />
-    <sql-case id="alter_function_depend_on" value="ALTER FUNCTION sqrt(integer) DEPENDS ON EXTENSION mathlib" db-types="PostgreSQL" />
+    <sql-case id="alter_function_rename" value="ALTER FUNCTION sqrt(integer) RENAME TO square_root" db-types="PostgreSQL,openGauss"/>
+    <sql-case id="alter_function_set" value="ALTER FUNCTION check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_function_owner" value="ALTER FUNCTION sqrt(integer) OWNER TO joe" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_function_set_schema" value="ALTER FUNCTION sqrt(integer) SET SCHEMA maths" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_function_reset" value="ALTER FUNCTION check_password(text) RESET search_path" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_function_depend_on" value="ALTER FUNCTION sqrt(integer) DEPENDS ON EXTENSION mathlib" db-types="PostgreSQL,openGauss" />
 </sql-cases>

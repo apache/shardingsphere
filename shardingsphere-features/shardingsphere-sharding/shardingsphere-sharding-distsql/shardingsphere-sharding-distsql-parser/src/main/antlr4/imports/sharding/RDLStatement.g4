@@ -24,7 +24,7 @@ createShardingTableRule
     ;
 
 createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 createShardingBroadcastTableRules
@@ -36,7 +36,7 @@ createShardingAlgorithm
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY shardingStrategy
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
     ;
 
 alterShardingTableRule
@@ -44,7 +44,7 @@ alterShardingTableRule
     ;
 
 alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 alterShardingBroadcastTableRules
@@ -56,11 +56,11 @@ dropShardingTableRule
     ;
 
 dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES
+    : DROP SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES
+    : DROP SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
     ;
     
 dropShardingAlgorithm
@@ -68,7 +68,15 @@ dropShardingAlgorithm
     ;
 
 shardingTableRuleDefinition
+    : (shardingAutoTableRule | shardingTableRule)
+    ;
+
+shardingAutoTableRule
     : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
+    ;
+
+shardingTableRule
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
@@ -76,6 +84,14 @@ resources
     ;
 
 resource
+    : IDENTIFIER | STRING
+    ;
+
+dataNodes
+    : DATANODES LP dataNode (COMMA dataNode)* RP
+    ;
+
+dataNode
     : IDENTIFIER | STRING
     ;
 
@@ -88,11 +104,23 @@ shardingAlgorithm
     ;
 
 shardingStrategy
-    :  LP TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm RP
+    :  TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm 
+    ;
+
+databaseStrategy
+    : DATABASE_STRATEGY LP shardingStrategy RP
+    ;
+
+tableStrategy
+    : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 tableName
@@ -109,10 +137,6 @@ bindTableRulesDefinition
 
 shardingAlgorithmDefinition
     : shardingAlgorithmName LP algorithmDefinition RP
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 algorithmName

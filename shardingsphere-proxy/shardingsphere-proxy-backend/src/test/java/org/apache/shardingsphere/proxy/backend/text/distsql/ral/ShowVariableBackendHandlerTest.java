@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowVariableBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Test
     public void assertShowTransactionType() throws SQLException {
@@ -98,7 +99,7 @@ public final class ShowVariableBackendHandlerTest {
         props.put("sql-show", "true");
         ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
         when(metaDataContexts.getProps()).thenReturn(configurationProperties);
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("sql_show"), backendConnection);
+        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("SQL_SHOW"), backendConnection);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));

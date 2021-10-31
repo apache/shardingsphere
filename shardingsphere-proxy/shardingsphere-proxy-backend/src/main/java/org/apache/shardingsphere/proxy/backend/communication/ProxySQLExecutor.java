@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -96,7 +97,7 @@ public final class ProxySQLExecutor {
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
         if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement()) 
-                || isExecuteDDLInPostgreSQLTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
+                || isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
             throw new TableModifyInTransactionException(executionContext.getSqlStatementContext());
         }
     }
@@ -106,9 +107,10 @@ public final class ProxySQLExecutor {
         return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
     }
     
-    private boolean isExecuteDDLInPostgreSQLTransaction(final SQLStatement sqlStatement) {
-        // TODO implement DDL statement commit/rollback in PostgreSQL transaction
-        return sqlStatement instanceof DDLStatement && sqlStatement instanceof PostgreSQLStatement && backendConnection.getTransactionStatus().isInTransaction();
+    private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
+        // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
+        boolean isPostgreSQLOpenGaussStatement = sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
+        return sqlStatement instanceof DDLStatement && isPostgreSQLOpenGaussStatement && backendConnection.getTransactionStatus().isInTransaction();
     }
     
     /**

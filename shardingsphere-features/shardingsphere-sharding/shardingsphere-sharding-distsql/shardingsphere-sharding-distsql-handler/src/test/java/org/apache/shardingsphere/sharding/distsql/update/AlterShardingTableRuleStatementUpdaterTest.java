@@ -18,29 +18,45 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,61 +66,102 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
+    
+    private final ShardingRuleConfiguration currentRuleConfiguration = createCurrentShardingRuleConfiguration();
+    
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource(), null, null, null);
     
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
-    }
-    
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order", "STANDARD_TEST"), null);
-    }
-    
-    @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
-    }
-    
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutExistTable() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration());
-    }
-    
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration());
+        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+        when(shardingSphereMetaData.getName()).thenReturn("schema");
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(shardingSphereRuleMetaData.getRules()).thenReturn(createShardingSphereRule());
     }
     
     @Test
-    public void assertExecuteWithInlineExpression() throws DistSQLException {
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_${0..1}", "ds2"), "order_id", new AlgorithmSegment("MOD_TEST", new Properties()), null, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), createCurrentRuleConfiguration());
+    public void assertUpdate() throws DistSQLException {
+        Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
+        rules.add(createCompleteAutoTableRule());
+        rules.add(createCompleteTableRule());
+        AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(rules);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfiguration);
+        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfiguration, toBeAlteredRuleConfiguration);
+        Assert.assertEquals(1, currentRuleConfiguration.getTables().size());
+        ShardingTableRuleConfiguration tableRule = currentRuleConfiguration.getTables().iterator().next();
+        Assert.assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        Assert.assertEquals("product_id", ((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn());
+        Assert.assertEquals("t_order_algorithm", tableRule.getTableShardingStrategy().getShardingAlgorithmName());
+        Assert.assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
+        Assert.assertEquals("t_order_algorithm", tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName());
+        Assert.assertEquals(1, currentRuleConfiguration.getTables().size());
+        ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
+        Assert.assertEquals("t_order_item", autoTableRule.getLogicTable());
+        Assert.assertEquals("ds_0,ds_1", autoTableRule.getActualDataSources());
+        Assert.assertEquals("t_order_item_MOD_TEST", autoTableRule.getShardingStrategy().getShardingAlgorithmName());
+        Assert.assertEquals("order_id", ((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn());
+        Assert.assertEquals("product_id", autoTableRule.getKeyGenerateStrategy().getColumn());
+        Assert.assertEquals("t_order_item_snowflake_test", autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName());
     }
     
-    private AlterShardingTableRuleStatement createSQLStatement(final String tableName, final String shardingAlgorithmName) {
-        TableRuleSegment ruleSegment = new TableRuleSegment(tableName, Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment(shardingAlgorithmName, new Properties()), null, null);
-        return new AlterShardingTableRuleStatement(Collections.singleton(ruleSegment));
+    private AutoTableRuleSegment createCompleteAutoTableRule() {
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"));
+        result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("snowflake_test", newProperties("work", "123"))));
+        result.setShardingColumn("order_id");
+        result.setShardingAlgorithmSegment(new AlgorithmSegment("MOD_TEST", newProperties("", "")));
+        return result;
     }
     
-    private AlterShardingTableRuleStatement createSQLStatement(final TableRuleSegment... ruleSegments) {
-        return new AlterShardingTableRuleStatement(Arrays.asList(ruleSegments));
+    private TableRuleSegment createCompleteTableRule() {
+        TableRuleSegment result = new TableRuleSegment("t_order", Collections.singletonList("ds_${0..1}.t_order${0..1}"));
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", "t_order_algorithm"));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm"));
+        result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("SNOWFLAKE_TEST", newProperties("work", "123"))));
+        return result;
     }
     
-    private AlterShardingTableRuleStatement createDuplicatedSQLStatement() {
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment("STANDARD_TEST", new Properties()), null, null);
-        return new AlterShardingTableRuleStatement(Arrays.asList(ruleSegment, ruleSegment));
-    }
-    
-    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
+    private ShardingRuleConfiguration createCurrentShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order");
-        shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "STANDARD_TEST"));
-        result.getAutoTables().add(shardingAutoTableRuleConfig);
+        result.getTables().add(createTableRuleConfiguration());
+        result.getAutoTables().add(createAutoTableRuleConfiguration());
+        result.getShardingAlgorithms().put("t_order_algorithm", new ShardingSphereAlgorithmConfiguration("hash_mod", newProperties("sharding-count", "4")));
+        result.getKeyGenerators().put("t_order_item_snowflake", new ShardingSphereAlgorithmConfiguration("snowflake", newProperties("worker-id", "123")));
+        return result;
+    }
+    
+    private ShardingTableRuleConfiguration createTableRuleConfiguration() {
+        ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");
+        tableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
+        return tableRuleConfiguration;
+    }
+    
+    private ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration() {
+        ShardingAutoTableRuleConfiguration autoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
+        autoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_MOD_TEST"));
+        autoTableRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_snowflake_test"));
+        return autoTableRuleConfiguration;
+    }
+    
+    private static Collection<ShardingSphereRule> createShardingSphereRule() {
+        return Collections.emptyList();
+    }
+    
+    private static Properties newProperties(final String key, final String value) {
+        Properties properties = new Properties();
+        properties.put(key, value);
+        return properties;
+    }
+    
+    private static Map<String, DataSource> createDataSource() {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("ds_0", mock(DataSource.class));
+        result.put("ds_1", mock(DataSource.class));
         return result;
     }
 }

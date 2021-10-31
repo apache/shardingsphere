@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_sequence" value="ALTER SEQUENCE seq_id MINVALUE 10" db-types="PostgreSQL,SQLServer" />
+    <sql-case id="alter_sequence" value="ALTER SEQUENCE seq_id MINVALUE 10" db-types="PostgreSQL,openGauss,SQLServer" />
 </sql-cases>

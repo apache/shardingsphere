@@ -76,7 +76,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     @Before
     public void init() {
-        payload = new PostgreSQLPacketPayload(createByteBuf(16, 128));
+        payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         String md5Digest = md5Encode(username, password, md5Salt.getBytes(StandardCharsets.UTF_8));
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);

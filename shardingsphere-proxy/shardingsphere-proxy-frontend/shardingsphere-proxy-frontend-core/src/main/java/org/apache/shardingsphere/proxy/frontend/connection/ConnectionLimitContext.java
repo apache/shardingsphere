@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.connection;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Connection limit context.
@@ -32,7 +31,7 @@ import lombok.NoArgsConstructor;
 public final class ConnectionLimitContext {
     
     private static final ConnectionLimitContext INSTANCE = new ConnectionLimitContext();
-
+    
     private final AtomicInteger activeConnections = new AtomicInteger();
     
     /**
@@ -46,33 +45,35 @@ public final class ConnectionLimitContext {
     
     /**
      * Channel active state.
+     *
      * @return Whether the connection can be established.
      */
-    public boolean connect() {
-        if (this.getConnectionLimit() <= 0) {
-            return true;
-        }
-        if (this.activeConnections.incrementAndGet() <= this.getConnectionLimit()) {
-            return true;
-        }
-        return false;
+    public boolean connectionAllowed() {
+        return activeConnections.incrementAndGet() <= getMaxConnections() || !limitsMaxConnections();
     }
     
     /**
      * Channel inactive state.
      */
-    public void disconnect() {
-        if (this.getConnectionLimit() <= 0) {
-            return;
-        }
-        this.activeConnections.decrementAndGet();
+    public void connectionInactive() {
+        activeConnections.decrementAndGet();
     }
     
     /**
-     * Connection limit size.
+     * Check if limits number of frontend connections.
+     *
+     * @return limits max connections
+     */
+    public boolean limitsMaxConnections() {
+        return getMaxConnections() > 0;
+    }
+    
+    /**
+     * Get connection limit size.
+     *
      * @return limit size.
      */
-    public int getConnectionLimit() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_CONNECTION_LIMIT);
+    public int getMaxConnections() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS);
     }
 }

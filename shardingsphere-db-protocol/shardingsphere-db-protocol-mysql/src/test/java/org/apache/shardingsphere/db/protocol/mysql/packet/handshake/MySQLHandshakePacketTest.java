@@ -44,7 +44,7 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
+        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getServerVersion());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
@@ -55,7 +55,7 @@ public final class MySQLHandshakePacketTest {
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper()));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
@@ -65,7 +65,7 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithClientPluginAuthPayload() {
-        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
+        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getServerVersion(), MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
@@ -76,7 +76,7 @@ public final class MySQLHandshakePacketTest {
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.CHARSET));
+        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
@@ -94,7 +94,7 @@ public final class MySQLHandshakePacketTest {
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
-        verify(payload).writeInt1(MySQLServerInfo.CHARSET);
+        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(authPluginData.getAuthenticationPluginData().length + 1);
@@ -113,7 +113,7 @@ public final class MySQLHandshakePacketTest {
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
-        verify(payload).writeInt1(MySQLServerInfo.CHARSET);
+        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
         verify(payload).writeInt1(authPluginData.getAuthenticationPluginData().length + 1);

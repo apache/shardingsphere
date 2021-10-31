@@ -8,7 +8,7 @@ weight = 4
 ```properties
 spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
-spring.shardingsphere.rules.shadow.enable= # Shadow功能开关。 可选值：true/false，默认为false
+spring.shardingsphere.rules.shadow.enable= # 影子库开关。 可选值：true/false，默认为false
 
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name= # 生产数据源名称
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name= # 影子数据源名称

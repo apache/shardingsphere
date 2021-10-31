@@ -6,11 +6,4 @@ chapter = true
 
 ## Overview
 
-This chapter is to introduce core concepts of data sharding, including:
-
-- Core concepts of SQL
-- Core concepts of sharding
-- Core concepts of configuration
-- Inline expression
-- Distributed primary key
-- Hint Sharding route
+This chapter is to introduce core concepts of data sharding.

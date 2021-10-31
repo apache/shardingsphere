@@ -516,4 +516,9 @@
         <input sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
         <output sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_binding_table_with_uppercase_table_name">
+        <input sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
+        <output sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
+    </rewrite-assertion>
 </rewrite-assertions>

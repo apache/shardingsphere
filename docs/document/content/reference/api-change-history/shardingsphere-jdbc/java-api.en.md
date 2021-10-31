@@ -671,7 +671,7 @@ Enumeration of properties.
 
 In order to relieve the pressure on the database, the write and read operations are separated into different data sources. The write library is called the master library, and the read library is called the slave library. One master library can be configured with multiple slave libraries.
 
-#### Support item
+#### Supported
 
 1. Provides a readwrite-splitting configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
 2. Independent use of readwrite-splitting to support SQL transparent transmission.
@@ -679,7 +679,7 @@ In order to relieve the pressure on the database, the write and read operations 
 4. Spring namespace.
 5. Hint-based mandatory main library routing.
 
-#### Unsupported item
+#### Unsupported
 
 1. Data synchronization between the master library and the slave library.
 2. Data inconsistency caused by the data synchronization delay of the master library and the slave library.
@@ -748,14 +748,14 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
 
 In order to relieve the pressure on the database, the write and read operations are separated into different data sources. The write library is called the master library, and the read library is called the slave library. One master library can be configured with multiple slave libraries.
 
-#### Support item
+#### Supported
 
 1. Provides a readwrite-splitting configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
 2. In the same thread and the same database connection, if there is a write operation, subsequent read operations will be read from the main library to ensure data consistency.
 3. Spring namespace.
 4. Hint-based mandatory main library routing.
 
-#### Unsupported item
+#### Unsupported
 
 1. Data synchronization between the master library and the slave library.
 2. Data inconsistency caused by the data synchronization delay of the master library and the slave library.

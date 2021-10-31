@@ -20,10 +20,12 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class WorkflowConfiguration {
     
     private long allowDelayMilliseconds = 60 * 1000L;

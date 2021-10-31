@@ -188,20 +188,20 @@ public final class OracleTableMetaDataLoaderTest {
     
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "TIMESTAMP");
+        when(result.getInt("DATA_TYPE")).thenReturn(4, 12, 93);
         return result;
     }
     
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
+        when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
-        when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO");
-        when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "creation_time");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "TIMESTAMP(6)");
+        when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO", "NO");
+        when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", "BINARY_CI");
         return result;
     }
     
@@ -232,7 +232,7 @@ public final class OracleTableMetaDataLoaderTest {
     
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(2));
+        assertThat(actual.get("tbl").getColumns().size(), is(3));
         assertThat(actual.get("tbl").getIndexes().size(), is(1));
         assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }

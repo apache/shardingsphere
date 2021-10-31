@@ -78,7 +78,7 @@ public final class SingleTableRouteEngine {
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
-        if (isDDLTableStatement() || isAllTablesInSameDataSource(routeContext, rule)) {
+        if (isDDLTableStatement() || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             Collection<String> existSingleTables = rule.getSingleTableNames(singleTableNames);
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(rule, routeContext, existSingleTables);
@@ -105,19 +105,6 @@ public final class SingleTableRouteEngine {
     
     private boolean isDDLTableStatement() {
         return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
-    }
-    
-    private boolean isAllTablesInSameDataSource(final RouteContext routeContext, final SingleTableRule rule) {
-        if (!rule.isSingleTableInSameDataSource(singleTableNames)) {
-            return false;
-        }
-        SingleTableDataNode dataNode = rule.getSingleTableDataNodes().get(singleTableNames.iterator().next());
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
-                return false;
-            }
-        }
-        return true;
     }
     
     private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,11 +32,11 @@ import java.util.LinkedList;
  * Prepare statement context.
  */
 @Getter
-public final class PrepareStatementContext extends CommonSQLStatementContext<PostgreSQLPrepareStatement> implements TableAvailable {
+public final class PrepareStatementContext extends CommonSQLStatementContext<PrepareStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public PrepareStatementContext(final PostgreSQLPrepareStatement sqlStatement) {
+    public PrepareStatementContext(final PrepareStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement));
     }
@@ -46,7 +46,7 @@ public final class PrepareStatementContext extends CommonSQLStatementContext<Pos
         return extractTablesFromPreparedStatement(getSqlStatement());
     }
     
-    private Collection<SimpleTableSegment> extractTablesFromPreparedStatement(final PostgreSQLPrepareStatement sqlStatement) {
+    private Collection<SimpleTableSegment> extractTablesFromPreparedStatement(final PrepareStatement sqlStatement) {
         TableExtractor tableExtractor = new TableExtractor();
         sqlStatement.getSelect().ifPresent(tableExtractor::extractTablesFromSelect);
         sqlStatement.getInsert().ifPresent(tableExtractor::extractTablesFromInsert);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
@@ -24,7 +25,9 @@ import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShar
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Algorithm provided sharding rule builder.
@@ -33,7 +36,9 @@ public final class AlgorithmProvidedShardingRuleBuilder implements SchemaRuleBui
     
     @Override
     public ShardingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedShardingRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new ShardingRule(config, materials.getDataSourceMap());
+        Map<String, DataSource> dataSourceMap = materials.getDataSourceMap();
+        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
+        return new ShardingRule(config, dataSourceMap.keySet());
     }
     
     @Override

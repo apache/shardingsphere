@@ -24,6 +24,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -36,7 +38,7 @@ public final class PostgreSQLAuthenticationOKPacketTest {
     
     private void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(4);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         PostgreSQLAuthenticationOKPacket packet = new PostgreSQLAuthenticationOKPacket();
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
         packet.write(payload);

@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -342,8 +343,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     @Override
     public ASTNode visitFuncExpr(final FuncExprContext ctx) {
         calculateParameterCount(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
-        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
@@ -469,11 +469,11 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (AggregationType.isAggregationType(aggregationType)) {
             return createAggregationSegment(ctx, aggregationType);
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private ProjectionSegment generateProjectFromFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType) {
@@ -872,7 +872,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
             return shorthandProjection;
         }
         AExprContext expr = ctx.aExpr();
-        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expr.getText());
+        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr));
         if (null != expr.cExpr()) {
             ASTNode projection = visit(expr.cExpr());
             if (projection instanceof ColumnSegment) {
@@ -1083,5 +1083,15 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
         return new PostgreSQLExecuteStatement();
+    }
+    
+    /**
+     * Get original text.
+     *
+     * @param ctx context
+     * @return original text
+     */
+    protected String getOriginalText(final ParserRuleContext ctx) {
+        return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
 }

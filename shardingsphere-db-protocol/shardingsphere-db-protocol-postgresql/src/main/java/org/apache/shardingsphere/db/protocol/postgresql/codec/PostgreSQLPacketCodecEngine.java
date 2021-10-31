@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -68,7 +70,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         if (isPostgreSQLIdentifierPacket) {
             prepareMessageHeader(out, ((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
         }
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
@@ -98,7 +100,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     }
     
     @Override
-    public PostgreSQLPacketPayload createPacketPayload(final ByteBuf message) {
-        return new PostgreSQLPacketPayload(message);
+    public PostgreSQLPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
+        return new PostgreSQLPacketPayload(message, charset);
     }
 }

@@ -77,7 +77,7 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     @Test
     public void assertGetDataSourceMapper() {
         Map<String, Collection<String>> actual = databaseDiscoveryDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("ds_0", "ds_1"));
+        Map<String, Collection<String>> expected = ImmutableMap.of("ds_0", Collections.singletonList("ds_0"), "ds_1", Collections.singletonList("ds_1"));
         assertThat(actual, is(expected));
     }
 }

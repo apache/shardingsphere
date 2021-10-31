@@ -104,7 +104,7 @@ public class ShardingTableMetaDataBuilderTest {
         tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "snowflake"));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     private void mockSQLServerResultSet(final Connection connection) throws SQLException {
@@ -291,7 +291,7 @@ public class ShardingTableMetaDataBuilderTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.T_ORDER_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     @Test

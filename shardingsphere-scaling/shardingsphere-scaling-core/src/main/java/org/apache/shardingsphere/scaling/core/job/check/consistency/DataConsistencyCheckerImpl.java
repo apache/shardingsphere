@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
@@ -127,8 +128,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         try {
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tablesColumnNamesMap.get(each);
-                Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceConfig, each, columnNames));
-                Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetConfig, each, columnNames));
+                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(sourceConfig).logicTableName(each).columnNames(columnNames).build();
+                Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceCalculateParameter));
+                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(targetConfig).logicTableName(each).columnNames(columnNames).build();
+                Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetCalculateParameter));
                 Object sourceCalculateResult = sourceFuture.get();
                 Object targetCalculateResult = targetFuture.get();
                 boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);

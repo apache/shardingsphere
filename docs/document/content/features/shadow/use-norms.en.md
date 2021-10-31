@@ -5,22 +5,22 @@ weight = 2
 
 ## Shadow database
 
-### Supported Items
+### Supported
 
 * The database is MySQL, Oracle, PostgreSQL, SQLServer;
 
-### Unsupported Items
+### Unsupported
 
 * NoSQL database;
 
 ## Shadow algorithm
 
-### Supported Items
+### Supported
 
 * The note shadow algorithm supports MDL and DDL statements;
 * The column shadow algorithm basically supports commonly used MDL statements;
 
-### Unsupported Items
+### Unsupported
 
 * Column shadow algorithm does not support DDL statements；
 * The column shadow algorithm does not support range value matching operations, for example: subQuery, BETWEEN, GROUP BY ... HAVING...;
@@ -41,7 +41,7 @@ Judge the inserted column and inserted value of `INSERT` operation
 
 * SELECT/UPDATE/DELETE statement
 
-Judge the fields and values included in the `WHERE` condition
+Judge the column and values included in the `WHERE` condition
 
 | *Condition* | *SQL* | *Support* |
 | -------- | --------- | --------- |

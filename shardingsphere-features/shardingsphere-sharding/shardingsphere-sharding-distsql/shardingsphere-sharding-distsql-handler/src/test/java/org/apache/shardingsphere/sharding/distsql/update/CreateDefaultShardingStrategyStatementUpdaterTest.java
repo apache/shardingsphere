@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -30,8 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Properties;
 
 import static org.mockito.Mockito.when;
 
@@ -48,11 +47,9 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         when(shardingSphereMetaData.getName()).thenReturn("test");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidStrategyType() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        updater.checkSQLStatement(shardingSphereMetaData, new CreateDefaultShardingStrategyStatement("TABLE", "invalidType", null, null), null);
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateDefaultShardingStrategyStatement("TABLE", "invalidType", null, "order_id_algorithm"), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -60,6 +57,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement("TABLE", "standard", "order_id", "order_id_algorithm");
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
+        currentRuleConfig.getShardingAlgorithms().put("order_id_algorithm", null);
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
@@ -68,6 +66,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement("TABLE", "standard", "order_id", "order_id_algorithm");
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
+        currentRuleConfig.getShardingAlgorithms().put("order_id_algorithm", null);
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);

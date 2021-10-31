@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Handle configuration.
@@ -27,6 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class HandleConfiguration {
     
     private Long jobId;
