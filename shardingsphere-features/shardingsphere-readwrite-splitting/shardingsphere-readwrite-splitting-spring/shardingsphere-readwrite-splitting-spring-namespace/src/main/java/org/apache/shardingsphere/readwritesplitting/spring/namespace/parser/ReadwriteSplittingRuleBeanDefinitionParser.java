@@ -64,7 +64,6 @@ public final class ReadwriteSplittingRuleBeanDefinitionParser extends AbstractBe
         factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.WRITE_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseReadDataSourcesRef(element));
         factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.QUERY_CONSISTENT));
         return factory.getBeanDefinition();
     }
     
