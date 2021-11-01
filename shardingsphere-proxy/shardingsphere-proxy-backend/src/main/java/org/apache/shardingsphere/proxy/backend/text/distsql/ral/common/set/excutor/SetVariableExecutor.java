@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVari
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.properties.TypedPropertyValue;
 import org.apache.shardingsphere.infra.properties.TypedPropertyValueException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -71,11 +71,13 @@ public final class SetVariableExecutor implements SetStatementExecutor {
     }
     
     private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
-        Properties props = contextManager.getMetaDataContexts().getProps().getProps();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Properties props = metaDataContexts.getProps().getProps();
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
-        metaDataPersistService.ifPresent(persistService -> persistService.getPropsService().persist(props, true));
+        if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {
+            metaDataPersistService.get().getPropsService().persist(props, true);
+        }
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
