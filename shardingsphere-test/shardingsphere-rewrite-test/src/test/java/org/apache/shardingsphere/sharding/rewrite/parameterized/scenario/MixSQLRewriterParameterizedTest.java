@@ -47,11 +47,12 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private static final String CASE_PATH = "scenario/mix/case";
     
-    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+                                           final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
     
-    @Parameters(name = "{0}: {1} -> {2}")
+    @Parameters(name = "{0}: {1} ({3}) -> {2}")
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, MixSQLRewriterParameterizedTest.class);
     }

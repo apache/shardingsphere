@@ -57,12 +57,7 @@
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_having_and_window_for_mysql" db-types="MySQL">
-        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_having_and_window_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_with_having_and_window" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
@@ -304,35 +299,35 @@
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 2147483647" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT 10 OFFSET 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT 110 OFFSET 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT 110 OFFSET 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
