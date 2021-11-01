@@ -17,17 +17,14 @@ The database for pressure testing data isolation.
 
 ## Shadow Algorithm
 
-Since the shadow algorithm is closely related to business, no default shadow algorithm provided.
-There are 2 types of shadow algorithms provided.
+The shadow algorithms are closely related to business, there are 2 types of shadow algorithms provided.
 
 - Column based shadow algorithm
-  
-It is suitable for the column values involved in the executed SQL satisfies certain matching conditions in the testing.
 
-Advantage: Only testing data need to be configured, do not need to modify codes and SQL.
-
-Disadvantage: DML supported only.
+Recognize data from SQL and route to shadow databases.
+Suitable for test data driven scenario.
 
 - Note based shadow algorithm
 
-It is suitable the column values involved in executing SQL cannot meet certain matching conditions in the testing.
+Recognize comment from SQL and route to shadow databases.
+Suitable for identify passed by upstream system scenario.
