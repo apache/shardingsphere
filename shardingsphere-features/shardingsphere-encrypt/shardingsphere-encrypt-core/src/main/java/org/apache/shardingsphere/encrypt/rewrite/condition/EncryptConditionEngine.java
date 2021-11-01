@@ -89,11 +89,11 @@ public final class EncryptConditionEngine {
                         selectStatementContext.getSchemaName());
                     result.addAll(createEncryptConditions(subSelectStatementContext));
                 });
-                SubqueryExtractUtil.getSubquerySegmentsFromExpression(selectStatementContext.getWhere().get().getExpr()).forEach(each -> {
+                selectStatementContext.getWhere().ifPresent(where -> SubqueryExtractUtil.getSubquerySegmentsFromExpression(where.getExpr()).forEach(each -> {
                     SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), each.getSelect(), 
                         selectStatementContext.getSchemaName());
                     result.addAll(createEncryptConditions(subSelectStatementContext));
-                });
+                }));
             }
         }
         if (sqlStatementContext instanceof UpdateStatementContext) {
@@ -103,19 +103,19 @@ public final class EncryptConditionEngine {
                     each.getSelect(), updateStatementContext.getSchemaName());
                 result.addAll(createEncryptConditions(subSelectStatementContext));
             });
-            SubqueryExtractUtil.getSubquerySegmentsFromExpression(updateStatementContext.getWhere().get().getExpr()).forEach(each -> {
+            updateStatementContext.getWhere().ifPresent(where -> SubqueryExtractUtil.getSubquerySegmentsFromExpression(updateStatementContext.getWhere().get().getExpr()).forEach(each -> {
                 SelectStatementContext subSelectStatementContext = new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(), 
                     updateStatementContext.getSchemaName());
                 result.addAll(createEncryptConditions(subSelectStatementContext));
-            });
+            }));
         }
         if (sqlStatementContext instanceof DeleteStatementContext) {
             DeleteStatementContext deleteStatementContext = (DeleteStatementContext) sqlStatementContext;
-            SubqueryExtractUtil.getSubquerySegmentsFromExpression(deleteStatementContext.getWhere().get().getExpr()).forEach(each -> {
+            deleteStatementContext.getWhere().ifPresent(where -> SubqueryExtractUtil.getSubquerySegmentsFromExpression(deleteStatementContext.getWhere().get().getExpr()).forEach(each -> {
                 SelectStatementContext subSelectStatementContext = new SelectStatementContext(deleteStatementContext.getMetaDataMap(), deleteStatementContext.getParameters(), each.getSelect(), 
                     deleteStatementContext.getSchemaName());
                 result.addAll(createEncryptConditions(subSelectStatementContext));
-            });
+            }));
         }
         return result;
     }
