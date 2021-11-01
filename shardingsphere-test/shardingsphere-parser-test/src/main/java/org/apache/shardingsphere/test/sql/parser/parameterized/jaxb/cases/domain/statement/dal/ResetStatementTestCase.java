@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.reset.ExpectedResetOptionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
- * MySQL reset statement.
+ * MySQL reset statement test case.
  */
-@ToString
 @Getter
-public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private List<ResetOptionSegment> options = new LinkedList<>();
+public final class ResetStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement(name = "option")
+    private List<ExpectedResetOptionSegment> options;
 }
