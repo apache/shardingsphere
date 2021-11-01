@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -55,9 +56,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingTableRuleStatementUpdaterTest {
@@ -78,10 +76,10 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     public void before() {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
-        when(shardingSphereMetaData.getName()).thenReturn("schema");
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(shardingSphereRuleMetaData.getRules()).thenReturn(createShardingSphereRule());
+        Mockito.when(shardingSphereMetaData.getName()).thenReturn("schema");
+        Mockito.when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        Mockito.when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        Mockito.when(shardingSphereRuleMetaData.getRules()).thenReturn(createShardingSphereRule());
     }
     
     @Test
@@ -160,8 +158,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     private static Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", Mockito.mock(DataSource.class));
+        result.put("ds_1", Mockito.mock(DataSource.class));
         return result;
     }
 }
