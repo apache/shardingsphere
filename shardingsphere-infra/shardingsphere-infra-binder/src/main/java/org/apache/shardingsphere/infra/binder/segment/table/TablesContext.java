@@ -74,6 +74,15 @@ public final class TablesContext {
     }
     
     /**
+     * Get all unique table segments.
+     *
+     * @return all unique table segments
+     */
+    public Collection<SimpleTableSegment> getAllUniqueTables() {
+        return uniqueTables.values();
+    }
+    
+    /**
      * Find table name.
      *
      * @param columns column segment collection
