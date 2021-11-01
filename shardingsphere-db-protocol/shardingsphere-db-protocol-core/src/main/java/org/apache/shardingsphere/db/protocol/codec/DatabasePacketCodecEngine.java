@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -61,7 +62,8 @@ public interface DatabasePacketCodecEngine<T extends DatabasePacket<?>> {
      * Create packet payload.
      *
      * @param message message
+     * @param charset charset
      * @return packet payload
      */
-    PacketPayload createPacketPayload(ByteBuf message);
+    PacketPayload createPacketPayload(ByteBuf message, Charset charset);
 }

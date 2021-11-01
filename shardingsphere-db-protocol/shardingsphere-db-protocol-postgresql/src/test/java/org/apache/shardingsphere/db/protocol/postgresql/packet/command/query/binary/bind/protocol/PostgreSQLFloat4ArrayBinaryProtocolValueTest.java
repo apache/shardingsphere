@@ -47,7 +47,7 @@ public final class PostgreSQLFloat4ArrayBinaryProtocolValueTest {
         byteBuf.writeInt(parameterValue.length());
         byteBuf.writeCharSequence(parameterValue, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = newInstance().read(payload, parameterValue.length());
         assertNotNull(result);
         assertThat(result, is(new float[] {11.1F, 12.1F}));
@@ -56,7 +56,7 @@ public final class PostgreSQLFloat4ArrayBinaryProtocolValueTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertWrite() {
-        newInstance().write(new PostgreSQLPacketPayload(null), "val");
+        newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val");
     }
     
 }

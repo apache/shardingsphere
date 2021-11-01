@@ -20,15 +20,20 @@ package org.apache.shardingsphere.scaling.mysql.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,20 +45,28 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLNegotiatePackageDecoderTest {
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ChannelHandlerContext channelHandlerContext;
+    
     @Mock
     private ByteBuf byteBuf;
+    
+    @Before
+    public void setup() {
+        when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+    }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertDecodeUnsupportedProtocolVersion() {
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
-        commandPacketDecoder.decode(null, byteBuf, null);
+        commandPacketDecoder.decode(channelHandlerContext, byteBuf, null);
     }
     
     @Test
     public void assertDecodeHandshakePacket() {
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
         List<Object> actual = new LinkedList<>();
-        commandPacketDecoder.decode(null, mockHandshakePacket(), actual);
+        commandPacketDecoder.decode(channelHandlerContext, mockHandshakePacket(), actual);
         assertHandshakePacket(actual);
     }
     
@@ -85,7 +98,7 @@ public final class MySQLNegotiatePackageDecoderTest {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
         ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
         List<Object> actual = new LinkedList<>();
-        negotiatePackageDecoder.decode(null, authSwitchRequestPacket(), actual);
+        negotiatePackageDecoder.decode(channelHandlerContext, authSwitchRequestPacket(), actual);
         assertPacketByType(actual, MySQLAuthSwitchRequestPacket.class);
     }
     
@@ -101,7 +114,7 @@ public final class MySQLNegotiatePackageDecoderTest {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
         ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
         List<Object> actual = new LinkedList<>();
-        negotiatePackageDecoder.decode(null, authMoreDataPacket(), actual);
+        negotiatePackageDecoder.decode(channelHandlerContext, authMoreDataPacket(), actual);
         assertPacketByType(actual, MySQLAuthMoreDataPacket.class);
     }
     

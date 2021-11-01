@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.preprocess.RuleDefinitionAlterPreprocessor;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
@@ -33,6 +34,8 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -45,6 +48,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
+        ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
     }
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
@@ -59,6 +63,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
+                new Properties());
+        if (ProxyContext.getInstance().isScalingEnabled() && preprocessor.isPresent()) {
+            processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
+            return new UpdateResponseHeader(sqlStatement);
+        }
         processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
         persistRuleConfigurationChange(shardingSphereMetaData);
         return new UpdateResponseHeader(sqlStatement);
@@ -109,8 +119,23 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
+    private void processCache(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig, 
+                              final RuleDefinitionAlterPreprocessor preprocessor) {
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
+        Collection<RuleConfiguration> alteredConfigs = new LinkedList<>(shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        alteredConfigs.remove(currentRuleConfig);
+        alteredConfigs.add(alteredRuleConfig);
+        cacheRuleConfigurationChange(shardingSphereMetaData.getName(), alteredConfigs);
+    }
+    
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().persist(
                 shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
+    }
+    
+    private void cacheRuleConfigurationChange(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().cache(
+                schemaName, ruleConfigurations));
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -41,6 +42,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.except
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 
+import java.nio.charset.Charset;
+
 /**
  * Authentication engine for PostgreSQL.
  */
@@ -51,6 +54,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private static final int SSL_REQUEST_CODE = 80877103;
     
     private boolean startupMessageReceived;
+    
+    private String clientEncoding;
     
     private byte[] md5Salt;
     
@@ -76,6 +81,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         startupMessageReceived = true;
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
+        clientEncoding = comStartupPacket.getClientEncoding();
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(Charset.forName(clientEncoding));
         String user = comStartupPacket.getUser();
         if (Strings.isNullOrEmpty(user)) {
             throw new InvalidAuthorizationSpecificationException("no PostgreSQL user name specified in startup packet");
@@ -99,7 +106,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
         context.write(new PostgreSQLAuthenticationOKPacket());
         context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
-        context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
+        context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
         context.writeAndFlush(new PostgreSQLReadyForQueryPacket(false));

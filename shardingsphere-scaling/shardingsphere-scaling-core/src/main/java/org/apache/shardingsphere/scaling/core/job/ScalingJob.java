@@ -50,6 +50,7 @@ public final class ScalingJob implements SimpleJob {
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
+            log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
             throw ex;

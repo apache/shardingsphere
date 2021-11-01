@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +43,7 @@ public final class PostgreSQLComStartupPacketTest {
         PostgreSQLComStartupPacket actual = new PostgreSQLComStartupPacket(payload);
         assertThat(actual.getDatabase(), is("test_db"));
         assertThat(actual.getUser(), is("postgres"));
+        assertThat(actual.getClientEncoding(), is("UTF8"));
         assertThat(byteBuf.writerIndex(), is(packetMessageLength));
     }
     
@@ -49,6 +51,7 @@ public final class PostgreSQLComStartupPacketTest {
         Map<String, String> result = new LinkedHashMap<>(2, 1);
         result.put("database", "test_db");
         result.put("user", "postgres");
+        result.put("client_encoding", "UTF8");
         return result;
     }
     
@@ -62,7 +65,7 @@ public final class PostgreSQLComStartupPacketTest {
     }
     
     private PostgreSQLPacketPayload createPayload(final Map<String, String> actualParametersMap, final int actualMessageLength, final ByteBuf byteBuf) {
-        PostgreSQLPacketPayload result = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload result = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         result.writeInt4(actualMessageLength);
         result.writeInt4(196608);
         for (Entry<String, String> entry : actualParametersMap.entrySet()) {

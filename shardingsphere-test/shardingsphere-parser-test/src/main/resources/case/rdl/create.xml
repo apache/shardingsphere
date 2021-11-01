@@ -67,7 +67,7 @@
         </data-source>
     </add-resource>
     
-    <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
+    <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
@@ -82,9 +82,9 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </create-sharding-table-rule>
+    </create-sharding-auto-table-rule>
 
-    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-quota">
+    <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-with-quota">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
@@ -99,9 +99,9 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </create-sharding-table-rule>
+    </create-sharding-auto-table-rule>
     
-    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-inline-expression">
+    <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-with-inline-expression">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy algorithm-name="hash_mod">
@@ -109,6 +109,19 @@
                     <property key="sharding-count" value="4"/>
                 </properties>
             </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+    </create-sharding-auto-table-rule>
+
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
             <key-generate-strategy algorithm-name="snowflake">
                 <properties>
                     <property key="worker-id" value="123"/>

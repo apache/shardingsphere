@@ -38,6 +38,8 @@ public enum QuoteCharacter {
     
     BRACKETS("[", "]"),
     
+    PARENTHESES("(", ")"),
+    
     NONE("", "");
     
     private final String startDelimiter;

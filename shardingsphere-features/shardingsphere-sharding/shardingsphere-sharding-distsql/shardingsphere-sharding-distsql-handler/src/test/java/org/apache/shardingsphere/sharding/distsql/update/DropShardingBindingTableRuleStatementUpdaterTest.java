@@ -17,19 +17,25 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBindingTableRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,24 +47,40 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new ShardingRuleConfiguration());
     }
     
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementIsNotTheSame() throws DistSQLException {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t"), currentRuleConfig);
+    }
+    
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    public void assertDropAllCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), currentRuleConfig);
         assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement() {
-        return new DropShardingBindingTableRulesStatement();
+    @Test
+    public void assertDropSpecifiedCurrentRuleConfiguration() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
+        updater.updateCurrentRuleConfiguration(createSQLStatement("t_1,t_2"), currentRuleConfig);
+        assertEquals(1, currentRuleConfig.getBindingTableGroups().size());
+        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
+    }
+    
+    private DropShardingBindingTableRulesStatement createSQLStatement(final String... group) {
+        LinkedList<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
+        return new DropShardingBindingTableRulesStatement(segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

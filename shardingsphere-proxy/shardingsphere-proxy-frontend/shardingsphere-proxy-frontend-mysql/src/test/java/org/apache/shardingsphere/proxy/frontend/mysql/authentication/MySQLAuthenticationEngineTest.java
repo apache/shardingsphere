@@ -19,9 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -92,7 +95,10 @@ public final class MySQLAuthenticationEngineTest {
         Channel channel = mock(Channel.class);
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channelHandlerContext.channel()).thenReturn(channel);
+        when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         authenticationEngine.authenticate(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
@@ -161,6 +167,7 @@ public final class MySQLAuthenticationEngineTest {
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {
         MySQLPacketPayload result = mock(MySQLPacketPayload.class);
+        when(result.readInt1()).thenReturn(1);
         when(result.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
         when(result.readStringNul()).thenReturn(username).thenReturn(database);
         when(result.readStringNulByBytes()).thenReturn(authResponse);
@@ -176,6 +183,8 @@ public final class MySQLAuthenticationEngineTest {
     private Channel getChannel() {
         Channel result = mock(Channel.class);
         doReturn(getRemoteAddress()).when(result).remoteAddress();
+        when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         return result;
     }
     

@@ -21,19 +21,19 @@
         AS 'select $1 + $2;'
         LANGUAGE SQL
         IMMUTABLE
-        RETURNS NULL ON NULL INPUT" db-types="PostgreSQL" />
+        RETURNS NULL ON NULL INPUT" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_function_with_argname" value="CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS
         $$
             BEGIN
                 RETURN i + 1;
             END;
-        $$ LANGUAGE plpgsql" db-types="PostgreSQL" />
+        $$ LANGUAGE plpgsql" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_function_with_multiple_output_parameters" value="CREATE FUNCTION dup(in int, out f1 int, out f2 text)
         AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
-        LANGUAGE SQL" db-types="PostgreSQL" />
+        LANGUAGE SQL" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)
         AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
-        LANGUAGE SQL" db-types="PostgreSQL" />
+        LANGUAGE SQL" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_function_with_execute" value="CREATE FUNCTION dbo.ISOweek (@DATE datetime)
         RETURNS int WITH EXECUTE AS CALLER AS
         BEGIN

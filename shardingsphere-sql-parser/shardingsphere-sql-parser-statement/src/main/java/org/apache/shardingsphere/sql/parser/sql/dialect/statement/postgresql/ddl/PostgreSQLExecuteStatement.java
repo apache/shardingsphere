@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL execute statement.
  */
 @ToString
-@Getter
-@Setter
-public final class PostgreSQLExecuteStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLExecuteStatement extends ExecuteStatement implements PostgreSQLStatement {
 }

@@ -96,7 +96,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
         Iterator<ShadowColumnCondition> iterator = shadowColumns.iterator();
         ShadowColumnCondition userId = iterator.next();
         assertThat(userId.getColumn(), is("user_id"));
-        assertThat(userId.getTable(), is("t_order"));
+        assertThat(userId.getOwner(), is("t_order"));
         assertThat(userId.getValues().iterator().next(), is("1"));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
         assertThat(sqlNotes.isPresent(), is(true));

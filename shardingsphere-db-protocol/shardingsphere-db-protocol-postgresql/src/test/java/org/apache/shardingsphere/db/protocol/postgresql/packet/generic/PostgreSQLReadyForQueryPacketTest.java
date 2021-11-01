@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,7 +33,7 @@ public final class PostgreSQLReadyForQueryPacketTest {
     @Test
     public void assertReadWriteWithInTransaction() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         PostgreSQLReadyForQueryPacket packet = new PostgreSQLReadyForQueryPacket(true);
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.READY_FOR_QUERY));
         packet.write(payload);
@@ -42,7 +44,7 @@ public final class PostgreSQLReadyForQueryPacketTest {
     @Test
     public void assertReadWriteWithNotInTransaction() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         PostgreSQLReadyForQueryPacket packet = new PostgreSQLReadyForQueryPacket(false);
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.READY_FOR_QUERY));
         packet.write(payload);

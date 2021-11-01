@@ -203,7 +203,7 @@ showProcedureCode
     ;
 
 showProcedureStatus
-    : SHOW PROCEDURE STATUS showFilter
+    : SHOW PROCEDURE STATUS showFilter?
     ;
 
 showProcesslist
