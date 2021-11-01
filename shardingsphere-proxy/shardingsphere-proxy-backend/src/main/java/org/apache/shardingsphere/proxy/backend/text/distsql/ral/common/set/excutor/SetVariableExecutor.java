@@ -51,10 +51,10 @@ public final class SetVariableExecutor implements SetStatementExecutor {
     
     @Override
     public ResponseHeader execute() {
-        Enum type = getType(sqlStatement.getName());
-        if (type instanceof ConfigurationPropertyKey) {
-            handleConfigurationProperty((ConfigurationPropertyKey) type, sqlStatement.getValue());
-        } else if (type instanceof VariableEnum) {
+        Enum enumType = getEnumType(sqlStatement.getName());
+        if (enumType instanceof ConfigurationPropertyKey) {
+            handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());
+        } else if (enumType instanceof VariableEnum) {
             handleVariables(sqlStatement);
         } else {
             throw new UnsupportedVariableException(sqlStatement.getName());
@@ -62,10 +62,10 @@ public final class SetVariableExecutor implements SetStatementExecutor {
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private Enum getType(final String name) {
+    private Enum getEnumType(final String name) {
         try {
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
             return VariableEnum.getValueOf(name);
         }
     }
@@ -84,13 +84,13 @@ public final class SetVariableExecutor implements SetStatementExecutor {
         try {
             TypedPropertyValue propertyValue = new TypedPropertyValue(propertyKey, value);
             return propertyValue.getValue();
-        } catch (TypedPropertyValueException e) {
+        } catch (TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
         }
     }
     
-    private void handleVariables(final SetVariableStatement statement) {
-        VariableEnum variable = VariableEnum.getValueOf(statement.getName());
+    private void handleVariables(final SetVariableStatement setVariableStatement) {
+        VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
@@ -100,14 +100,14 @@ public final class SetVariableExecutor implements SetStatementExecutor {
                 backendConnection.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
                 break;
             default:
-                throw new UnsupportedVariableException(statement.getName());
+                throw new UnsupportedVariableException(setVariableStatement.getName());
         }
     }
     
     private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
         try {
             return TransactionType.valueOf(transactionTypeName.toUpperCase());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
             throw new UnsupportedVariableException(transactionTypeName);
         }
     }

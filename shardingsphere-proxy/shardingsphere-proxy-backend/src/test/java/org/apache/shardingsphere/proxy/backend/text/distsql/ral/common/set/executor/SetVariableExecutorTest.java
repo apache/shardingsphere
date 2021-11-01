@@ -45,11 +45,11 @@ public final class SetVariableExecutorTest {
     
     @Test
     public void assertExecuteWithAgent() {
-        SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "true");
+        SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "false");
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
         String expectedValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        Assert.assertThat(expectedValue, is("true"));
+        Assert.assertThat(expectedValue, is("false"));
     }
     
     @Test
