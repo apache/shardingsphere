@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Character set of MySQL.
+ * Character set and collation of MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/character-set.html#packet-Protocol::CharacterSet">Character Set</a>
  */
@@ -309,7 +309,7 @@ public enum MySQLCollation {
     UTF8MB4_ZH_0900_AS_CS(308, () -> StandardCharsets.UTF_8),
     UTF8MB4_0900_BIN(309, () -> StandardCharsets.UTF_8);
     
-    private static final Map<Integer, MySQLCollation> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
+    private static final Map<Integer, MySQLCollation> COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
     
     private final int id;
     
@@ -326,18 +326,18 @@ public enum MySQLCollation {
     }
     
     /**
-     * Get character set by id.
+     * Get collation by id.
      *
      * @param id id
-     * @return MySQL character set
+     * @return MySQL collation
      */
     public static MySQLCollation findById(final int id) {
-        MySQLCollation result = CHARACTER_SET_MAP.get(id);
+        MySQLCollation result = COLLATION_MAP.get(id);
         if (null == result) {
-            throw new UnsupportedCharsetException(String.format("Character set corresponding to id %d not found", id));
+            throw new UnsupportedCharsetException(String.format("Character set or collation corresponding to id %d not found", id));
         }
         if (null == result.getCharset()) {
-            throw new UnsupportedCharsetException(String.format("Character set %s unsupported", result.name().toLowerCase()));
+            throw new UnsupportedCharsetException(String.format("Character set or collation %s unsupported", result.name().toLowerCase()));
         }
         return result;
     }
