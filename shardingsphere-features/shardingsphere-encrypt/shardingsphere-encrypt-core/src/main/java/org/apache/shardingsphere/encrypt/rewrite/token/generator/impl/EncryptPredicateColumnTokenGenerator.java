@@ -86,7 +86,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final Collection<ExpressionSegment> predicates, 
             final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        Map<String, Map<String, String>> rewriteMetaDataMap = new HashMap<>();
+        Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap = new HashMap<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
             rewriteMetaDataMap = ((SelectStatementContext) sqlStatementContext).getRewriteMetaDataMap();
             if (rewriteMetaDataMap == null) {
@@ -98,9 +98,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
                 if (!rewriteMetaDataMap.isEmpty()) {
-                    Map<String, String> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
+                    Map<String, Map<String, String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
                     if (value != null && value.containsKey(column.getIdentifier().getValue())) {
-                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()))));
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get("assistedQueryColumn"))));
                         continue;
                     }
                 }
