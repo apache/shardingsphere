@@ -58,7 +58,6 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapper
         result.setWriteDataSourceName(dataSourceRuleConfig.getWriteDataSourceName());
         result.setReadDataSourceNames(dataSourceRuleConfig.getReadDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
-        result.setQueryConsistent(dataSourceRuleConfig.isQueryConsistent());
         return result;
     }
     
@@ -77,8 +76,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapper
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getAutoAwareDataSourceName(),
-                yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(), yamlDataSourceRuleConfig.getLoadBalancerName(), 
-                yamlDataSourceRuleConfig.isQueryConsistent());
+                yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
     @Override

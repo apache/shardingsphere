@@ -43,7 +43,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | 语句                                                               | 说明                                | 示例                                           |
 |:------------------------------------------------------------------|:------------------------------------|:----------------------------------------------|
 |[enable / disable] readwrite_splitting read xxx [from schema]      | 启用 / 禁用读库                       | enable readwrite_splitting read resource_0    |  
-|[enable / disable] instance IP=xxx, PORT=xxx                       | 启用 / 禁用proxy实例                  | disable instance IP=127.0.0.1, PORT=3307      |  
+|[enable / disable] instance IP=xxx, PORT=xxx                       | 启用 / 禁用 proxy 实例                | disable instance IP=127.0.0.1, PORT=3307      |  
 |show instance list                                                 | 查询 proxy 实例信息                   | show instance list                            |  
 |show readwrite_splitting read resources [from schema]              | 查询所有读库的状态                     | show readwrite_splitting read resources       |  
 
@@ -52,12 +52,15 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 | 语句                                                | 说明                                               | 示例                                          |
 |:---------------------------------------------------|:---------------------------------------------------|:----------------------------------------------|
-|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持LOCAL，XA，BASE             | set variable transaction_type = XA            |  
+|set variable proxy_property_name = xx               | proxy_property_name 为 proxy 的[属性配置](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/configuration/props/) ，需使用下划线命名            | set variable sql_show = true            |  
+|set variable transaction_type = xx                  | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE            | set variable transaction_type = XA            |  
 |set variable agent_plugins_enabled = [true / false] | 设置 agent 插件的启用状态，默认值 false                | set variable agent_plugins_enabled = true     |  
+|show all variables                                  | 查询 proxy 所有的属性配置                             | show all variable                             |  
+|show variable proxy_property_name                   | 查询 proxy 属性配置，需使用下划线命名                   | show variable sql_show                        |  
 |show variable transaction_type                      | 查询当前连接的事务类型                                 | show variable transaction_type                |  
 |show variable cached_connections                    | 查询当前连接中缓存的物理数据库连接个数                   | show variable cached_connections              |  
 |show variable agent_plugins_enabled                 | 查询 agent 插件的启用状态                             | show variable agent_plugins_enabled           |  
-|preview SQL                                         | 预览实际 SQL                                         | preview select * from t_order                 |  
+|preview SQL                                         | 预览实际 SQL                                        | preview select * from t_order                 |  
 
 ## 注意事项
 

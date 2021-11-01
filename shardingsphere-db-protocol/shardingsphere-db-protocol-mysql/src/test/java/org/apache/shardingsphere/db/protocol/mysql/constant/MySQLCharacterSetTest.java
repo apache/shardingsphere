@@ -27,18 +27,18 @@ import static org.junit.Assert.assertThat;
 public final class MySQLCharacterSetTest {
     
     @Test
-    public void assertFoundCharsetById() {
-        MySQLCharacterSet actual = MySQLCharacterSet.findById(255);
-        assertThat(actual, is(MySQLCharacterSet.UTF8MB4));
+    public void assertFoundCharacterSetById() {
+        MySQLCharacterSet actual = MySQLCharacterSet.findById(45);
+        assertThat(actual, is(MySQLCharacterSet.UTF8MB4_GENERAL_CI));
     }
     
     @Test(expected = UnsupportedCharsetException.class)
-    public void assertCharsetNotFoundById() {
+    public void assertCharacterSetNotFoundById() {
         MySQLCharacterSet.findById(-1);
     }
     
     @Test(expected = UnsupportedCharsetException.class)
-    public void assertFoundUnsupportedCharsetById() {
+    public void assertFoundUnsupportedCharacterSetById() {
         MySQLCharacterSet.findById(63);
     }
 }

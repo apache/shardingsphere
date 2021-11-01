@@ -38,15 +38,6 @@ public final class SchemaMetaDataPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist schema name.
-     *
-     * @param schemaName schema name to be persisted
-     */
-    public void persist(final String schemaName) {
-        repository.persist(SchemaMetaDataNode.getSchemaNamePath(schemaName), "");
-    }
-    
-    /**
      * Persist schema.
      *
      * @param schemaName schema name to be persisted

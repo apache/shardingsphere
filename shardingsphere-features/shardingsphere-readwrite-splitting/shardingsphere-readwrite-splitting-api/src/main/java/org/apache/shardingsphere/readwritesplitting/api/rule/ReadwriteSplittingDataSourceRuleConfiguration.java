@@ -38,6 +38,4 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     private final List<String> readDataSourceNames;
     
     private final String loadBalancerName;
-    
-    private final boolean queryConsistent;
 }

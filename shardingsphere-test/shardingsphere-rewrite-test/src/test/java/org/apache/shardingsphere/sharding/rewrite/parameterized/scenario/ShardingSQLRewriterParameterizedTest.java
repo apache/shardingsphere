@@ -23,12 +23,12 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -50,11 +50,12 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private static final String CASE_PATH = "scenario/sharding/case";
     
-    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+                                                final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
     
-    @Parameters(name = "{0}: {1} -> {2}")
+    @Parameters(name = "{0}: {1} ({3}) -> {2}")
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, ShardingSQLRewriterParameterizedTest.class);
     }
@@ -73,11 +74,6 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
             singleTableRule.get().addDataNode("t_single", "db");
             singleTableRule.get().addDataNode("t_single_extend", "db");
         }
-    }
-
-    @Override
-    protected String getDataBaseType() {
-        return null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType();
     }
     
     @Override

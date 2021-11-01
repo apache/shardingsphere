@@ -78,7 +78,7 @@ public final class MySQLCommandExecutorFactoryTest {
     public void setUp() throws ReflectiveOperationException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
-        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4);
+        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();

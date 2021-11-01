@@ -52,7 +52,7 @@ variableName
     ;
 
 variableValue
-    : IDENTIFIER
+    : IDENTIFIER | STRING | (MINUS)? INT 
     ;
 
 ip

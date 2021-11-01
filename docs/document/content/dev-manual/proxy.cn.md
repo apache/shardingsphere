@@ -14,7 +14,8 @@ chapter = true
 | *已知实现类*              | *详细说明*                                      |
 | ------------------------ | ---------------------------------------------- |
 | MySQLFrontendEngine      | 基于 MySQL 的数据库协议实现                      |
-| PostgreSQLFrontendEngine | 基于 PostgreSQL 的SQL 解析器实现                 |
+| PostgreSQLFrontendEngine | 基于 PostgreSQL 的数据库协议实现                 |
+| OpenGaussFrontendEngine | 基于 openGauss 的数据库协议实现                 |
 
 ## JDBCDriverURLRecognizer
 
@@ -30,6 +31,7 @@ chapter = true
 | SQLServerRecognizer     |  使用 SQLServer 的 JDBC 驱动执行 SQL  |
 | H2Recognizer            |  使用 H2 的 JDBC 驱动执行 SQL         |
 | P6SpyDriverRecognizer   |  使用 P6Spy 的 JDBC 驱动执行 SQL      |
+| OpenGaussRecognizer   |  使用 openGauss 的 JDBC 驱动执行 SQL      |
 
 ## AuthorityProvideAlgorithm
 

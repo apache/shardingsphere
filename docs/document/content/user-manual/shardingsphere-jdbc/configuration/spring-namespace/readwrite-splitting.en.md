@@ -22,7 +22,6 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | write-data-source-name     | Attribute  | Write data source name                                                  |
 | read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |
-| query-consistent           | Attribute  | Whether to enable query consistent routing                              |
 
 \<readwrite-splitting:load-balance-algorithm />
 

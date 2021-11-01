@@ -48,6 +48,18 @@ public final class JDBCUtil {
         }
     }
     
+    /**
+     * Append jdbc parameter.
+     *
+     * @param jdbcUrl jdbc url
+     * @param parameters parameters
+     *
+     * @return new jdbc url
+     */
+    public static String appendJDBCParameter(final String jdbcUrl, final Map<String, String> parameters) {
+        return append(jdbcUrl, parameters);
+    }
+    
     private static void append(final StandardJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
         dataSourceConfig.getHikariConfig().setJdbcUrl(append(dataSourceConfig.getHikariConfig().getJdbcUrl(), parameters));
     }
