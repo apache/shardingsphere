@@ -17,47 +17,47 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
-    <rewrite-assertion id="show_columns_from_table_without_schema" db-type="MySQL">
+    <rewrite-assertion id="show_columns_from_table_without_schema" db-types="MySQL">
         <input sql="SHOW COLUMNS FROM t_account" />
         <output sql="SHOW COLUMNS FROM t_account_0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_schema" db-type="MySQL">
+    <rewrite-assertion id="show_columns_from_table_with_schema" db-types="MySQL">
         <input sql="SHOW COLUMNS FROM t_account FROM sharding_db" />
         <output sql="SHOW COLUMNS FROM t_account_0 " />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_owner" db-type="MySQL">
+    <rewrite-assertion id="show_columns_from_table_with_owner" db-types="MySQL">
         <input sql="SHOW COLUMNS FROM sharding_db.t_account" />
         <output sql="SHOW COLUMNS FROM t_account_0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_back_quote" db-type="MySQL">
+    <rewrite-assertion id="show_columns_from_table_with_back_quote" db-types="MySQL">
         <input sql="SHOW COLUMNS FROM `sharding_db`.`t_account` FROM `sharding_db`" />
         <output sql="SHOW COLUMNS FROM `t_account_0` " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="show_tables" db-type="MySQL">
+    <rewrite-assertion id="show_tables" db-types="MySQL">
         <input sql="SHOW FULL TABLES FROM `sharding_db`" />
         <output sql="SHOW FULL TABLES " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="show_tables_with_pattern_matching_filter" db-type="MySQL">
+    <rewrite-assertion id="show_tables_with_pattern_matching_filter" db-types="MySQL">
         <input sql="SHOW FULL TABLES FROM `sharding_db` LIKE 't_acc%'" />
         <output sql="SHOW FULL TABLES  LIKE 't_acc%'" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="show_index_from_table_without_schema" db-type="MySQL">
+    <rewrite-assertion id="show_index_from_table_without_schema" db-types="MySQL">
         <input sql="SHOW INDEX FROM t_account" />
         <output sql="SHOW INDEX FROM t_account_0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="show_index_from_table_with_schema" db-type="MySQL">
+    <rewrite-assertion id="show_index_from_table_with_schema" db-types="MySQL">
         <input sql="SHOW INDEX FROM t_account FROM sharding_db" />
         <output sql="SHOW INDEX FROM t_account_0 " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="show_index_from_table_with_owner" db-type="MySQL">
+    <rewrite-assertion id="show_index_from_table_with_owner" db-types="MySQL">
         <input sql="SHOW INDEX FROM sharding_db.t_account" />
         <output sql="SHOW INDEX FROM t_account_0" />
     </rewrite-assertion>

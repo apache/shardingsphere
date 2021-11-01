@@ -87,11 +87,6 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
     }
-    
-    @Override
-    protected String getDataBaseType() {
-        return null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
-    }
 
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);

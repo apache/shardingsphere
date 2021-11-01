@@ -75,9 +75,4 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
             singleTableRule.get().addDataNode("t_account_bak", "encrypt_ds");
         }
     }
-
-    @Override
-    protected String getDataBaseType() {
-        return null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
-    }
 }

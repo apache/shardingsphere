@@ -17,123 +17,123 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
-    <rewrite-assertion id="create_table_with_single_data_node_binding_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_data_node_binding_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_item (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_item_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_unbinding_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_data_node_unbinding_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_extend (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_extend_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order_0 (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order_0 (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_binding_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_binding_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail_0 (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail_1 (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_data_node_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_and_single_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_data_node_and_single_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_single_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_single_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_broadcast_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_type (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_type (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_and_single_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_broadcast_and_single_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_and_broadcast_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint_for_postgresql" db-types="PostgreSQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_item (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_item_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_unbinding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_data_node_unbinding_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_extend (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_order_extend_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order_0 (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_order_0 (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail_0 (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_account_detail_1 (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_config (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_order(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
         <output sql="CREATE TABLE t_order_0(order_id INT PRIMARY KEY, CONSTRAINT t_order_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_multi_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_multi_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
         <output sql="CREATE TABLE t_account_detail_0(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
         <output sql="CREATE TABLE t_account_detail_1(order_id INT PRIMARY KEY, CONSTRAINT t_account_fk FOREIGN KEY (account_id) REFERENCES t_single (account_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_broadcast_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_type (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_order_type (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_broadcast_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_broadcast_and_single_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
         <output sql="CREATE TABLE t_config(order_id INT PRIMARY KEY, CONSTRAINT t_config_fk FOREIGN KEY (order_id) REFERENCES t_single (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
     </rewrite-assertion>
-    <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint_for_mysql" db-types="MySQL">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
     </rewrite-assertion>

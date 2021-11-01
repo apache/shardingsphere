@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.engine.paramete
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
