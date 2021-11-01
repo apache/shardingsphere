@@ -60,7 +60,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         this.backendConnection = backendConnection;
-        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override

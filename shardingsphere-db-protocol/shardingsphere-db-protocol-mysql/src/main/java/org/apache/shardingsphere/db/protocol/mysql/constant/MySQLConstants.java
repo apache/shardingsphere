@@ -27,5 +27,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLConstants {
     
-    public static final AttributeKey<MySQLCollation> MYSQL_CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCollation.class.getName());
+    public static final AttributeKey<MySQLCollation> MYSQL_COLLATION_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCollation.class.getName());
 }

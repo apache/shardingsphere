@@ -88,7 +88,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         sequenceId = packet.getSequenceId();
         MySQLCollation mySQLCollation = MySQLCollation.findById(packet.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCollation.getCharset());
-        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCollation);
+        context.channel().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).set(mySQLCollation);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().schemaExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();

@@ -77,7 +77,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCollation.UTF8MB4_GENERAL_CI);
+        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get()).thenReturn(MySQLCollation.UTF8MB4_GENERAL_CI);
     }
     
     private ShardingSphereMetaData mockMetaData() {
