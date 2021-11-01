@@ -28,6 +28,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +40,7 @@ public final class SetVariableExecutorTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         new SetVariableExecutor(statement, connection).execute();
-        Assert.assertEquals(TransactionType.LOCAL.name(), connection.getTransactionStatus().getTransactionType().name());
+        Assert.assertThat(TransactionType.LOCAL.name(), is(connection.getTransactionStatus().getTransactionType().name()));
     }
     
     @Test
@@ -48,7 +49,7 @@ public final class SetVariableExecutorTest {
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
         String expectedValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        Assert.assertEquals(expectedValue, "true");
+        Assert.assertThat(expectedValue, is("true"));
     }
     
     @Test
@@ -57,6 +58,6 @@ public final class SetVariableExecutorTest {
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
         String expectedValue = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold").toString();
-        Assert.assertEquals(expectedValue, "1024");
+        Assert.assertThat(expectedValue, is("1024"));
     }
 }
