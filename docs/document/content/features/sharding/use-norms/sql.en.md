@@ -93,7 +93,7 @@ SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 
 #### Join with cross databases
 
-When tables in the join query are distributed on different database instances, the statement will be supported by `Federation execution engine`.
+When tables in a join query are distributed on different database instances, sql statement will be supported by `Federation execution engine`.
 Assuming that `t_order` and `t_order_item` are sharding tables with multiple data nodes, and no binding table rules are configured, `t_user` and `t_user_role` are single tables that distributed on different database instances. `Federation execution engine` can support the following commonly used join query:
 
 ```sql
