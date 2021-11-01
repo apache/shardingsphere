@@ -27,12 +27,12 @@ public final class PostgreSQLServerInfoTest {
     @Test
     public void assertSetServerVersion() {
         PostgreSQLServerInfo.setServerVersion("13.2");
-        assertThat(PostgreSQLServerInfo.getServerVersion(), is("13.2-ShardingSphere-Proxy 5.0.0-beta"));
+        assertThat(PostgreSQLServerInfo.getServerVersion(), is("13.2-ShardingSphere-Proxy 5.0.0"));
     }
     
     @Test
     public void assertSetServerVersionForNull() {
         PostgreSQLServerInfo.setServerVersion(null);
-        assertThat(PostgreSQLServerInfo.getServerVersion(), is("12.3-ShardingSphere-Proxy 5.0.0-beta"));
+        assertThat(PostgreSQLServerInfo.getServerVersion(), is("12.3-ShardingSphere-Proxy 5.0.0"));
     }
 }
