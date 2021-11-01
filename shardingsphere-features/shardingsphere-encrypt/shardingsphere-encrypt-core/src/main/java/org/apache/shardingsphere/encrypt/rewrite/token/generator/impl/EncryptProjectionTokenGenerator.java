@@ -141,7 +141,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
                         && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
-                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, SubqueryKind.InsertSelectSubquery));
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, SubqueryKind.InsertSelectSubquery, rewriteMetaDataMap));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
