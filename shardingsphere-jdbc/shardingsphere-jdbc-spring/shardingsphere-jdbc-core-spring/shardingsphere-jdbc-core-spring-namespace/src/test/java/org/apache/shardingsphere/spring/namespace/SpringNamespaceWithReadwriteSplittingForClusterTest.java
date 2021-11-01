@@ -37,7 +37,6 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +63,6 @@ public final class SpringNamespaceWithReadwriteSplittingForClusterTest extends A
         assertThat(dataSourceRule.get().getWriteDataSourceName(), is("dbtbl_write_0"));
         assertTrue(dataSourceRule.get().getReadDataSourceNames().contains("dbtbl_0_read_0"));
         assertTrue(dataSourceRule.get().getReadDataSourceNames().contains("dbtbl_0_read_1"));
-        assertFalse(dataSourceRule.get().isQueryConsistent());
     }
     
     @Test

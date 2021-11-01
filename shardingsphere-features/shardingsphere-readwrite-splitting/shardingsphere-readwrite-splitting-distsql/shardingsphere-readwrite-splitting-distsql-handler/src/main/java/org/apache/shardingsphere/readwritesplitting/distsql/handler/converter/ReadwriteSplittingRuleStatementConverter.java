@@ -56,8 +56,8 @@ public final class ReadwriteSplittingRuleStatementConverter {
     
     private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final String name, final String loadBalancerName, final ReadwriteSplittingRuleSegment ruleSegment) {
         return Strings.isNullOrEmpty(ruleSegment.getAutoAwareResource())
-                ? new ReadwriteSplittingDataSourceRuleConfiguration(name, null, ruleSegment.getWriteDataSource(), new LinkedList<>(ruleSegment.getReadDataSources()), loadBalancerName, false)
-                : new ReadwriteSplittingDataSourceRuleConfiguration(name, ruleSegment.getAutoAwareResource(), null, Collections.emptyList(), loadBalancerName, false);
+                ? new ReadwriteSplittingDataSourceRuleConfiguration(name, null, ruleSegment.getWriteDataSource(), new LinkedList<>(ruleSegment.getReadDataSources()), loadBalancerName)
+                : new ReadwriteSplittingDataSourceRuleConfiguration(name, ruleSegment.getAutoAwareResource(), null, Collections.emptyList(), loadBalancerName);
     }
     
     private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {

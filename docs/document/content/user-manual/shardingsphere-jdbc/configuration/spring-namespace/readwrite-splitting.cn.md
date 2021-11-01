@@ -22,13 +22,12 @@ weight = 2
 | write-data-source-name     | 属性  | 写数据源名称                      |
 | read-data-source-names     | 属性  | 读数据源名称，多个读数据源用逗号分隔 |
 | load-balance-algorithm-ref | 属性  | 负载均衡算法名称                   |
-| query-consistent           | 属性  | 是否启用查询一致性路由              |
 
 
 \<readwrite-splitting:load-balance-algorithm />
 
-| *名称*    | *类型* | *说明*            |
-| --------- | ----- | ----------------- |
+| *名称*     | *类型* | *说明*           |
+| --------- | ----- | ---------------- |
 | id        | 属性  | 负载均衡算法名称    |
 | type      | 属性  | 负载均衡算法类型    |
 | props (?) | 标签  | 负载均衡算法属性配置 |

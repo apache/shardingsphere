@@ -40,7 +40,7 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
         check(sqlStatement);
         ProxyContext.getInstance().getContextManager().addSchema(sqlStatement.getDatabaseName());
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(
-            optional -> optional.getSchemaMetaDataService().persist(sqlStatement.getDatabaseName()));
+            optional -> optional.getSchemaMetaDataService().persist(sqlStatement.getDatabaseName(), null));
         return new UpdateResponseHeader(sqlStatement);
     }
     
