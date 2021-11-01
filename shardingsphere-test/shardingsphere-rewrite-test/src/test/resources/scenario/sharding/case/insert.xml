@@ -32,7 +32,7 @@
         <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
         <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
     </rewrite-assertion>
