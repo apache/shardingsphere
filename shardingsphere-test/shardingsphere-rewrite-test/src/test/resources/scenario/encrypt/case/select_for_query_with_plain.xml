@@ -41,4 +41,14 @@
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account_bak a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_bak a" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="select_join_with_alias">
+        <input sql="SELECT a.password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
+        <output sql="SELECT a.cipher_password AS password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_join_with_table_name">
+        <input sql="SELECT t_account.password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
+        <output sql="SELECT t_account.cipher_password AS password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
+    </rewrite-assertion>
 </rewrite-assertions>
