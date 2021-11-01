@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCollation;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -78,7 +78,7 @@ public final class MySQLCommandExecutorFactoryTest {
     public void setUp() throws ReflectiveOperationException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
-        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get()).thenReturn(MySQLCollation.UTF8MB4_GENERAL_CI);
+        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();

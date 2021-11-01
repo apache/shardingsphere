@@ -94,7 +94,7 @@ public final class MySQLFrontendEngineTest {
         resetConnectionIdGenerator();
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

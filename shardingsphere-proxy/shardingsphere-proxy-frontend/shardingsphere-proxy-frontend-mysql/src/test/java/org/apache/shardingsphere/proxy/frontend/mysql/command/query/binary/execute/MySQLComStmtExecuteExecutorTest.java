@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCollation;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -77,7 +77,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get()).thenReturn(MySQLCollation.UTF8MB4_GENERAL_CI);
+        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
     }
     
     private ShardingSphereMetaData mockMetaData() {

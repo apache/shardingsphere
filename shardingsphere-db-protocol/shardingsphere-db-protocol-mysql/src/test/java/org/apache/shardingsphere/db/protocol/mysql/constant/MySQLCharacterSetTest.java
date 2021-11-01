@@ -24,21 +24,21 @@ import java.nio.charset.UnsupportedCharsetException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLCollationTest {
+public final class MySQLCharacterSetTest {
     
     @Test
-    public void assertFoundCollationById() {
-        MySQLCollation actual = MySQLCollation.findById(45);
-        assertThat(actual, is(MySQLCollation.UTF8MB4_GENERAL_CI));
+    public void assertFoundCharacterSetById() {
+        MySQLCharacterSet actual = MySQLCharacterSet.findById(45);
+        assertThat(actual, is(MySQLCharacterSet.UTF8MB4_GENERAL_CI));
     }
     
     @Test(expected = UnsupportedCharsetException.class)
-    public void assertCollationNotFoundById() {
-        MySQLCollation.findById(-1);
+    public void assertCharacterSetNotFoundById() {
+        MySQLCharacterSet.findById(-1);
     }
     
     @Test(expected = UnsupportedCharsetException.class)
-    public void assertFoundUnsupportedCollationById() {
-        MySQLCollation.findById(63);
+    public void assertFoundUnsupportedCharacterSetById() {
+        MySQLCharacterSet.findById(63);
     }
 }

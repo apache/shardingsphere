@@ -67,7 +67,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, schemaName);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
-        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get().getId();
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override

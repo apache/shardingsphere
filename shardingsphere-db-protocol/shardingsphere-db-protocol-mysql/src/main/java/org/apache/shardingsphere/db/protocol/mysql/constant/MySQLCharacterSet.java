@@ -30,12 +30,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Character set and collation of MySQL.
+ * Character set of MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/character-set.html#packet-Protocol::CharacterSet">Character Set</a>
  */
 @Getter
-public enum MySQLCollation {
+public enum MySQLCharacterSet {
     
     BIG5_CHINESE_CI(1, () -> Charset.forName("big5")),
     LATIN2_CZECH_CS(2, () -> Charset.forName("latin2")),
@@ -309,13 +309,13 @@ public enum MySQLCollation {
     UTF8MB4_ZH_0900_AS_CS(308, () -> StandardCharsets.UTF_8),
     UTF8MB4_0900_BIN(309, () -> StandardCharsets.UTF_8);
     
-    private static final Map<Integer, MySQLCollation> COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
+    private static final Map<Integer, MySQLCharacterSet> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
     
     private final int id;
     
     private final Charset charset;
     
-    MySQLCollation(final int id, final Supplier<Charset> charsetSupplier) {
+    MySQLCharacterSet(final int id, final Supplier<Charset> charsetSupplier) {
         this.id = id;
         Charset result = null;
         try {
@@ -326,18 +326,18 @@ public enum MySQLCollation {
     }
     
     /**
-     * Get collation by id.
+     * Get character set by id.
      *
      * @param id id
-     * @return MySQL collation
+     * @return MySQL character set
      */
-    public static MySQLCollation findById(final int id) {
-        MySQLCollation result = COLLATION_MAP.get(id);
+    public static MySQLCharacterSet findById(final int id) {
+        MySQLCharacterSet result = CHARACTER_SET_MAP.get(id);
         if (null == result) {
-            throw new UnsupportedCharsetException(String.format("Character set or collation corresponding to id %d not found", id));
+            throw new UnsupportedCharsetException(String.format("Character set corresponding to id %d not found", id));
         }
         if (null == result.getCharset()) {
-            throw new UnsupportedCharsetException(String.format("Character set or collation %s unsupported", result.name().toLowerCase()));
+            throw new UnsupportedCharsetException(String.format("Character set %s unsupported", result.name().toLowerCase()));
         }
         return result;
     }

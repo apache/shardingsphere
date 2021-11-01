@@ -83,7 +83,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(schemaName), schemaName, metaDataContexts.getMetaDataMap(), backendConnection.getGrantee());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), backendConnection);
-        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_COLLATION_ATTRIBUTE_KEY).get().getId();
+        characterSet = backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
