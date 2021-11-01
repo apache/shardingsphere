@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * Kill hikari data source.
+ * Hikari data source killer.
  */
 public final class HikariDataSourceKiller implements DataSourceKiller {
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 /**
- * Kill data source.
+ * Data source killer.
  */
 public interface DataSourceKiller extends TypedSPI, RequiredSPI {
     

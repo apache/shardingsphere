@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
 
 /**
- * Kill hikari data source.
+ * Default data source killer.
  */
 public final class DefaultDataSourceKiller implements DataSourceKiller {
     
