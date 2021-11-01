@@ -28,7 +28,8 @@ public final class PostgreSQLServerInfo {
     
     private static final String DEFAULT_POSTGRESQL_VERSION = "12.3";
     
-    private static final String PROXY_VERSION = "5.0.0-beta";
+    // TODO Write version here is easy to forget. Consider refactoring it.
+    private static final String PROXY_VERSION = "5.0.0";
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
