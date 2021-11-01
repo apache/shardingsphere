@@ -16,7 +16,6 @@ rules:
       readDataSourceNames: 
         - <read-data_source-name> (+) # 读库数据源名称
       loadBalancerName: # 负载均衡算法名称
-      queryConsistent: # 是否启用查询一致性路由
   
   # 负载均衡算法配置
   loadBalancers:

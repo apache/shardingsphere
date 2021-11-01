@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
@@ -215,7 +214,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public void close() throws SQLException {
         closed = true;
-        PrimaryVisitedManager.clear();
         connectionManager.close();
     }
 }

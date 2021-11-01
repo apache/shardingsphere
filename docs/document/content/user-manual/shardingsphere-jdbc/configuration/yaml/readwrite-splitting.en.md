@@ -16,7 +16,6 @@ rules:
       readDataSourceNames: 
         - <read-data-source-name> (+) # Read data source name
       loadBalancerName: # Load balance algorithm name
-      queryConsistent: # Whether to enable query consistent routing
   
   # Load balance algorithm configuration
   loadBalancers:

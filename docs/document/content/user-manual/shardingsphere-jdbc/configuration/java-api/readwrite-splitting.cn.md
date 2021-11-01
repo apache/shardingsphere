@@ -26,7 +26,6 @@ weight = 2
 | writeDataSourceName        | String               | 写库数据源名称        | -             |
 | readDataSourceNames (+)    | Collection\<String\> | 读库数据源名称列表    | -             |
 | loadBalancerName (?)       | String               | 读库负载均衡算法名称  | 轮询负载均衡算法 |
-| queryConsistent (?)        | boolean              | 是否启用查询一致性路由 | false         |
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
 查询一致性路由的详情，请参见[使用规范](/cn/features/readwrite-splitting/use-norms)。
