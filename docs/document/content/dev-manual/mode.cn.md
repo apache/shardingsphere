@@ -36,7 +36,6 @@ chapter = true
 | -----------------------------  | ------------------ |
 | StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |
 | ComputeNodeStateChangedWatcher | 计算节点状态变化监听器 |
-| LockChangedWatcher             | 锁状态变化监听器      |
 | PropertiesChangedWatcher       | 属性变化监听器        |
 | PrivilegeNodeChangedWatcher    | 权限变化监听器        |
 | GlobalRuleChangedWatcher       | 全局规则配置变化监听器 |

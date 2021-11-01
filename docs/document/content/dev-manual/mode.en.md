@@ -36,7 +36,6 @@ chapter = true
 | -------------------------------- | --------------------------------- |
 | StorageNodeStateChangedWatcher   | Storage node changed watcher      |
 | ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
-| LockChangedWatcher               | Lock changed watcher              |
 | PropertiesChangedWatcher         | Properties changed watcher        |
 | PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
 | GlobalRuleChangedWatcher         | Global rule changed watcher       |
