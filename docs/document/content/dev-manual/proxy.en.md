@@ -15,6 +15,7 @@ chapter = true
 | ------------------------ | ------------------------------------------------------------------------------- |
 | MySQLFrontendEngine      | Base on MySQL database protocol                                                 |
 | PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
+| OpenGaussFrontendEngine | Base on openGauss database protocol                                            |
 
 ## JDBCDriverURLRecognizer
 
@@ -30,6 +31,7 @@ chapter = true
 | SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
 | H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
 | P6SpyDriverRecognizer   |  Use P6Spy JDBC driver to execute SQL      |
+| OpenGaussRecognizer   |  Use openGauss JDBC driver to execute SQL      |
 
 ## AuthorityProvideAlgorithm
 
