@@ -25,12 +25,12 @@ import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 /**
- * Close data source.
+ * Kill data source.
  */
 public interface DataSourceKiller extends TypedSPI, RequiredSPI {
     
     /**
-     * Gracefully close the dataSource.
+     * Gracefully kill the dataSource.
      * 
      * @param dataSource data source
      * @throws SQLException sql exception

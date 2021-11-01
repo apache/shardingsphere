@@ -24,7 +24,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Data source closer factory.
+ * Data source killer factory.
  */
 public final class DataSourceKillerFactory {
     
@@ -33,10 +33,10 @@ public final class DataSourceKillerFactory {
     }
     
     /**
-     * Get data source closer.
+     * Get data source killer.
      * 
      * @param dataSourceClassName data source class name
-     * @return data source closer
+     * @return data source killer
      */
     public static DataSourceKiller getDataSourceKiller(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourceKiller.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceKiller.class));
