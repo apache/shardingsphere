@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +56,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,21 +95,21 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfiguration);
         ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfiguration, toBeAlteredRuleConfiguration);
-        Assert.assertThat(currentRuleConfiguration.getTables().size(), is(1));
+        assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfiguration.getTables().iterator().next();
-        Assert.assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
-        Assert.assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
-        Assert.assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
-        Assert.assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
-        Assert.assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
-        Assert.assertThat(currentRuleConfiguration.getTables().size(), is(1));
+        assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
+        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
-        Assert.assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
-        Assert.assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
-        Assert.assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_MOD_TEST"));
-        Assert.assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
-        Assert.assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
-        Assert.assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_snowflake_test"));
+        assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
+        assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_MOD_TEST"));
+        assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
+        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_snowflake_test"));
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
