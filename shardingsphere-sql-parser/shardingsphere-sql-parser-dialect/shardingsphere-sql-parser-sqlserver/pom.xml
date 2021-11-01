@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser-dialect</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.0.0</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
     <name>${project.artifactId}</name>
