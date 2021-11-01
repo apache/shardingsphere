@@ -17,12 +17,12 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-plain.yaml">
-    <rewrite-assertion id="delete_plain_for_parameters">
+    <rewrite-assertion id="delete_plain_for_parameters" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
         <output sql="DELETE FROM t_account_bak_1 WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="delete_for_literals">
+    <rewrite-assertion id="delete_for_literals" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="DELETE FROM t_account_bak_1 WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
