@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.base.Preconditions;
+import lombok.Setter;
+
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -133,6 +136,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, subqueryKind, rewriteMetaDataMap));
+                if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
+                        && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, insertSelect));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
