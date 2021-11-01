@@ -55,7 +55,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         super(testParameters);
     }
     
-    @Parameters(name = "{0}: {1} -> {2}")
+    @Parameters(name = "{0}: {1} ({3}) -> {2}")
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, ShardingSQLRewriterParameterizedTest.class);
     }
