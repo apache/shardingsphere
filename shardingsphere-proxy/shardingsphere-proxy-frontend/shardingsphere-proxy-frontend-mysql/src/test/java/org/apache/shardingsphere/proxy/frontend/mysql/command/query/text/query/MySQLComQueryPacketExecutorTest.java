@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCollation;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -58,7 +58,7 @@ public final class MySQLComQueryPacketExecutorTest {
     @Before
     public void setUp() {
         when(packet.getSql()).thenReturn("");
-        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4);
+        when(backendConnection.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCollation.UTF8MB4_GENERAL_CI);
     }
     
     @Test

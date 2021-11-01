@@ -31,7 +31,7 @@ public final class MySQLServerInfo {
      */
     public static final int PROTOCOL_VERSION = 0x0A;
     
-    public static final MySQLCharacterSet DEFAULT_CHARSET = MySQLCharacterSet.UTF8MB4;
+    public static final MySQLCollation DEFAULT_CHARSET = MySQLCollation.UTF8MB4_0900_AI_CI;
     
     private static final String DEFAULT_MYSQL_VERSION = "5.7.22";
     

@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCollation;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
@@ -86,9 +86,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         authResponse = packet.getAuthResponse();
         sequenceId = packet.getSequenceId();
-        MySQLCharacterSet mySQLCharacterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCharacterSet.getCharset());
-        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCharacterSet);
+        MySQLCollation mySQLCollation = MySQLCollation.findById(packet.getCharacterSet());
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCollation.getCharset());
+        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCollation);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().schemaExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();
