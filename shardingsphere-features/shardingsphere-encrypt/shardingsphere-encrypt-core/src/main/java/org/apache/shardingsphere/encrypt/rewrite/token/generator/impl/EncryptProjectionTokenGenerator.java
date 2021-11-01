@@ -133,9 +133,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
-            	if (!rewriteMetaDataMap.isEmpty() && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
-            		result.addAll(generateSQLTokens(each, rewriteMetaDataMap));
-            	}
+                if (!rewriteMetaDataMap.isEmpty() && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
+                    result.addAll(generateSQLTokens(each, rewriteMetaDataMap));
+                }
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue()) 
                         && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
                     result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, subqueryKind, rewriteMetaDataMap));
@@ -152,13 +152,13 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionSegment each, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
-    	Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-    	ColumnSegment column = ((ColumnProjectionSegment) each).getColumn();
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
+        ColumnSegment column = ((ColumnProjectionSegment) each).getColumn();
         int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
         int stopIndex = column.getStopIndex();
         Map<String, Map<String, String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
         if (value != null && value.containsKey(column.getIdentifier().getValue())) {
-        	result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get("cipherColumn"), 
+            result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get("cipherColumn"), 
                 column.getIdentifier().getValue())));
         }
         return result;
