@@ -57,12 +57,7 @@
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_having_and_window_for_mysql" db-types="MySQL">
-        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_having_and_window_for_postgresql" db-types="PostgreSQL,openGauss">
+    <rewrite-assertion id="select_with_having_and_window" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
