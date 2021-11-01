@@ -35,7 +35,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -74,7 +75,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
         updater.updateCurrentRuleConfiguration(createSQLStatement("t_1,t_2"), currentRuleConfig);
-        assertEquals(1, currentRuleConfig.getBindingTableGroups().size());
+        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
     }
     

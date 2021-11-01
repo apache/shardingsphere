@@ -56,6 +56,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,21 +94,21 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfiguration);
         ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfiguration, toBeAlteredRuleConfiguration);
-        Assert.assertEquals(1, currentRuleConfiguration.getTables().size());
+        Assert.assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfiguration.getTables().iterator().next();
         Assert.assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
-        Assert.assertEquals("product_id", ((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn());
-        Assert.assertEquals("t_order_algorithm", tableRule.getTableShardingStrategy().getShardingAlgorithmName());
+        Assert.assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
+        Assert.assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
         Assert.assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
-        Assert.assertEquals("t_order_algorithm", tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName());
-        Assert.assertEquals(1, currentRuleConfiguration.getTables().size());
+        Assert.assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        Assert.assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
-        Assert.assertEquals("t_order_item", autoTableRule.getLogicTable());
-        Assert.assertEquals("ds_0,ds_1", autoTableRule.getActualDataSources());
-        Assert.assertEquals("t_order_item_MOD_TEST", autoTableRule.getShardingStrategy().getShardingAlgorithmName());
-        Assert.assertEquals("order_id", ((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn());
-        Assert.assertEquals("product_id", autoTableRule.getKeyGenerateStrategy().getColumn());
-        Assert.assertEquals("t_order_item_snowflake_test", autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName());
+        Assert.assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
+        Assert.assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        Assert.assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_MOD_TEST"));
+        Assert.assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
+        Assert.assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
+        Assert.assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_snowflake_test"));
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {

@@ -23,9 +23,10 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefault
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Create default sharding strategy statement assert.
@@ -45,10 +46,14 @@ public final class CreateDefaultShardingStrategyStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertEquals(actual.getDefaultType(), expected.getStrategy().getDefaultType());
-            assertEquals(actual.getShardingColumn(), expected.getStrategy().getShardingColumn());
-            assertEquals(actual.getStrategyType(), expected.getStrategy().getStrategyType());
-            assertEquals(actual.getShardingAlgorithmName(), expected.getStrategy().getShardingAlgorithmName());
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), 
+                    actual.getDefaultType(), is(expected.getStrategy().getDefaultType()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), 
+                    actual.getShardingColumn(), is(expected.getStrategy().getShardingColumn()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), 
+                    actual.getStrategyType(), is(expected.getStrategy().getStrategyType()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), 
+                    actual.getShardingAlgorithmName(), is(expected.getStrategy().getShardingAlgorithmName()));
         }
     }
 }
