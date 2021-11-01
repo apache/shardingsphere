@@ -82,7 +82,6 @@ public final class TablesContext {
         return uniqueTables.values();
     }
     
-    
     /**
      * Find table name.
      *

@@ -95,7 +95,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     }
     
     @Test
-    public void assertColumnAmbiguousGenerateSQLTokens() {
+    public void assertColumnUnAmbiguousGenerateSQLTokens() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("column `mobile` is ambiguous in encrypt rules");
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);

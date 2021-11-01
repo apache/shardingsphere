@@ -108,7 +108,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private boolean columnMatchTableAndCheckAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
         return isOwnerExistsMatchTableAlias(selectStatementContext, columnProjectionSegment, tableName) 
                 || isOwnerExistsMatchTableName(selectStatementContext, columnProjectionSegment, tableName) 
-                || isColumnAmbiguous(selectStatementContext, columnProjectionSegment);
+                || isColumnUnAmbiguous(selectStatementContext, columnProjectionSegment);
     }
     
     private boolean isOwnerExistsMatchTableAlias(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
@@ -127,7 +127,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 && !table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(tableName));
     }
     
-    private boolean isColumnAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment) {
+    private boolean isColumnUnAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment) {
         if (columnProjectionSegment.getColumn().getOwner().isPresent()) {
             return false;
         }
@@ -138,8 +138,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                     && encryptTable.get().getLogicColumns().contains(columnProjectionSegment.getColumn().getIdentifier().getValue())) {
                 columnCount++;
             }
-            Preconditions.checkState(columnCount <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
         }
+        Preconditions.checkState(columnCount <= 1, "column `%s` is ambiguous in encrypt rules", columnProjectionSegment.getColumn().getIdentifier().getValue());
         return true;
     }
     
