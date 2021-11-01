@@ -26,13 +26,8 @@
         <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
         <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
     </rewrite-assertion>
-    
-    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters" db-types="MySQL">
-        <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
-        <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
-    </rewrite-assertion>
 
-    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters_for_postgresql" db-types="PostgreSQL">
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="INSERT INTO t_account (amount, status) VALUES (?, ?)" parameters="1000, OK" />
         <output sql="INSERT INTO t_account_1 (amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />
     </rewrite-assertion>
@@ -139,11 +134,6 @@
     <rewrite-assertion id="insert_set_with_columns_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account SET amount = 1000, status = 'OK'" />
         <output sql="INSERT INTO t_account_1 SET amount = 1000, status = 'OK', account_id = 1" />
-    </rewrite-assertion>
-    
-    <rewrite-assertion id="insert_into_with_columns_without_id_for_parameters" db-types="MySQL">
-        <input sql="INSERT INTO t_account SET amount = ?, status = ?" parameters="1000, OK" />
-        <output sql="INSERT INTO t_account_1 SET amount = ?, status = ?, account_id = ?" parameters="1000, OK, 1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters_and_on_duplicate_update" db-types="MySQL">

@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -43,11 +42,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     
     private static final String CASE_PATH = "scenario/encrypt/case";
     
-    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+                                               final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
     
-    @Parameters(name = "{0}: {1} -> {2}")
+    @Parameters(name = "{0}: {1} ({3}) -> {2}")
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, EncryptSQLRewriterParameterizedTest.class);
     }
@@ -62,8 +62,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     @Override
     protected ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList(Arrays.asList("account_id", "certificate_number", "password", "amount", "status")));
-        when(result.getAllColumnNames("t_account_bak")).thenReturn(new ArrayList(Arrays.asList("account_id", "certificate_number", "password", "amount", "status")));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;
     }
     
