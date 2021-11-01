@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -62,8 +61,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     @Override
     protected ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList(Arrays.asList("account_id", "certificate_number", "password", "amount", "status")));
-        when(result.getAllColumnNames("t_account_bak")).thenReturn(new ArrayList(Arrays.asList("account_id", "certificate_number", "password", "amount", "status")));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;
     }
     
