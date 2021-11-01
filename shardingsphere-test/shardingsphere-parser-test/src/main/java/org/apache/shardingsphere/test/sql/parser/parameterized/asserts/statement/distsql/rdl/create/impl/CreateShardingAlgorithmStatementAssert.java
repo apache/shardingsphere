@@ -31,9 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Create sharding algorithm statement assert.
@@ -66,7 +67,7 @@ public final class CreateShardingAlgorithmStatementAssert {
             for (ExpectedShardingAlgorithm each : expected) {
                 ShardingAlgorithmSegment actualAlgorithm = actualMap.get(each.getShardingAlgorithmName());
                 assertNotNull(assertContext.getText("Actual sharding algorithm should exist."), actualAlgorithm);
-                assertEquals(each.getShardingAlgorithmName(), actualAlgorithm.getShardingAlgorithmName());
+                assertThat(actualAlgorithm.getShardingAlgorithmName(), is(each.getShardingAlgorithmName()));
                 AlgorithmAssert.assertIs(assertContext, actualAlgorithm.getAlgorithmSegment(), each.getAlgorithmSegment());
             }
         }
