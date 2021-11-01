@@ -11,13 +11,13 @@ SHOW DB_DISCOVERY RULES [FROM schemaName]
 
 ## 说明
 
-| 列                    | 说明            |
-| --------------------- | --------------- |
-| name                  | 规则名称         |
-| dataSourceNames       | 数据源名称列表    |
-| primaryDataSourceName | 主数据源名称      |
-| discoverType          | 数据库发现服务类型 |
-| discoverProps         | 数据库发现服务参数 |
+| 列                       | 说明            |
+| ------------------------ | --------------- |
+| name                     | 规则名称         |
+| data_source_names        | 数据源名称列表    |
+| primary_data_source_name | 主数据源名称      |
+| discover_type            | 数据库发现服务类型 |
+| discover_props           | 数据库发现服务参数 |
 
 ## 示例
 

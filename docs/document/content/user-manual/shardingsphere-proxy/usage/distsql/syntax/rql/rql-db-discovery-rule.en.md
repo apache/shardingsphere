@@ -11,13 +11,13 @@ SHOW DB_DISCOVERY RULES [FROM schemaName]
 
 ## Description
 
-| Column                | Description                            |
-| --------------------- | -------------------------------------- |
-| name                  | Rule name                              |
-| dataSourceNames       | Data source name list                  |
-| primaryDataSourceName | Primary data source name               |
-| discoverType          | Database discovery service type        |
-| discoverProps         | Database discovery service parameters  |
+| Column                   | Description                            |
+| ------------------------ | -------------------------------------- |
+| name                     | Rule name                              |
+| data_source_names        | Data source name list                  |
+| primary_data_source_name | Primary data source name               |
+| discover_type            | Database discovery service type        |
+| discover_props           | Database discovery service parameters  |
 
 ## Example
 
