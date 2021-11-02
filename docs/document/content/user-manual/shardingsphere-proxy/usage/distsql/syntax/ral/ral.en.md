@@ -51,8 +51,11 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                          | Function                                                                             | Example                                       |
 |:---------------------------------------------------|:-------------------------------------------------------------------------------------|:----------------------------------------------|
+|set variable proxy_property_name = xx               | proxy_property_name is one of [properties configuration](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/configuration/props/)  of proxy，name is split by underscore            | set variable sql_show = true            |  
 |set variable transaction_type = xx                  | Modify transaction_type of the current connection, supports LOCAL, XA, BASE          | set variable transaction_type = XA            |  
 |set variable agent_plugins_enabled = [true / false] | Set whether the agent plugins are enabled, the default value is false                | set variable agent_plugins_enabled = true     |  
+|show all variables                                  | Query proxy all properties configuration                                             | show all variable                             |  
+|show variable proxy_property_name                   | Query proxy properties configuration, name is split by underscore                    | show variable sql_show                        |  
 |show variable transaction_type                      | Query the transaction type of the current connection                                 | show variable transaction_type                |  
 |show variable cached_connections                    | Query the number of cached physical database connections in the current connection   | show variable cached_connections              |  
 |show variable agent_plugins_enabled                 | Query whether the agent plugin are enabled                                           | show variable agent_plugins_enabled           | 

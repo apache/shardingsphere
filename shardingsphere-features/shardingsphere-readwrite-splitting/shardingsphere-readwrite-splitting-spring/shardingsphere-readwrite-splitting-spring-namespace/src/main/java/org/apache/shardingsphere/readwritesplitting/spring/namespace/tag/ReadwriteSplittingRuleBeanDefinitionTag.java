@@ -39,6 +39,4 @@ public final class ReadwriteSplittingRuleBeanDefinitionTag {
     public static final String READ_DATA_SOURCE_NAMES_ATTRIBUTE = "read-data-source-names";
     
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
-    
-    public static final String QUERY_CONSISTENT = "query-consistent";
 }

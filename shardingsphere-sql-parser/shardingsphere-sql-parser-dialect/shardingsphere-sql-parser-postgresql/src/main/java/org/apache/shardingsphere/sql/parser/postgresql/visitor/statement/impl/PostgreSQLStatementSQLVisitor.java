@@ -687,16 +687,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     
     @Override
     public ASTNode visitRelationExprOptAlias(final RelationExprOptAliasContext ctx) {
-        SimpleTableSegment result;
+        SimpleTableSegment result = generateTableFromRelationExpr(ctx.relationExpr());
         if (null != ctx.colId()) {
-            ColIdContext colId = ctx.relationExpr().qualifiedName().colId();
-            TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
-            result = new SimpleTableSegment(tableName);
             result.setAlias(new AliasSegment(ctx.colId().start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-        } else {
-            ColIdContext colId = ctx.relationExpr().qualifiedName().colId();
-            TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
-            result = new SimpleTableSegment(tableName);
         }
         return result;
     }

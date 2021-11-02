@@ -48,9 +48,6 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatement sqlStatement) {
         if (isPrimaryRoute(sqlStatement)) {
-            if (rule.isQueryConsistent()) {
-                PrimaryVisitedManager.setPrimaryVisited();
-            }
             String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
             if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
                 return rule.getWriteDataSourceName();
@@ -73,8 +70,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement)
-                || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly() || TransactionHolder.isTransaction();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || HintManager.isWriteRouteOnly() || TransactionHolder.isTransaction();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

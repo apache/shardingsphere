@@ -85,7 +85,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = 
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null, "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", false);
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null, "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
     }
 }

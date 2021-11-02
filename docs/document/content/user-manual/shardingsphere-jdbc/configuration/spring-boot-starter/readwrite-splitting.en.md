@@ -11,7 +11,6 @@ spring.shardingsphere.datasource.names= # Omit the data source configuration, pl
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.primary-data-source-name= # Write data source name
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.replica-data-source-names= # Read data source names, multiple data source names separated with comma
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # Load balance algorithm name
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.query-consistent= # Whether to enable query consistent routing
 
 # Load balance algorithm configuration
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.type= # Load balance algorithm type

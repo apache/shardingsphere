@@ -682,4 +682,10 @@
     <delete sql-case-id="delete_with_table">
         <table name="product_price_history" start-index="7" stop-index="27" />
     </delete>
+
+    <delete sql-case-id="delete_with_schema">
+        <table name="t_order" start-index="12" stop-index="22">
+            <owner name="db1" start-index="12" stop-index="14" />
+        </table>
+    </delete>
 </sql-parser-test-cases>

@@ -49,12 +49,12 @@ public final class NoteShadowAlgorithmDeterminerTest {
         shadowAlgorithmDeterminer = new NoteShadowAlgorithmDeterminer(createNoteShadowAlgorithm());
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private NoteShadowAlgorithm<Comparable<?>> createNoteShadowAlgorithm() {
-        NoteShadowAlgorithm noteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
-        noteShadowAlgorithm.setProps(createProps());
-        noteShadowAlgorithm.init();
-        return noteShadowAlgorithm;
+        NoteShadowAlgorithm result = new SimpleSQLNoteShadowAlgorithm();
+        result.setProps(createProps());
+        result.init();
+        return result;
     }
 
     private Properties createProps() {
