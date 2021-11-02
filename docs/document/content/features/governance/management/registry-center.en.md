@@ -73,7 +73,7 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemeName}/dataSources
+### /metadata/${schemaName}/dataSources
 
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
@@ -102,7 +102,7 @@ ds_1:
     maxLifetimeMilliseconds: 1800000
 ```
 
-### /metadata/${schemeName}/rules
+### /metadata/${schemaName}/rules
 
 Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
 
@@ -117,7 +117,7 @@ Rule configurations, including sharding, readwrite-splitting, data encryption, s
   xxx
 ```
 
-### /metadata/${schemeName}/schema
+### /metadata/${schemaName}/schema
 
 Dynamic modification of metadata content is not supported currently.
 
