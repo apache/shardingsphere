@@ -123,6 +123,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                               final RuleDefinitionAlterPreprocessor preprocessor) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
+        updater.updateCurrentRuleConfiguration(alteredRuleConfig, toBeAlteredRuleConfig);
         Collection<RuleConfiguration> alteredConfigs = new LinkedList<>(shardingSphereMetaData.getRuleMetaData().getConfigurations());
         alteredConfigs.remove(currentRuleConfig);
         alteredConfigs.add(alteredRuleConfig);
