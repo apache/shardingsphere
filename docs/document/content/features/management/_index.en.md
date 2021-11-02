@@ -17,7 +17,7 @@ The challenge is ability which are unified management of centralized management,
 Centralized management is to uniformly manage the state of database storage nodes and middleware computing nodes, 
 and can detect the latest updates in the distributed environment in real time, further provide information with control and scheduling.
 
-In the overload traffic scenario, circuit breaker and flow limiting for a node to ensure whole database cluster can run continuously is a challenge to control ability of a single node.
+In the overload traffic scenario, circuit breaker and request limiting for a node to ensure whole database cluster can run continuously is a challenge to control ability of a single node.
 
 ## Goal
 
