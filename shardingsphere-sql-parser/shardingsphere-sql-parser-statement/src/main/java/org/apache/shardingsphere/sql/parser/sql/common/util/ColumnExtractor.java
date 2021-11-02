@@ -54,7 +54,7 @@ public final class ColumnExtractor {
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             result.add((ColumnSegment) ((InExpression) expression).getLeft());
             if (((InExpression) expression).getRight() instanceof SubqueryExpressionSegment) {
-                result.addAll(extract(((SubqueryExpressionSegment) ((InExpression) expression).getRight()).getSubquery().getSelect().getWhere().get().getExpr()));
+                ((SubqueryExpressionSegment) ((InExpression) expression).getRight()).getSubquery().getSelect().getWhere().ifPresent(each -> result.addAll(extract(each.getExpr())));
             }
         }
         if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
