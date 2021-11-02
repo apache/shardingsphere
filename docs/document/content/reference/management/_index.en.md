@@ -1,17 +1,8 @@
 +++
-title = "Registry Center"
+pre = "<b>7.1. </b>"
+title = "Management"
 weight = 1
 +++
-
-## Motivation
-
-- Centralized configuration: more and more running examples have made it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating them in the configuration center can make the management more effective.
-
-- Dynamic configuration: distribution after configuration modification is another important capability of configuration center. It can support dynamic switch between data sources and rule configurations.
-
-- Hold all ephemeral status data dynamically generated in runtime(such as available proxy instances, disabled datasource instances etc).
-
-- Disable the access to replica database and the access of application. Governance still has many functions(such as flow control) to be developed.
 
 ## Data Structure in Registry Center
 
@@ -157,29 +148,3 @@ It includes running instance information of database access object, with sub-nod
 ### /status/storage_nodes
 
 It is able to orchestrate replica database, delete or disable data dynamically.
-
-## Dynamic Effectiveness
-
-Modification, deletion and insertion of relevant configurations in the config center will immediately take effect in the producing environment.
-
-## Operation Guide
-
-### Circuit Breaker
-
-Write `DISABLED` (case insensitive) to `IP@PORT` to disable that instance; delete `DISABLED` to enable the instance.
-
-Zookeeper command is as follows:
-
-```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/circuit_breaker/${your_instance_ip_a}@${your_instance_port_x} DISABLED
-```
-
-### Disable Replica Database
-
-Under readwrite-splitting scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
-
-Zookeeper command is as follows:
-
-```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/disable/${your_schema_name.your_replica_datasource_name} DISABLED
-```

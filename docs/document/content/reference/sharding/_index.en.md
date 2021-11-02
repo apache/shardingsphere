@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.1. </b>"
+pre = "<b>7.2. </b>"
 title = "Sharding"
-weight = 1
+weight = 2
 chapter = true
 +++
 

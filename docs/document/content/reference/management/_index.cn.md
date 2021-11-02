@@ -1,17 +1,8 @@
 +++
-title = "注册中心"
+pre = "<b>7.1. </b>"
+title = "管控"
 weight = 1
 +++
-
-## 实现动机
-
-- 配置集中化：越来越多的运行时实例，使得散落的配置难于管理，配置不同步导致的问题十分严重。将配置集中于配置中心，可以更加有效进行管理。
-
-- 配置动态化：配置修改后的分发，是配置中心可以提供的另一个重要能力。它可支持数据源和规则的动态切换。
-
-- 存放运行时的动态/临时状态数据，比如可用的 ShardingSphere 的实例，需要禁用或熔断的数据源等。
-
-- 提供熔断数据库访问程序对数据库的访问和禁用从库的访问的编排治理能力。治理模块仍然有大量未完成的功能（比如流控等）。
 
 ## 注册中心数据结构
 
@@ -153,35 +144,10 @@ tables:                                       # 表
 ### /status/compute_nodes
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。
-运行实例标识由运行服务器的 IP 地址和 PORT 构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
+运行实例标识由运行服务器的 IP 地址和 PORT 构成。
+运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。
 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
 
 ### /status/storage_nodes
 
 可以治理读写分离从库，可动态添加删除以及禁用。
-
-## 动态生效
-
-在注册中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。
-
-## 操作指南
-
-### 熔断实例
-
-可在 `IP地址@PORT` 节点写入 `DISABLED`（忽略大小写）表示禁用该实例，删除 `DISABLED` 表示启用。
-
-Zookeeper 命令如下：
-
-```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/compute_nodes/circuit_breaker/${your_instance_ip_a}@${your_instance_port_x} DISABLED
-```
-
-### 禁用从库
-
-在读写分离场景下，可在数据源名称子节点中写入 `DISABLED`（忽略大小写）表示禁用从库数据源，删除 `DISABLED` 或节点表示启用。
-
-Zookeeper 命令如下：
-
-```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/status/storage_nodes/disable/${your_schema_name.your_replica_datasource_name} DISABLED
-```
