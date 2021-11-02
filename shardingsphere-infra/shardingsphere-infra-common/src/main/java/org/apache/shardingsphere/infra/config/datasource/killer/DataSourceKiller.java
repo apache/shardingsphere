@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.infra.config.datasource.killer;
 
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Data source killer.
@@ -30,10 +28,10 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 public interface DataSourceKiller extends TypedSPI, RequiredSPI {
     
     /**
-     * Gracefully kill the dataSource.
+     * Gracefully kill the data source.
      * 
      * @param dataSource data source
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     void closeDataSource(DataSource dataSource) throws SQLException;
 }

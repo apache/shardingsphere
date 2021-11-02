@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.infra.config.datasource.killer.impl;
 
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
+import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.sql.DataSource;
-
-import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Hikari data source killer.
