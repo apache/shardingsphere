@@ -19,7 +19,25 @@ The migration scene we support:
 
 **Attention**: 
 
-If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `${shardingsphere-proxy}/lib directory`.
+If the backend database is in following table, please download JDBC driver jar and put it into `${shardingsphere-proxy}/lib` directory.
+
+| RDBMS                 | JDBC driver                          | Reference            |
+| --------------------- | ------------------------------------ | -------------------- |
+| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
+| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
+
+Supported features:
+
+| Feature                                  | MySQL         | PostgreSQL    | openGauss     |
+| ---------------------------------------- | ------------- | ------------- | ------------- |
+| Inventory migration                      | Supported     | Supported     | Supported     |
+| Incremental migration                    | Supported     | Supported     | Supported     |
+| Create table automatically               | Supported     | Unsupported   | Supported     |
+| Default data consistency check algorithm | Supported     | Unsupported   | Unsupported   |
+
+**Attention**:
+
+For RDBMS which `Create table automatically` feature is not supported, we need to create sharding tables manually.
 
 ### Privileges
 
@@ -74,6 +92,8 @@ mysql> preview select count(1) from t_order;
 1. Add new data source resources
 
 Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
+
+Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
 Example:
 ```sql
