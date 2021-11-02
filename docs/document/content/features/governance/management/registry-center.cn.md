@@ -73,7 +73,7 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemeName}/dataSources
+### /metadata/${schemaName}/dataSources
 
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
 
@@ -102,7 +102,7 @@ ds_1:
     maxLifetimeMilliseconds: 1800000
 ```
 
-### /metadata/${schemeName}/rules
+### /metadata/${schemaName}/rules
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测等配置。
 
@@ -117,7 +117,7 @@ ds_1:
   xxx
 ```
 
-### /metadata/${schemeName}/schema
+### /metadata/${schemaName}/schema
 
 表结构配置，暂不支持动态修改。
 
