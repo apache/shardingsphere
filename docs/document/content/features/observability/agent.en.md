@@ -1,5 +1,5 @@
 +++
-title = "Agent Integration"
+title = "Collecting Agent"
 weight = 2
 +++
 
