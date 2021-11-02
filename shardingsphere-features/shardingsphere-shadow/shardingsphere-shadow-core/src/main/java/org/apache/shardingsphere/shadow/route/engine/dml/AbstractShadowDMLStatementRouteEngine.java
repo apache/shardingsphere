@@ -153,7 +153,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     /**
      * get shadow operation type.
      *
-     * @return  shadow operation type
+     * @return shadow operation type
      */
     protected abstract ShadowOperationType getShadowOperationType();
     

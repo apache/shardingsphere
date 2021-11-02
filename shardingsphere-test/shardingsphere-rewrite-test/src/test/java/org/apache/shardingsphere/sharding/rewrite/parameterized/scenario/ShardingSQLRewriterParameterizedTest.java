@@ -38,6 +38,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -85,6 +86,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
         indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));

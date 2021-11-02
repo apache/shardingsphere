@@ -41,4 +41,5 @@
     <sql-case id="delete_with_returning_into" value="DELETE FROM employees WHERE job_id = 'SA_REP' AND hire_date + TO_YMINTERVAL('01-00') &lt; SYSDATE RETURNING salary INTO bnd1" db-types="Oracle" />
     <sql-case id="delete_with_partition" value="DELETE FROM sales PARTITION (sales_q1_1998) WHERE amount_sold > 1000" db-types="Oracle" />
     <sql-case id="delete_with_table" value="DELETE product_price_history" db-types="Oracle" />
+    <sql-case id="delete_with_schema" value="DELETE FROM db1.t_order" />
 </sql-cases>
