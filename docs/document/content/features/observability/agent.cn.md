@@ -1,13 +1,11 @@
 +++
-title = "Agent集成"
+title = "Agent 集成"
 weight = 2
 +++
 
 ## 背景
 
-ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的项目，基于插件化的设计，可以无缝隙的与ShardingSphere集成，
-
-目前有提供 Log, metrics, APM 等可观测性功能。
+ShardingSphere-Agent 基于字节码增强和插件化设计提供 APM、metrics、日志等功能。
 
 ## 使用方法
 
@@ -33,11 +31,11 @@ ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的
 
 ## Agent配置
 
-在本地打包目录和解压缩目录下找到: `agent.yaml` 
+找到 `agent.yaml` 文件： 
 
 ```yaml
-applicationName: shardingsphere-agent # 应用名称
-ignoredPluginNames: #忽略的插件集合，表示集合里面的插件不生效
+applicationName: shardingsphere-agent
+ignoredPluginNames: # 忽略的插件集合
   - Opentracing
   - Jaeger
   - Zipkin
@@ -47,13 +45,13 @@ ignoredPluginNames: #忽略的插件集合，表示集合里面的插件不生�
 
 plugins:
   Prometheus:
-    host:  "localhost" #prometheus暴露的host
-    port: 9090 #prometheus暴露的端口
+    host:  "localhost" 
+    port: 9090
     props:
       JVM_INFORMATION_COLLECTOR_ENABLED : "true"
   Jaeger:
-    host: "localhost" #jaeger服务的host
-    port: 5775 #jaeger服务的端口
+    host: "localhost"
+    port: 5775
     props:
       SERVICE_NAME: "shardingsphere-agent"
       JAEGER_SAMPLER_TYPE: "const"
@@ -61,22 +59,19 @@ plugins:
       JAEGER_REPORTER_LOG_SPANS: "true"
       JAEGER_REPORTER_FLUSH_INTERVAL: "1"
   Zipkin:
-    host: "localhost" #zipkin服务的host
-    port: 9411 #zipkin服务的prot
+    host: "localhost"
+    port: 9411
     props:
       SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans" #zipkin服务的抓取span的uri
+      URL_VERSION: "/api/v2/spans"
   Opentracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   OpenTelemetry:
     props:
-      otel.resource.attributes: "service.name=shardingsphere-agent" #opentelemetry的Resource信息，多个配置可用','分隔
-      otel.traces.exporter: "zipkin" #traces数据的导出器
+      otel.resource.attributes: "service.name=shardingsphere-agent" # 多个配置用','分隔
+      otel.traces.exporter: "zipkin"
   Logging:
     props:
-      LEVEL: "INFO" #打印的日志级别
-
+      LEVEL: "INFO"
 ```
-
-以上为agent的所有配置，注意：当配置 ignoredPluginNames时候，表示集合里面的插件会被忽略！

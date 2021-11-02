@@ -5,8 +5,7 @@ weight = 2
 
 ## Background
 
-ShardingSphere-Agent is an independent and independently designed project based on ByteBuddy bytecode increase. Based on plugin design, it can integrate seamlessly with ShardingSphere.
-There are currently Log, metrics, APM and other observability capabilities available.
+ShardingSphere-Agent is based on bytecode enhance and plugin design to provide APM, metrics and log.
 
 ## Usage
 
@@ -17,7 +16,7 @@ There are currently Log, metrics, APM and other observability capabilities avail
  > mvn clean install
 ```
 
-### Remote download（No release）
+### Download（Not Released Yet）
 
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz
@@ -32,11 +31,11 @@ Add startup arguments
 
 ## Agent Configuration
 
-It is found under the local package directory and unzip directory : `agent.yaml` 
+Found `agent.yaml` file:  
 
 ```yaml
-applicationName: shardingsphere-agent # application name 
-ignoredPluginNames: # A collection of ignored plugins, indicating that the plugins in the collection are not active
+applicationName: shardingsphere-agent 
+ignoredPluginNames: # A collection of ignored plugins
   - Opentracing
   - Jaeger
   - Zipkin
@@ -46,13 +45,13 @@ ignoredPluginNames: # A collection of ignored plugins, indicating that the plugi
 
 plugins:
   Prometheus:
-    host:  "localhost" #prometheus host
-    port: 9090 #prometheus port 
+    host:  "localhost"
+    port: 9090 
     props:
       JVM_INFORMATION_COLLECTOR_ENABLED : "true"
   Jaeger:
-    host: "localhost" #jaeger host
-    port: 5775 #jaeger prot
+    host: "localhost"
+    port: 5775
     props:
       SERVICE_NAME: "shardingsphere-agent"
       JAEGER_SAMPLER_TYPE: "const"
@@ -60,22 +59,19 @@ plugins:
       JAEGER_REPORTER_LOG_SPANS: "true"
       JAEGER_REPORTER_FLUSH_INTERVAL: "1"
   Zipkin:
-    host: "localhost" #zipkin host
-    port: 9411 #zipkin prot
+    host: "localhost"
+    port: 9411
     props:
       SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans" #zipkin uri
+      URL_VERSION: "/api/v2/spans"
   Opentracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   OpenTelemetry:
     props:
-      otel.resource.attributes: "service.name=shardingsphere-agent" #Resource information of opentelemetry, multiple configurations can be separated by ','
-      otel.traces.exporter: "zipkin" #the exporter of traces
+      otel.resource.attributes: "service.name=shardingsphere-agent" # Multiple configurations can be split by ','
+      otel.traces.exporter: "zipkin"
   Logging:
     props:
-      LEVEL: "INFO" #log level
-
+      LEVEL: "INFO"
 ```
-
- When ignoredPluginNames is configured, plugins in the collection are ignored!
