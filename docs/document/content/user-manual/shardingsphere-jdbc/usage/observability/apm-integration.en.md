@@ -1,30 +1,7 @@
 +++
 title = "APM Integration"
-weight = 1
+weight = 2
 +++
-
-## Background
-
-APM is the abbreviation for application performance monitoring. 
-Currently, main APM functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
-
-Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. 
-In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
-It can connect to APM systems in three ways.
-
-The first way is to send performance tracing data by OpenTracing API. 
-APM products facing OpenTracing protocol can all automatically connect to Apache ShardingSphere, like SkyWalking, Zipkin and Jaeger. 
-In this way, users only need to configure the implementation of OpenTracing protocol at the start. 
-Its advantage is the compatibility of all the products compatible of OpenTracing protocol, such as the APM demonstration system. 
-If companies intend to implement their own APM systems, they only need to implement the OpenTracing protocol, and they can automatically show the chain tracing information of Apache ShardingSphere. 
-Its disadvantage is that OpenTracing protocol is not stable in its development, has only a few new versions, and is too neutral to support customized products as native ones do.
-
-The second way is to use SkyWalking's automatic monitor agent. 
-Cooperating with [Apache SkyWalking](https://skywalking.apache.org/) team, 
-Apache ShardingSphere team has realized `ShardingSphere` automatic monitor agent to automatically send application performance data to `SkyWalking`.
-
-The third way is to send performance tracing data by OpenTelemetry. OpenTelemetry was merged by OpenTracing and OpenCencus in 2019.
-In this way, you only need to fill in the appropriate configuration in the agent configuration file according to [OpenTelemetry SDK Autoconfigure Guide](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure).
 
 ## Usage
 
@@ -38,13 +15,13 @@ Add startup arguments
 -Dorg.apache.shardingsphere.tracing.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
-Call initialization method
+Call initialization method.
 
 ```java
 ShardingTracer.init();
 ```
 
-* Method 2: inject Tracer provided by APM through parameter
+* Method 2: inject Tracer provided by APM through parameter.
 
 ```java
 ShardingTracer.init(new SkywalkingTracer());

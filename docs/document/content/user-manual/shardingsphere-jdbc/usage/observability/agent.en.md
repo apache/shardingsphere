@@ -1,41 +1,31 @@
 +++
-title = "指标收集探针"
-weight = 2
+title = "Use Agent"
+weight = 1
 +++
 
-## 背景
+## Build
 
-ShardingSphere-Agent 基于字节码增强和插件化设计提供 APM、metrics、日志等功能。
-
-## 使用方法
-
-### 本地构建
+### Local Build
 
 ```
- > cd shardingsphere/shardingsphere-agent
+ > cd  shardingsphere/shardingsphere-agent
  > mvn clean install
 ```
 
-### 远程下载(暂未发布)
+### Download（Not Released Yet）
 
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz
  > tar -zxvcf shardingsphere-agent.tar.gz
 ```
 
-启动时添加参数
+## Configuration
 
-```
--javaagent:\absolute path\shardingsphere-agent.jar
-```
-
-## Agent配置
-
-找到 `agent.yaml` 文件： 
+Found `agent.yaml` file:
 
 ```yaml
-applicationName: shardingsphere-agent
-ignoredPluginNames: # 忽略的插件集合
+applicationName: shardingsphere-agent 
+ignoredPluginNames: # A collection of ignored plugins
   - Opentracing
   - Jaeger
   - Zipkin
@@ -45,8 +35,8 @@ ignoredPluginNames: # 忽略的插件集合
 
 plugins:
   Prometheus:
-    host:  "localhost" 
-    port: 9090
+    host:  "localhost"
+    port: 9090 
     props:
       JVM_INFORMATION_COLLECTOR_ENABLED : "true"
   Jaeger:
@@ -69,9 +59,17 @@ plugins:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   OpenTelemetry:
     props:
-      otel.resource.attributes: "service.name=shardingsphere-agent" # 多个配置用','分隔
+      otel.resource.attributes: "service.name=shardingsphere-agent" # Multiple configurations can be split by ','
       otel.traces.exporter: "zipkin"
   Logging:
     props:
       LEVEL: "INFO"
+```
+
+## Startup
+
+Add arguments in startup script.
+
+```
+-javaagent:\absolute path\shardingsphere-agent.jar
 ```
