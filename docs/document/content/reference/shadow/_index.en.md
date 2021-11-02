@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.5. </b>"
+pre = "<b>7.6. </b>"
 title = "Shadow"
-weight = 5
+weight = 6
 +++
 
 ## Overall Architecture
