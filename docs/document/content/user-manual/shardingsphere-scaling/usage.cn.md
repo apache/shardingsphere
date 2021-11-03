@@ -19,7 +19,25 @@ weight = 2
 
 **注意**：
 
-如果后端连接 MySQL 数据库，请下载 [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )，并将其放入 `${shardingsphere-proxy}/lib` 目录。
+如果后端连接以下数据库，请下载相应JDBC驱动jar包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
+
+| 数据库                 | JDBC驱动                              | 参考                 |
+| --------------------- | ------------------------------------ | -------------------- |
+| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
+| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
+
+功能支持情况：
+
+| 功能                   | MySQL         | PostgreSQL    | openGauss     |
+| --------------------- | ------------- | ------------- | ------------- |
+| 全量迁移               | 支持           | 支持           | 支持           |
+| 增量迁移               | 支持           | 支持           | 支持           |
+| 自动建表               | 支持           | 不支持         | 支持           |
+| 默认数据一致性校验算法   | 支持           | 不支持         | 不支持          |
+
+**注意**：
+
+还没开启`自动建表`的数据库需要手动创建分表。
 
 ### 权限要求
 
@@ -75,6 +93,8 @@ mysql> preview select count(1) from t_order;
 
 详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/)。
 
+先在底层数据库系统创建需要的分库，下面的 `DistSQL` 需要用到。
+
 示例：
 ```sql
 ADD RESOURCE ds_2 (
@@ -90,7 +110,9 @@ ADD RESOURCE ds_2 (
 
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
 
-示例：
+`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式。
+
+`AutoTableRule`修改示例：
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -101,6 +123,18 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 ```
 
 比如说`RESOURCES`和`sharding-count`修改了会触发迁移。
+
+不完整的`TableRule`修改示例：
+```sql
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+);
+```
+
+**注意**：当前版本不支持通过修改`TableRule`触发迁移。
 
 #### 查询所有迁移任务
 
