@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Collection;
 
 /**
- * optimize table statement context.
+ * Optimize table statement context.
  */
 @Getter
 public final class OptimizeTableStatementContext extends CommonSQLStatementContext<MySQLOptimizeTableStatement> implements TableAvailable {
