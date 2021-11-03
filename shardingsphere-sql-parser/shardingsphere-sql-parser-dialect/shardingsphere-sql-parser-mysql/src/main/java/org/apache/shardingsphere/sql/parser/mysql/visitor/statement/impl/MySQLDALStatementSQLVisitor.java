@@ -21,10 +21,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChannelOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
@@ -80,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLik
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureCodeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRelaylogEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
@@ -150,6 +152,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelaylogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicasStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
@@ -305,12 +308,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitChannelOption(final MySQLStatementParser.ChannelOptionContext ctx) {
+    public ASTNode visitChannelOption(final ChannelOptionContext ctx) {
         return visit(ctx.string_());
     }
 
     @Override
-    public ASTNode visitBinaryLogFileIndexNumber(final MySQLStatementParser.BinaryLogFileIndexNumberContext ctx) {
+    public ASTNode visitBinaryLogFileIndexNumber(final BinaryLogFileIndexNumberContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
 
@@ -573,6 +576,16 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
         MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
         result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
+        MySQLShowRelaylogEventsStatement result = new MySQLShowRelaylogEventsStatement();
+        result.setChannel(ctx.channelName().getText());
+        if (null != ctx.logName()) {
+            result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue());
+        }
         return result;
     }
     
