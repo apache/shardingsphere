@@ -48,25 +48,25 @@ rules:
     defaultShadowAlgorithmName: simple-note-algorithm
     shadowAlgorithms:
       user-id-insert-match-algorithm:
-        type: COLUMN_REGEX_MATCH
+        type: REGEX_MATCH
         props:
           operation: insert
           column: user_id
           regex: "[1]"
       user-id-select-match-algorithm:
-        type: COLUMN_REGEX_MATCH
+        type: REGEX_MATCH
         props:
           operation: select
           column: user_id
           regex: "[1]"
       user-id-delete-match-algorithm:
-        type: COLUMN_REGEX_MATCH
+        type: REGEX_MATCH
         props:
           operation: delete
           column: user_id
           regex: "[1]"
       simple-note-algorithm:
-        type: SIMPLE_NOTE
+        type: HINT
         props:
           shadow: true
           foo: bar
