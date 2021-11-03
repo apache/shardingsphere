@@ -75,12 +75,12 @@ tables:
       - user-id-match-algorithm
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -122,7 +122,7 @@ INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -146,7 +146,7 @@ SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/
 ```yaml
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
@@ -169,13 +169,13 @@ SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
       value: 0
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
@@ -214,12 +214,12 @@ tables:
 default-shadow-algorithm-name: simple-note-algorithm
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id

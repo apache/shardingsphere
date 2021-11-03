@@ -94,12 +94,12 @@ tables:
       - user-id-match-algorithm
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -142,7 +142,7 @@ Column Shadow algorithm configuration (YAML):
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -165,7 +165,7 @@ Note Shadow algorithm configuration (YAML):
 ```yaml
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
@@ -188,13 +188,13 @@ Both will be executed to shadow DB, other data executed to production DB.
 ```yaml
 shadow-algorithms:
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
       value: 0
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
@@ -233,12 +233,12 @@ tables:
 default-shadow-algorithm-name: simple-note-algorithm
 shadow-algorithms:
   simple-note-algorithm:
-    type: SIMPLE_NOTE
+    type: HINT
     props:
       shadow: true
       foo: bar
   user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
