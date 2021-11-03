@@ -29,8 +29,6 @@ public final class PostgreSQLServerInfo {
     
     private static final String DEFAULT_POSTGRESQL_VERSION = "12.3";
     
-    private static final String PROXY_VERSION = CommonConstants.PROXY_VERSION.get();
-    
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
     private static volatile String serverVersion;
@@ -41,7 +39,7 @@ public final class PostgreSQLServerInfo {
      * @param serverVersion server version
      */
     public static synchronized void setServerVersion(final String serverVersion) {
-        PostgreSQLServerInfo.serverVersion = null == serverVersion ? null : String.format(SERVER_VERSION_PATTERN, serverVersion, PROXY_VERSION);
+        PostgreSQLServerInfo.serverVersion = null == serverVersion ? null : String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get());
     }
     
     /**
@@ -50,6 +48,6 @@ public final class PostgreSQLServerInfo {
      * @return server version
      */
     public static String getServerVersion() {
-        return null == serverVersion ? String.format(SERVER_VERSION_PATTERN, DEFAULT_POSTGRESQL_VERSION, PROXY_VERSION) : serverVersion;
+        return null == serverVersion ? String.format(SERVER_VERSION_PATTERN, DEFAULT_POSTGRESQL_VERSION, CommonConstants.PROXY_VERSION.get()) : serverVersion;
     }
 }
