@@ -51,6 +51,10 @@ alterShardingBroadcastTableRules
     : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
+alterShardingAlgorithm
+    : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
 dropShardingTableRule
     : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
     ;
