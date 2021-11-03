@@ -268,7 +268,7 @@ public enum SQLVisitorRule {
     
     FLUSH("Flush", SQLStatementType.DAL),
 
-    Restart("Restart", SQLStatementType.DAL),
+    RESTART("Restart", SQLStatementType.DAL),
 
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
@@ -281,6 +281,8 @@ public enum SQLVisitorRule {
     CLONE("Clone", SQLStatementType.DAL),
     
     REPAIR_TABLE("RepairTable", SQLStatementType.DAL),
+    
+    KILL("Kill", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     
