@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,12 +27,14 @@ public final class PostgreSQLServerInfoTest {
     
     @Test
     public void assertSetServerVersion() {
+        CommonConstants.PROXY_VERSION.set("5.0.0");
         PostgreSQLServerInfo.setServerVersion("13.2");
         assertThat(PostgreSQLServerInfo.getServerVersion(), is("13.2-ShardingSphere-Proxy 5.0.0"));
     }
     
     @Test
     public void assertSetServerVersionForNull() {
+        CommonConstants.PROXY_VERSION.set("5.0.0");
         PostgreSQLServerInfo.setServerVersion(null);
         assertThat(PostgreSQLServerInfo.getServerVersion(), is("12.3-ShardingSphere-Proxy 5.0.0"));
     }

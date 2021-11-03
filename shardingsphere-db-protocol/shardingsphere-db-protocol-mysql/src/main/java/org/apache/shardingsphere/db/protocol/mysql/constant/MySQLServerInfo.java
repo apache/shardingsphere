@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 
 /**
  * ShardingSphere-Proxy's information for MySQL.
@@ -35,8 +36,7 @@ public final class MySQLServerInfo {
     
     private static final String DEFAULT_MYSQL_VERSION = "5.7.22";
     
-    // TODO Write version here is easy to forget. Consider refactoring it.
-    private static final String PROXY_VERSION = "5.0.0";
+    private static final String PROXY_VERSION = CommonConstants.PROXY_VERSION.get();
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
