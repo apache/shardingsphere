@@ -110,7 +110,9 @@ ADD RESOURCE ds_2 (
 
 Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
 
-Example:
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types.
+
+Example of alter `AutoTableRule`:
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -121,6 +123,18 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 ```
 
 If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted.
+
+Uncompleted example of alter `TableRule`:
+```sql
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+);
+```
+
+**Attention**: We could not emit scaling job by altering `TableRule` in current version.
 
 #### List scaling jobs
 

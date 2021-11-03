@@ -110,7 +110,9 @@ ADD RESOURCE ds_2 (
 
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
 
-示例：
+`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式。
+
+`AutoTableRule`修改示例：
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -121,6 +123,18 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 ```
 
 比如说`RESOURCES`和`sharding-count`修改了会触发迁移。
+
+不完整的`TableRule`修改示例：
+```sql
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+);
+```
+
+**注意**：当前版本不支持通过修改`TableRule`触发迁移。
 
 #### 查询所有迁移任务
 
