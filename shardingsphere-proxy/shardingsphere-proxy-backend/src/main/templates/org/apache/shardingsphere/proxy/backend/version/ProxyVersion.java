@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.proxy.backend.version;
 
-import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLServerInfoTest {
+/**
+ * Proxy version.
+ */
+public final class ProxyVersion {
     
-    @Test
-    public void assertSetServerVersion() {
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        MySQLServerInfo.setServerVersion("5.1.47");
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.1.47-ShardingSphere-Proxy 5.0.0"));
-    }
-    
-    @Test
-    public void assertSetServerVersionForNull() {
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        MySQLServerInfo.setServerVersion(null);
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
-    }
+    public static final String VERSION = "${project.version}";
 }
