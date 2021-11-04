@@ -33,7 +33,7 @@ Attributes:
 
 ### Simple SQL Note Shadow Algorithm
 
-Type: HINT
+Type: SIMPLE_HINT
 
 Attributes:
 

@@ -33,7 +33,7 @@ weight = 5
 
 ### 简单SQL注解匹配影子算法
 
-类型：HINT
+类型：SIMPLE_HINT
 
 可配置属性：
 
