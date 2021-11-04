@@ -91,7 +91,7 @@
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
+#    simple-hint-algorithm:
 #      type: SIMPLE_HINT
 #      props:
 #        shadow: true
@@ -172,7 +172,7 @@
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
+#    simple-hint-algorithm:
 #      type: SIMPLE_HINT
 #      props:
 #        shadow: true
