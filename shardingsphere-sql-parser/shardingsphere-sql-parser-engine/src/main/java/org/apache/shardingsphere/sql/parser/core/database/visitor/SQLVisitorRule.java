@@ -241,6 +241,8 @@ public enum SQLVisitorRule {
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
+
+    SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW("Show", SQLStatementType.DAL),
     

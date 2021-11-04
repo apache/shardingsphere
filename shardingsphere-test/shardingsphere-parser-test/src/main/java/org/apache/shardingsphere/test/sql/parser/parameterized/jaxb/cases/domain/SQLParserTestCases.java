@@ -40,6 +40,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowFunctionStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowReplicasStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
@@ -687,6 +688,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-default-sharding-strategy")
     private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-replicas")
+    private final List<ShowReplicasStatementTestCase> showReplicasStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -859,6 +863,7 @@ public final class SQLParserTestCases {
         putAll(createDefaultShardingStrategyStatementTestCases, result);
         putAll(createShardingTableRuleTestCases, result);
         putAll(alterShardingTableRuleTestCases, result);
+        putAll(showReplicasStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
