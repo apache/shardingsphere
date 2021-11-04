@@ -78,6 +78,11 @@
     {
       "name": "spring.shardingsphere.schema.name",
       "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
+      "type": "java.util.Properties",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
     }
   ],
   "hints": [
