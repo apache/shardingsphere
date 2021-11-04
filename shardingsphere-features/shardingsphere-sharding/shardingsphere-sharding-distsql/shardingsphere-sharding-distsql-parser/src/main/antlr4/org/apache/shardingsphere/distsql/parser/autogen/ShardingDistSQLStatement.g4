@@ -41,5 +41,6 @@ execute
     | showShardingHintStatus
     | clearShardingHint
     | createShardingAlgorithm
+    | alterShardingAlgorithm
     ) SEMI?
     ;
