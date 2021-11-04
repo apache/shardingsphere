@@ -73,7 +73,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_HINT">
+    <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
@@ -87,7 +87,7 @@
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
         </shadow:shadow-table>
-        <shadow:default-shadow-algorithm-name name="simple-note-algorithm"/>
+        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>
 
     <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,ds_shadow" rule-refs="shadowRule">

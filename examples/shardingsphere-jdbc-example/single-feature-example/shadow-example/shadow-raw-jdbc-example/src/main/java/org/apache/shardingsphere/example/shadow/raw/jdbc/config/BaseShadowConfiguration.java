@@ -50,7 +50,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         result.add("user-id-insert-match-algorithm");
         result.add("user-id-delete-match-algorithm");
         result.add("user-id-select-match-algorithm");
-        result.add("simple-note-algorithm");
+        result.add("simple-hint-algorithm");
         return result;
     }
     
@@ -74,7 +74,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-note-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
+        result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
 }

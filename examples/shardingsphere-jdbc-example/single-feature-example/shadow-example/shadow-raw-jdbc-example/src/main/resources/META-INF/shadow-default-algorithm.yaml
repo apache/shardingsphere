@@ -45,7 +45,7 @@ rules:
           - user-id-select-match-algorithm
           - user-id-update-match-algorithm
           - user-id-delete-match-algorithm
-    defaultShadowAlgorithmName: simple-note-algorithm
+    defaultShadowAlgorithmName: simple-hint-algorithm
     shadowAlgorithms:
       user-id-insert-match-algorithm:
         type: REGEX_MATCH
@@ -65,8 +65,8 @@ rules:
           operation: delete
           column: user_id
           regex: "[1]"
-      simple-note-algorithm:
-        type: HINT
+      simple-hint-algorithm:
+        type: SIMPLE_HINT
         props:
           shadow: true
           foo: bar
