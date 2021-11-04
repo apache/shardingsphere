@@ -67,7 +67,7 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
      * @return client encoding
      */
     public String getClientEncoding() {
-        return parametersMap.get(CLIENT_ENCODING_KEY);
+        return parametersMap.getOrDefault(CLIENT_ENCODING_KEY, "UTF8");
     }
     
     @Override

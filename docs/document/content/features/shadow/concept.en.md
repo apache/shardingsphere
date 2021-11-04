@@ -24,7 +24,7 @@ The shadow algorithms are closely related to business, there are 2 types of shad
 Recognize data from SQL and route to shadow databases.
 Suitable for test data driven scenario.
 
-- Note based shadow algorithm
+- Hint based shadow algorithm
 
 Recognize comment from SQL and route to shadow databases.
 Suitable for identify passed by upstream system scenario.

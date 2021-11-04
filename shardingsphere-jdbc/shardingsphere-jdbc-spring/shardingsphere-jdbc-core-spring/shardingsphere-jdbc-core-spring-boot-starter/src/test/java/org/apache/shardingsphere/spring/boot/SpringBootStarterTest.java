@@ -163,7 +163,7 @@ public class SpringBootStarterTest {
         assertThat(shadowAlgorithms.size(), is(3));
         assertThat(shadowAlgorithms.get("user-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
         assertThat(shadowAlgorithms.get("order-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
-        assertThat(shadowAlgorithms.get("simple-note-algorithm") instanceof NoteShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("simple-hint-algorithm") instanceof NoteShadowAlgorithm, is(true));
     }
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {

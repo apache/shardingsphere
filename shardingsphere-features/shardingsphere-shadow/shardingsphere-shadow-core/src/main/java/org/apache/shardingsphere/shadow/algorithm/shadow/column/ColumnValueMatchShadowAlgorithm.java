@@ -86,6 +86,6 @@ public final class ColumnValueMatchShadowAlgorithm implements ColumnShadowAlgori
     
     @Override
     public String getType() {
-        return "COLUMN_VALUE_MATCH";
+        return "VALUE_MATCH";
     }
 }

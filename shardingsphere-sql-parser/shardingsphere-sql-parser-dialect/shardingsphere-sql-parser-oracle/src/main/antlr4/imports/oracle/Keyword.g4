@@ -562,7 +562,3 @@ TRIGGERS
 GLOBAL_NAME
     : G L O B A L UL_ N A M E
     ;
-
-A
-    : 'A'
-    ;

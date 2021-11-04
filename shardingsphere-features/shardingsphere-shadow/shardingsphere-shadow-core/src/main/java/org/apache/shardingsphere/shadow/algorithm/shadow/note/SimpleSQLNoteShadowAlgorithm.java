@@ -59,6 +59,6 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     
     @Override
     public String getType() {
-        return "SIMPLE_NOTE";
+        return "SIMPLE_HINT";
     }
 }

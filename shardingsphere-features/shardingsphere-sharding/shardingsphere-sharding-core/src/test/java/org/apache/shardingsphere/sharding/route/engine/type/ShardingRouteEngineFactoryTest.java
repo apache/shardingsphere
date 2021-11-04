@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
@@ -69,6 +70,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -327,5 +329,25 @@ public final class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForOptimizeTableWithShardingTable() {
+        MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
+        tableNames.add("table_1");
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingTableBroadcastRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForOptimizeTableWithSingleTable() {
+        MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
+        tableNames.add("table_1");
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(Collections.emptyList());
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
     }
 }
