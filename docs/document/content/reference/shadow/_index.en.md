@@ -90,16 +90,16 @@ tables:
   t_order:
     data-source-names: shadow-data-source
     shadow-algorithm-names:
-      - simple-note-algorithm
-      - user-id-match-algorithm
+      - simple-hint-algorithm
+      - user-id-value-match-algorithm
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -141,8 +141,8 @@ Column Shadow algorithm configuration (YAML):
 
 ```yaml
 shadow-algorithms:
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -151,7 +151,7 @@ shadow-algorithms:
 
 **Note**: When the shadow table uses the column shadow algorithm, the same type of shadow operation (INSERT, UPDATE, DELETE, SELECT) currently only supports a single column.
 
-2. Note shadow algorithm example
+2. Hint shadow algorithm example
 
 Assume that the `t_order` table does not contain columns that can matching. Executed SQL statement need to add SQL note `/*shadow:true,foo:bar,.. .*/`
 
@@ -164,8 +164,8 @@ Note Shadow algorithm configuration (YAML):
 
 ```yaml
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
@@ -187,14 +187,14 @@ Both will be executed to shadow DB, other data executed to production DB.
 
 ```yaml
 shadow-algorithms:
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
       value: 0
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
@@ -228,17 +228,17 @@ tables:
   t_order:
     data-source-names: shadow-data-source
     shadow-algorithm-names:
-      - simple-note-algorithm
-      - user-id-match-algorithm
+      - simple-hint-algorithm
+      - user-id-value-match-algorithm
 default-shadow-algorithm-name: simple-note-algorithm
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id

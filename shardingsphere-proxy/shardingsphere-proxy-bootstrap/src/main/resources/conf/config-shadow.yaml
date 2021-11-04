@@ -74,25 +74,25 @@
 #        - simple-note-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
 #    user-id-update-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
 #    user-id-select-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
-#      type: SIMPLE_NOTE
+#    simple-hint-algorithm:
+#      type: SIMPLE_HINT
 #      props:
 #        shadow: true
 #        foo: bar
@@ -155,25 +155,25 @@
 #        - simple-note-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
 #    user-id-update-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
 #    user-id-select-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
-#      type: SIMPLE_NOTE
+#    simple-hint-algorithm:
+#      type: SIMPLE_HINT
 #      props:
 #        shadow: true
 #        foo: bar

@@ -7,7 +7,7 @@ weight = 5
 
 ### Column Value Match Shadow Algorithm
 
-Type：COLUMN_VALUE_MATCH
+Type：VALUE_MATCH
 
 Attributes:
 
@@ -19,7 +19,7 @@ Attributes:
 
 ### Column Regex Match Shadow Algorithm
 
-Type: COLUMN_REGEX_MATCH
+Type: REGEX_MATCH
 
 Attributes:
 
@@ -33,7 +33,7 @@ Attributes:
 
 ### Simple SQL Note Shadow Algorithm
 
-Type: SIMPLE_NOTE
+Type: SIMPLE_HINT
 
 Attributes:
 

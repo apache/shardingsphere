@@ -7,7 +7,7 @@ weight = 5
 
 ### 列值匹配影子算法
 
-类型：COLUMN_VALUE_MATCH
+类型：VALUE_MATCH
 
 可配置属性：
 
@@ -19,7 +19,7 @@ weight = 5
 
 ### 列正则表达式匹配影子算法
 
-类型：COLUMN_REGEX_MATCH
+类型：REGEX_MATCH
 
 可配置属性：
 
@@ -33,7 +33,7 @@ weight = 5
 
 ### 简单SQL注解匹配影子算法
 
-类型：SIMPLE_NOTE
+类型：SIMPLE_HINT
 
 可配置属性：
 
