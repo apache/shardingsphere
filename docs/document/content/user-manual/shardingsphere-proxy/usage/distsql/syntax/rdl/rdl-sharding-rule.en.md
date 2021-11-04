@@ -138,7 +138,7 @@ SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 ),t_order_item (
-DATANODES("resource_${0..3}.t_order_item}"),
+DATANODES("resource_${0..3}.t_order_item"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
