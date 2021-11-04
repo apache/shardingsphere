@@ -31,6 +31,7 @@
     <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" />
     <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" />
     <sql-case id="select_equal_with_single_table" value="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" />
+    <sql-case id="select_equal_with_single_table_and_lowercase_keyword" value="select * from t_order where user_id = ? and order_id = ?" />
     <sql-case id="select_in_with_single_table" value="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" />
     <sql-case id="select_between_with_single_table" value="SELECT * FROM t_order WHERE user_id BETWEEN ? AND ? AND order_id BETWEEN ? AND ? ORDER BY user_id, order_id" />
     <sql-case id="select_comparison_symbol_with_single_table" value="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" />
@@ -105,4 +106,5 @@
     <sql-case id="select_with_model_with_order_by" value="SELECT year, sales FROM sales_view WHERE country='Italy' AND prod='Bounce' MODEL DIMENSION BY (year) MEASURES (sale sales) RULES SEQUENTIAL ORDER (sales[ANY] ORDER BY year DESC = sales[cv(year)-1]) ORDER BY year" db-types="Oracle" />
     <sql-case id="select_with_model_with_multi_column_for_loop" value="SELECT country, product, year, s FROM sales_view MODEL DIMENSION BY (country, product, year) MEASURES (sales s) IGNORE NAV RULES UPSERT (s[FOR (country, product, year) IN (SELECT DISTINCT 'new_country', product, year FROM sales_view WHERE country = 'Poland')] = s['Poland',CV(),CV()]) ORDER BY country, year, product" db-types="Oracle" />
     <sql-case id="select_with_comments" value="-- begin comments&#x000A;SELECT * FROM # middle comments&#x000A; t_order; -- end comments" db-types="MySQL"/>
+    <sql-case id="select_with_model_in" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />
 </sql-cases>
