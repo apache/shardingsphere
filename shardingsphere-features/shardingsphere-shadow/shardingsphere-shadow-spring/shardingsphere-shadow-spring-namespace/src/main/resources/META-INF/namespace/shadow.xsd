@@ -80,7 +80,7 @@
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="REGEX_MATCH" />
             <xsd:enumeration value="VALUE_MATCH" />
-            <xsd:enumeration value="HINT" />
+            <xsd:enumeration value="SIMPLE_HINT" />
         </xsd:restriction>
     </xsd:simpleType>
 

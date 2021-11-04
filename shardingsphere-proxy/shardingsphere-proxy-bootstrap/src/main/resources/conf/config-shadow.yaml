@@ -92,7 +92,7 @@
 #        column: user_id
 #        regex: "[1]"
 #    simple-note-algorithm:
-#      type: HINT
+#      type: SIMPLE_HINT
 #      props:
 #        shadow: true
 #        foo: bar
@@ -173,7 +173,7 @@
 #        column: user_id
 #        regex: "[1]"
 #    simple-note-algorithm:
-#      type: HINT
+#      type: SIMPLE_HINT
 #      props:
 #        shadow: true
 #        foo: bar

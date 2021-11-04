@@ -52,7 +52,7 @@ spring:
               column: user_id
               value: 1
           simple-note-algorithm:
-            type: HINT
+            type: SIMPLE_HINT
             props:
               shadow: true
               foo: bar

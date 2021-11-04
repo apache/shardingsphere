@@ -64,7 +64,7 @@ public class PropertiesShadowSpringBootStarterTest {
         assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("HINT"));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }

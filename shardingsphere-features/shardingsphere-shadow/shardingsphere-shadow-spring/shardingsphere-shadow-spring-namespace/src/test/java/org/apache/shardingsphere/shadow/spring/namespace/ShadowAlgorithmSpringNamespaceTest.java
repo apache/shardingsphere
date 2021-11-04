@@ -64,7 +64,7 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
         assertThat(userIdValueMatchAlgorithm.getProps().get("value"), is("1"));
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("HINT"));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }
