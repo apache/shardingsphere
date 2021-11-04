@@ -40,19 +40,19 @@ spring:
               - simple-note-algorithm
         shadow-algorithms:
           user-id-regex-match-algorithm:
-            type: COLUMN_REGEX_MATCH
+            type: REGEX_MATCH
             props:
               operation: insert
               column: user_id
               regex: "[1]"
           user-id-value-match-algorithm:
-            type: COLUMN_VALUE_MATCH
+            type: VALUE_MATCH
             props:
               operation: insert
               column: user_id
               value: 1
           simple-note-algorithm:
-            type: SIMPLE_NOTE
+            type: SIMPLE_HINT
             props:
               shadow: true
               foo: bar

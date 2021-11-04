@@ -52,19 +52,19 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm userIdRegexMatchAlgorithm = shadowAlgorithms.get("user-id-regex-match-algorithm");
         assertThat(userIdRegexMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
-        assertThat(userIdRegexMatchAlgorithm.getType(), is("COLUMN_REGEX_MATCH"));
+        assertThat(userIdRegexMatchAlgorithm.getType(), is("REGEX_MATCH"));
         assertThat(userIdRegexMatchAlgorithm.getProps().get("operation"), is("insert"));
         assertThat(userIdRegexMatchAlgorithm.getProps().get("column"), is("user_id"));
         assertThat(userIdRegexMatchAlgorithm.getProps().get("regex"), is("[1]"));
         ShadowAlgorithm userIdValueMatchAlgorithm = shadowAlgorithms.get("user-id-value-match-algorithm");
         assertThat(userIdValueMatchAlgorithm instanceof ColumnValueMatchShadowAlgorithm, is(true));
-        assertThat(userIdValueMatchAlgorithm.getType(), is("COLUMN_VALUE_MATCH"));
+        assertThat(userIdValueMatchAlgorithm.getType(), is("VALUE_MATCH"));
         assertThat(userIdValueMatchAlgorithm.getProps().get("operation"), is("insert"));
         assertThat(userIdValueMatchAlgorithm.getProps().get("column"), is("user_id"));
         assertThat(userIdValueMatchAlgorithm.getProps().get("value"), is("1"));
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_NOTE"));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }

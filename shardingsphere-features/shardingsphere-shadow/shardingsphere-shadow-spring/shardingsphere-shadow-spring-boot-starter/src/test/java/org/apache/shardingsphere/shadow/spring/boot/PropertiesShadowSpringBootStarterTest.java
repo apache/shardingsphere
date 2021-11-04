@@ -58,13 +58,13 @@ public class PropertiesShadowSpringBootStarterTest {
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm userIdMatchAlgorithm = shadowAlgorithms.get("user-id-match-algorithm");
         assertThat(userIdMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
-        assertThat(userIdMatchAlgorithm.getType(), is("COLUMN_REGEX_MATCH"));
+        assertThat(userIdMatchAlgorithm.getType(), is("REGEX_MATCH"));
         assertThat(userIdMatchAlgorithm.getProps().get("operation"), is("insert"));
         assertThat(userIdMatchAlgorithm.getProps().get("column"), is("user_id"));
         assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_NOTE"));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }
