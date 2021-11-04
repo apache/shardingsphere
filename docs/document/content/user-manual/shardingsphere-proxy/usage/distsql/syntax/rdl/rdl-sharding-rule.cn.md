@@ -151,13 +151,13 @@ TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
 );
 
 CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 2}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}"))
 ),table_inline (
 TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 2}"))
 );
 
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 4}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
 ),table_inline (
 TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 4}"))
 );
