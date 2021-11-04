@@ -96,7 +96,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="HINT">
+    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>

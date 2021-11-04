@@ -74,7 +74,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-note-algorithm", new ShardingSphereAlgorithmConfiguration("HINT", noteAlgorithmProps));
+        result.put("simple-note-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
 }
