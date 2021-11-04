@@ -232,7 +232,7 @@
 
     <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
         <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
-            <algorithm algorithm-name="hash_mod">
+            <algorithm algorithm-name="inline">
                 <properties>
                     <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
                 </properties>
