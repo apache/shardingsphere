@@ -123,11 +123,11 @@ DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=2)),
+TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 ),t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_hash_mod),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
@@ -135,10 +135,10 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
+TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 ),t_order_item (
-DATANODES("resource_${0..3}.t_order_item_${0..3}"),
+DATANODES("resource_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
@@ -151,15 +151,15 @@ TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
 );
 
 CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}"))
 ),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 2}"))
 );
 
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
 ),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 4}"))
 );
 
 DROP SHARDING ALGORITHM t_order_hash_mod;
