@@ -286,6 +286,10 @@ public enum SQLVisitorRule {
     
     KILL("Kill", SQLStatementType.DAL),
     
+    RESET("ResetStatement", SQLStatementType.DAL),
+
+    RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
+
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
