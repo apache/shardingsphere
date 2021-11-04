@@ -636,7 +636,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         List<ColumnSegment> columnSegments = Collections.singletonList((ColumnSegment) visit(ctx.setTarget()));
-        ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
+        ExpressionSegment expressionSegment;
+        if (null != ctx.aExpr()) {
+            expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
+        } else {
+            String value = ctx.start.getInputStream().getText(new Interval(ctx.VALUES().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
+            expressionSegment = new CommonExpressionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), value);
+        }
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
     
