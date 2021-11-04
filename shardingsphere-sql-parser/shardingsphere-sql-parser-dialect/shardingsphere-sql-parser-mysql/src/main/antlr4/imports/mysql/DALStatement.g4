@@ -247,7 +247,7 @@ showWarnings
     ;
 
 showReplicas
-    :SHOW REPLICAS
+    : SHOW REPLICAS
     ;
 
 setCharacter

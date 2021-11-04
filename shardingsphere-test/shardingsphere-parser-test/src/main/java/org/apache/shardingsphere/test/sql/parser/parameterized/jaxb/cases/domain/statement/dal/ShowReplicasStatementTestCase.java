@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 /**
  * Show replicas test case.
  */
-public class ShowReplicasStatementTestCase extends SQLParserTestCase {
+public final class ShowReplicasStatementTestCase extends SQLParserTestCase {
 }

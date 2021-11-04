@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  * MySQL show replicas statement.
  */
 @ToString
-public class MySQLShowReplicasStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowReplicasStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
