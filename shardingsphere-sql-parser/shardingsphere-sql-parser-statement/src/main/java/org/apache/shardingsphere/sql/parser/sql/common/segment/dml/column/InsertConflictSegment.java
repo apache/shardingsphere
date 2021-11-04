@@ -17,22 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * On duplicate key columns segment.
+ * Insert conflict segment.
  */
-@RequiredArgsConstructor
-@Getter
-public final class OnDuplicateKeyColumnsSegment implements InsertConflictSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<AssignmentSegment> columns;
+public interface InsertConflictSegment extends SQLSegment {
 }

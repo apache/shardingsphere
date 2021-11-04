@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml
 
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertConflictSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -33,6 +34,8 @@ import java.util.Optional;
 public final class OpenGaussInsertStatement extends InsertStatement implements OpenGaussStatement {
     
     private WithSegment withSegment;
+    
+    private InsertConflictSegment insertConflictSegment;
 
     /**
      * Get with segment.
@@ -41,5 +44,14 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
+    }
+    
+    /**
+     * Get insert conflict segment.
+     *
+     * @return insert conflict segment.
+     */
+    public Optional<InsertConflictSegment> getInsertConflictSegment() {
+        return Optional.ofNullable(insertConflictSegment);
     }
 }

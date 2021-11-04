@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
 /**
- * On duplicate key columns segment.
+ * Expected on duplicate key update nothing.
  */
-@RequiredArgsConstructor
 @Getter
-public final class OnDuplicateKeyColumnsSegment implements InsertConflictSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<AssignmentSegment> columns;
+public final class ExpectedOnDuplicateKeyUpdateNothing extends AbstractExpectedSQLSegment {
 }

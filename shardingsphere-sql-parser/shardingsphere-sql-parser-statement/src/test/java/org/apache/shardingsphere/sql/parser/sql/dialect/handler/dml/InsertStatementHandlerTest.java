@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyUpdateNothingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Test;
@@ -46,6 +48,36 @@ public final class InsertStatementHandlerTest {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
         assertFalse(onDuplicateKeyColumnsSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyColumnsSegmentWithOnDuplicateKeyColumnsSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
+        insertStatement.setInsertConflictSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
+        assertTrue(onDuplicateKeyColumnsSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyColumnsSegmentWithoutOnDuplicateKeyColumnsSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
+        assertFalse(onDuplicateKeyColumnsSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyUpdateNothingSegmentWithOnDuplicateKeyUpdateNothingSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
+        insertStatement.setInsertConflictSegment(new OnDuplicateKeyUpdateNothingSegment(0, 0));
+        Optional<OnDuplicateKeyUpdateNothingSegment> onDuplicateKeyUpdateNothingSegment = InsertStatementHandler.getOnDuplicateKeyUpdateNothingSegment(insertStatement);
+        assertTrue(onDuplicateKeyUpdateNothingSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyUpdateNothingSegmentWithoutOnDuplicateKeyUpdateNothingSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
+        Optional<OnDuplicateKeyUpdateNothingSegment> onDuplicateKeyUpdateNothingSegment = InsertStatementHandler.getOnDuplicateKeyUpdateNothingSegment(insertStatement);
+        assertFalse(onDuplicateKeyUpdateNothingSegment.isPresent());
     }
     
     @Test
