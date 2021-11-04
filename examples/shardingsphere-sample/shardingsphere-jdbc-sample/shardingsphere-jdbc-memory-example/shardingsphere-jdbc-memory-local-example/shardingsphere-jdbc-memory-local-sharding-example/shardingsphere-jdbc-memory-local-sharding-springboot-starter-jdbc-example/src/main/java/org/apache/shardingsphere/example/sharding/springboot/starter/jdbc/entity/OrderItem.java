@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.jdbc.entity;
+package org.apache.shardingsphere.example.sharding.springboot.starter.jdbc.entity;
 
 import java.io.Serializable;
 
-public class Order implements Serializable {
+public class OrderItem implements Serializable {
     
-    private static final long serialVersionUID = 8306802022239174861L;
+    private static final long serialVersionUID = 1332162822494069342L;
+    
+    private long orderItemId;
     
     private long orderId;
     
     private int userId;
     
-    private long addressId;
-    
     private String status;
+    
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
     
     public long getOrderId() {
         return orderId;
@@ -55,16 +63,8 @@ public class Order implements Serializable {
         this.status = status;
     }
     
-    public long getAddressId() {
-        return addressId;
-    }
-    
-    public void setAddressId(final long addressId) {
-        this.addressId = addressId;
-    }
-    
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, address_id: %s, status: %s", orderId, userId, addressId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.jdbc.entity;
+package org.apache.shardingsphere.example.sharding.jdbc.entity;
 
 import java.io.Serializable;
 

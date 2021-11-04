@@ -78,5 +78,5 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
+    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
 </beans>

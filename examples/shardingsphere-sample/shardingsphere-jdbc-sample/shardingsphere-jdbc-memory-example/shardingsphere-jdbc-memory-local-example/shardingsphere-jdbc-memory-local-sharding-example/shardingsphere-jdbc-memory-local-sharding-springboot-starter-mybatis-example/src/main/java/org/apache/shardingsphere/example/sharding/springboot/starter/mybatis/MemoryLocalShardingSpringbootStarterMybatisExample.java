@@ -22,11 +22,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.sql.SQLException;
+
 @MapperScan("org.apache.shardingsphere.example.sharding.springboot.starter.mybatis.repository")
 @SpringBootApplication
 public class MemoryLocalShardingSpringbootStarterMybatisExample {
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(MemoryLocalShardingSpringbootStarterMybatisExample.class, args)) {
             MemoryLocalShardingSpringbootStarterMybatisExampleService exampleService = applicationContext.getBean(MemoryLocalShardingSpringbootStarterMybatisExampleService.class);
             exampleService.run();

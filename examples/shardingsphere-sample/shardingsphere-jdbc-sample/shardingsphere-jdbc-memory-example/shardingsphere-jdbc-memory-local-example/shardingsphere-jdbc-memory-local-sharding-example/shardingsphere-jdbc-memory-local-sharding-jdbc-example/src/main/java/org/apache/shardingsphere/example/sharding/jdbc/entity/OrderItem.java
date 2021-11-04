@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity;
+package org.apache.shardingsphere.example.sharding.jdbc.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "t_order_item")
 public class OrderItem implements Serializable {
-
-    private static final long serialVersionUID = -5336127407322921657L;
     
-    @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 1332162822494069342L;
+    
     private long orderItemId;
-
-    @Column(name = "order_id")
+    
     private long orderId;
     
-    @Column(name = "user_id")
     private int userId;
-
-    @Column(name = "status")
+    
     private String status;
     
     public long getOrderItemId() {

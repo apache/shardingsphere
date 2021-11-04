@@ -33,10 +33,5 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-raw-jdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.${framework};
+package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')};
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.example.core.api.entity.Address;
-import org.apache.shardingsphere.example.core.api.entity.Order;
-import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.OrderItem;
+<#if framework?contains("spring")>
+import org.springframework.stereotype.Service;
+</#if>
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,8 +34,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+<#assign frameworkName="">
+<#list framework?split("-") as framework1>
+    <#assign frameworkName=frameworkName + framework1?cap_first>
+</#list>
+<#if framework?contains("spring")>
+@Service
+</#if>
 @AllArgsConstructor
-public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService {
+public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}ExampleService {
     
     private final DataSource dataSource;
 
@@ -50,7 +59,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
             this.cleanEnvironment();
         }
     }
-
+    
     /**
      * Initialize the database test environment.
      * @throws SQLException
@@ -75,7 +84,6 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
             statement.executeUpdate(truncateOrderItemTable);
             statement.executeUpdate(truncateAddressTableSql);
         }
-        initAddressData(dataSource);
     }
     
     private void processSuccess() throws SQLException {
@@ -207,21 +215,6 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
             }
         }
         return result;
-    }
-    
-    private void initAddressData(DataSource dataSource) throws SQLException {
-        for (int i = 0; i < 10; i++) {
-            Address address = new Address();
-            address.setAddressId((long) i);
-            address.setAddressName("address_" + i);
-            String sql = "INSERT INTO t_address (address_id, address_name) VALUES (?, ?)";
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, address.getAddressId());
-                preparedStatement.setString(2, address.getAddressName());
-                preparedStatement.executeUpdate();
-            }
-        }
     }
     
     /**
