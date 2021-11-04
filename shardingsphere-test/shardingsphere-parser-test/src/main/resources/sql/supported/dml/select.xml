@@ -31,6 +31,7 @@
     <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" />
     <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" />
     <sql-case id="select_equal_with_single_table" value="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" />
+    <sql-case id="select_equal_with_single_table_and_lowercase_keyword" value="select * from t_order where user_id = ? and order_id = ?" />
     <sql-case id="select_in_with_single_table" value="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" />
     <sql-case id="select_between_with_single_table" value="SELECT * FROM t_order WHERE user_id BETWEEN ? AND ? AND order_id BETWEEN ? AND ? ORDER BY user_id, order_id" />
     <sql-case id="select_comparison_symbol_with_single_table" value="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" />

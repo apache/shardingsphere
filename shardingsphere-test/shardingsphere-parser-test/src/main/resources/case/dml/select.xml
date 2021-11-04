@@ -388,6 +388,46 @@
         </where>
     </select>
 
+    <select sql-case-id="select_equal_with_single_table_and_lowercase_keyword" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="38">
+                            <left>
+                                <column name="user_id" start-index="28" stop-index="34" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="38" stop-index="38" />
+                                <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>and</operator>
+                    <right>
+                        <binary-operation-expression start-index="44" stop-index="55">
+                            <left>
+                                <column name="order_id" start-index="44" stop-index="51" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="55" stop-index="55" />
+                                <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
