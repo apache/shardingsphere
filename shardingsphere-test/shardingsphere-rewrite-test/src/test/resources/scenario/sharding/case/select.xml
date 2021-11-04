@@ -516,4 +516,9 @@
         <input sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
         <output sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_and_condition_and_lowercase_keyword">
+        <input sql="select * from t_account where amount=? and account_id=?" parameters="1,2"/>
+        <output sql="select * from t_account_0 where amount=? and account_id=?" parameters="1,2"/>
+    </rewrite-assertion>
 </rewrite-assertions>

@@ -24,21 +24,21 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
-    <shadow:shadow-algorithm id="user-id-regex-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-regex-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">insert</prop>
             <prop key="column">user_id</prop>
             <prop key="regex">[1]</prop>
         </props>
     </shadow:shadow-algorithm>
-    <shadow:shadow-algorithm id="user-id-value-match-algorithm" type="COLUMN_VALUE_MATCH">
+    <shadow:shadow-algorithm id="user-id-value-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">insert</prop>
             <prop key="column">user_id</prop>
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_NOTE">
+    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>

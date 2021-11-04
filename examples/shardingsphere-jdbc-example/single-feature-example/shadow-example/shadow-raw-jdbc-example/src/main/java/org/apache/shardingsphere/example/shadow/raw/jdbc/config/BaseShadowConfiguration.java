@@ -50,7 +50,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         result.add("user-id-insert-match-algorithm");
         result.add("user-id-delete-match-algorithm");
         result.add("user-id-select-match-algorithm");
-        result.add("simple-note-algorithm");
+        result.add("simple-hint-algorithm");
         return result;
     }
     
@@ -60,21 +60,21 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         userIdInsertProps.setProperty("operation", "insert");
         userIdInsertProps.setProperty("column", "user_type");
         userIdInsertProps.setProperty("value", "1");
-        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_VALUE_MATCH", userIdInsertProps));
+        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         Properties userIdDeleteProps = new Properties();
         userIdDeleteProps.setProperty("operation", "delete");
         userIdDeleteProps.setProperty("column", "user_type");
         userIdDeleteProps.setProperty("value", "1");
-        result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_VALUE_MATCH", userIdDeleteProps));
+        result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
         Properties userIdSelectProps = new Properties();
         userIdSelectProps.setProperty("operation", "select");
         userIdSelectProps.setProperty("column", "user_type");
         userIdSelectProps.setProperty("value", "1");
-        result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_VALUE_MATCH", userIdSelectProps));
+        result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-note-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_NOTE", noteAlgorithmProps));
+        result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
 }

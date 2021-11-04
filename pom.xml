@@ -143,6 +143,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
+        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
 
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
@@ -765,6 +766,11 @@
                             </fileSet>
                         </fileSets>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>templating-maven-plugin</artifactId>
+                    <version>${templating-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
