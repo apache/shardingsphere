@@ -1384,3 +1384,7 @@ OUT
 INOUT
     : I N O U T
     ;
+
+DUPLICATE
+    : D U P L I C A T E
+    ;
