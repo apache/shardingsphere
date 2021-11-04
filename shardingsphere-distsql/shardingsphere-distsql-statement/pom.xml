@@ -22,15 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-distsql</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-distsql-parser</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-distsql-statement</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-distsql-parser-statement</module>
-        <module>shardingsphere-distsql-parser-engine</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

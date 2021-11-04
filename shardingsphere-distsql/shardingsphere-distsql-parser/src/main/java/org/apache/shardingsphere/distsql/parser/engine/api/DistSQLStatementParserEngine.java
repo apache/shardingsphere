@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api;
+package org.apache.shardingsphere.distsql.parser.engine.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.core.advanced.AdvancedDistSQLStatementParserEngine;
