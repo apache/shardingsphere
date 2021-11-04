@@ -237,9 +237,18 @@ public final class EncryptTableMetaDataBuilderTest {
     private void loadByPostgreSQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
             throws SQLException {
         when(databaseType.getName()).thenReturn("PostgreSQL");
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
         Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType,
                 Collections.singletonMap("logic_db", dataSource), rules, props));
         assertResult(actual);
+    }
+    
+    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_name")).thenReturn(TABLE_NAME);
+        return result;
     }
     
     @Test
