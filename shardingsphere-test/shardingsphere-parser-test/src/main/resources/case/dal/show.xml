@@ -86,4 +86,5 @@
 
     <show-function-status sql-case-id="show_function_status" />
     <show-procedure-status sql-case-id="show_procedure_status" />
+    <show-replicas sql-case-id="show_replicas" />
 </sql-parser-test-cases>
