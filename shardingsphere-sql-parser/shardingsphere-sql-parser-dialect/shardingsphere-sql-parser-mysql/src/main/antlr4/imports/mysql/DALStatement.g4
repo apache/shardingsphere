@@ -246,6 +246,10 @@ showWarnings
     : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
+showReplicas
+    : SHOW REPLICAS
+    ;
+
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -451,4 +455,5 @@ show
     | showTrriggers
     | showWarnings
     | showVariables
+    | showReplicas
     ;
