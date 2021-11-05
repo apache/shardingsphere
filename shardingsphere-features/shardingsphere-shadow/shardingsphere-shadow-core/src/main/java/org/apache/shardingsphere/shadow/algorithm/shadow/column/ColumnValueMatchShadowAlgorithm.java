@@ -80,7 +80,7 @@ public final class ColumnValueMatchShadowAlgorithm implements ColumnShadowAlgori
         boolean containTable = shadowTableNames.contains(shadowValue.getLogicTableName());
         boolean isSameOperation = shadowOperationType == shadowValue.getShadowOperationType();
         boolean isSameColumnName = Objects.equals(props.get(COLUMN), shadowValue.getColumnName());
-        boolean isSameColumnValue = props.get(VALUE).toString().equals(shadowValue.getValue());
+        boolean isSameColumnValue = props.get(VALUE).toString().equals(String.valueOf(shadowValue.getValue()));
         return containTable && isSameOperation && isSameColumnName && isSameColumnValue;
     }
     
