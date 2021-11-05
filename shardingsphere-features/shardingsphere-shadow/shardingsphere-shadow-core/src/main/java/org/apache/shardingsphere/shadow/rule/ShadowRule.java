@@ -32,9 +32,7 @@ import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -198,8 +196,15 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        return shadowDataSourceMappings.values().stream().collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, each ->
-                Arrays.asList(each.getSourceDataSource(), each.getShadowDataSource()), (key, value) -> value, () -> new HashMap<>(shadowDataSourceMappings.size(), 1)));
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        Collection<String> dataSourceNames;
+        for (Map.Entry<String, ShadowDataSourceRule> entry : shadowDataSourceMappings.entrySet()) {
+            dataSourceNames = new LinkedList<>();
+            dataSourceNames.add(entry.getValue().getSourceDataSource());
+            dataSourceNames.add(entry.getValue().getShadowDataSource());
+            result.put(entry.getKey(), dataSourceNames);
+        }
+        return result;
     }
     
     @Override

@@ -176,4 +176,30 @@ public final class ShadowRuleTest {
     public void assertGetRuleType() {
         assertThat(shadowRuleWithAlgorithm.getType(), is(ShadowRule.class.getSimpleName()));
     }
+    
+    @Test
+    public void assertGetDataSourceMapper() {
+        Map<String, Collection<String>> dataSourceMapper = shadowRuleWithAlgorithm.getDataSourceMapper();
+        assertThat(dataSourceMapper.size(), is(2));
+        assertLogicalNames(dataSourceMapper.keySet());
+        assertDataSourceMappers(dataSourceMapper.values());
+    }
+    
+    private void assertDataSourceMappers(final Collection<Collection<String>> dataSourceMappers) {
+        Iterator<Collection<String>> dataSourceMappersIterator = dataSourceMappers.iterator();
+        Collection<String> dataSourcesMapperOne = dataSourceMappersIterator.next();
+        Iterator<String> elementOneIterator = dataSourcesMapperOne.iterator();
+        assertThat(elementOneIterator.next(), is("ds"));
+        assertThat(elementOneIterator.next(), is("ds_shadow"));
+        Collection<String> dataSourcesMapperTwo = dataSourceMappersIterator.next();
+        Iterator<String> elementTwoIterator = dataSourcesMapperTwo.iterator();
+        assertThat(elementTwoIterator.next(), is("ds1"));
+        assertThat(elementTwoIterator.next(), is("ds1_shadow"));
+    }
+    
+    private void assertLogicalNames(final Collection<String> logicalNames) {
+        Iterator<String> logicalNamesIterator = logicalNames.iterator();
+        assertThat(logicalNamesIterator.next(), is("shadow-data-source-0"));
+        assertThat(logicalNamesIterator.next(), is("shadow-data-source-1"));
+    }
 }
