@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class H2DataSourceMetaDataTest {
-
+    
     @Test
     public void assertNewConstructorWithMem() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
@@ -33,7 +33,7 @@ public final class H2DataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithSymbol() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
@@ -41,7 +41,7 @@ public final class H2DataSourceMetaDataTest {
         assertThat(actual.getPort(), is(-1));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithTcp() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
@@ -50,7 +50,7 @@ public final class H2DataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("test2"));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithSsl() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test");
@@ -59,7 +59,7 @@ public final class H2DataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("test"));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithFile() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");

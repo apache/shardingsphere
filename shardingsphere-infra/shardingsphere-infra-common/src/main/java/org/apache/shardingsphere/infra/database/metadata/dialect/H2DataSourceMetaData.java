@@ -29,21 +29,21 @@ import java.util.regex.Pattern;
  */
 @Getter
 public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = -1;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String catalog;
-
+    
     private final String schema;
-
+    
     private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|"
             + "(ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "file:[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
-
+    
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
