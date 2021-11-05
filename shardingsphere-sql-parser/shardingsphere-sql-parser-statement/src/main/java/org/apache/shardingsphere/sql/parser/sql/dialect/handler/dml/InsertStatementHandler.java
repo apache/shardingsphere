@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyUpdateNothingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
@@ -58,22 +57,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
             return ((MySQLInsertStatement) insertStatement).getOnDuplicateKeyColumns();
         }
         if (insertStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussInsertStatement) insertStatement).getInsertConflictSegment().filter(each -> each instanceof OnDuplicateKeyColumnsSegment)
-                    .map(each -> (OnDuplicateKeyColumnsSegment) each);
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Get on duplicate key update nothing segment.
-     *
-     * @param insertStatement insert statement
-     * @return on duplicate key update nothing segment
-     */
-    public static Optional<OnDuplicateKeyUpdateNothingSegment> getOnDuplicateKeyUpdateNothingSegment(final InsertStatement insertStatement) {
-        if (insertStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussInsertStatement) insertStatement).getInsertConflictSegment().filter(each -> each instanceof OnDuplicateKeyUpdateNothingSegment)
-                    .map(each -> (OnDuplicateKeyUpdateNothingSegment) each);
+            return ((OpenGaussInsertStatement) insertStatement).getOnDuplicateKeyColumns();
         }
         return Optional.empty();
     }

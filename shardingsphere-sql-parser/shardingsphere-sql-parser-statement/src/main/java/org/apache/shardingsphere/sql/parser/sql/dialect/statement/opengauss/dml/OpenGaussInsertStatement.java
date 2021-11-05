@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml
 
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertConflictSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -35,7 +35,7 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     
     private WithSegment withSegment;
     
-    private InsertConflictSegment insertConflictSegment;
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment;
 
     /**
      * Get with segment.
@@ -47,11 +47,11 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     }
     
     /**
-     * Get insert conflict segment.
+     * Get on duplicate key columns segment.
      *
-     * @return insert conflict segment.
+     * @return on duplicate key columns segment
      */
-    public Optional<InsertConflictSegment> getInsertConflictSegment() {
-        return Optional.ofNullable(insertConflictSegment);
+    public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
+        return Optional.ofNullable(onDuplicateKeyColumnsSegment);
     }
 }

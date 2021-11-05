@@ -109,9 +109,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertConflictSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyUpdateNothingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -576,7 +574,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         OpenGaussInsertStatement result = (OpenGaussInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnDuplicateKey()) {
-            result.setInsertConflictSegment((InsertConflictSegment) visit(ctx.optOnDuplicateKey()));
+            result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -624,7 +622,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public ASTNode visitOptOnDuplicateKey(final OptOnDuplicateKeyContext ctx) {
         if (null != ctx.NOTHING()) {
-            return new OnDuplicateKeyUpdateNothingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+            return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.emptyList());
         }
         Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {

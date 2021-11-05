@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertMultiTableElement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertValuesClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedOnDuplicateKeyUpdateNothing;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
@@ -56,9 +55,6 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "on-duplicate-key-columns")
     private ExpectedOnDuplicateKeyColumns onDuplicateKeyColumns;
-    
-    @XmlElement(name = "on-duplicate-key-update-nothing")
-    private ExpectedOnDuplicateKeyUpdateNothing onDuplicateKeyUpdateNothing;
     
     @XmlElement(name = "with")
     private ExpectedWithClause withClause;

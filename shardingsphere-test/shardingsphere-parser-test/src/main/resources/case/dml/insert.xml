@@ -1964,7 +1964,7 @@
                 </assignment-value>
             </value>
         </values>
-        <on-duplicate-key-update-nothing start-index="72" stop-index="102" />
+        <on-duplicate-key-columns start-index="72" stop-index="102" />
     </insert>
 
     <insert sql-case-id="insert_on_duplicate_key_update_multi_column">

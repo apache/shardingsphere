@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyUpdateNothingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.InsertMultiTableElementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.insert.InsertValuesClauseAssert;
@@ -65,7 +63,7 @@ public final class InsertStatementAssert {
         assertInsertValuesClause(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
         assertInsertSelectClause(assertContext, actual, expected);
-        assertInsertConflict(assertContext, actual, expected);
+        assertOnDuplicateKeyColumns(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
         assertInsertMultiTableElement(assertContext, actual, expected);
@@ -114,21 +112,6 @@ public final class InsertStatementAssert {
             SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect(), expected.getSelectTestCase());
         } else {
             assertFalse(assertContext.getText("Actual insert select segment should not exist."), actual.getInsertSelect().isPresent());
-        }
-    }
-    
-    private static void assertInsertConflict(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        assertOnDuplicateKeyUpdateNothing(assertContext, actual, expected);
-        assertOnDuplicateKeyColumns(assertContext, actual, expected);
-    }
-    
-    private static void assertOnDuplicateKeyUpdateNothing(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<OnDuplicateKeyUpdateNothingSegment> onDuplicateKeyUpdateNothingSegment = InsertStatementHandler.getOnDuplicateKeyUpdateNothingSegment(actual);
-        if (null != expected.getOnDuplicateKeyUpdateNothing()) {
-            assertTrue(assertContext.getText("Actual on duplicate key update nothing segment should exist."), onDuplicateKeyUpdateNothingSegment.isPresent());
-            SQLSegmentAssert.assertIs(assertContext, onDuplicateKeyUpdateNothingSegment.get(), expected.getOnDuplicateKeyUpdateNothing());
-        } else {
-            assertFalse(assertContext.getText("Actual on duplicate key update nothing segment should not exist."), onDuplicateKeyUpdateNothingSegment.isPresent());
         }
     }
     
