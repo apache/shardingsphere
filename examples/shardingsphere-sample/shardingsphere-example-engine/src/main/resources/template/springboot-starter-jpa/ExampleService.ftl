@@ -38,7 +38,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
     /**
      * Execute test.
      */
-    public void processSuccess() {
+    public void run() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
