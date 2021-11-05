@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnRefContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
@@ -100,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
@@ -122,8 +124,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompleteRegularFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
@@ -141,6 +141,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
@@ -174,7 +175,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
