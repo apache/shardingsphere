@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.exec
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
@@ -57,7 +56,5 @@ public final class SetVariableExecutorTest {
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
-        String expectedValue = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold").toString();
-        Assert.assertThat(expectedValue, is("1024"));
     }
 }
