@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * MySQL reset statement.
+ * Alter sharding algorithm statement.
  */
-@ToString
+@RequiredArgsConstructor
 @Getter
-public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class AlterShardingAlgorithmStatement extends DropRuleStatement {
     
-    private List<ResetOptionSegment> options = new LinkedList<>();
+    private final Collection<ShardingAlgorithmSegment> algorithmSegments;
 }

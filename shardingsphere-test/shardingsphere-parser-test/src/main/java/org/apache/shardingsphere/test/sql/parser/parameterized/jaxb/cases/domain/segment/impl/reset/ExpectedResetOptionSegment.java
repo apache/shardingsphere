@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.reset;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * MySQL reset statement.
+ * Expected reset option segment.
  */
-@ToString
 @Getter
-public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class ExpectedResetOptionSegment extends AbstractExpectedSQLSegment {
     
-    private List<ResetOptionSegment> options = new LinkedList<>();
+    @XmlAttribute(name = "master")
+    private boolean master;
+
+    @XmlAttribute(name = "binary-log-file-index-number")
+    private Integer binaryLogFileIndexNumber;
+
+    @XmlAttribute(name = "all")
+    private boolean all;
+
+    @XmlAttribute(name = "channel")
+    private String channel;
 }

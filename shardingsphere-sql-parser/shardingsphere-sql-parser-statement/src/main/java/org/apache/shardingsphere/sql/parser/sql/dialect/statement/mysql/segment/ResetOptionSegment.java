@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * MySQL reset statement.
+ * MySQL reset option segment.
  */
-@ToString
 @Getter
-public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private List<ResetOptionSegment> options = new LinkedList<>();
+@Setter
+public abstract class ResetOptionSegment implements SQLSegment {
+
+    private int startIndex;
+
+    private int stopIndex;
 }
