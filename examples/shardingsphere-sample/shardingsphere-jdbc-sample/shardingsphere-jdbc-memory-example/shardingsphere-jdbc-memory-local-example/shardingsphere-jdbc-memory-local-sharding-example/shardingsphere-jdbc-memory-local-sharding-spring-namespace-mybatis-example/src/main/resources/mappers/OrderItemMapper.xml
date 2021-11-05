@@ -17,35 +17,35 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.repository.OrderRepository">
-    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.Order">
-        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+<mapper namespace="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository.OrderItemRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.OrderItem">
+        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
+        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="address_id" property="addressId" jdbcType="BIGINT"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
     </resultMap>
-
+    
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+        CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, status VARCHAR(50) , PRIMARY KEY (order_item_id));
     </update>
     
     <update id="truncateTable">
-        TRUNCATE TABLE t_order;
+        TRUNCATE TABLE t_order_item;
     </update>
     
     <update id="dropTable">
-        DROP TABLE IF EXISTS t_order;
+        DROP TABLE IF EXISTS t_order_item;
     </update>
     
-    <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO t_order (user_id, address_id, status) VALUES (${r"#{userId,jdbcType=INTEGER}"}, ${r"#{addressId,jdbcType=BIGINT}"}, ${r"#{status,jdbcType=VARCHAR}"});
+    <insert id="insert" useGeneratedKeys="true" keyProperty="orderItemId">
+        INSERT INTO t_order_item (order_id, user_id, status) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR});
     </insert>
     
     <delete id="delete">
-        DELETE FROM t_order WHERE order_id = ${r"#{orderId,jdbcType=INTEGER}"};
+        DELETE FROM t_order_item WHERE order_id = #{orderId,jdbcType=INTEGER};
     </delete>
     
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT * FROM t_order;
+        SELECT * from t_order_item
     </select>
 </mapper>

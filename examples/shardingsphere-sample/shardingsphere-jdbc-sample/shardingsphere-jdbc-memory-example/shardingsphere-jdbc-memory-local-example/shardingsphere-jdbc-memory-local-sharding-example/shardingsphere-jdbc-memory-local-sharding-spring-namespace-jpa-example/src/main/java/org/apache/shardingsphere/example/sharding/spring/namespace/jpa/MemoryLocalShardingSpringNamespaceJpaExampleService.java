@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.springboot.starter.jpa;
+package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
 
-import org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity.Order;
-import org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity.OrderItem;
+import org.apache.shardingsphere.example.sharding.spring.namespace.jpa.entity.Order;
+import org.apache.shardingsphere.example.sharding.spring.namespace.jpa.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
-</#list>
 @Service
-public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}ExampleService {
+public final class MemoryLocalShardingSpringNamespaceJpaExampleService {
     
     @Resource
-    private ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}Repository repository;
+    private MemoryLocalShardingSpringNamespaceJpaRepository repository;
 
     /**
      * Execute test.

@@ -35,14 +35,14 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            ">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}"/>
-<#if framework=="spring-namespace-jpa">
+    <context:component-scan base-package="org.apache.shardingsphere.example.sharding.spring.namespace.jpa"/>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.sharding.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
@@ -53,7 +53,6 @@
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-</#if>
     
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -71,7 +70,7 @@
 
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm-expression">demo_ds_${r'${user_id % 2}'}</prop>
+            <prop key="algorithm-expression">demo_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
@@ -101,20 +100,4 @@
     </sharding:rule>
     
     <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
-<#if framework=="spring-namespace-mybatis">
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
-    </bean>
-    <tx:annotation-driven />
-
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
-    </bean>
-
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-    </bean>
-</#if>
 </beans>

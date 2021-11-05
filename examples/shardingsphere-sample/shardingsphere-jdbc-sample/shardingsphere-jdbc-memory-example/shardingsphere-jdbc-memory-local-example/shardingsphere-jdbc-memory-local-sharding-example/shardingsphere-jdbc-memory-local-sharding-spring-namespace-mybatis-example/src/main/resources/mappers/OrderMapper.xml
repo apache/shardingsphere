@@ -17,8 +17,8 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.repository.OrderRepository">
-    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.Order">
+<mapper namespace="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository.OrderRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.Order">
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="address_id" property="addressId" jdbcType="BIGINT"/>
@@ -38,11 +38,11 @@
     </update>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO t_order (user_id, address_id, status) VALUES (${r"#{userId,jdbcType=INTEGER}"}, ${r"#{addressId,jdbcType=BIGINT}"}, ${r"#{status,jdbcType=VARCHAR}"});
+        INSERT INTO t_order (user_id, address_id, status) VALUES (#{userId,jdbcType=INTEGER}, #{addressId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR});
     </insert>
     
     <delete id="delete">
-        DELETE FROM t_order WHERE order_id = ${r"#{orderId,jdbcType=INTEGER}"};
+        DELETE FROM t_order WHERE order_id = #{orderId,jdbcType=INTEGER};
     </delete>
     
     <select id="selectAll" resultMap="baseResultMap">

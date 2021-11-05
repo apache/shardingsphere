@@ -21,34 +21,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * jdbc generator.
+ * spring namespace jpa generator.
  */
-public final class JDBCGenerator extends ExampleGenerateEngine {
+public final class SpringNamespaceJpaGenerator extends ExampleGenerateEngine {
     
     private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap<>();
     private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>();
     private static final Map<String, String> RESOURCE_TEMPLATE_MAP = new HashMap<>();
-
+    
     static {
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
-        RENAME_TEMPLATE_MAP.put("ExampleService", "jdbc/ExampleService.ftl");
-        RENAME_TEMPLATE_MAP.put("Configuration", "jdbc/Configuration.ftl");
+        RENAME_TEMPLATE_MAP.put("ExampleService", "jpa/ExampleService.ftl");
+        RENAME_TEMPLATE_MAP.put("Repository", "jpa/Repository.ftl");
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        
+        RESOURCE_TEMPLATE_MAP.put("xml/application", "application.xml");
     }
-
-    public JDBCGenerator() {
+    
+    public SpringNamespaceJpaGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
     
     @Override
     protected String getGenerator() {
-        return "jdbc";
+        return "spring-namespace-jpa";
     }
     
     public static void main(String[] args) {
-        JDBCGenerator generator = new JDBCGenerator();
+        SpringNamespaceJpaGenerator generator = new SpringNamespaceJpaGenerator();
         generator.exec();
     }
 }

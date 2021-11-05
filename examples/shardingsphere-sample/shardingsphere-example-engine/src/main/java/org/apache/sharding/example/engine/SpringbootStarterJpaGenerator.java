@@ -31,8 +31,8 @@ public final class SpringbootStarterJpaGenerator extends ExampleGenerateEngine {
 
     static {
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
-        RENAME_TEMPLATE_MAP.put("ExampleService", "springboot-starter-jpa/ExampleService.ftl");
-        RENAME_TEMPLATE_MAP.put("Repository", "springboot-starter-jpa/Repository.ftl");
+        RENAME_TEMPLATE_MAP.put("ExampleService", "jpa/ExampleService.ftl");
+        RENAME_TEMPLATE_MAP.put("Repository", "jpa/Repository.ftl");
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
@@ -41,9 +41,14 @@ public final class SpringbootStarterJpaGenerator extends ExampleGenerateEngine {
     public SpringbootStarterJpaGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
-
+    
+    @Override
+    protected String getGenerator() {
+        return "springboot-starter-jpa";
+    }
+    
     public static void main(String[] args) {
         SpringbootStarterJpaGenerator generator = new SpringbootStarterJpaGenerator();
-        generator.exec("/template/springboot-starter-jpa/data-model.yaml");
+        generator.exec();
     }
 }
