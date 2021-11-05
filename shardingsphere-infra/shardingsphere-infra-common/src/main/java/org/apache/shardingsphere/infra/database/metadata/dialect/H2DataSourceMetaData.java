@@ -39,17 +39,21 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     private final String catalog;
     
     private final String schema;
-    
-    private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+
+    private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|(ssl:|tcp:)(//)?([\\w\\-.]+)(:(?<port>[0-9]*)/)?([/~\\w\\-.]+)(/(?<name>[\\-\\w]*)){1}|file:([/~\\w\\-]+)(/(?<fileName>[\\-\\w]*)){1});?\\S*", Pattern.CASE_INSENSITIVE);
     
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
+        String portFromMatcher = matcher.group("port");
+        String catalogFromMatcher = matcher.group("catalog");
+        String nameFromMatcher = matcher.group("name");
+        String fileNameFromMatcher = matcher.group("fileName");
         hostName = "";
-        port = DEFAULT_PORT;
-        catalog = matcher.group(2);
+        port =  portFromMatcher == null || portFromMatcher.isEmpty() ? DEFAULT_PORT : Integer.parseInt(portFromMatcher);
+        catalog = catalogFromMatcher == null ? (nameFromMatcher == null ? fileNameFromMatcher : nameFromMatcher) : catalogFromMatcher;
         schema = null;
     }
 }
