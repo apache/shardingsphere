@@ -55,6 +55,7 @@ optOnDuplicateKey
 
 assignment
     : setTarget EQ_ aExpr
+    | setTarget EQ_ VALUES LP_ name RP_
     ;
 
 update
