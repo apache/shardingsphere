@@ -24,6 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryRuleConstants;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -33,6 +37,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.CronContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
@@ -50,7 +55,7 @@ import java.util.Optional;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, CronContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
@@ -70,7 +75,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
     }
     
-    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes, 
+    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes,
                                   final String schemaName, final Map<String, DataSource> dataSourceMap) {
         checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
         this.discoveryTypes = discoveryTypes;
@@ -141,7 +146,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return found data source rule
      */
@@ -184,9 +189,28 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
+    @Override
+    public void updateCornToJob() {
+        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+            ZookeeperRegistryCenter registryCenter =
+                    new ZookeeperRegistryCenter(new ZookeeperConfiguration(entry.getValue().getDatabaseDiscoveryType().getProps().getProperty("zkServerLists"), "mgr-elasticjob"));
+            registryCenter.init();
+            new JobConfigurationAPIImpl(registryCenter).updateJobConfiguration(createJobConfiguration("MGR-" + entry.getKey(),
+                    entry.getValue().getDatabaseDiscoveryType().getProps().getProperty("keepAliveCron")));
+        }
+    }
+    
     private Map<String, String> exportPrimaryDataSourceMap() {
         Map<String, String> result = new HashMap<>(dataSourceRules.size(), 1);
         dataSourceRules.forEach((name, dataSourceRule) -> result.put(dataSourceRule.getName(), dataSourceRule.getPrimaryDataSourceName()));
+        return result;
+    }
+    
+    private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
+        JobConfigurationPOJO result = new JobConfigurationPOJO();
+        result.setJobName(jobName);
+        result.setCron(cron);
+        result.setShardingTotalCount(1);
         return result;
     }
     
