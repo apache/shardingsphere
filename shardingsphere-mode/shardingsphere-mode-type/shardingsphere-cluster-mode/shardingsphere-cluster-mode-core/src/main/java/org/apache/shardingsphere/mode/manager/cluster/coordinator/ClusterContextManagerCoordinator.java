@@ -42,7 +42,6 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.CronContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
@@ -171,8 +170,6 @@ public final class ClusterContextManagerCoordinator {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
         metaDataMap.putAll(changedMetaDataContexts.getMetaDataMap());
         contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
-        contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName).getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof CronContainedRule).forEach(each -> ((CronContainedRule) each).updateCornToJob());
     }
     
     /**
