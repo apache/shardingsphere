@@ -29,19 +29,21 @@ import java.util.regex.Pattern;
  */
 @Getter
 public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
-    
+
     private static final int DEFAULT_PORT = -1;
-    
+
     private final String hostName;
-    
+
     private final int port;
-    
+
     private final String catalog;
-    
+
     private final String schema;
 
-    private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|(ssl:|tcp:)(//)?([\\w\\-.]+)(:(?<port>[0-9]*)/)?([/~\\w\\-.]+)(/(?<name>[\\-\\w]*)){1}|file:([/~\\w\\-]+)(/(?<fileName>[\\-\\w]*)){1});?\\S*", Pattern.CASE_INSENSITIVE);
-    
+    private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|"
+            + "(ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "file:[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
+
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
@@ -51,9 +53,12 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         String catalogFromMatcher = matcher.group("catalog");
         String nameFromMatcher = matcher.group("name");
         String fileNameFromMatcher = matcher.group("fileName");
-        hostName = "";
-        port =  portFromMatcher == null || portFromMatcher.isEmpty() ? DEFAULT_PORT : Integer.parseInt(portFromMatcher);
-        catalog = catalogFromMatcher == null ? (nameFromMatcher == null ? fileNameFromMatcher : nameFromMatcher) : catalogFromMatcher;
+        String hostNameFromMatcher = matcher.group("hostName");
+        boolean setPort = null != portFromMatcher && !portFromMatcher.isEmpty();
+        String name = null == nameFromMatcher ? fileNameFromMatcher : nameFromMatcher;
+        hostName = null == hostNameFromMatcher ? "" : hostNameFromMatcher;
+        port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
+        catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
     }
 }
