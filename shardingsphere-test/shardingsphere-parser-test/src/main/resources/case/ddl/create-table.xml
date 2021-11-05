@@ -1577,4 +1577,26 @@
             <column name="status" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_storage_parameter">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="43">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="46" stop-index="56">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="59" stop-index="76">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="79" stop-index="97">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="100" stop-index="118">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="121" stop-index="139">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
