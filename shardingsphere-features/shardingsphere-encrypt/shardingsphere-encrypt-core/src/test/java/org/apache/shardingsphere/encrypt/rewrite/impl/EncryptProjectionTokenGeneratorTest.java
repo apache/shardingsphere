@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class EncryptProjectionTokenGeneratorTest {
-
+    
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     
