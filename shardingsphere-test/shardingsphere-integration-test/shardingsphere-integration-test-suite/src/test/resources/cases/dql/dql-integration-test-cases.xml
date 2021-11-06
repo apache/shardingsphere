@@ -618,7 +618,7 @@
         <assertion expected-data-file="select_shorthand_projection_with_subquery.xml"/>
     </test-case>
 
-    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL,H2">
         <assertion expected-data-file="select_aggregation_projection_with_subquery.xml"/>
     </test-case>
 </integration-test-cases>
