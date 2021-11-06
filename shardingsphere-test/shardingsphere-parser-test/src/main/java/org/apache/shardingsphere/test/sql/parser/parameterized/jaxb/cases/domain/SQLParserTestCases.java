@@ -186,7 +186,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -691,7 +690,7 @@ public final class SQLParserTestCases {
     private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "kill")
-    private final List<KillStatementTestCase> killStatementTestCases = new ArrayList<>();
+    private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
