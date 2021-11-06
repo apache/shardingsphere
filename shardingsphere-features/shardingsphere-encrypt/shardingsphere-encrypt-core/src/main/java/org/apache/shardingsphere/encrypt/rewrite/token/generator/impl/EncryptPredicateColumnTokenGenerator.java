@@ -17,7 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -34,55 +43,64 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.Setter;
 
 /**
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
-    
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware,
+        QueryWithCipherColumnAware {
+
     private ShardingSphereSchema schema;
-    
+
     private boolean queryWithCipherColumn;
-    
+
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
-            || (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())
-            || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
+                || (sqlStatementContext instanceof SelectStatementContext && (((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()
+                || ((SelectStatementContext) sqlStatementContext).isContainsSubquery()))
+                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
     }
-    
+
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<WhereSegment> whereSegments = getWhereSegments(sqlStatementContext);
         Collection<AndPredicate> andPredicates = whereSegments.stream().flatMap(each -> ExpressionExtractUtil.getAndPredicates(each.getExpr()).stream()).collect(Collectors.toList());
         Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates, whereSegments);
-        return andPredicates.stream().flatMap(each -> generateSQLTokens(each.getPredicates(), columnTableNames).stream()).collect(Collectors.toCollection(LinkedHashSet::new));
+        return andPredicates.stream().flatMap(each -> generateSQLTokens(sqlStatementContext, each.getPredicates(), columnTableNames).stream()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
-    
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final Collection<ExpressionSegment> predicates,
+                                                                       final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
+        Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap = new HashMap<>();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            rewriteMetaDataMap = ((SelectStatementContext) sqlStatementContext).getRewriteMetaDataMap();
+            if (rewriteMetaDataMap == null) {
+                rewriteMetaDataMap = new HashMap<>();
+            }
+        }
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
+                int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
+                int stopIndex = column.getStopIndex();
+                if (!rewriteMetaDataMap.isEmpty()) {
+                    Map<String, Map<String, String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
+                    if (value != null && value.containsKey(column.getIdentifier().getValue())) {
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get("assistedQueryColumn"))));
+                        continue;
+                    }
+                }
                 Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column);
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                     continue;
                 }
-                int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-                int stopIndex = column.getStopIndex();
                 EncryptTable table = encryptTable.get();
                 if (Boolean.FALSE.equals(table.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
@@ -100,36 +118,55 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         }
         return result;
     }
-    
+
     private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
         Collection<WhereSegment> result = new LinkedList<>();
-        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
-            result.add(((WhereAvailable) sqlStatementContext).getWhere().get());
-        }
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()) {
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+        result.addAll(getWhereSegmentsFromWhereAvailable(sqlStatementContext));
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+            result.addAll(getWhereSegmentsOnJoinQuery(selectStatementContext));
+            if (selectStatementContext.isContainsSubquery()) {
+                selectStatementContext.getSubquerySegments().forEach(each -> {
+                    SelectStatementContext subuqerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(),
+                            selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
+                    result.addAll(getWhereSegmentsFromWhereAvailable(subuqerySelectStatementContext));
+                    result.addAll(getWhereSegmentsOnJoinQuery(subuqerySelectStatementContext));
+                });
+            }
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
-            if (selectStatementContext instanceof WhereAvailable && ((WhereAvailable) selectStatementContext).getWhere().isPresent()) {
-                result.add(((WhereAvailable) selectStatementContext).getWhere().get());
-            }
+            result.addAll(getWhereSegmentsFromWhereAvailable(selectStatementContext));
         }
         return result;
     }
-    
-    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates, 
-            final Collection<WhereSegment> whereSegments) {
+
+    private Collection<WhereSegment> getWhereSegmentsFromWhereAvailable(final SQLStatementContext<?> sqlStatementContext) {
+        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            return Collections.singletonList(((WhereAvailable) sqlStatementContext).getWhere().get());
+        }
+        return Collections.emptyList();
+    }
+
+    private Collection<WhereSegment> getWhereSegmentsOnJoinQuery(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.isContainsJoinQuery()) {
+            return WhereExtractUtil.getJoinWhereSegments(selectStatementContext.getSqlStatement());
+        }
+        return Collections.emptyList();
+    }
+
+    private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates,
+                                                    final Collection<WhereSegment> whereSegments) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
                 .flatMap(each -> ColumnExtractor.extract(each).stream()).filter(Objects::nonNull).collect(Collectors.toList());
         columns.addAll(whereSegments.stream().flatMap(each -> ColumnExtractor.extract(each.getExpr()).stream()).collect(Collectors.toList()));
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
-    
+
     private Optional<EncryptTable> findEncryptTable(final Map<String, String> columnTableNames, final ColumnSegment column) {
         return Optional.ofNullable(columnTableNames.get(column.getQualifiedName())).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
-    
+
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {
         return Collections.singletonList(new ColumnProjection(null, columnName, null));
     }
