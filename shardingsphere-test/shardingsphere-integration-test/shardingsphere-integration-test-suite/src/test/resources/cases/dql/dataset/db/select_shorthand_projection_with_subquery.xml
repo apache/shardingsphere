@@ -21,5 +21,4 @@
         <column name="user_id" />
     </metadata>
     <row values="1010, 10" />
-    <row values="1100, 10" />
 </dataset>
