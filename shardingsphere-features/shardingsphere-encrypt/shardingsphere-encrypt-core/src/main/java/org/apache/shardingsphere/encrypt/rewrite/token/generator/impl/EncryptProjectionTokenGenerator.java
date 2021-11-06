@@ -115,7 +115,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         if (!columnProjectionSegment.getColumn().getOwner().isPresent()) {
             return false;
         }
-        return selectStatementContext.getTablesContext().getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+        return selectStatementContext.getTablesContext().getOriginalTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue())
                 && table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(table.getAlias().get()));
     }
     
@@ -123,7 +123,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         if (!columnProjectionSegment.getColumn().getOwner().isPresent()) {
             return false;
         }
-        return selectStatementContext.getTablesContext().getAllUniqueTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue()) 
+        return selectStatementContext.getTablesContext().getOriginalTables().stream().anyMatch(table -> tableName.equals(table.getTableName().getIdentifier().getValue())
                 && !table.getAlias().isPresent() && columnProjectionSegment.getColumn().getOwner().get().getIdentifier().getValue().equals(tableName));
     }
     
