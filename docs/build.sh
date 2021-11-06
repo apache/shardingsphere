@@ -15,6 +15,7 @@ mv document/public/* target/document/current
 
 mkdir target/community
 cd community
+mv community/static/data/* target/community/data/
 hugo --cleanDestinationDir
 find ../community/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/community|g' {} \;
 cd public/en
