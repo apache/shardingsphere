@@ -245,7 +245,9 @@ public enum SQLVisitorRule {
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW("Show", SQLStatementType.DAL),
-    
+
+    SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
+
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),

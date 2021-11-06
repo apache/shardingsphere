@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Function segment.
+ * MySQL show procedure code statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class FunctionSegment implements ComplexExpressionSegment {
+@Setter
+public final class MySQLShowProcedureCodeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String functionName;
-    
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
-    
-    private final String text;
-    
-    @Setter
-    private String owner;
+    private FunctionSegment function;
 }

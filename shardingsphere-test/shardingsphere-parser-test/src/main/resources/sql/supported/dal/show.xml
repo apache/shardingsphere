@@ -38,4 +38,6 @@
     <sql-case id="show_function_status" value="SHOW FUNCTION STATUS" db-types="MySQL" />
     <sql-case id="show_procedure_status" value="SHOW PROCEDURE STATUS" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
+    <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL" />
+    <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL" />
 </sql-cases>

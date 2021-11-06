@@ -87,4 +87,12 @@
     <show-function-status sql-case-id="show_function_status" />
     <show-procedure-status sql-case-id="show_procedure_status" />
     <show-replicas sql-case-id="show_replicas" />
+    <show-procedure-code sql-case-id="show_procedure_code_func">
+        <function name="TEST_FUNC" start-index="20" stop-index="28" />
+    </show-procedure-code>
+    <show-procedure-code sql-case-id="show_procedure_code_owner_func">
+        <function name="TEST_FUNC" start-index="20" stop-index="38">
+            <owner name="TEST_USER" />
+        </function>
+    </show-procedure-code>
 </sql-parser-test-cases>
