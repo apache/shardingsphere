@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * spring boot starter mybatis generator.
+ * spring namespace mybatis generator.
  */
 public final class SpringNamespaceMybatisGenerator extends ExampleGenerateEngine {
     
