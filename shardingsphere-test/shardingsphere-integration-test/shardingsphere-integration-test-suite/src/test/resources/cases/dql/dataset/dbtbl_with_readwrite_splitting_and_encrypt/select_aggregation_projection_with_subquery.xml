@@ -19,5 +19,5 @@
     <metadata>
         <column name="order_id_sharding_avg" />
     </metadata>
-    <row values="1010" />
+    <row values="1010.0000" />
 </dataset>
