@@ -7,13 +7,14 @@ chapter = true
 
 ## 背景
 
-DistSQL（Distributed SQL）是 Apache ShardingSphere 特有的内置 SQL 语言，提供了标准 SQL 之外的增量功能操作能力。
+DistSQL（Distributed SQL）是 Apache ShardingSphere 特有的操作语言。
+它与标准 SQL 的使用方式完全一致，用于提供增量功能的 SQL 级别操作能力。
 
 ## 挑战
 
 灵活的规则配置和资源管控能力是 Apache ShardingSphere 的特点之一。
-在使用 ShardingSphere-Proxy 时，开发者虽然可以像使用数据库一样操作数据，但却需要通过 YAML 文件（或注册中心）配置资源和规则。
-然而，YAML 格式的展现形式，以及注册中心动态修改带来的操作习惯变更，对于运维工程师并不友好。
+在使用 4.x 及其之前版本时，开发者虽然可以像使用原生数据库一样操作数据，但却需要通过本地文件或注册中心配置资源和规则。
+然而，操作习惯变更，对于运维工程师并不友好。
 
 DistSQL 让用户可以像操作数据库一样操作 Apache ShardingSphere，使其从面向开发人员的框架和中间件转变为面向运维人员的数据库产品。
 
