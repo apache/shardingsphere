@@ -51,15 +51,15 @@ public final class EncryptProjectionTokenGeneratorTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
+    
     private EncryptProjectionTokenGenerator encryptProjectionTokenGenerator;
-
+    
     @Before
     public void setup() {
         encryptProjectionTokenGenerator = new EncryptProjectionTokenGenerator();
         encryptProjectionTokenGenerator.setEncryptRule(buildEncryptRule());
     }
-
+    
     @Test
     public void assertOwnerExistsMatchTableAliasGenerateSQLTokens() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -79,7 +79,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         Collection<SubstitutableColumnNameToken> tokens = encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
         assertThat(tokens.size(), is(1));
     }
-
+    
     @Test
     public void assertOwnerExistsMatchTableAliasGenerateSQLTokens2() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -99,7 +99,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         Collection<SubstitutableColumnNameToken> tokens = encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
         assertThat(tokens.size(), is(1));
     }
-
+    
     @Test
     public void assertOwnerExistsMatchTableNameGenerateSQLTokens() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -118,7 +118,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         Collection<SubstitutableColumnNameToken> tokens = encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
         assertThat(tokens.size(), is(1));
     }
-
+    
     @Test
     public void assertColumnUnAmbiguousGenerateSQLTokens() {
         expectedException.expect(IllegalStateException.class);
@@ -135,11 +135,11 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(columnProjectionSegment));
         encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
     }
-
+    
     private List<SimpleTableSegment> buildAllUniqueTables() {
         return buildAllUniqueTables(true);
     }
-
+    
     private List<SimpleTableSegment> buildAllUniqueTables(final boolean hasAlias) {
         SimpleTableSegment table1 = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         when(table1.getTableName().getIdentifier().getValue()).thenReturn("doctor");
