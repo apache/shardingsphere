@@ -68,10 +68,8 @@ public final class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
         doctor.setAlias(new AliasSegment(8, 9, new IdentifierValue("a")));
         SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor1")));
-
         when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor", "doctor1"));
-
         IdentifierValue identifierValue = new IdentifierValue("mobile");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("a"));
@@ -90,10 +88,8 @@ public final class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
         doctor.setAlias(new AliasSegment(8, 9, new IdentifierValue("a")));
         SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor")));
-
         when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor"));
-
         IdentifierValue identifierValue = new IdentifierValue("mobile");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("a"));
@@ -109,13 +105,10 @@ public final class EncryptProjectionTokenGeneratorTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projectionsSegment);
-
         SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
         SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor1")));
-
         when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor", "doctor1"));
-
         IdentifierValue identifierValue = new IdentifierValue("mobile");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("doctor"));
@@ -158,7 +151,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         }
         return Arrays.asList(table1, table2);
     }
-
+    
     private EncryptRule buildEncryptRule() {
         EncryptRule encryptRule = mock(EncryptRule.class);
         EncryptTable encryptTable1 = mock(EncryptTable.class);
