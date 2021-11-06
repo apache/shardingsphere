@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
- * kill statement test case.
+ * Kill statement test case.
  */
+@Getter
 public final class KillStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "thread-id")
+    private String threadId;
 }

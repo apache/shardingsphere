@@ -23,8 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.KillStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
- * kill statement assert.
+ * Kill statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KillStatementAssert {
@@ -37,5 +40,6 @@ public final class KillStatementAssert {
      * @param expected      expected kill statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLKillStatement actual, final KillStatementTestCase expected) {
+        assertThat(assertContext.getText("Kill statement context does not match: "), actual.getThreadId(), is(expected.getThreadId()));
     }
 }
