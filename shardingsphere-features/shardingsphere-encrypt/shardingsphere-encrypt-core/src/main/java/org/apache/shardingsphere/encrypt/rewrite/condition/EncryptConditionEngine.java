@@ -17,15 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -49,7 +41,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt condition engine.
@@ -58,9 +57,9 @@ import lombok.RequiredArgsConstructor;
 public final class EncryptConditionEngine {
 
     private final EncryptRule encryptRule;
-
+    
     private final ShardingSphereSchema schema;
-
+    
     /**
      * Create encrypt conditions.
      *
@@ -96,7 +95,7 @@ public final class EncryptConditionEngine {
         }
         return result;
     }
-
+    
     private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
@@ -107,7 +106,7 @@ public final class EncryptConditionEngine {
         }
         return result;
     }
-
+    
     private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
@@ -118,7 +117,7 @@ public final class EncryptConditionEngine {
         }
         return result;
     }
-
+    
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
             String operator = ((BinaryOperationExpression) expression).getOperator();
@@ -128,7 +127,6 @@ public final class EncryptConditionEngine {
                 return isSupportedOperator(((BinaryOperationExpression) expression).getOperator()) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue)
                         : Optional.empty();
             }
-
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
@@ -138,7 +136,7 @@ public final class EncryptConditionEngine {
         }
         return Optional.empty();
     }
-
+    
     private Collection<EncryptCondition> createEncryptConditionsOnWhereSegment(final SQLStatementContext sqlStatementContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
         if (!(sqlStatementContext instanceof WhereAvailable)) {
@@ -156,13 +154,13 @@ public final class EncryptConditionEngine {
         }
         return result;
     }
-
+    
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnSegment> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
                 .flatMap(each -> ColumnExtractor.extract(each).stream()).collect(Collectors.toList());
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
     }
-
+    
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
         if (!(expression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
@@ -172,7 +170,7 @@ public final class EncryptConditionEngine {
                 expression.getStopIndex(), compareRightValue))
                 : Optional.empty();
     }
-
+    
     private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
         if (!(inExpression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
@@ -189,7 +187,7 @@ public final class EncryptConditionEngine {
         return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(),
                 tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
-
+    
     private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
     }
