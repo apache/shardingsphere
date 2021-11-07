@@ -241,9 +241,13 @@ public enum SQLVisitorRule {
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
+
+    SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW("Show", SQLStatementType.DAL),
-    
+
+    SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
+
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),
@@ -284,6 +288,10 @@ public enum SQLVisitorRule {
     
     KILL("Kill", SQLStatementType.DAL),
     
+    RESET("ResetStatement", SQLStatementType.DAL),
+
+    RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
+
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

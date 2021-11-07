@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingLexer;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingParser;
 import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingSQLStatementVisitor;

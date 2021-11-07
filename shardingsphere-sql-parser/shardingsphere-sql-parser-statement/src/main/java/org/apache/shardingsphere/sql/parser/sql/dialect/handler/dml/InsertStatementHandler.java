@@ -56,6 +56,9 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         if (insertStatement instanceof MySQLStatement) {
             return ((MySQLInsertStatement) insertStatement).getOnDuplicateKeyColumns();
         }
+        if (insertStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussInsertStatement) insertStatement).getOnDuplicateKeyColumns();
+        }
         return Optional.empty();
     }
     

@@ -25,8 +25,10 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.Substituta
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,9 +65,31 @@ public final class EncryptProjectionTokenGeneratorTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projectionsSegment);
+        SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
+        doctor.setAlias(new AliasSegment(8, 9, new IdentifierValue("a")));
+        SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor1")));
+        when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor", "doctor1"));
-        List<SimpleTableSegment> allUniqueTables = buildAllUniqueTables();
-        when(sqlStatementContext.getTablesContext().getAllUniqueTables()).thenReturn(allUniqueTables);
+        IdentifierValue identifierValue = new IdentifierValue("mobile");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
+        OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("a"));
+        columnSegment.setOwner(ownerSegment);
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(columnProjectionSegment));
+        Collection<SubstitutableColumnNameToken> tokens = encryptProjectionTokenGenerator.generateSQLTokens(sqlStatementContext);
+        assertThat(tokens.size(), is(1));
+    }
+    
+    @Test
+    public void assertOwnerExistsMatchTableAliasGenerateSQLTokens2() {
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projectionsSegment);
+        SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
+        doctor.setAlias(new AliasSegment(8, 9, new IdentifierValue("a")));
+        SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor")));
+        when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor"));
         IdentifierValue identifierValue = new IdentifierValue("mobile");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("a"));
@@ -81,9 +105,10 @@ public final class EncryptProjectionTokenGeneratorTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projectionsSegment);
+        SimpleTableSegment doctor = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("doctor")));
+        SimpleTableSegment doctor1 = new SimpleTableSegment(new TableNameSegment(10, 17, new IdentifierValue("doctor1")));
+        when(sqlStatementContext.getTablesContext().getOriginalTables()).thenReturn(Arrays.asList(doctor, doctor1));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Arrays.asList("doctor", "doctor1"));
-        List<SimpleTableSegment> allUniqueTables = buildAllUniqueTables(false);
-        when(sqlStatementContext.getTablesContext().getAllUniqueTables()).thenReturn(allUniqueTables);
         IdentifierValue identifierValue = new IdentifierValue("mobile");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifierValue);
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("doctor"));

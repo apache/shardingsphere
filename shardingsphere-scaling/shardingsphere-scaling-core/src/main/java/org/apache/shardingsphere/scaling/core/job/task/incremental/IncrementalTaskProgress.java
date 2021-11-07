@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class IncrementalTaskProgress implements Progress {
     
     private volatile ScalingPosition<?> position;

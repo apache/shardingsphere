@@ -17,18 +17,44 @@
 
 package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity;
 
+<#if framework?contains("jpa")>
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+</#if>
 import java.io.Serializable;
 
+<#if framework?contains("jpa")>
+@Entity
+@Table(name = "t_order")
+</#if>
 public class Order implements Serializable {
-
+    
     private static final long serialVersionUID = 8306802022239174861L;
     
+    <#if framework?contains("jpa")>
+    @Id
+    @Column(name = "order_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    </#if>
     private long orderId;
     
+    <#if framework?contains("jpa")>
+    @Column(name = "user_id")
+    </#if>
     private int userId;
     
+    <#if framework?contains("jpa")>
+    @Column(name = "address_id")
+    </#if>
     private long addressId;
     
+    <#if framework?contains("jpa")>
+    @Column(name = "status")
+    </#if>
     private String status;
     
     public long getOrderId() {

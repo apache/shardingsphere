@@ -27,7 +27,7 @@ spring:
         default-shadow-algorithm-name: simple-note-algorithm
         shadow-algorithms:
           simple-note-algorithm:
-            type: SIMPLE_NOTE
+            type: SIMPLE_HINT
             props:
               shadow: true
               foo: bar

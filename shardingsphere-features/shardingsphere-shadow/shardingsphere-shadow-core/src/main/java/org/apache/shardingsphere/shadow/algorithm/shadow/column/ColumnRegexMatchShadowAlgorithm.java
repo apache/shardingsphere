@@ -86,6 +86,6 @@ public final class ColumnRegexMatchShadowAlgorithm implements ColumnShadowAlgori
     
     @Override
     public String getType() {
-        return "COLUMN_REGEX_MATCH";
+        return "REGEX_MATCH";
     }
 }

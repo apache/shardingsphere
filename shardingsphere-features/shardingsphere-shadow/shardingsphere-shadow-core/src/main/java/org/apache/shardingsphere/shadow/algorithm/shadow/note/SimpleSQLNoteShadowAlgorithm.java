@@ -45,7 +45,7 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     }
     
     private void checkPropsSize() {
-        Preconditions.checkState(!props.isEmpty(), "Simple note shadow algorithm props cannot be empty.");
+        Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
     }
     
     @Override
@@ -59,6 +59,6 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     
     @Override
     public String getType() {
-        return "SIMPLE_NOTE";
+        return "SIMPLE_HINT";
     }
 }

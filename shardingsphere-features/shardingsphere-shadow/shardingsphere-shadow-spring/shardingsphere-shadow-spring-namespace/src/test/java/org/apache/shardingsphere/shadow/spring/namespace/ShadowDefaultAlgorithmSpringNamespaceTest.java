@@ -54,7 +54,7 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
         assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_NOTE"));
+        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
     }
