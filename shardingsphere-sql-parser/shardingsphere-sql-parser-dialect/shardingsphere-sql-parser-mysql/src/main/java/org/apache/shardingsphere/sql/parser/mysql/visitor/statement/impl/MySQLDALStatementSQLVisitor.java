@@ -358,7 +358,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        return new MySQLKillStatement(ctx.NUMBER_().get(0).getText());
+        MySQLKillStatement result = new MySQLKillStatement();
+        result.setThreadId(ctx.NUMBER_().get(0).getText());
+        return result;
     }
     
     @Override
