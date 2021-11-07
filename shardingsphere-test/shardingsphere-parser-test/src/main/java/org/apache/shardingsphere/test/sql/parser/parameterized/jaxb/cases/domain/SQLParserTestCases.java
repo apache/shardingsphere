@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetPersistStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.KillStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
@@ -708,6 +709,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reset-persist")
     private final List<ResetPersistStatementTestCase> resetPersistStatementTestCases = new LinkedList<>();
 
+    @XmlElement(name = "kill")
+    private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -884,6 +888,7 @@ public final class SQLParserTestCases {
         putAll(resetPersistStatementTestCases, result);
         putAll(showReplicasStatementTestCases, result);
         putAll(alterShardingAlgorithmStatementTestCases, result);
+        putAll(killStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

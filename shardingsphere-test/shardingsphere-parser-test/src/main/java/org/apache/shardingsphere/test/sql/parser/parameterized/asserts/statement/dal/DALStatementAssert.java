@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.FlushStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.InstallComponentStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.InstallPluginStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.KillStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLBinlogStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLCreateResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLResetPersistStatementAssert;
@@ -89,6 +91,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.KillStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RestartStatementTestCase;
@@ -187,6 +190,8 @@ public final class DALStatementAssert {
             MySQLResetPersistStatementAssert.assertIs(assertContext, (MySQLResetPersistStatement) actual, (ResetPersistStatementTestCase) expected);
         } else if (actual instanceof MySQLShowProcedureCodeStatement) {
             ShowProcedureCodeStatementAssert.assertIs(assertContext, (MySQLShowProcedureCodeStatement) actual, (ShowProcedureCodeStatementTestCase) expected);
+        } else if (actual instanceof MySQLKillStatement) {
+            KillStatementAssert.assertIs(assertContext, (MySQLKillStatement) actual, (KillStatementTestCase) expected);
         }
     }
 }

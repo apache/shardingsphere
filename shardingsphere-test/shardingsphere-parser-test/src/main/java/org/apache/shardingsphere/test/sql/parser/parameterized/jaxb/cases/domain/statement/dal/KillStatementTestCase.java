@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * MySQL kill statement.
+ * Kill statement test case.
  */
 @Getter
-@Setter
-@ToString
-public final class MySQLKillStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class KillStatementTestCase extends SQLParserTestCase {
 
+    @XmlAttribute(name = "thread-id")
     private String threadId;
 }
