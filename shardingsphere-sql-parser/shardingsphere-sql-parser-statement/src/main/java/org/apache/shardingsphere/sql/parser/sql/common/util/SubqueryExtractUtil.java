@@ -43,7 +43,7 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SubqueryExtractUtil {
-
+    
     /**
      * Get subquery segment from SelectStatement.
      *

@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class EncryptConditionEngine {
-
+    
     private final EncryptRule encryptRule;
     
     private final ShardingSphereSchema schema;
@@ -111,7 +111,7 @@ public final class EncryptConditionEngine {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             Optional<String> tableName = Optional.ofNullable(columnTableNames.get(each.getQualifiedName()));
-            Optional<EncryptCondition> encryptCondition = tableName.isPresent()
+            Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
                     && encryptRule.findEncryptor(schemaName, tableName.get(), each.getIdentifier().getValue()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
             encryptCondition.ifPresent(result::add);
         }
@@ -127,6 +127,7 @@ public final class EncryptConditionEngine {
                 return isSupportedOperator(((BinaryOperationExpression) expression).getOperator()) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue)
                         : Optional.empty();
             }
+
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
