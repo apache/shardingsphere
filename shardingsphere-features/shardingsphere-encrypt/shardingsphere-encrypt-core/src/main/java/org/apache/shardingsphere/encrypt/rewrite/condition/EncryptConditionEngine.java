@@ -127,7 +127,7 @@ public final class EncryptConditionEngine {
                 return isSupportedOperator(((BinaryOperationExpression) expression).getOperator()) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue)
                         : Optional.empty();
             }
-
+            
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
