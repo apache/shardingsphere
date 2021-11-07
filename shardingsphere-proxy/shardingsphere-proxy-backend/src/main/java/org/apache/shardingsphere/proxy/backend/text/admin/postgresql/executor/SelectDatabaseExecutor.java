@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
+package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -23,90 +23,92 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatab
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Schemata query executor, used to query the schemata table.
  */
-public final class SelectInformationSchemataExecutor extends DefaultDatabaseMetadataExecutor {
+public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecutor {
     
-    public static final String SCHEMA_NAME = "SCHEMA_NAME";
+    private static final String DATABASE_NAME = "databasename";
     
-    public static final String DEFAULT_CHARACTER_SET_NAME = "DEFAULT_CHARACTER_SET_NAME";
-    
-    public static final String DEFAULT_COLLATION_NAME = "DEFAULT_COLLATION_NAME";
-    
-    public static final String CATALOG_NAME = "CATALOG_NAME";
-    
-    public static final String SQL_PATH = "SQL_PATH";
-    
-    public static final String DEFAULT_ENCRYPTION = "DEFAULT_ENCRYPTION";
-    
-    private static final Set<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
+    private final Set<String> columnNames = new LinkedHashSet<>();
     
     private final SelectStatement sqlStatement;
     
-    public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
+    private String databaseNameAlias = DATABASE_NAME;
+    
+    public SelectDatabaseExecutor(final SelectStatement sqlStatement, final String sql) {
         super(sql);
         this.sqlStatement = sqlStatement;
     }
     
     @Override
+    protected void addDefaultRow(final LinkedList<Map<String, Object>> rows) {
+        LinkedList<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllSchemaNames().stream()
+                .filter(each -> !hasDatasource(each)).collect(Collectors.toCollection(LinkedList::new));
+        schemaWithoutDataSource.forEach(each -> rows.addLast(getDefaultRowData(each)));
+    }
+    
+    @Override
     protected List<String> getSchemaNames() {
         Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
-        List<String> result = schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
-        if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            fillSchemasWithoutDatasource();
-        }
-        return result;
+        return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     
     @Override
     protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+        buildColumnNames(aliasMap);
         ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        String alias = aliasMap.getOrDefault(SCHEMA_NAME, "");
-        String rowValue = rowMap.getOrDefault(alias, "").toString();
+        databaseNameAlias = aliasMap.getOrDefault(DATABASE_NAME, "");
+        String rowValue = rowMap.getOrDefault(databaseNameAlias, "").toString();
         if (catalogs.contains(rowValue)) {
-            rowMap.replace(alias, schemaName);
+            rowMap.replace(databaseNameAlias, schemaName);
         } else {
             rowMap.clear();
         }
     }
     
-    private void fillSchemasWithoutDatasource() {
-        if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            return;
-        }
-        Map<String, String> defaultRowData = getTheDefaultRowData();
-        SCHEMA_WITHOUT_DATA_SOURCE.forEach(each -> {
-            Map<String, Object> row = new HashMap<>(defaultRowData);
-            row.replace(SCHEMA_NAME, each);
-            getRows().addLast(row);
+    private void buildColumnNames(final Map<String, String> aliasMap) {
+        aliasMap.forEach((key, value) -> {
+            if (!value.isEmpty()) {
+                columnNames.add(value);
+            } else {
+                columnNames.add(key);
+            }
         });
-        SCHEMA_WITHOUT_DATA_SOURCE.clear();
+        
     }
     
-    private Map<String, String> getTheDefaultRowData() {
-        Map<String, String> result;
-        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        if (projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment)) {
-            result = Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION).collect(Collectors.toMap(each -> each, each -> ""));
-        } else {
-            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier()).map(IdentifierValue::getValue).collect(Collectors.toMap(each -> each, each -> ""));
+    private Map<String, Object> getDefaultRowData(final String schemaName) {
+        Map<String, Object> result;
+        if (columnNames.isEmpty()) {
+            columnNames.addAll(getDefaultColumnNames());
         }
+        result = columnNames.stream().collect(Collectors.toMap(each -> each, each -> ""));
+        result.replace(databaseNameAlias, schemaName);
         return result;
+    }
+    
+    private Set<String> getDefaultColumnNames() {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        if (projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
+            return Collections.singleton(databaseNameAlias);
+        } else {
+            return projections.stream().map(each -> {
+                ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
+                return segment.getAlias().isPresent() ? segment.getAlias().get() : segment.getColumn().getIdentifier().getValue();
+            }).collect(Collectors.toCollection(LinkedHashSet::new));
+        }
     }
 }

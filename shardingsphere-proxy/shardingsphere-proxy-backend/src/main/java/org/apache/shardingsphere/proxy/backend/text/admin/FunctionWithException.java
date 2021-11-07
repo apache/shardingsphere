@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
+package org.apache.shardingsphere.proxy.backend.text.admin;
 
 /**
  * FunctionWithException interface.
  */
 @FunctionalInterface
-public interface FunctionWithException<T, R, E extends Exception> {
+public interface FunctionWithException<T, E extends Exception> {
 
     /**
      * Apply function.
      *
      * @param t param
-     * @return return value
      * @throws E exception
      */
-    R apply(T t) throws E;
+    void apply(T t) throws E;
 }

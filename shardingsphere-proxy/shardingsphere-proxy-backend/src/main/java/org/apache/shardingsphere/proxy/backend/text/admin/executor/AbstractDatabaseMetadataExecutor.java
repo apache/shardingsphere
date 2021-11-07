@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
+package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.FunctionWithException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -49,9 +49,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The abstract class of select information schema, used to define the template.
+ * The abstract class of database metadata, used to define the template.
  */
-public abstract class AbstractSelectInformationExecutor implements DatabaseAdminQueryExecutor {
+public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQueryExecutor {
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -66,25 +66,27 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     public final void execute(final BackendConnection backendConnection) throws SQLException {
         List<String> schemaNames = getSchemaNames();
         for (String schemaName : schemaNames) {
-            getSourceData(schemaName, resultSet -> {
-                while (resultSet.next()) {
-                    Map<String, Object> rowMap = new HashMap<>();
-                    Map<String, String> aliasMap = new HashMap<>();
-                    ResultSetMetaData metaData = resultSet.getMetaData();
-                    for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
-                        aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
-                        rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
-                    }
-                    rowPostProcessing(schemaName, rowMap, aliasMap);
-                    if (!rowMap.isEmpty()) {
-                        getRows().addFirst(rowMap);
-                    }
-                }
-                return null;
-            });
+            getSourceData(schemaName, resultSet -> handleResultSet(schemaName, resultSet));
         }
+        addDefaultRow(rows);
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
+    }
+    
+    private void handleResultSet(final String schemaName, final ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            Map<String, Object> rowMap = new HashMap<>();
+            Map<String, String> aliasMap = new HashMap<>();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
+                aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
+                rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
+            }
+            rowPostProcessing(schemaName, rowMap, aliasMap);
+            if (!rowMap.isEmpty()) {
+                rows.addFirst(rowMap);
+            }
+        }
     }
     
     /**
@@ -95,19 +97,26 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     protected abstract List<String> getSchemaNames();
     
     /**
+     * Add default row data.
+     *
+     * @param rows row
+     */
+    protected abstract void addDefaultRow(LinkedList<Map<String, Object>> rows);
+    
+    /**
      * Get the source object of the row data.
      *
      * @param schemaName schema name
      * @param callback callback for processing source data of information_schema
      * @throws SQLException SQLException
      */
-    protected abstract void getSourceData(String schemaName, FunctionWithException<ResultSet, Void, SQLException> callback) throws SQLException;
+    protected abstract void getSourceData(String schemaName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
     
     /**
      * Get the source object of the row data.
-     * 
-     *  @param schemaName schema name
-     * @param rowMap row 
+     *
+     * @param schemaName schema name
+     * @param rowMap row
      * @param aliasMap alias
      */
     protected abstract void rowPostProcessing(String schemaName, Map<String, Object> rowMap, Map<String, String> aliasMap);
@@ -135,15 +144,15 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
     }
     
     /**
-     * Default select information executor, execute sql directly in the database to obtain the result source data.
+     * Default database metadata executor, execute sql directly in the database to obtain the result source data.
      */
     @Slf4j
-    public static class DefaultSelectInformationExecutor extends AbstractSelectInformationExecutor {
+    public static class DefaultDatabaseMetadataExecutor extends AbstractDatabaseMetadataExecutor {
         
         @Getter
         private final String sql;
         
-        public DefaultSelectInformationExecutor(final String sql) {
+        public DefaultDatabaseMetadataExecutor(final String sql) {
             this.sql = sql;
         }
         
@@ -154,7 +163,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
          */
         @Override
         protected List<String> getSchemaNames() {
-            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(AbstractSelectInformationExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
+            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
             return Collections.singletonList(schema);
         }
         
@@ -165,7 +174,7 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
          * @throws SQLException SQLException
          */
         @Override
-        protected void getSourceData(final String schemaName, final FunctionWithException<ResultSet, Void, SQLException> callback) throws SQLException {
+        protected void getSourceData(final String schemaName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
             ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
@@ -177,13 +186,22 @@ public abstract class AbstractSelectInformationExecutor implements DatabaseAdmin
         
         /**
          * Custom processing.
-         * 
-         *  @param schemaName schema name
+         *
+         * @param schemaName schema name
          * @param rowMap row
          * @param aliasMap alias
          */
         @Override
         protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+        }
+    
+        /**
+         * Add default row data.
+         *
+         * @param rows row
+         */
+        @Override
+        protected void addDefaultRow(final LinkedList<Map<String, Object>> rows) {
         }
     }
 }
