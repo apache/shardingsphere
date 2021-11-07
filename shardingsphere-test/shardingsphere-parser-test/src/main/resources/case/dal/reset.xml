@@ -17,6 +17,31 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="reset_all" />
-    <common sql-case-id="reset_timezone" />
+    <common sql-case-id="reset_all"/>
+    <common sql-case-id="reset_timezone"/>
+    <reset sql-case-id="reset_master">
+        <option master="true" start-index="6" stop-index="11"/>
+    </reset>
+    <reset sql-case-id="reset_slave">
+        <option master="false" start-index="6" stop-index="10"/>
+    </reset>
+    <reset sql-case-id="reset_master_slave">
+        <option master="true" start-index="6" stop-index="11"/>
+        <option master="false" start-index="14" stop-index="18"/>
+    </reset>
+    <reset sql-case-id="reset_master_with_binlog">
+        <option master="true" binary-log-file-index-number="10" start-index="6" stop-index="17"/>
+    </reset>
+    <reset sql-case-id="reset_slave_with_all">
+        <option master="false" all="true" start-index="6" stop-index="14"/>
+    </reset>
+    <reset sql-case-id="reset_slave_with_channel">
+        <option master="false" channel="TEST_CHANNEL" start-index="6" stop-index="37"/>
+    </reset>
+    <reset sql-case-id="reset_slave_with_all_channel">
+        <option master="false" all="true" channel="TEST_CHANNEL" start-index="6" stop-index="41"/>
+    </reset>
+    <reset-persist sql-case-id="reset_persist"/>
+    <reset-persist sql-case-id="reset_persist_identifier" identifier="TEST_ID"/>
+    <reset-persist sql-case-id="reset_persist_exist_identifier" exist-clause="true" identifier="TEST_ID"/>
 </sql-parser-test-cases>

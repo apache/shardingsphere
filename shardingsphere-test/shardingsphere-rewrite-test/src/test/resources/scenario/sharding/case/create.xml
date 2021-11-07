@@ -77,4 +77,9 @@
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
         <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />
     </rewrite-assertion>
+    <rewrite-assertion id="create_table_with_multi_data_node_with_storage_parameter" db-types="openGauss">
+        <input sql="CREATE TABLE t_account_detail (order_id INT,account_id INT) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" />
+        <output sql="CREATE TABLE t_account_detail_0 (order_id INT,account_id INT) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" />
+        <output sql="CREATE TABLE t_account_detail_1 (order_id INT,account_id INT) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" />
+    </rewrite-assertion>
 </rewrite-assertions>

@@ -58,6 +58,8 @@ public final class ScalingJobPreparer {
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
             initInventoryTasks(jobContext, dataSourceManager);
+            log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
+                    jobContext.getJobId(), jobContext.getShardingItem(), jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
         } catch (final SQLException ex) {
             log.error("Scaling job preparing failed, jobId={}", jobContext.getJobId());
             throw new PrepareFailedException("Scaling job preparing failed, jobId=" + jobContext.getJobId(), ex);

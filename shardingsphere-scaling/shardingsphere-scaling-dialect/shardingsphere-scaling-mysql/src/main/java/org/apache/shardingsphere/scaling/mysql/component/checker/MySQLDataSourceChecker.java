@@ -97,7 +97,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private void checkVariable(final Connection connection, final String key, final String toBeCheckedValue) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
-            preparedStatement.setString(1, "%" + key);
+            preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 String actualValue = resultSet.getString(2);

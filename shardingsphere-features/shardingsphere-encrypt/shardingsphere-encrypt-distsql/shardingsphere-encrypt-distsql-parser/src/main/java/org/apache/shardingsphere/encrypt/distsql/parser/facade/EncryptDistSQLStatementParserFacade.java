@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLLexer;
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLParser;
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLStatementVisitor;

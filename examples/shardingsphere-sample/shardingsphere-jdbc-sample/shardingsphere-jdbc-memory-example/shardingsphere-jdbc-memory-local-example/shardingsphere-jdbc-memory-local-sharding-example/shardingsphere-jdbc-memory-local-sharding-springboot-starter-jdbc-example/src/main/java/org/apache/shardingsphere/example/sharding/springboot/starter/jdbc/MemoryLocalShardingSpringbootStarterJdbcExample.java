@@ -26,7 +26,7 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class MemoryLocalShardingSpringbootStarterJdbcExample {
     
-    public static void main(String[] args) throws SQLException {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(MemoryLocalShardingSpringbootStarterJdbcExample.class, args)) {
             MemoryLocalShardingSpringbootStarterJdbcExampleService exampleService = applicationContext.getBean(MemoryLocalShardingSpringbootStarterJdbcExampleService.class);
             exampleService.run();

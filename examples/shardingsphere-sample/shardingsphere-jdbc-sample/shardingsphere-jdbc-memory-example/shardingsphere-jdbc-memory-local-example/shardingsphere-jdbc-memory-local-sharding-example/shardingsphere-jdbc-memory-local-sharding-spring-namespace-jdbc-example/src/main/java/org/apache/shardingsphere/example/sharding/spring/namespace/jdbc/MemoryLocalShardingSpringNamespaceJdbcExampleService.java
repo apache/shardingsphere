@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.jdbc;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.example.sharding.spring.namespace.jdbc.entity.Order;
 import org.apache.shardingsphere.example.sharding.spring.namespace.jdbc.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,10 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public final class MemoryLocalShardingSpringNamespaceJdbcExampleService {
     
-    @Resource(name = "shardingDataSource")
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     /**
      * Execute test.
@@ -51,7 +51,7 @@ public final class MemoryLocalShardingSpringNamespaceJdbcExampleService {
             this.cleanEnvironment();
         }
     }
-
+    
     /**
      * Initialize the database test environment.
      * @throws SQLException
@@ -85,6 +85,13 @@ public final class MemoryLocalShardingSpringNamespaceJdbcExampleService {
         deleteData(orderIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
+    }
+    
+    private void processFailure() throws SQLException {
+        System.out.println("-------------- Process Failure Begin ---------------");
+        insertData();
+        System.out.println("-------------- Process Failure Finish --------------");
+        throw new RuntimeException("Exception occur for transaction test.");
     }
 
     private List<Long> insertData() throws SQLException {

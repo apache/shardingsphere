@@ -38,4 +38,5 @@
     <distsql-case id="alter-shadow-algorithm" value="ALTER SHADOW ALGORITHM (simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES('shadow'='true', 'foo'='bar')))" />
     <distsql-case id="alter-shadow-rule" value="ALTER SHADOW RULE shadow_rule(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES('operation'='insert','column'='user_id','regex'='[1]'))),(simple_note_algorithm,TYPE(NAME=SIMPLE_NOTE,PROPERTIES('shadow'='true',foo='bar')))))" />
     <distsql-case id="alter-sharding-table-rule" value="ALTER SHARDING TABLE RULE t_order (DATANODES('ms_group_${0..1}'),DATABASE_STRATEGY( TYPE = `standard`,sharding_column = order_id,sharding_algorithm = database_inline),TABLE_STRATEGY(TYPE = `standard`,sharding_column = user_id,sharding_algorithm = table_inline),GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES('worker-id'=123))))" />"
+    <distsql-case id="alter-sharding-algorithm" value="ALTER SHARDING ALGORITHM algorithm_name(TYPE(NAME=inline,PROPERTIES('algorithm-expression' = 't_order_${order_id % 2}')))" />
 </sql-cases>
