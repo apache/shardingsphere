@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,5 +44,5 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     private final String text;
     
     @Setter
-    private String owner;
+    private OwnerSegment owner;
 }
