@@ -156,11 +156,11 @@ rules:
     db_inline_order_id:
       type: INLINE
       props:
-        algorithm-expression: db_${order_id_sharding % 2}.t_order_federate_sharding
+        algorithm-expression: ds_${order_id_sharding % 2}
     db_inline_item_id:
       type: INLINE
       props:
-        algorithm-expression: db_${db_inline_item_id % 2}.t_order_item_federate_sharding
+        algorithm-expression: ds_${db_inline_item_id % 2}
 
   keyGenerators:
       constant:

@@ -17,11 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="type" />
-        <column name="props" />
+        <column name="order_id_sharding" />
+        <column name="user_id" />
     </metadata>
-    <row values="standard_test| STANDARD_TEST| " />
-    <row values="db_inline_order_id| INLINE| algorithm-expression=ds_${order_id_sharding % 2}" />
-    <row values="db_inline_item_id| INLINE| algorithm-expression=ds_${db_inline_item_id % 2}" />
+    <row values="1010, 10" />
 </dataset>
