@@ -47,7 +47,7 @@
             <index name="idx_user" start-index="53" stop-index="60"/>
         </table-index>
     </cache-index>
-    <cache-index sql-case-id="cache_index_single_partition" name="hot_cache_index">
+    <cache-index sql-case-id="cache_index_all_partition" name="hot_cache_index">
         <partitions start-index="12" stop-index="33">
             <table name="t_order" start-index="12" stop-index="18"/>
         </partitions>
