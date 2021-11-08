@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected partition.
+ * Expected partitions.
  */
 @Getter
 @Setter

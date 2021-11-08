@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Binlog statement test case.
+ * Cache index statement test case.
  */
 @Getter
 public final class CacheIndexStatementTestCase extends SQLParserTestCase {
