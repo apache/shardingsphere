@@ -15,9 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater
-org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater
-org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmStatementUpdater
-org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleStatementUpdater
-org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowAlgorithmStatementUpdater
-org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowAlgorithmStatementUpdater
+org.apache.shardingsphere.shadow.distsql.fixture.HintShadowAlgorithmFixture
