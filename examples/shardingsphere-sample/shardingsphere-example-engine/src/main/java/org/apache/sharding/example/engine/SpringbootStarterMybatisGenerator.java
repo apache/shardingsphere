@@ -35,8 +35,8 @@ public final class SpringbootStarterMybatisGenerator extends ExampleGenerateEngi
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
-        UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-        UN_NAME_TEMPLATE_MAP.put("springboot-starter-mybatis/OrderRepository", "repository/OrderRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderRepository", "repository/OrderRepository.java");
 
         RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
         RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderItemMapper.xml");
@@ -45,9 +45,14 @@ public final class SpringbootStarterMybatisGenerator extends ExampleGenerateEngi
     public SpringbootStarterMybatisGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
-
+    
+    @Override
+    protected String getGenerator() {
+        return "springboot-starter-mybatis";
+    }
+    
     public static void main(String[] args) {
         SpringbootStarterMybatisGenerator generator = new SpringbootStarterMybatisGenerator();
-        generator.exec("/template/springboot-starter-mybatis/data-model.yaml");
+        generator.exec();
     }
 }

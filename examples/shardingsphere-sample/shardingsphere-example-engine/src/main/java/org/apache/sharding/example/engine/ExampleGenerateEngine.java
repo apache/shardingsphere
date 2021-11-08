@@ -53,6 +53,8 @@ public abstract class ExampleGenerateEngine {
             "<#assign frameworkName=frameworkName + framework1?cap_first>" +
             "</#list>${frameworkName}";
     
+    private static final String FRAMEWORK_PATH = "/dataModel/%s/data-model.yaml";
+    
     private final Map<String, String> renameTemplateMap;
     
     private final Map<String, String> unRenameTemplateMap;
@@ -100,13 +102,19 @@ public abstract class ExampleGenerateEngine {
         }
         return null;
     }
+
+    /**
+     * get generator.
+     * @return generator name
+     */
+    protected abstract String getGenerator();
     
     /**
      * exec code generate
-     * @param path template relative road strength
      */
-    protected void exec(String path) {
+    protected void exec() {
         Yaml yaml = new Yaml();
+        String path = String.format(FRAMEWORK_PATH, getGenerator());
         InputStream in = ExampleGenerateEngine.class.getResourceAsStream(path);
         Map<String, String> dataModel = yaml.loadAs(in, Map.class);
         this.generateJavaCode(dataModel);

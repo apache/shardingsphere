@@ -74,6 +74,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowFunctionStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureCodeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
@@ -97,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -140,6 +142,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicasStatement;
@@ -354,7 +357,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        return new MySQLKillStatement();
+        MySQLKillStatement result = new MySQLKillStatement();
+        result.setThreadId(ctx.NUMBER_().get(0).getText());
+        return result;
     }
     
     @Override
@@ -439,7 +444,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             return visit(ctx.update());
         }
     }
-    
+
+    @Override
+    public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
+        MySQLShowProcedureCodeStatement result = new MySQLShowProcedureCodeStatement();
+        result.setFunction((FunctionSegment) visit(ctx.functionName()));
+        return result;
+    }
+
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement();

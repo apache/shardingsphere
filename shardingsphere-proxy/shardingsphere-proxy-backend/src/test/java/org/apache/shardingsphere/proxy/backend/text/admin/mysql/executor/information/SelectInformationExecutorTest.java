@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -184,7 +184,7 @@ public final class SelectInformationExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("demo_ds_0", getMetaData());
         metaDataMap.put("test", mock(ShardingSphereMetaData.class));
-        DefaultSelectInformationExecutor selectExecutor = new DefaultSelectInformationExecutor(sql);
+        DefaultDatabaseMetadataExecutor selectExecutor = new DefaultDatabaseMetadataExecutor(sql);
         selectExecutor.execute(mock(BackendConnection.class));
         assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
         assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
@@ -198,7 +198,7 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        DefaultSelectInformationExecutor defaultSelectMetaDataExecutor = new DefaultSelectInformationExecutor(sql);
+        DefaultDatabaseMetadataExecutor defaultSelectMetaDataExecutor = new DefaultDatabaseMetadataExecutor(sql);
         defaultSelectMetaDataExecutor.execute(mock(BackendConnection.class));
         assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
         while (defaultSelectMetaDataExecutor.getMergedResult().next()) {

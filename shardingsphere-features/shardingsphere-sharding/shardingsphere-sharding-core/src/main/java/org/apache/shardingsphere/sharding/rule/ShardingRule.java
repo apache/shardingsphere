@@ -244,10 +244,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge logic tables is all belong to binding encryptors.
+     * Judge whether logic table is all binding encryptors or not.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to binding encryptors or not
+     * @return whether logic table is all binding encryptors or not
      */
     public boolean isAllBindingTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -277,40 +277,40 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge logic tables is all belong to broadcast encryptors.
+     * Judge whether logic table is all broadcast encryptors or not.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to broadcast encryptors or not
+     * @return whether logic table is all broadcast encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && broadcastTables.containsAll(logicTableNames);
     }
     
     /**
-     * Judge logic tables is all belong to sharding tables.
+     * Judge whether logic table is all sharding table or not.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to sharding tables or not
+     * @return whether logic table is all sharding table or not
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isShardingTable);
     }
     
     /**
-     * Judge logic table is belong to sharding tables.
+     * Judge whether logic table is sharding table or not.
      *
      * @param logicTableName logic table name
-     * @return logic table is belong to sharding tables or not
+     * @return whether logic table is sharding table or not
      */
     public boolean isShardingTable(final String logicTableName) {
         return tableRules.containsKey(logicTableName.toLowerCase());
     }
     
     /**
-     * Judge logic table is belong to broadcast tables.
+     * Judge whether logic table is broadcast table or not.
      *
      * @param logicTableName logic table name
-     * @return logic table is belong to broadcast tables or not
+     * @return whether logic table is broadcast table or not
      */
     public boolean isBroadcastTable(final String logicTableName) {
         return broadcastTables.contains(logicTableName);
@@ -329,7 +329,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge if there is at least one table rule for logic tables.
+     * Judge whether a table rule exists for logic tables.
      *
      * @param logicTableNames logic table names
      * @return whether a table rule exists for logic tables
@@ -339,11 +339,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge is sharding column or not.
+     * Judge whether given logic table column is sharding column or not.
      *
      * @param columnName column name
      * @param tableName table name
-     * @return is sharding column or not
+     * @return whether given logic table column is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
         return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isShardingColumn(each, columnName)).isPresent();
@@ -371,11 +371,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     } 
     
     /**
-     * Judge is generate key column or not.
+     * Judge whether given logic table column is generate key column or not.
      *
      * @param columnName column name
      * @param tableName table name
-     * @return is generate key column or not
+     * @return whether given logic table column is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
         return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
@@ -397,7 +397,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Generate key.
+     * Find the Generated key of logic table.
      *
      * @param logicTableName logic table name
      * @return generated key

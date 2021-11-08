@@ -42,9 +42,14 @@ public final class SpringNamespaceJDBCGenerator extends ExampleGenerateEngine {
     public SpringNamespaceJDBCGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
-
+    
+    @Override
+    protected String getGenerator() {
+        return "spring-namespace-jdbc";
+    }
+    
     public static void main(String[] args) {
         SpringNamespaceJDBCGenerator generator = new SpringNamespaceJDBCGenerator();
-        generator.exec("/template/spring-namespace-jdbc/data-model.yaml");
+        generator.exec();
     }
 }

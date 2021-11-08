@@ -34,7 +34,7 @@
     </disassociate-statistics>
     
     <disassociate-statistics sql-case-id="disassociate_statistics_from_function">
-        <function name="myFunction" start-index="39" stop-index="48" />
+        <function function-name="myFunction" start-index="39" stop-index="48" text="myFunction" />
     </disassociate-statistics>
     
     <disassociate-statistics sql-case-id="disassociate_statistics_from_package">
