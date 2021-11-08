@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Expected function.
+ */
 @Getter
 @Setter
 public final class ExpectedFunction extends AbstractExpectedSQLSegment implements ExpectedProjection {
