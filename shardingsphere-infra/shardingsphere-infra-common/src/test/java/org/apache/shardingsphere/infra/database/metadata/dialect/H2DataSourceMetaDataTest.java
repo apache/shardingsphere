@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,8 +42,30 @@ public final class H2DataSourceMetaDataTest {
         assertNull(actual.getSchema());
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
-    public void assertNewConstructorFailure() {
-        new H2DataSourceMetaData("jdbc:h2:file:/data/sample");
+    @Test
+    public void assertNewConstructorWithTcp() {
+        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
+        assertThat(actual.getHostName(), is("localhost"));
+        assertThat(actual.getPort(), is(8082));
+        assertThat(actual.getCatalog(), is("test2"));
+        assertNull(actual.getSchema());
+    }
+    
+    @Test
+    public void assertNewConstructorWithSsl() {
+        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test");
+        assertThat(actual.getHostName(), is("180.76.76.76"));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getCatalog(), is("test"));
+        assertNull(actual.getSchema());
+    }
+    
+    @Test
+    public void assertNewConstructorWithFile() {
+        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
+        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getCatalog(), is("sample"));
+        assertNull(actual.getSchema());
     }
 }

@@ -63,7 +63,7 @@ For guides on how to get started and setup your environment, contributor & commi
 
 We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
-## How it Works: 
+## How it Works:
 
 Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Planning). They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
 
@@ -72,9 +72,7 @@ Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Pl
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 A lightweight Java framework providing extra services at the Java JDBC layer. 
-With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence. 
-Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP. 
-Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
+With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
  
@@ -84,8 +82,7 @@ Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQ
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
 
 A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBAs, the MySQL version now provided can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with the MySQL protocol to operate data.
-It can be used directly as MySQL and PostgreSQL servers, and is applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
+Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
 

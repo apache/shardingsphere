@@ -83,6 +83,7 @@ reservedKeyword
     | PRIMARY
     | REFERENCES
     | RETURNING
+    | ROW
     | SELECT
     | SESSION_USER
     | SOME
