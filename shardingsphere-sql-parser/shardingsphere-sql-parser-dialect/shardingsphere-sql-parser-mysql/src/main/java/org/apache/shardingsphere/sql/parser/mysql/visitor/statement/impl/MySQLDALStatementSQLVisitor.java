@@ -45,6 +45,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Optimiz
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueNoOptionTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PartitionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PartitionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetPersistContext;
@@ -84,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
@@ -96,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -152,9 +156,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -326,7 +333,47 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
-        return new MySQLCacheIndexStatement();
+        MySQLCacheIndexStatement result = new MySQLCacheIndexStatement();
+        if (null != ctx.tableIndexList()) {
+            for (TableIndexListContext each : ctx.tableIndexList()) {
+                result.getTableIndexes().add((TableIndexSegment) visit(each));
+            }
+        }
+        if (null != ctx.partitionList()) {
+            PartitionsSegment segment = new PartitionsSegment(ctx.tableName().start.getStartIndex(), ctx.partitionList().stop.getStopIndex());
+            segment.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
+            result.setPartitions(segment);
+        }
+        result.setIdentifier((IdentifierValue) visit(ctx.identifier()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableIndexList(final TableIndexListContext ctx) {
+        TableIndexSegment result = new TableIndexSegment();
+        result.setStartIndex(ctx.getStart().getStartIndex());
+        result.setStopIndex(ctx.getStop().getStopIndex());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        for (MySQLStatementParser.IndexNameContext each : ctx.indexName()) {
+            result.getIndexes().add((IndexSegment) visitIndexName(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPartitionList(final PartitionListContext ctx) {
+        CollectionValue<PartitionSegment> result = new CollectionValue<>();
+        for (PartitionNameContext each : ctx.partitionName()) {
+            result.getValue().add((PartitionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPartitionName(final PartitionNameContext ctx) {
+        PartitionSegment result = new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        return result;
     }
     
     @Override
