@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Create shadow rule statement test case.
+ * Create shadow algorithm statement test case.
  */
 @Getter
 @Setter
