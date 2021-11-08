@@ -329,5 +329,15 @@
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
-    
+
+    <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
+        <shadow-algorithm algorithm-id="simple_note_algorithm">
+            <algorithm algorithm-name="HINT">
+                <properties>
+                    <property key="shadow" value="true"/>
+                    <property key="foo" value="bar"/>
+                </properties>
+            </algorithm>
+        </shadow-algorithm>
+    </create-shadow-algorithm>
 </sql-parser-test-cases>
