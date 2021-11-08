@@ -173,7 +173,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
     }
     
