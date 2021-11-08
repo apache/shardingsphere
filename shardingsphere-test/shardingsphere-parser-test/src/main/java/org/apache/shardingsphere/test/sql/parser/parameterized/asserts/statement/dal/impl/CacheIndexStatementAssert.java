@@ -64,7 +64,7 @@ public final class CacheIndexStatementAssert {
             SQLSegmentAssert.assertIs(assertContext, actual.getPartitions(), expected.getPartitions());
         }
         if (null != expected.getName()) {
-            assertThat(assertContext.getText("Cache index statement name assert error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+            assertThat(assertContext.getText("Cache index statement name assert error: "), actual.getName().getValue(), is(expected.getName()));
         }
     }
     
@@ -80,7 +80,7 @@ public final class CacheIndexStatementAssert {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         int count = 0;
         for (PartitionSegment each : actual.getPartitions()) {
-            IdentifierValueAssert.assertIs(assertContext, each.getIdentifier(), expected.getPartitions().get(count), "Partition");
+            IdentifierValueAssert.assertIs(assertContext, each.getName(), expected.getPartitions().get(count), "Partition");
             SQLSegmentAssert.assertIs(assertContext, each, expected.getPartitions().get(count));
             count++;
         }
