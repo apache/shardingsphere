@@ -34,7 +34,7 @@
     </associate-statistics>
     
     <associate-statistics sql-case-id="associate_statistics_with_function">
-        <function name="myFunction" start-index="36" stop-index="45" />
+        <function function-name="myFunction" start-index="36" stop-index="45" text="myFunction" />
     </associate-statistics>
     
     <associate-statistics sql-case-id="associate_statistics_with_package">

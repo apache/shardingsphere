@@ -19,16 +19,16 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.function.FunctionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndextypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.packages.PackageAssert;
@@ -89,7 +89,7 @@ public final class DisassociateStatisticsStatementAssert {
         if (null != expected.getFunctions()) {
             int count = 0;
             for (FunctionSegment each : actual.getFunctions()) {
-                FunctionAssert.assertIs(assertContext, each, expected.getFunctions().get(count));
+                ExpressionAssert.assertFunction(assertContext, each, expected.getFunctions().get(count));
                 count++;
             }
         }

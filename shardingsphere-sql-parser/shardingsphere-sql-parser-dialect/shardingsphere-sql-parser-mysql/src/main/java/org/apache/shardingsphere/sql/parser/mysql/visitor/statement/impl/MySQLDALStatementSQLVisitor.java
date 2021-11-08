@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Explain
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillContext;
@@ -450,17 +449,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
         MySQLShowProcedureCodeStatement result = new MySQLShowProcedureCodeStatement();
         result.setFunction((FunctionSegment) visit(ctx.functionName()));
-        return result;
-    }
-
-    @Override
-    public ASTNode visitFunctionName(final FunctionNameContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), 
-                ctx.stop.getStopIndex(), 
-                ctx.identifier().IDENTIFIER_().getText(), null);
-        if (null != ctx.owner()) {
-            result.setOwner(ctx.owner().identifier().IDENTIFIER_().getText());
-        }
         return result;
     }
 
