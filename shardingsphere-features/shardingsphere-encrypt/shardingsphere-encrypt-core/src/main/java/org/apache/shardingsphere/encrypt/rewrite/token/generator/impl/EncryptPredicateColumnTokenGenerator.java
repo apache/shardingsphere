@@ -52,8 +52,7 @@ import java.util.stream.Collectors;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware,
-        QueryWithCipherColumnAware {
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
     
     private ShardingSphereSchema schema;
     
@@ -81,7 +80,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap = new HashMap<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
             rewriteMetaDataMap = ((SelectStatementContext) sqlStatementContext).getRewriteMetaDataMap();
-            if (rewriteMetaDataMap == null) {
+            if (null == rewriteMetaDataMap) {
                 rewriteMetaDataMap = new HashMap<>();
             }
         }
@@ -90,9 +89,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
                 if (!rewriteMetaDataMap.isEmpty()) {
-                    Map<String, Map<String, String>> value = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
-                    if (value != null && value.containsKey(column.getIdentifier().getValue())) {
-                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(value.get(column.getIdentifier().getValue()).get("assistedQueryColumn"))));
+                    Map<String, Map<String, String>> rewritedColumnMap = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
+                    if (null != rewritedColumnMap && rewritedColumnMap.containsKey(column.getIdentifier().getValue())) {
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(rewritedColumnMap.get(column.getIdentifier().getValue()).get("assistedQueryColumn"))));
                         continue;
                     }
                 }
@@ -124,19 +123,26 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(getWhereSegmentsOnJoinQuery(selectStatementContext));
-            if (selectStatementContext.isContainsSubquery()) {
-                selectStatementContext.getSubquerySegments().forEach(each -> {
-                    SelectStatementContext subuqerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(),
-                            selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
-                    result.addAll(getWhereSegmentsFromWhereAvailable(subuqerySelectStatementContext));
-                    result.addAll(getWhereSegmentsOnJoinQuery(subuqerySelectStatementContext));
-                });
-            }
+            result.addAll(getWhereSegmentsOnSubquery(selectStatementContext));
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.addAll(getWhereSegmentsFromWhereAvailable(selectStatementContext));
         }
+        return result;
+    }
+    
+    private Collection<WhereSegment> getWhereSegmentsOnSubquery(final SelectStatementContext selectStatementContext) {
+        if (!selectStatementContext.isContainsSubquery()) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> result = new LinkedList<>();
+        selectStatementContext.getSubquerySegments().forEach(each -> {
+            SelectStatementContext subquerySelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(),
+                    selectStatementContext.getParameters(), each.getSelect(), selectStatementContext.getSchemaName());
+            result.addAll(getWhereSegmentsFromWhereAvailable(subquerySelectStatementContext));
+            result.addAll(getWhereSegmentsOnJoinQuery(subquerySelectStatementContext));
+        });
         return result;
     }
 
@@ -148,10 +154,10 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
 
     private Collection<WhereSegment> getWhereSegmentsOnJoinQuery(final SelectStatementContext selectStatementContext) {
-        if (selectStatementContext.isContainsJoinQuery()) {
-            return WhereExtractUtil.getJoinWhereSegments(selectStatementContext.getSqlStatement());
+        if (!selectStatementContext.isContainsJoinQuery()) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        return WhereExtractUtil.getJoinWhereSegments(selectStatementContext.getSqlStatement());
     }
 
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates,
