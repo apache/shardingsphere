@@ -39,9 +39,7 @@
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
-        
-        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
-
+        <shardingsphere.version>5.0.1-SNAPSHOT</shardingsphere.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>5.0.13.RELEASE</spring-framework.version>
         <spring-boot.version>2.0.9.RELEASE</spring-boot.version>

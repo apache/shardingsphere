@@ -473,16 +473,16 @@ mvn clean package -Prelease,docker
 Check the image ID through `docker images`, for example: e9ea51023687
 
 ```shell
-docker tag e9ea51023687 apache/sharding-proxy:latest
-docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
+docker tag e9ea51023687 apache/shardingsphere-proxy:latest
+docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
 ```
 
 5.4 Publish Docker Image
 
 ```shell
 docker login
-docker push apache/sharding-proxy:latest
-docker push apache/sharding-proxy:${RELEASE_VERSION}
+docker push apache/shardingsphere-proxy:latest
+docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
 ```
 
 5.5 Confirm the successful release
