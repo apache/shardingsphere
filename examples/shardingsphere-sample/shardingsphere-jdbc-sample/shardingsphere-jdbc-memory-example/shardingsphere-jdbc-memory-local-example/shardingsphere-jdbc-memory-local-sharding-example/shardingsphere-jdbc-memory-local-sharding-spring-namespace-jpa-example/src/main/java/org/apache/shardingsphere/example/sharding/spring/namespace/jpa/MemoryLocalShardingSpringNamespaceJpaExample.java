@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.springboot.starter.mybatis.repository;
+package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature}.springboot.starter.mybatis.entity.Order;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.sql.SQLException;
 
-import java.util.List;
-
-@Mapper
-public interface OrderRepository {
-
-    void createTableIfNotExists();
-
-    void truncateTable();
-
-    void dropTable();
-
-    void insert(Order order);
-
-    void delete(long orderId);
-
-    List<Order> selectAll();
+public class MemoryLocalShardingSpringNamespaceJpaExample {
+    
+    public static void main(final String[] args) throws SQLException {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
+            MemoryLocalShardingSpringNamespaceJpaExampleService exampleService = applicationContext.getBean(MemoryLocalShardingSpringNamespaceJpaExampleService.class);
+            exampleService.run();
+        }
+    }
 }

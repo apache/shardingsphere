@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.springboot.starter.jpa;
+package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')};
 
-import org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity.Order;
-import org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity.OrderItem;
+import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.OrderItem;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

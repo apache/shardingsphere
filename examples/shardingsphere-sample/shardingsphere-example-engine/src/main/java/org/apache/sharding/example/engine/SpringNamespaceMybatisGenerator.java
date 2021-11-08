@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * jdbc generator.
+ * spring namespace mybatis generator.
  */
-public final class JDBCGenerator extends ExampleGenerateEngine {
+public final class SpringNamespaceMybatisGenerator extends ExampleGenerateEngine {
     
     private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap<>();
     private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>();
@@ -31,24 +31,29 @@ public final class JDBCGenerator extends ExampleGenerateEngine {
 
     static {
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
-        RENAME_TEMPLATE_MAP.put("ExampleService", "jdbc/ExampleService.ftl");
-        RENAME_TEMPLATE_MAP.put("Configuration", "jdbc/Configuration.ftl");
+        RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderRepository", "repository/OrderRepository.java");
+
+        RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+        RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+        RESOURCE_TEMPLATE_MAP.put("xml/application", "application.xml");
     }
 
-    public JDBCGenerator() {
+    public SpringNamespaceMybatisGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
     
     @Override
     protected String getGenerator() {
-        return "jdbc";
+        return "spring-namespace-mybatis";
     }
     
     public static void main(String[] args) {
-        JDBCGenerator generator = new JDBCGenerator();
+        SpringNamespaceMybatisGenerator generator = new SpringNamespaceMybatisGenerator();
         generator.exec();
     }
 }

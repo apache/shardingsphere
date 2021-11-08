@@ -40,9 +40,14 @@ public final class SpringbootStarterJDBCGenerator extends ExampleGenerateEngine 
     public SpringbootStarterJDBCGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
-
+    
+    @Override
+    protected String getGenerator() {
+        return "springboot-starter-jdbc";
+    }
+    
     public static void main(String[] args) {
         SpringbootStarterJDBCGenerator generator = new SpringbootStarterJDBCGenerator();
-        generator.exec("/template/springboot-starter-jdbc/data-model.yaml");
+        generator.exec();
     }
 }

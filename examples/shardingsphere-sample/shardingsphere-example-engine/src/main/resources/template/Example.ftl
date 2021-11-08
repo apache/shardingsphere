@@ -16,8 +16,8 @@
  */
 
 package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')};
-<#if framework?contains("springboot")>
 
+<#if framework?contains("springboot")>
 <#if framework=="springboot-starter-mybatis">
 import org.mybatis.spring.annotation.MapperScan;
 <#elseif framework=="springboot-starter-jpa">
@@ -26,14 +26,13 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-<#elseif framework=="spring-namespace-jdbc">
+<#elseif framework?contains("spring-namespace")>
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 <#elseif framework=="jdbc">
 
 import javax.sql.DataSource;
 </#if>
-
 import java.sql.SQLException;
 
 <#assign frameworkName="">
@@ -58,7 +57,7 @@ public class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${fram
         ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService exampleService = new ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}ExampleService(dataSource);
         exampleService.run();
     <#else>
-    <#if framework=="spring-namespace-jdbc">
+    <#if framework?contains("spring-namespace")>
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
     <#else>
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}Example.class, args)) {
