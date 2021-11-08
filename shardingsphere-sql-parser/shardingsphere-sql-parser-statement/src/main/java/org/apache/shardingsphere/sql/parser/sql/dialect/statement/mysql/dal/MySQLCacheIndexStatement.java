@@ -37,11 +37,11 @@ import java.util.LinkedList;
 @ToString
 public final class MySQLCacheIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 
-    private final Collection<TableIndexSegment> tableIndexes = new LinkedList<>();
+    private Collection<TableIndexSegment> tableIndexes = new LinkedList<>();
     
     @Setter
     private PartitionsSegment partitions;
     
     @Setter
-    private IdentifierValue identifier;
+    private IdentifierValue name;
 }

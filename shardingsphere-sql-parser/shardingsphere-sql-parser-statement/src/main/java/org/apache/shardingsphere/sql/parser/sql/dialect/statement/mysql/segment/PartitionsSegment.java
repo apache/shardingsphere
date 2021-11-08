@@ -35,8 +35,7 @@ public final class PartitionsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    @Setter
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    private Collection<PartitionSegment> partitions = new LinkedList<>();
 }

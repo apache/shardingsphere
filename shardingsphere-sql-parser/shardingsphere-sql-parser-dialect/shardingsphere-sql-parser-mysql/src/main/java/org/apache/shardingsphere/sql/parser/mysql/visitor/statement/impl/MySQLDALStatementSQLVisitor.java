@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Explain
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillContext;
@@ -340,22 +341,18 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             }
         }
         if (null != ctx.partitionList()) {
-            PartitionsSegment segment = new PartitionsSegment(ctx.tableName().start.getStartIndex(), ctx.partitionList().stop.getStopIndex());
-            segment.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            PartitionsSegment segment = new PartitionsSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
             result.setPartitions(segment);
         }
-        result.setIdentifier((IdentifierValue) visit(ctx.identifier()));
+        result.setName((IdentifierValue) visit(ctx.identifier()));
         return result;
     }
     
     @Override
     public ASTNode visitTableIndexList(final TableIndexListContext ctx) {
-        TableIndexSegment result = new TableIndexSegment();
-        result.setStartIndex(ctx.getStart().getStartIndex());
-        result.setStopIndex(ctx.getStop().getStopIndex());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        for (MySQLStatementParser.IndexNameContext each : ctx.indexName()) {
+        TableIndexSegment result = new TableIndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
+        for (IndexNameContext each : ctx.indexName()) {
             result.getIndexes().add((IndexSegment) visitIndexName(each));
         }
         return result;

@@ -32,5 +32,5 @@ public final class PartitionSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final IdentifierValue identifier;
+    private final IdentifierValue name;
 }
