@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shadow.route.engine.determiner.algorithm;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -40,30 +40,26 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class NoteShadowAlgorithmDeterminerTest {
+public final class HintShadowAlgorithmDeterminerTest {
 
     private ShadowAlgorithmDeterminer shadowAlgorithmDeterminer;
 
     @Before
     public void init() {
-        shadowAlgorithmDeterminer = new NoteShadowAlgorithmDeterminer(createNoteShadowAlgorithm());
+        shadowAlgorithmDeterminer = new HintShadowAlgorithmDeterminer(createHintShadowAlgorithm());
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private NoteShadowAlgorithm<Comparable<?>> createNoteShadowAlgorithm() {
-        NoteShadowAlgorithm result = new SimpleSQLNoteShadowAlgorithm();
-        result.setProps(createProps());
-        result.init();
-        return result;
-    }
-
-    private Properties createProps() {
+    private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
+        HintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
         properties.setProperty("foo", "bar");
-        return properties;
+        result.setProps(properties);
+        result.init();
+        return result;
     }
-
+    
     @Test
     public void assertIsShadow() {
         assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
@@ -80,7 +76,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
 
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user_id-insert-regex-algorithm", createNoteShadowAlgorithm());
+        result.put("simple-hint-algorithm", createHintShadowAlgorithm());
         return result;
     }
 
@@ -92,7 +88,7 @@ public final class NoteShadowAlgorithmDeterminerTest {
 
     private Collection<String> createShadowAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        result.add("user_id-insert-regex-algorithm");
+        result.add("simple-hint-algorithm");
         return result;
     }
     
@@ -105,7 +101,8 @@ public final class NoteShadowAlgorithmDeterminerTest {
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        result.initSqlNotes(Collections.singletonList("/*foo:bar,shadow:true*/"));
-        return result;
+        Collection<String> sqlComments = new LinkedList<>();
+        sqlComments.add("/*foo:bar,shadow:true*/");
+        return result.initSQLComments(sqlComments);
     }
 }

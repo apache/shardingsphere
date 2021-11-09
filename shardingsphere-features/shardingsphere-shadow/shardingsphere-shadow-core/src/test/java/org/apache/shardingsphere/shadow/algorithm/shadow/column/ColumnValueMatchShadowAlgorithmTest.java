@@ -17,35 +17,27 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ColumnValueMatchShadowAlgorithmTest {
+public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
     private ColumnValueMatchShadowAlgorithm shadowAlgorithm;
     
     @Before
     public void init() {
         shadowAlgorithm = new ColumnValueMatchShadowAlgorithm();
-        shadowAlgorithm.setProps(createProperties());
-        shadowAlgorithm.init();
-    }
-    
-    private Properties createProperties() {
         Properties properties = new Properties();
-        properties.setProperty("column", "shadow");
+        properties.setProperty("column", SHADOW_COLUMN);
         properties.setProperty("operation", "insert");
         properties.setProperty("value", "1");
-        return properties;
+        shadowAlgorithm.setProps(properties);
+        shadowAlgorithm.init();
     }
     
     @Test
@@ -55,25 +47,15 @@ public final class ColumnValueMatchShadowAlgorithmTest {
     }
     
     private void assertTrueCase() {
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_user", ShadowOperationType.INSERT, "shadow", "1")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_order", ShadowOperationType.INSERT, "shadow", "1")), is(true));
+        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(true)));
     }
     
     private void assertFalseCase() {
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("auto", ShadowOperationType.INSERT, "shadow", "1")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_user", ShadowOperationType.UPDATE, "shadow", "1")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_user", ShadowOperationType.UPDATE, "auto", "1")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createTableNames(), createPreciseColumnShadowValue("t_user", ShadowOperationType.UPDATE, "shadow", "2")), is(false));
+        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(false)));
     }
     
-    private PreciseColumnShadowValue<Comparable<?>> createPreciseColumnShadowValue(final String tableName, final ShadowOperationType operationType, final String columnName, final String value) {
-        return new PreciseColumnShadowValue<>(tableName, operationType, columnName, value);
-    }
-    
-    private Collection<String> createTableNames() {
-        Collection<String> shadowTableNames = new LinkedList<>();
-        shadowTableNames.add("t_user");
-        shadowTableNames.add("t_order");
-        return shadowTableNames;
+    @Test
+    public void assertGetType() {
+        assertThat(shadowAlgorithm.getType(), is("VALUE_MATCH"));
     }
 }

@@ -32,12 +32,12 @@ spring:
             data-source-names: shadow-data-source-0,shadow-data-source-1
             shadow-algorithm-names:
               - user-id-regex-match-algorithm
-              - simple-note-algorithm
+              - simple-hint-algorithm
           t_user:
             data-source-names: shadow-data-source-1
             shadow-algorithm-names:
               - user-id-value-match-algorithm
-              - simple-note-algorithm
+              - simple-hint-algorithm
         shadow-algorithms:
           user-id-regex-match-algorithm:
             type: REGEX_MATCH
@@ -51,7 +51,7 @@ spring:
               operation: insert
               column: user_id
               value: 1
-          simple-note-algorithm:
+          simple-hint-algorithm:
             type: SIMPLE_HINT
             props:
               shadow: true

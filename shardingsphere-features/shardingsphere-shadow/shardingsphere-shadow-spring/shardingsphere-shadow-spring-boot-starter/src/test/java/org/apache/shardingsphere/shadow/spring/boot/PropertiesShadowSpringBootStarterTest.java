@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.spring.boot;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -62,19 +62,19 @@ public class PropertiesShadowSpringBootStarterTest {
         assertThat(userIdMatchAlgorithm.getProps().get("operation"), is("insert"));
         assertThat(userIdMatchAlgorithm.getProps().get("column"), is("user_id"));
         assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
-        ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
-        assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
-        assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
-        assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
+        ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
+        assertThat(simpleHintAlgorithm instanceof SimpleHintShadowAlgorithm, is(true));
+        assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
+        assertThat(simpleHintAlgorithm.getProps().get("shadow"), is("true"));
+        assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));
     }
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
         assertThat(shadowTables.size(), is(2));
         assertThat(shadowTables.get("t_order").getDataSourceNames().size(), is(2));
-        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-note-algorithm")));
+        assertThat(shadowTables.get("t_order").getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "simple-hint-algorithm")));
         assertThat(shadowTables.get("t_user").getDataSourceNames().size(), is(1));
-        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-note-algorithm")));
+        assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-hint-algorithm")));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {

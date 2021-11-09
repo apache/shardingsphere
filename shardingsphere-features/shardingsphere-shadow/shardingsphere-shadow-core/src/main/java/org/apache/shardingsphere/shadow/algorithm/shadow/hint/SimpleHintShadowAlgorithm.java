@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.note;
+package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,7 +35,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<String> {
+public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
     private Properties props = new Properties();
     
@@ -49,11 +49,11 @@ public final class SimpleSQLNoteShadowAlgorithm implements NoteShadowAlgorithm<S
     }
     
     @Override
-    public boolean isShadow(final Collection<String> shadowTableNames, final PreciseNoteShadowValue<String> noteShadowValue) {
-        if (ShadowOperationType.NOTE_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
+    public boolean isShadow(final Collection<String> shadowTableNames, final PreciseHintShadowValue<String> noteShadowValue) {
+        if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        Optional<Map<String, String>> noteOptional = NoteShadowAlgorithmUtil.parseSimpleSQLNote(noteShadowValue.getSqlNoteValue());
+        Optional<Map<String, String>> noteOptional = HintShadowAlgorithmUtil.parseSimpleHint(noteShadowValue.getValue());
         return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
     }
     

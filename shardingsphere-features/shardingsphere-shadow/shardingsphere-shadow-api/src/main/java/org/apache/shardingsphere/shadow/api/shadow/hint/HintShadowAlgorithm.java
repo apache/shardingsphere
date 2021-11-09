@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.api.shadow.note;
+package org.apache.shardingsphere.shadow.api.shadow.hint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-@RequiredArgsConstructor
-@Getter
-public final class PreciseNoteShadowValue<T extends Comparable<?>> implements ShadowValue {
+import java.util.Collection;
+
+/**
+ * Precise hint of shadow in SQL comment.
+ *
+ * @param <T> class type of hint value
+ */
+public interface HintShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
     
-    private final String logicTableName;
-    
-    private final ShadowOperationType shadowOperationType;
-    
-    private final T sqlNoteValue;
+    /**
+     * Is need shadow.
+     *
+     * @param relatedShadowTables related shadow tables
+     * @param hintShadowValue hint value of shadow
+     * @return is need shadow or not
+     */
+    boolean isShadow(Collection<String> relatedShadowTables, PreciseHintShadowValue<T> hintShadowValue);
 }

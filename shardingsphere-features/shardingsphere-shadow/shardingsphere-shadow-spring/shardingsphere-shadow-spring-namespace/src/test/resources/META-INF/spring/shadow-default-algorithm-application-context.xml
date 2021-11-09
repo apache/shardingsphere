@@ -24,7 +24,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_HINT">
+    <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
@@ -33,6 +33,6 @@
 
     <shadow:rule id="shadowRule" enable="true">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
-        <shadow:default-shadow-algorithm-name name="simple-note-algorithm"/>
+        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>
 </beans>

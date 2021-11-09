@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.note;
+package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Note shadow algorithm util.
+ * Hint shadow algorithm util.
  */
-public final class NoteShadowAlgorithmUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class HintShadowAlgorithmUtil {
     
     private static final String SIMPLE_SQL_NOTE_SPACE = ",";
     
@@ -35,13 +39,13 @@ public final class NoteShadowAlgorithmUtil {
     private static final String SIMPLE_SQL_NOTE_SUFFIX = "*/";
     
     /**
-     * Parse simple SQL note.
+     * Parse simple hint in SQL comment.
      *
-     * @param sqlNoteValue SQL note value
-     * @return note map
+     * @param sqlComment SQL comment
+     * @return simple hint map
      */
-    public static Optional<Map<String, String>> parseSimpleSQLNote(final String sqlNoteValue) {
-        String noteValue = sqlNoteValue.trim();
+    public static Optional<Map<String, String>> parseSimpleHint(final String sqlComment) {
+        String noteValue = sqlComment.trim();
         if (noteValue.startsWith(SIMPLE_SQL_NOTE_PREFIX)) {
             noteValue = removePrefix(noteValue);
         }

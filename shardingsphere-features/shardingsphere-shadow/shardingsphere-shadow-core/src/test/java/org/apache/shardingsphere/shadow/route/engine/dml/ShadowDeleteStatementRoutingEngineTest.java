@@ -98,7 +98,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         assertThat(userId.getColumn(), is("user_id"));
         assertThat(userId.getOwner(), is("t_order"));
         assertThat(userId.getValues().iterator().next(), is("1"));
-        Optional<Collection<String>> sqlNotes = shadowDeleteStatementRoutingEngine.parseSqlNotes();
+        Optional<Collection<String>> sqlNotes = shadowDeleteStatementRoutingEngine.parseSQLComments();
         assertThat(sqlNotes.isPresent(), is(true));
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
