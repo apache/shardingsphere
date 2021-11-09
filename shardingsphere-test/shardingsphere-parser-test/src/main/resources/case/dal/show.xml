@@ -95,4 +95,6 @@
             <owner name="TEST_USER" start-index="20" stop-index="28"/>
         </function>
     </show-procedure-code>
+    <show-relaylog-events sql-case-id="show_relaylog_events" channel="TEST_CHANNEL" /> 
+    <show-relaylog-events sql-case-id="show_relaylog_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
 </sql-parser-test-cases>

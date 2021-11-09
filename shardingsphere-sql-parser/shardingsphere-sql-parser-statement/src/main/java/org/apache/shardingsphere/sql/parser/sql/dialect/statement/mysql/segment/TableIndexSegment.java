@@ -15,98 +15,26 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
+import java.util.LinkedList;
 
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-TABLE
-    : T A B L E
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-ALGORITHM
-    : A L G O R I T H M
-    ;
-
-ALGORITHMS
-    : A L G O R I T H M S
-    ;
-
-SET
-    : S E T
-    ;
-
-ADD
-    : A D D
-    ;
-
-DATABASE_VALUE
-    : D A T A B A S E UL_ V A L U E
-    ;
-
-TABLE_VALUE
-    : T A B L E UL_ V A L U E
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-CLEAR
-    : C L E A R
-    ;
+@RequiredArgsConstructor
+@Getter
+public final class TableIndexSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final SimpleTableSegment table;
+    
+    private Collection<IndexSegment> indexes = new LinkedList<>();
+}

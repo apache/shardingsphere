@@ -9,6 +9,8 @@ weight = 6
 CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
+``
+CREATE SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
 ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
@@ -33,7 +35,7 @@ algorithmProperty: key=value
 - `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `resource` ，请参考 [数据源资源](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`
 - `algorithmName` 未指定时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成
-- `shadowAlgorithmType` 目前支持 `COLUMN_REGEX_MATCH` 和 `SIMPLE_NOTE`
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`
 - `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
 - `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除
 
@@ -44,18 +46,23 @@ algorithmProperty: key=value
 CREATE SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=VALUE_MATCH, PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
 
 ALTER SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=VALUE_MATCH, PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
+
+CREATE SHADOW ALGORITHM 
+(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", "foo"="bar"))), 
+(user_id_match_algorithm, TYPE(NAME=REGEX_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
+
 
 ALTER SHADOW ALGORITHM 
-(simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar"))), 
-(user_id_match_algorithm, TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
+(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="false", "foo"="bar"))), 
+(user_id_match_algorithm, TYPE(NAME=VALUE_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "value"='1')));
 
 DROP SHADOW RULE shadow_rule;
 
