@@ -54,6 +54,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
+    @SuppressWarnings("rawtypes")
     private final Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
@@ -135,6 +136,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param logicColumn logic column name
      * @return encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
         return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
@@ -147,6 +149,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param logicColumn logic column name
      * @return encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String logicTable, final String logicColumn) {
         if (!tables.containsKey(logicTable)) {
             return Optional.empty();
@@ -156,6 +159,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return encryptAlgorithm;
     }
     
+    @SuppressWarnings("rawtypes")
     private void mergeProps(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
         Properties props = encryptAlgorithm.getProps();
         props.putAll(encryptProperties);
@@ -171,10 +175,11 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param originalValues original values
      * @return encrypt values
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
+        return originalValues.stream().map(input -> null == input ? null : encryptor.get().encrypt(input)).collect(Collectors.toList());
     }
     
     /**
@@ -228,6 +233,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param originalValues original values
      * @return assisted query values
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
