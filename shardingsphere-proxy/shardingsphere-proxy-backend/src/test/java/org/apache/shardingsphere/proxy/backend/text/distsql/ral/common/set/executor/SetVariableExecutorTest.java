@@ -44,7 +44,7 @@ public final class SetVariableExecutorTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         new SetVariableExecutor(statement, connection).execute();
-        assertThat(TransactionType.LOCAL.name(), is(connection.getTransactionStatus().getTransactionType().name()));
+        assertThat(connection.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
     }
     
     @Test
@@ -52,8 +52,8 @@ public final class SetVariableExecutorTest {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "false");
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
-        String expectedValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        assertThat(expectedValue, is("false"));
+        String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
+        assertThat(actualValue, is("false"));
     }
     
     @Test
@@ -65,8 +65,8 @@ public final class SetVariableExecutorTest {
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         BackendConnection connection = mock(BackendConnection.class);
         new SetVariableExecutor(statement, connection).execute();
-        Object expectedValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
-        assertNotNull(expectedValue);
-        assertThat(expectedValue.toString(), is("1024"));
+        Object actualValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
+        assertNotNull(actualValue);
+        assertThat(actualValue.toString(), is("1024"));
     }
 }
