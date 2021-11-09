@@ -1,9 +1,9 @@
 +++
-title = "使用 Spring Boot Starter"
+title = "Use Spring Boot Starter"
 weight = 3
 +++
 
-## 引入 Maven 依赖
+## Import Maven Dependency
 
 ```xml
 <dependency>
@@ -13,71 +13,72 @@ weight = 3
 </dependency>
 ```
 
-## 规则配置
+## Configure Rule
 
-注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
+Note: The example connection pool is HikariCP, which can be replaced with other connection pools according to business scenarios.
 
 ```properties
-# 配置真实数据源
+# Configure actual data sources
 spring.shardingsphere.datasource.names=ds0,ds1
 
-# 配置第 1 个数据源
+# Configure the first data source
 spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://localhost:3306/ds0
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=
 
-# 配置第 2 个数据源
+# Configure the second data source
 spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://localhost:3306/ds1
 spring.shardingsphere.datasource.ds1.username=root
 spring.shardingsphere.datasource.ds1.password=
 
-# 配置 t_order 表规则
+# Configure t_order table rule
 spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 
-# 配置分库策略
+# Configure database sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm-name=database_inline
 
-# 配置分表策略
+# Configure table sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm-name=table_inline
 
-# 省略配置 t_order_item 表规则...
+# Omit t_order_item table rule configuration ...
 # ...
 
-# 配置 分片算法
+# Configure sharding algorithm
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds_${user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm-expression=t_order_${order_id % 2}
-
 ```
 
-### 使用 JNDI 数据源
+### Use JNDI Data Source
 
-如果计划使用 JNDI 配置数据库，在应用容器（如 Tomcat）中使用 ShardingSphere-JDBC 时，
-可使用 `spring.shardingsphere.datasource.${datasourceName}.jndiName` 来代替数据源的一系列配置。如：
+If developer plan to use ShardingSphere-JDBC in Web Server (such as Tomcat) with JNDI data source, 
+`spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
+For example:
 
 ```properties
-# 配置真实数据源
+# Configure actual data sources
 spring.shardingsphere.datasource.names=ds0,ds1
 
-# 配置第 1 个数据源
+# Configure the first data source
 spring.shardingsphere.datasource.ds0.jndi-name=java:comp/env/jdbc/ds0
-# 配置第 2 个数据源
+# Configure the second data source
 spring.shardingsphere.datasource.ds1.jndi-name=java:comp/env/jdbc/ds1
 
-# 省略规则配置...
+# Omit rule configurations ...
 # ...
 ```
 
-## 在 Spring 中使用 ShardingSphereDataSource
+## Use ShardingSphereDataSource in Spring
 
-直接通过注入的方式即可使用 ShardingSphereDataSource；或者将 ShardingSphereDataSource 配置在JPA， MyBatis 等 ORM 框架中配合使用。
+ShardingSphereDataSource can be used directly by injection; 
+or configure ShardingSphereDataSource in ORM frameworks such as JPA or MyBatis.
 
 ```java
 @Resource

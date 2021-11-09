@@ -1,28 +1,28 @@
 +++
-title = "强制路由"
-weight = 5
+title = "Hint"
+weight = 1
 +++
 
-## 简介
+## Introduction
 
-Apache ShardingSphere 使用 ThreadLocal 管理分片键值进行强制路由。
-可以通过编程的方式向 HintManager 中添加分片值，该分片值仅在当前线程内生效。
+Apache ShardingSphere uses ThreadLocal to manage sharding key value or hint route. 
+Users can add sharding values to HintManager, and those values only take effect within the current thread. 
 
-Hint 的主要使用场景：
+Usage of hint:
 
-* 分片字段不存在 SQL 和数据库表结构中，而存在于外部业务逻辑。
-* 强制在主库进行某些数据操作。
+* Sharding columns are not in SQL and table definition, but in external business logic.
+* Some operations forced to do in the primary database.
 
-## 使用方法
+## Usage
 
-### 使用 Hint 分片
+### Sharding with Hint
 
-#### 规则配置
+#### Hint Configuration
 
-Hint 分片算法需要用户实现 `org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm` 接口。
-Apache ShardingSphere 在进行路由时，将会从 HintManager 中获取分片值进行路由操作。
+Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`. 
+Apache ShardingSphere will acquire sharding values from HintManager to route.
 
-参考配置如下：
+Take the following configurations for reference:
 
 ```yaml
 rules:
@@ -46,29 +46,29 @@ props:
     sql-show: true
 ```
 
-#### 获取 HintManager
+#### Get HintManager
 
 ```java
 HintManager hintManager = HintManager.getInstance();
 ```
 
-#### 添加分片键值
+#### Add Sharding Value
 
-- 使用 `hintManager.addDatabaseShardingValue` 来添加数据源分片键值。
-- 使用 `hintManager.addTableShardingValue` 来添加表分片键值。
+- Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
+- Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> 分库不分表情况下，强制路由至某一个分库时，可使用 `hintManager.setDatabaseShardingValue` 方式添加分片。
+> Users can use `hintManager.setDatabaseShardingValue` to add sharding in hint route to some certain sharding database without sharding tables.
 
-#### 清除分片键值
+#### Clean Hint Values
 
-分片键值保存在 ThreadLocal 中，所以需要在操作结束时调用 `hintManager.close()` 来清除 ThreadLocal 中的内容。
+Sharding values are saved in `ThreadLocal`, so it is necessary to use `hintManager.close()` to clean `ThreadLocal`.
 
-__hintManager 实现了 AutoCloseable 接口，可推荐使用 try with resource 自动关闭。__
+**`HintManager` has implemented `AutoCloseable`. We recommend to close it automatically with `try with resource`.**
 
-#### 完整代码示例
+#### Codes:
 
 ```java
-// Sharding database and table with using HintManager
+// Sharding database and table with HintManager
 String sql = "SELECT * FROM t_order";
 try (HintManager hintManager = HintManager.getInstance();
      Connection conn = dataSource.getConnection();
@@ -82,7 +82,7 @@ try (HintManager hintManager = HintManager.getInstance();
     }
 }
 
-// Sharding database without sharding table and routing to only one database with using HintManager
+// Sharding database and one database route with HintManager
 String sql = "SELECT * FROM t_order";
 try (HintManager hintManager = HintManager.getInstance();
      Connection conn = dataSource.getConnection();
@@ -96,21 +96,21 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-### 使用 Hint 强制主库路由
+### Primary Route with Hint
 
-#### 获取 HintManager
+#### Get HintManager
 
-与基于 Hint 的数据分片相同。
+Be the same as sharding based on hint.
 
-#### 设置主库路由
+#### Configure Primary Database Route
 
-- 使用 `hintManager.setWriteRouteOnly` 设置主库路由。
+- Use `hintManager.setWriteRouteOnly` to configure primary database route.
 
-#### 清除分片键值
+#### Clean Hint Value
 
-与基于 Hint 的数据分片相同。
+Be the same as data sharding based on hint.
 
-#### 完整代码示例
+#### Codes:
 
 ```java
 String sql = "SELECT * FROM t_order";
