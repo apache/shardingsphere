@@ -19,24 +19,24 @@ package org.apache.shardingsphere.driver.fixture;
 
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
-public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
+public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
     public void init() {
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
+    public String encrypt(final Object plainValue) {
         return "encryptValue";
     }
     
     @Override
-    public Object decrypt(final String ciphertext) {
+    public Object decrypt(final String cipherValue) {
         return "decryptValue";
     }
     
     @Override
-    public String queryAssistedEncrypt(final Object plaintext) {
+    public String queryAssistedEncrypt(final Object plainValue) {
         return "assistedEncryptValue";
     }
     
