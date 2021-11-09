@@ -30,11 +30,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 public final class ShowReplicasStatementAssert {
     
     /**
-     * Assert show procedure status statement is correct with expected parser result.
+     * Assert show replicas statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show procedure status statement
-     * @param expected      expected show procedure status statement test case
+     * @param actual        actual show replicas statement
+     * @param expected      expected show replicas statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowReplicasStatement actual, final ShowReplicasStatementTestCase expected) {
     }
