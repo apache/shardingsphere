@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.BinlogStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
@@ -712,6 +713,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "reset-persist")
     private final List<ResetPersistStatementTestCase> resetPersistStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cache-index")
+    private final List<CacheIndexStatementTestCase> cacheIndexStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
@@ -894,6 +898,7 @@ public final class SQLParserTestCases {
         putAll(alterShardingAlgorithmStatementTestCases, result);
         putAll(killStatementTestCases, result);
         putAll(createDefaultShadowAlgorithmStatementTestCases, result);
+        putAll(cacheIndexStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

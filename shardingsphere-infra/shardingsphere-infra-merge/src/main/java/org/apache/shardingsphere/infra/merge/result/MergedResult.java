@@ -30,7 +30,7 @@ public interface MergedResult {
      * Iterate next data.
      * 
      * @return has next data
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean next() throws SQLException;
     
@@ -40,7 +40,7 @@ public interface MergedResult {
      * @param columnIndex column index
      * @param type class type of data value
      * @return data value
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     Object getValue(int columnIndex, Class<?> type) throws SQLException;
     
@@ -51,7 +51,7 @@ public interface MergedResult {
      * @param type class type of data value
      * @param calendar calendar
      * @return calendar value
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
@@ -61,7 +61,7 @@ public interface MergedResult {
      * @param columnIndex column index
      * @param type class type of data value
      * @return InputStream
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
     
@@ -69,7 +69,7 @@ public interface MergedResult {
      * Judge ResultSet is null or not.
      * 
      * @return ResultSet is null or not
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean wasNull() throws SQLException;
 }

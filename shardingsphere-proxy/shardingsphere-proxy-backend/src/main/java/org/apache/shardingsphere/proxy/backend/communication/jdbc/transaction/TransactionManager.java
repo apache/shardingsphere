@@ -27,21 +27,21 @@ public interface TransactionManager {
     /**
      * Begin transaction.
      *
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void begin() throws SQLException;
     
     /**
      * Commit transaction.
      *
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void commit() throws SQLException;
     
     /**
      * Rollback transaction.
      *
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void rollback() throws SQLException;
     
@@ -49,7 +49,7 @@ public interface TransactionManager {
      * Set savepoint.
      *
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void setSavepoint(String savepointName) throws SQLException;
     
@@ -57,7 +57,7 @@ public interface TransactionManager {
      * Rollback to savepoint.
      *
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void rollbackTo(String savepointName) throws SQLException;
     
@@ -65,7 +65,7 @@ public interface TransactionManager {
      * Release savepoint.
      *
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void releaseSavepoint(String savepointName) throws SQLException;
 }

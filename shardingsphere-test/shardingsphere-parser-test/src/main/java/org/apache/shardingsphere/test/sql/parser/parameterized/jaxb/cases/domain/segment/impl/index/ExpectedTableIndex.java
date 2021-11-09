@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Rule in used exception.
+ * Expected table index.
  */
-public final class RuleInUsedException extends RuleDefinitionViolationException {
+@Getter
+@Setter
+public final class ExpectedTableIndex extends AbstractExpectedIdentifierSQLSegment {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    @XmlElement(name = "table")
+    private ExpectedSimpleTable table;
     
-    public RuleInUsedException(final String ruleType, final String schemaName) {
-        super(1111, String.format("%s rule in schema `%s` is still in used.", ruleType, schemaName));
-    }
-    
-    public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, ruleNames, schemaName));
-    }
+    @XmlElement(name = "index")
+    private List<ExpectedIndex> indexNames = new LinkedList<>();
 }

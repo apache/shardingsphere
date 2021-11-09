@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-/**
- * Rule in used exception.
- */
-public final class RuleInUsedException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class PartitionSegment implements SQLSegment {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private final int startIndex;
     
-    public RuleInUsedException(final String ruleType, final String schemaName) {
-        super(1111, String.format("%s rule in schema `%s` is still in used.", ruleType, schemaName));
-    }
+    private final int stopIndex;
     
-    public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, ruleNames, schemaName));
-    }
+    private final IdentifierValue name;
 }
