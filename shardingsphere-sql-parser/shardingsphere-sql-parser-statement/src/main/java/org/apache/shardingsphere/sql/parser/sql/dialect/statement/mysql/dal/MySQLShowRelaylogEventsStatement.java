@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | dropShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
-    ) SEMI?
-    ;
+/**
+ * MySQL show relay log events statement.
+ */
+@ToString
+@Getter
+@Setter
+public final class MySQLShowRelaylogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+
+    private String logName;
+    
+    private String channel;
+}

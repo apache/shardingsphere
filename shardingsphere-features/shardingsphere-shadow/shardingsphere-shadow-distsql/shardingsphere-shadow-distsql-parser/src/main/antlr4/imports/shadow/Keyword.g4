@@ -87,10 +87,6 @@ ALGORITHMS
     : A L G O R I T H M S
     ;
 
-HINT
-    : H I N T
-    ;
-
 SET
     : S E T
     ;

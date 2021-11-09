@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.fixture;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | dropShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
-    ) SEMI?
-    ;
+public final class HintShadowAlgorithmFixture implements ShadowAlgorithm {
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public String getType() {
+        return "HINT_TEST";
+    }
+}

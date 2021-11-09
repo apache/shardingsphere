@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | dropShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * MySQL show relay log events statement test case.
+ */
+@Getter
+public final class ShowRelaylogEventsStatementTestCase extends SQLParserTestCase {
+
+    @XmlAttribute(name = "log-name")
+    private String logName;
+
+    @XmlAttribute(name = "channel")
+    private String channel;
+}
