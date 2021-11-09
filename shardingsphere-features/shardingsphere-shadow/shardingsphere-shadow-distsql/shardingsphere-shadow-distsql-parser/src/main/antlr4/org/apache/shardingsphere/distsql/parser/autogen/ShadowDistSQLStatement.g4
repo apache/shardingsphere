@@ -28,5 +28,6 @@ execute
     | showShadowAlgorithms
     | dropShadowAlgorithm
     | alterShadowAlgorithm
+    | createShadowAlgorithm
     ) SEMI?
     ;

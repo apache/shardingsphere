@@ -150,6 +150,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingAutoTableRuleStatementTestCase;
@@ -629,6 +630,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-shadow-algorithm")
     private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCase = new LinkedList<>();
+ 
+    @XmlElement(name = "create-shadow-algorithm")
+    private final List<CreateShadowAlgorithmStatementTestCase> createShadowAlgorithmTestCase = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-rules")
     private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatementTestCase = new LinkedList<>();
@@ -899,6 +903,7 @@ public final class SQLParserTestCases {
         putAll(alterShardingAlgorithmStatementTestCases, result);
         putAll(killStatementTestCases, result);
         putAll(cacheIndexStatementTestCases, result);
+        putAll(createShadowAlgorithmTestCase, result);
         return result;
     }
     // CHECKSTYLE:ON
