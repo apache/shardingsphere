@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.spring.namespace;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -48,15 +48,15 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
     }
     
     private void assertDefaultShadowAlgorithm(final String defaultShadowAlgorithmName) {
-        assertThat("simple-note-algorithm".equals(defaultShadowAlgorithmName), is(true));
+        assertThat("simple-hint-algorithm".equals(defaultShadowAlgorithmName), is(true));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        ShadowAlgorithm simpleNoteAlgorithm = shadowAlgorithms.get("simple-note-algorithm");
-        assertThat(simpleNoteAlgorithm instanceof SimpleSQLNoteShadowAlgorithm, is(true));
-        assertThat(simpleNoteAlgorithm.getType(), is("SIMPLE_HINT"));
-        assertThat(simpleNoteAlgorithm.getProps().get("shadow"), is("true"));
-        assertThat(simpleNoteAlgorithm.getProps().get("foo"), is("bar"));
+        ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
+        assertThat(simpleHintAlgorithm instanceof SimpleHintShadowAlgorithm, is(true));
+        assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
+        assertThat(simpleHintAlgorithm.getProps().get("shadow"), is("true"));
+        assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));
     }
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {

@@ -66,7 +66,7 @@ public final class EncryptMergedResultTest {
     
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNotNullCiphertext() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
+        when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt("VALUE")).thenReturn("ORIGINAL_VALUE");
         when(metaData.findEncryptor(1)).thenReturn(Optional.of(encryptAlgorithm));

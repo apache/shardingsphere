@@ -22,22 +22,25 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmP
 
 /**
  * Encrypt algorithm for SPI.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
  */
-public interface EncryptAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Encode.
      *
-     * @param plaintext plaintext
-     * @return ciphertext
+     * @param plainValue plain value
+     * @return cipher value
      */
-    String encrypt(Object plaintext);
+    O encrypt(I plainValue);
     
     /**
      * Decode.
      *
-     * @param ciphertext ciphertext
-     * @return plaintext
+     * @param cipherValue cipher value
+     * @return plain value
      */
-    Object decrypt(String ciphertext);
+    I decrypt(O cipherValue);
 }

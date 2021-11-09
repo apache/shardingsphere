@@ -19,14 +19,17 @@ package org.apache.shardingsphere.encrypt.spi;
 
 /**
  * Query assisted encrypt algorithm for SPI.
+ *
+ * @param <I> type of plain value
+ * @param <O> type of  cipher value
  */
-public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
+public interface QueryAssistedEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
     
     /**
      * Query assisted encrypt.
      *
-     * @param plaintext plaintext
-     * @return ciphertext
+     * @param plainValue plain value
+     * @return cipher value
      */
-    String queryAssistedEncrypt(Object plaintext);
+    O queryAssistedEncrypt(I plainValue);
 }

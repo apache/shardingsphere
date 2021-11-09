@@ -350,7 +350,7 @@ cacheIndex
     ;
 
 tableIndexList
-    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
+    : tableName ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
     ;
 
 partitionList

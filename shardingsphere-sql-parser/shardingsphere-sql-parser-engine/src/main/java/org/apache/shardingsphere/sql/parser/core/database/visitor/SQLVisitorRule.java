@@ -246,6 +246,8 @@ public enum SQLVisitorRule {
     
     SHOW("Show", SQLStatementType.DAL),
 
+    SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
+
     SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
 
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
@@ -291,6 +293,8 @@ public enum SQLVisitorRule {
     RESET("ResetStatement", SQLStatementType.DAL),
 
     RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
+
+    CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
 
     CALL("Call", SQLStatementType.DML),
     

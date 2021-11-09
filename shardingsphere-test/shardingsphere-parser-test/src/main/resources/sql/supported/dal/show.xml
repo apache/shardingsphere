@@ -40,4 +40,6 @@
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
     <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL" />
     <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL" />
+    <sql-case id="show_relaylog_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
+    <sql-case id="show_relaylog_events_with_log" value="SHOW RELAYLOG EVENTS IN 'TEST_LOG' FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
 </sql-cases>
