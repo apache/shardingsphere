@@ -64,7 +64,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
         DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
     }
     
-    private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms,
+    private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
                                       final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, currentAlgorithms, thrower);
     }

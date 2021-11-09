@@ -90,7 +90,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     public ASTNode visitShadowAlgorithmDefinition(final ShadowAlgorithmDefinitionContext ctx) {
         AlgorithmSegment segment = new AlgorithmSegment(getIdentifierValue(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
         String algorithmName = null != ctx.algorithmName() ? getIdentifierValue(ctx.algorithmName())
-                : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()),
+                : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()), 
                 getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
         return new ShadowAlgorithmSegment(algorithmName, segment);
     }
