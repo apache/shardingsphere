@@ -163,8 +163,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
 
     private boolean columnMatchTableAndCheckAmbiguous(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnProjectionSegment, final String tableName) {
-        return isOwnerExistsMatchTableAlias(selectStatementContext, columnProjectionSegment, tableName)
-                || isOwnerExistsMatchTableName(selectStatementContext, columnProjectionSegment, tableName)
+        return isOwnerExistsMatchTableAlias(selectStatementContext, columnProjectionSegment, tableName) 
+                || isOwnerExistsMatchTableName(selectStatementContext, columnProjectionSegment, tableName) 
                 || isColumnUnAmbiguous(selectStatementContext, columnProjectionSegment);
     }
     
