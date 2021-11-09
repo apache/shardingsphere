@@ -49,7 +49,7 @@ public final class OpenGaussLogicalReplication {
      *
      * @param jdbcDataSourceConfig JDBC data source configuration
      * @return OpenGauss connection
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public Connection createPgConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         return createConnection(jdbcDataSourceConfig);
@@ -72,7 +72,7 @@ public final class OpenGaussLogicalReplication {
      * @param startPosition start position
      * @param slotName the setted slotName
      * @return replication stream
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public PGReplicationStream createReplicationStream(final PgConnection pgConnection, final BaseLogSequenceNumber startPosition, final String slotName) throws SQLException {
         return pgConnection.getReplicationAPI()
