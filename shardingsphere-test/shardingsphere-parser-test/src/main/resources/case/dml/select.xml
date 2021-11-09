@@ -2911,7 +2911,11 @@
             <simple-table name="t_order" start-index="70" stop-index="76" />
         </from>
         <projections start-index="7" stop-index="63">
-            <expression-projection text="CONVERT(SUBSTRING(content, 5) , SIGNED)" alias="signed_content" start-index="7" stop-index="63" />
+            <expression-projection text="CONVERT(SUBSTRING(content, 5) , SIGNED)" alias="signed_content" start-index="7" stop-index="63">
+                <expr>
+                    <function function-name="CONVERT" start-index="7" stop-index="45" text="CONVERT(SUBSTRING(content, 5) , SIGNED)" />
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="78" stop-index="95">
             <expr>
@@ -3103,7 +3107,11 @@
         </from>
         <projections start-index="7" stop-index="38">
             <column-projection name="user_id" start-index="7" stop-index="13"/>
-            <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38" />
+            <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" />
+                </expr>
+            </expression-projection>
         </projections>
     </select>
 
@@ -3112,7 +3120,11 @@
             <simple-table name="t_order" start-index="47" stop-index="53"/>
         </from>
         <projections start-index="7" stop-index="40">
-            <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32" />
+            <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" />
+                </expr>
+            </expression-projection>
             <column-projection name="user_id" start-index="34" stop-index="40"/>
         </projections>
     </select>
