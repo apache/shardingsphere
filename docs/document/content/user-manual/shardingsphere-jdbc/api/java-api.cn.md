@@ -60,18 +60,18 @@ Map<String, DataSource> dataSourceMap = new HashMap<>();
 // 配置第 1 个数据源
 HikariDataSource dataSource1 = new HikariDataSource();
 dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds0");
+dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds_1");
 dataSource1.setUsername("root");
 dataSource1.setPassword("");
-dataSourceMap.put("ds1", dataSource1);
+dataSourceMap.put("ds_1", dataSource1);
 
 // 配置第 n 个数据源
 HikariDataSource dataSourceN = new HikariDataSource();
 dataSourceN.setDriverClassName("com.mysql.jdbc.Driver");
-dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds1");
+dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds_n");
 dataSourceN.setUsername("root");
 dataSourceN.setPassword("");
-dataSourceMap.put("dsN", dataSourceN);
+dataSourceMap.put("ds_n", dataSourceN);
 ```
 
 ### 构建规则
@@ -88,7 +88,7 @@ Properties props = ... // 构建属性配置
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource("my_schema", modeConfig, dataSourceMap, ruleConfigs, props);
 ```
 
-## 使用数据源
+## 使用 ShardingSphere 数据源
 
 通过 ShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或 JPA、Hibernate、MyBatis 等 ORM 框架。

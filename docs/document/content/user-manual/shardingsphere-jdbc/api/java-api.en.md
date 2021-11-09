@@ -57,22 +57,22 @@ The example connection pool is HikariCP, which can be replaced with other connec
 
 ```java
 Map<String, DataSource> dataSourceMap = new HashMap<>();
-        
+
 // Configure the 1st data source
 HikariDataSource dataSource1 = new HikariDataSource();
 dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds0");
+dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds_1");
 dataSource1.setUsername("root");
 dataSource1.setPassword("");
-dataSourceMap.put("ds1", dataSource1);
-        
+dataSourceMap.put("ds_1", dataSource1);
+
 // Configure the n data source
 HikariDataSource dataSourceN = new HikariDataSource();
 dataSourceN.setDriverClassName("com.mysql.jdbc.Driver");
-dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds1");
+dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds_n");
 dataSourceN.setUsername("root");
 dataSourceN.setPassword("");
-dataSourceMap.put("dsN", dataSourceN);
+dataSourceMap.put("ds_n", dataSourceN);
 ```
 
 ### Build Rules
@@ -89,7 +89,7 @@ Properties props = ... // Build properties
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource("my_schema", modeConfig, dataSourceMap, ruleConfigs, props);
 ```
 
-## Use Data Source
+## Use ShardingSphere Data Source
 
 The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA, Hibernate or MyBatis through the DataSource.
