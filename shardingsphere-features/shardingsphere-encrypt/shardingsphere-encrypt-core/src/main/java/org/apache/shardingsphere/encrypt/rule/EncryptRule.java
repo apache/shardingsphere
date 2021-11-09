@@ -159,7 +159,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return encryptAlgorithm;
     }
     
-    private void mergeProps(final EncryptAlgorithm<?, ?> encryptAlgorithm, final Properties encryptProperties) {
+    @SuppressWarnings("rawtypes")
+    private void mergeProps(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
         Properties props = encryptAlgorithm.getProps();
         props.putAll(encryptProperties);
         encryptAlgorithm.setProps(props);
