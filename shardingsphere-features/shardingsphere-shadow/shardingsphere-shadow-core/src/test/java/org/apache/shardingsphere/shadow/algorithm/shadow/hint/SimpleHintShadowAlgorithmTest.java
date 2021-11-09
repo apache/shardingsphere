@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.note;
+package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.note.PreciseNoteShadowValue;
+import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,21 +29,17 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SimpleSQLNoteShadowAlgorithmTest {
+public final class SimpleHintShadowAlgorithmTest {
     
-    private SimpleSQLNoteShadowAlgorithm shadowAlgorithm;
+    private SimpleHintShadowAlgorithm shadowAlgorithm;
     
     @Before
     public void init() {
-        shadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
-        shadowAlgorithm.setProps(createProperties());
-        shadowAlgorithm.init();
-    }
-    
-    private Properties createProperties() {
+        shadowAlgorithm = new SimpleHintShadowAlgorithm();
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
-        return properties;
+        shadowAlgorithm.setProps(properties);
+        shadowAlgorithm.init();
     }
     
     @Test
@@ -66,8 +62,8 @@ public final class SimpleSQLNoteShadowAlgorithmTest {
         assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow:true, aaa:bbb ")), is(true));
     }
     
-    private PreciseNoteShadowValue<String> createNoteShadowValue(final String sqlNote) {
-        return new PreciseNoteShadowValue<>("t_user", ShadowOperationType.NOTE_MATCH, sqlNote);
+    private PreciseHintShadowValue<String> createNoteShadowValue(final String sqlNote) {
+        return new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, sqlNote);
     }
     
     private Collection<String> createShadowTableNames() {

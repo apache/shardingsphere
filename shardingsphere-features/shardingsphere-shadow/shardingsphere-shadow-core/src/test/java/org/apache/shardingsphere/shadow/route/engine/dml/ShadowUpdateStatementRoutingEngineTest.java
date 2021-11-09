@@ -99,7 +99,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         assertThat(userId.getColumn(), is("user_id"));
         assertThat(userId.getOwner(), is("t_order"));
         assertThat(userId.getValues().iterator().next(), is("1"));
-        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
+        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();

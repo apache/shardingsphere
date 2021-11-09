@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -78,15 +78,15 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
         if (null != defaultShadowAlgorithmName) {
             ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = shadowAlgorithmConfigurations.get(defaultShadowAlgorithmName);
-            boolean state = null != shardingSphereAlgorithmConfiguration && "SIMPLE_NOTE".equals(shardingSphereAlgorithmConfiguration.getType());
-            Preconditions.checkState(state, "Default shadow algorithm class should be implement NoteShadowAlgorithm.");
+            boolean state = null != shardingSphereAlgorithmConfiguration && "SIMPLE_HINT".equals(shardingSphereAlgorithmConfiguration.getType());
+            Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }
     }
     
     protected void defaultShadowAlgorithmCheck(final String defaultShadowAlgorithmName, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         if (null != defaultShadowAlgorithmName) {
-            boolean isNoteShadowAlgorithmState = shadowAlgorithms.get(defaultShadowAlgorithmName) instanceof NoteShadowAlgorithm;
-            Preconditions.checkState(isNoteShadowAlgorithmState, "Default shadow algorithm class should be implement NoteShadowAlgorithm.");
+            boolean isHintShadowAlgorithmState = shadowAlgorithms.get(defaultShadowAlgorithmName) instanceof HintShadowAlgorithm;
+            Preconditions.checkState(isHintShadowAlgorithmState, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }
     }
     

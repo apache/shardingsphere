@@ -31,7 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadB
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rule.ShadowTableRule;
@@ -151,11 +151,11 @@ public class SpringBootStarterTest {
         assertThat(shadowTableRules.size(), is(2));
         assertThat(shadowTableRules.get("t_order").getTableName(), is("t_order"));
         assertThat(shadowTableRules.get("t_order").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_order").getNoteShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_order").getHintShadowAlgorithmNames().size(), is(1));
         assertThat(shadowTableRules.get("t_order").getColumnShadowAlgorithmNames().size(), is(2));
         assertThat(shadowTableRules.get("t_user").getTableName(), is("t_user"));
         assertThat(shadowTableRules.get("t_user").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_user").getNoteShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_user").getHintShadowAlgorithmNames().size(), is(1));
         assertThat(shadowTableRules.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
     }
     
@@ -163,7 +163,7 @@ public class SpringBootStarterTest {
         assertThat(shadowAlgorithms.size(), is(3));
         assertThat(shadowAlgorithms.get("user-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
         assertThat(shadowAlgorithms.get("order-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
-        assertThat(shadowAlgorithms.get("simple-hint-algorithm") instanceof NoteShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("simple-hint-algorithm") instanceof HintShadowAlgorithm, is(true));
     }
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {

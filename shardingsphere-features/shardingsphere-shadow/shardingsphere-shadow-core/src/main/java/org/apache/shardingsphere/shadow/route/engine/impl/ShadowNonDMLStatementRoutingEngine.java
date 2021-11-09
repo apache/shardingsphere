@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowDeterminerFactory;
@@ -49,33 +49,33 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
-        Optional<Collection<String>> sqlNotes = parseSqlNotes();
-        if (!sqlNotes.isPresent()) {
+        Optional<Collection<String>> sqlComments = parseSQLComments();
+        if (!sqlComments.isPresent()) {
             return Optional.empty();
         }
-        Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> noteShadowAlgorithms = shadowRule.getAllNoteShadowAlgorithms();
+        Optional<Collection<HintShadowAlgorithm<Comparable<?>>>> noteShadowAlgorithms = shadowRule.getAllHintShadowAlgorithms();
         if (!noteShadowAlgorithms.isPresent()) {
             return Optional.empty();
         }
-        if (isMatchAnyNoteShadowAlgorithms(noteShadowAlgorithms.get(), createShadowDetermineCondition(sqlNotes.get()), shadowRule)) {
+        if (isMatchAnyNoteShadowAlgorithms(noteShadowAlgorithms.get(), createShadowDetermineCondition(sqlComments.get()), shadowRule)) {
             return Optional.of(shadowRule.getAllShadowDataSourceMappings());
         }
         return Optional.empty();
     }
     
-    private Optional<Collection<String>> parseSqlNotes() {
+    private Optional<Collection<String>> parseSQLComments() {
         Collection<String> result = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().stream().map(CommentSegment::getText)
                 .collect(Collectors.toCollection(LinkedList::new));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlNotes) {
-        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.NOTE_MATCH);
-        return result.initSqlNotes(sqlNotes);
+    private ShadowDetermineCondition createShadowDetermineCondition(final Collection<String> sqlComments) {
+        ShadowDetermineCondition result = new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH);
+        return result.initSQLComments(sqlComments);
     }
     
-    private boolean isMatchAnyNoteShadowAlgorithms(final Collection<NoteShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
-        for (NoteShadowAlgorithm<Comparable<?>> each : shadowAlgorithms) {
+    private boolean isMatchAnyNoteShadowAlgorithms(final Collection<HintShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        for (HintShadowAlgorithm<Comparable<?>> each : shadowAlgorithms) {
             if (isMatchNoteShadowAlgorithm(each, shadowCondition, shadowRule)) {
                 return true;
             }
@@ -83,7 +83,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
         return false;
     }
     
-    private boolean isMatchNoteShadowAlgorithm(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
-        return ShadowDeterminerFactory.newInstance(noteShadowAlgorithm).isShadow(shadowCondition, shadowRule);
+    private boolean isMatchNoteShadowAlgorithm(final HintShadowAlgorithm<Comparable<?>> hintShadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
+        return ShadowDeterminerFactory.newInstance(hintShadowAlgorithm).isShadow(shadowCondition, shadowRule);
     }
 }

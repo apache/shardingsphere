@@ -38,7 +38,7 @@
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_HINT">
+    <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
@@ -50,11 +50,11 @@
         <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds1" shadow-data-source-name="ds1-shadow"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source-0,shadow-data-source-1">
             <shadow:algorithm shadow-algorithm-ref= "user-id-regex-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref= "simple-hint-algorithm" />
         </shadow:shadow-table>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-1">
             <shadow:algorithm shadow-algorithm-ref= "user-id-value-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref= "simple-note-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref= "simple-hint-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
 </beans>
