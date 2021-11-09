@@ -43,6 +43,10 @@ dropShadowAlgorithm
     : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
+createDefaultShadowAlgorithm
+    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    ;
+
 shadowRuleDefinition
     :  ruleName LP SOURCE EQ source COMMA SHADOW EQ shadow COMMA shadowTableRule (COMMA shadowTableRule)* RP
     ;
