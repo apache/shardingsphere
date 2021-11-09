@@ -114,3 +114,7 @@ STATUS
 CLEAR
     : C L E A R
     ;
+
+DEFAULT
+    : D E F A U L T
+    ;
