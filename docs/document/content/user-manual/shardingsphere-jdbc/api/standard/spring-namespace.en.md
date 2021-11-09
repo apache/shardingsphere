@@ -15,7 +15,7 @@ weight = 4
 
 ## Configure Rule
 
-Note: The example database connection pool is HikariCP, which can be replaced with other mainstream database connection pools according to business scenarios.
+Note: The example connection pool is HikariCP, which can be replaced with other connection pools according to business scenarios.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
