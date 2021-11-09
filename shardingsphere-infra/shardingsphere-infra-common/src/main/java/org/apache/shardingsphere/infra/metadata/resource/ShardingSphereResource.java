@@ -70,7 +70,7 @@ public final class ShardingSphereResource {
      * Close data sources.
      * 
      * @param dataSources data sources to be closed
-     * @throws SQLException exception
+     * @throws SQLException SQL exception
      */
     public void close(final Collection<String> dataSources) throws SQLException {
         for (String each : dataSources) {
@@ -82,7 +82,7 @@ public final class ShardingSphereResource {
      * Close data source.
      *
      * @param dataSource data source to be closed
-     * @throws SQLException exception
+     * @throws SQLException SQL exception
      */
     public void close(final DataSource dataSource) throws SQLException {
         DataSourceKiller dataSourceKiller = DataSourceKillerFactory.getDataSourceKiller(dataSource.getClass().getName());

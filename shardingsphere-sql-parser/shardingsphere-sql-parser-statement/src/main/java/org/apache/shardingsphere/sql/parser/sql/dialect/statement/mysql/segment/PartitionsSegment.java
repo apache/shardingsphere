@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-/**
- * Rule in used exception.
- */
-public final class RuleInUsedException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+public final class PartitionsSegment implements SQLSegment {
     
-    private static final long serialVersionUID = 3308787279125477660L;
+    private final int startIndex;
     
-    public RuleInUsedException(final String ruleType, final String schemaName) {
-        super(1111, String.format("%s rule in schema `%s` is still in used.", ruleType, schemaName));
-    }
+    private final int stopIndex;
     
-    public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, ruleNames, schemaName));
-    }
+    private final SimpleTableSegment table;
+    
+    private Collection<PartitionSegment> partitions = new LinkedList<>();
 }

@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
 
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Rule in used exception.
+ * Expected partition.
  */
-public final class RuleInUsedException extends RuleDefinitionViolationException {
-    
-    private static final long serialVersionUID = 3308787279125477660L;
-    
-    public RuleInUsedException(final String ruleType, final String schemaName) {
-        super(1111, String.format("%s rule in schema `%s` is still in used.", ruleType, schemaName));
-    }
-    
-    public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, ruleNames, schemaName));
-    }
+public final class ExpectedPartition extends AbstractExpectedIdentifierSQLSegment {
 }

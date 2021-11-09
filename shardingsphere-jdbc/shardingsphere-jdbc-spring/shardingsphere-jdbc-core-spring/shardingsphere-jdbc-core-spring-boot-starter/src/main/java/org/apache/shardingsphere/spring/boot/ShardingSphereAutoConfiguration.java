@@ -98,7 +98,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      *
      * @param modeConfig mode configuration
      * @return data source bean
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
