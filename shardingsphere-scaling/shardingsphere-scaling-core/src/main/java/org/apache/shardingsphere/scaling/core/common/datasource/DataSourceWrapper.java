@@ -97,7 +97,7 @@ public final class DataSourceWrapper implements DataSource, AutoCloseable {
                 throw new SQLException("data source close failed.", ex);
             }
         } else {
-            log.error("dataSource is not closed, it might cause connection leak, dataSource={}", dataSource, new RuntimeException());
+            log.warn("dataSource is not closed, it might cause connection leak, dataSource={}", dataSource);
         }
     }
 }
