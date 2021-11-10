@@ -246,6 +246,10 @@ showWarnings
     : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
+showReplicas
+    : SHOW REPLICAS
+    ;
+
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -346,7 +350,7 @@ cacheIndex
     ;
 
 tableIndexList
-    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
+    : tableName ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
     ;
 
 partitionList
@@ -451,4 +455,5 @@ show
     | showTrriggers
     | showWarnings
     | showVariables
+    | showReplicas
     ;

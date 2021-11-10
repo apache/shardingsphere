@@ -87,7 +87,7 @@
     <sql-case id="alter_table_add_primary_foreign_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" db-types="Oracle" />
     <sql-case id="alter_table_add_composite_primary_key_oracle" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="Oracle" />
     <sql-case id="alter_table_drop_unique_key" value="ALTER TABLE t_order DROP UNIQUE (order_id)" db-types="Oracle" />
-    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="alter_table_drop_primary_key_unique_key" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT order_index" db-types="Oracle" />
     <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="Oracle" />
     <sql-case id="alter_table_with_row_level" value="ALTER TABLE t_order FORCE ROW LEVEL SECURITY" db-types="PostgreSQL,openGauss" />

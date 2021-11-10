@@ -31,6 +31,6 @@ public final class RuleInUsedException extends RuleDefinitionViolationException 
     }
     
     public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, schemaName, ruleNames));
+        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, ruleNames, schemaName));
     }
 }

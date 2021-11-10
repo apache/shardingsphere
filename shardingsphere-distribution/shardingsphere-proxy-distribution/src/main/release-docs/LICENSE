@@ -298,11 +298,11 @@ The following components are provided under the Apache License. See project link
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     groovy 2.4.19-indy: https://github.com/apache/groovy, Apache 2.0
-    atomikos-util 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-api 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-jdbc 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-jta 4.0.6: https://www.atomikos.com, Apache 2.0
+    atomikos-util 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-jdbc 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-jta 5.0.8: https://www.atomikos.com, Apache 2.0
     
 ========================================================================
 BSD licenses

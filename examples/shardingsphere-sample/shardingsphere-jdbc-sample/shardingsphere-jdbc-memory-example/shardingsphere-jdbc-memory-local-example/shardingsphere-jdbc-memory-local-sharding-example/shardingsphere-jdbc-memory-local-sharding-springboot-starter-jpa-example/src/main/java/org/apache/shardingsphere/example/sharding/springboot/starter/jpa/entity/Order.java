@@ -28,20 +28,20 @@ import java.io.Serializable;
 @Entity
 @Table(name = "t_order")
 public class Order implements Serializable {
-
-    private static final long serialVersionUID = -5336127407322921657L;
+    
+    private static final long serialVersionUID = 8306802022239174861L;
     
     @Id
     @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderId;
-
+    
     @Column(name = "user_id")
     private int userId;
-
+    
     @Column(name = "address_id")
     private long addressId;
-
+    
     @Column(name = "status")
     private String status;
     

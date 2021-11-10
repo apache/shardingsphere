@@ -45,18 +45,25 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     private static final String PROPERTIES = "properties";
     
+    private static final String DEFAULT = "is_default";
+    
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
+    
+    private String defaultAlgorithm;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(configuration -> data = configuration.getShadowAlgorithms().entrySet().iterator());
+        rule.ifPresent(configuration -> {
+            data = configuration.getShadowAlgorithms().entrySet().iterator();
+            defaultAlgorithm = configuration.getDefaultShadowAlgorithmName();
+        });
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPERTIES);
+        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPERTIES, DEFAULT);
     }
     
     @Override
@@ -70,7 +77,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     }
     
     private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()));
+        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()), data.getKey().equals(defaultAlgorithm));
     }
     
     private String convertToString(final Properties props) {

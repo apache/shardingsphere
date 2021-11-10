@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLStatementVisitor;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLLexer;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLParser;

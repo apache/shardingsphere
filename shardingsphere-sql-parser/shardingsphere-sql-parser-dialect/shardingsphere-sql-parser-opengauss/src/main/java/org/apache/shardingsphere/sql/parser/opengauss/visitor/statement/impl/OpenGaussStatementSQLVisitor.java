@@ -97,6 +97,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Val
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OptOnDuplicateKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -107,6 +109,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -570,6 +573,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         // TODO :deal with insert select
         OpenGaussInsertStatement result = (OpenGaussInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
+        if (null != ctx.optOnDuplicateKey()) {
+            result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
+        }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
@@ -611,6 +617,31 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(valuesClause);
         result.getValues().addAll(insertValuesSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitOptOnDuplicateKey(final OptOnDuplicateKeyContext ctx) {
+        if (null != ctx.NOTHING()) {
+            return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.emptyList());
+        }
+        Collection<AssignmentSegment> columns = new LinkedList<>();
+        for (AssignmentContext each : ctx.assignment()) {
+            columns.add((AssignmentSegment) visit(each));
+        }
+        return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
+    }
+    
+    @Override
+    public ASTNode visitAssignment(final AssignmentContext ctx) {
+        List<ColumnSegment> columnSegments = Collections.singletonList((ColumnSegment) visit(ctx.setTarget()));
+        ExpressionSegment expressionSegment;
+        if (null != ctx.aExpr()) {
+            expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
+        } else {
+            String value = ctx.start.getInputStream().getText(new Interval(ctx.VALUES().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
+            expressionSegment = new CommonExpressionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), value);
+        }
+        return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
     
     @Override

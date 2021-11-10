@@ -45,9 +45,9 @@ public enum ShadowOperationType {
     SELECT,
     
     /**
-     * The shadow operation is SQL note match.
+     * The shadow operation is SQL hint match.
      */
-    NOTE_MATCH;
+    HINT_MATCH;
     
     /**
      * Contains operation type.

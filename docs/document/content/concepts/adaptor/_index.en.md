@@ -16,9 +16,9 @@ ShardingSphere-JDBC defines itself as a lightweight Java framework that provides
 With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence.
 It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
-* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
+* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC;
+* Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
+* Support any kind of JDBC standard database: MySQL, PostgreSQL, Oracle, SQLServer and any JDBC adapted databases.
 
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
 
@@ -39,7 +39,7 @@ ShardingSphere-Proxy is the second product of Apache ShardingSphere.
 It defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
 Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided. It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL or PostgreSQL protocol to operate data, which is friendlier to DBAs
 
-* Totally transparent to applications, it can be used directly as MySQL/PostgreSQL.
+* Totally transparent to applications, it can be used directly as MySQL/PostgreSQL;
 * Applicable to any kind of client end that is compatible with MySQL/PostgreSQL protocol.
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)

@@ -1991,6 +1991,10 @@ REPLACE
     : R E P L A C E
     ;
 
+REPLICAS
+    : R E P L I C A S
+    ;
+
 REPLICATE_DO_DB
     : R E P L I C A T E UL_ D O UL_ D B
     ;

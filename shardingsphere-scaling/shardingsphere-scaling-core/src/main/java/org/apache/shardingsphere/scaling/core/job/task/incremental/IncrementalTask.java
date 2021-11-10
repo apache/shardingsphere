@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.channel.distribution.DistributionChannel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -46,6 +47,7 @@ import java.util.concurrent.Future;
  * Incremental task.
  */
 @Slf4j
+@ToString(exclude = {"dataSourceManager", "dumper", "progress"})
 public final class IncrementalTask extends AbstractScalingExecutor implements ScalingTask {
     
     @Getter

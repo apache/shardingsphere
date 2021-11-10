@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -131,30 +131,30 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     }
     
     /**
-     * Get related note shadow algorithms.
+     * Get related hint shadow algorithms.
      *
-     * @return related note shadow algorithms
+     * @return related hint shadow algorithms
      */
     @SuppressWarnings("unchecked")
-    public Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> getAllNoteShadowAlgorithms() {
-        Collection<NoteShadowAlgorithm<Comparable<?>>> result = shadowAlgorithms.values().stream().filter(each -> each instanceof NoteShadowAlgorithm<?>)
-                .map(each -> (NoteShadowAlgorithm<Comparable<?>>) each).collect(Collectors.toCollection(LinkedList::new));
-        if (defaultShadowAlgorithm instanceof NoteShadowAlgorithm<?>) {
-            result.add((NoteShadowAlgorithm<Comparable<?>>) defaultShadowAlgorithm);
+    public Optional<Collection<HintShadowAlgorithm<Comparable<?>>>> getAllHintShadowAlgorithms() {
+        Collection<HintShadowAlgorithm<Comparable<?>>> result = shadowAlgorithms.values().stream().filter(each -> each instanceof HintShadowAlgorithm<?>)
+                .map(each -> (HintShadowAlgorithm<Comparable<?>>) each).collect(Collectors.toCollection(LinkedList::new));
+        if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
+            result.add((HintShadowAlgorithm<Comparable<?>>) defaultShadowAlgorithm);
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     /**
-     * Get related note shadow algorithms by table name.
+     * Get related hint shadow algorithms by table name.
      *
      * @param tableName table name
-     * @return note shadow algorithms
+     * @return hint shadow algorithms
      */
     @SuppressWarnings("unchecked")
-    public Optional<Collection<NoteShadowAlgorithm<Comparable<?>>>> getRelatedNoteShadowAlgorithms(final String tableName) {
-        Collection<NoteShadowAlgorithm<Comparable<?>>> result = shadowTableRules.get(tableName).getNoteShadowAlgorithmNames().stream().map(shadowAlgorithms::get)
-                .filter(shadowAlgorithm -> !Objects.isNull(shadowAlgorithm)).map(shadowAlgorithm -> (NoteShadowAlgorithm<Comparable<?>>) shadowAlgorithm)
+    public Optional<Collection<HintShadowAlgorithm<Comparable<?>>>> getRelatedHintShadowAlgorithms(final String tableName) {
+        Collection<HintShadowAlgorithm<Comparable<?>>> result = shadowTableRules.get(tableName).getHintShadowAlgorithmNames().stream().map(shadowAlgorithms::get)
+                .filter(shadowAlgorithm -> !Objects.isNull(shadowAlgorithm)).map(shadowAlgorithm -> (HintShadowAlgorithm<Comparable<?>>) shadowAlgorithm)
                 .collect(Collectors.toCollection(LinkedList::new));
         return result.isEmpty() ? Optional.of(result) : Optional.of(result);
     }

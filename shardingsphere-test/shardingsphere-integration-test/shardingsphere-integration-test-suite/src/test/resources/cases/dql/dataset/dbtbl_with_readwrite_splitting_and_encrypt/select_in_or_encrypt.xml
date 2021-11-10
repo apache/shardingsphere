@@ -18,9 +18,10 @@
 <dataset>
     <metadata>
         <column name="user_id" />
+        <column name="address_id" />
         <column name="pwd" />
         <column name="status" />
     </metadata>
-    <row values="10, a10, init_read" />
-    <row values="11, b11, init_read" />
+    <row values="10, 10001, a10, init_read" />
+    <row values="11, 11001, b11, init_read" />
 </dataset>

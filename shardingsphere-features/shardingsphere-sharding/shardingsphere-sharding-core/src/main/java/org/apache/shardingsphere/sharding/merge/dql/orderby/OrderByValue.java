@@ -95,7 +95,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
      * iterate next data.
      *
      * @return has next data
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     public boolean next() throws SQLException {
         boolean result = queryResult.next();

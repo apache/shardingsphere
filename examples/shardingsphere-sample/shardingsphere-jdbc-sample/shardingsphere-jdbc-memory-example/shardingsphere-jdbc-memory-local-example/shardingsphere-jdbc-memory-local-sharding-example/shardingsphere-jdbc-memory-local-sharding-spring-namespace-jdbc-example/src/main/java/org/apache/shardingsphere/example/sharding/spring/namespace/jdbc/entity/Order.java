@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.sharding.spring.namespace.jdbc.entity;
 import java.io.Serializable;
 
 public class Order implements Serializable {
-
+    
     private static final long serialVersionUID = 8306802022239174861L;
     
     private long orderId;

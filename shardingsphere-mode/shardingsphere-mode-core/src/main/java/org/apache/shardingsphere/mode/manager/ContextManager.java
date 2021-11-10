@@ -153,6 +153,16 @@ public final class ContextManager implements AutoCloseable {
         refreshMetaDataContext(schemaName, dataSourceConfigs);
     }
     
+    /**
+     * Drop resource.
+     *
+     * @param schemaName schema name
+     * @param toBeDroppedResourceNames to be dropped resource names
+     */
+    public void dropResource(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+        toBeDroppedResourceNames.forEach(metaDataContexts.getMetaData(schemaName).getResource().getDataSources()::remove);
+    }
+    
     private void refreshMetaDataContext(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) throws SQLException {
         MetaDataContexts changedMetaDataContext = buildChangedMetaDataContext(metaDataContexts.getMetaDataMap().get(schemaName), dataSourceConfigs);
         metaDataContexts.getMetaDataMap().putAll(changedMetaDataContext.getMetaDataMap());

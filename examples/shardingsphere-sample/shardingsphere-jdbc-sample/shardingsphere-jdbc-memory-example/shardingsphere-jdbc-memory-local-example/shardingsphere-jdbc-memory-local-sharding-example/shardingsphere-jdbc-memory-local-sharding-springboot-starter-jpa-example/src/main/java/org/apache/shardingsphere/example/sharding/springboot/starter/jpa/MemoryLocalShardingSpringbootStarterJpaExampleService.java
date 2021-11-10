@@ -34,7 +34,7 @@ public final class MemoryLocalShardingSpringbootStarterJpaExampleService {
     /**
      * Execute test.
      */
-    public void processSuccess() {
+    public void run() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
