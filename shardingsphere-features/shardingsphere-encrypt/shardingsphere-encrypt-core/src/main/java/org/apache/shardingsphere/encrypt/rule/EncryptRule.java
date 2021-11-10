@@ -31,6 +31,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -290,5 +292,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     @Override
     public String getType() {
         return EncryptRule.class.getSimpleName();
+    }
+    
+    /**
+     * Set up encryptor schema.
+     * 
+     * @param schema schema
+     */
+    public void setUpEncryptorSchema(final ShardingSphereSchema schema) {
+        for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
+            if (each instanceof SchemaMetaDataAware) {
+                ((SchemaMetaDataAware) each).setSchema(schema);
+            }
+        }
     }
 }
