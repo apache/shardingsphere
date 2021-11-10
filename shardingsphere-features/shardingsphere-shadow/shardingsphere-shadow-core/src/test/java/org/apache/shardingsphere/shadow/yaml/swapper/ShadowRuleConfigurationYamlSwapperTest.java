@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.swapper;
+package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 

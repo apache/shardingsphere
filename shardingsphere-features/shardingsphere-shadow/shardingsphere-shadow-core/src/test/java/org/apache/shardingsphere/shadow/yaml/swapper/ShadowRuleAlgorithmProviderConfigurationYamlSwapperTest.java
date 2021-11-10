@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.swapper;
+package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.swapper;
+package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
