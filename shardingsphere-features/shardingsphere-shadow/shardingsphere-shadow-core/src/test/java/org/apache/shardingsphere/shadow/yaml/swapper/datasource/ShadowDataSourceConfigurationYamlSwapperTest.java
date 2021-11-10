@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.swapper.datasource;
+package org.apache.shardingsphere.shadow.yaml.swapper.datasource;
 
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.datasource.ShadowDataSourceConfigurationYamlSwapper;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

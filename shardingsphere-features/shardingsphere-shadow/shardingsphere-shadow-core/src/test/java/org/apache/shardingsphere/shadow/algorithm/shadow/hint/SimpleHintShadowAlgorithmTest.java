@@ -49,6 +49,7 @@ public final class SimpleHintShadowAlgorithmTest {
     }
     
     private void assertFalseCase() {
+        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, "/*shadow:true*/")), is(false));
         assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/**/")), is(false));
         assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/*")), is(false));
         assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("aaa  = bbb")), is(false));
@@ -71,5 +72,10 @@ public final class SimpleHintShadowAlgorithmTest {
         shadowTableNames.add("t_user");
         shadowTableNames.add("t_order");
         return shadowTableNames;
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(shadowAlgorithm.getType(), is("SIMPLE_HINT"));
     }
 }

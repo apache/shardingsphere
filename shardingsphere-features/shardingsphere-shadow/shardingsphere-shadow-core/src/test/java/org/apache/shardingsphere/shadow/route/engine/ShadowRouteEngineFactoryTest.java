@@ -20,9 +20,18 @@ package org.apache.shardingsphere.shadow.route.engine;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRoutingEngine;
 import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRoutingEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRoutingEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRoutingEngine;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,13 +43,37 @@ public final class ShadowRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ShadowRouteEngine shadowRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSqlStatementContext(), "", Lists.newArrayList()));
-        assertThat(shadowRouteEngine instanceof ShadowInsertStatementRoutingEngine, is(true));
+        ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createInsertSqlStatementContext(), "", Lists.newArrayList()));
+        assertThat(shadowInsertRouteEngine instanceof ShadowInsertStatementRoutingEngine, is(true));
+        ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createUpdateSqlStatementContext(), "", Lists.newArrayList()));
+        assertThat(shadowUpdateRouteEngine instanceof ShadowUpdateStatementRoutingEngine, is(true));
+        ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createDeleteSqlStatementContext(), "", Lists.newArrayList()));
+        assertThat(shadowDeleteRouteEngine instanceof ShadowDeleteStatementRoutingEngine, is(true));
+        ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSelectSqlStatementContext(), "", Lists.newArrayList()));
+        assertThat(shadowSelectRouteEngine instanceof ShadowSelectStatementRoutingEngine, is(true));
     }
     
-    private SQLStatementContext<InsertStatement> createSqlStatementContext() {
+    private SQLStatementContext<InsertStatement> createInsertSqlStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
+        return result;
+    }
+    
+    private SQLStatementContext<UpdateStatement> createUpdateSqlStatementContext() {
+        UpdateStatementContext result = mock(UpdateStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
+        return result;
+    }
+    
+    private SQLStatementContext<DeleteStatement> createDeleteSqlStatementContext() {
+        DeleteStatementContext result = mock(DeleteStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(mock(DeleteStatement.class));
+        return result;
+    }
+    
+    private SQLStatementContext<SelectStatement> createSelectSqlStatementContext() {
+        SelectStatementContext result = mock(SelectStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         return result;
     }
 }

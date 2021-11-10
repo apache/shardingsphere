@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.swapper.table;
+package org.apache.shardingsphere.shadow.yaml.swapper.table;
 
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.table.ShadowTableConfigurationYamlSwapper;
 import org.junit.Test;
 
 import java.util.Arrays;
