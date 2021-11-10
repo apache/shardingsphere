@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -77,24 +77,15 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final Collection<ExpressionSegment> predicates,
                                                                        final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap = new HashMap<>();
+        SubqueryTableContext subqueryTableContext = new SubqueryTableContext();
         if (sqlStatementContext instanceof SelectStatementContext) {
-            rewriteMetaDataMap = ((SelectStatementContext) sqlStatementContext).getRewriteMetaDataMap();
-            if (null == rewriteMetaDataMap) {
-                rewriteMetaDataMap = new HashMap<>();
-            }
+            subqueryTableContext = ((SelectStatementContext) sqlStatementContext).getSubqueryTableContext();
         }
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
-                if (!rewriteMetaDataMap.isEmpty()) {
-                    Map<String, Map<String, String>> rewritedColumnMap = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
-                    if (null != rewritedColumnMap && rewritedColumnMap.containsKey(column.getIdentifier().getValue())) {
-                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(rewritedColumnMap.get(column.getIdentifier().getValue()).get("assistedQueryColumn"))));
-                        continue;
-                    }
-                }
+                subqueryTableContext.getAssistedQueryColumn(column).ifPresent(item -> result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(item))));
                 Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, column);
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                     continue;

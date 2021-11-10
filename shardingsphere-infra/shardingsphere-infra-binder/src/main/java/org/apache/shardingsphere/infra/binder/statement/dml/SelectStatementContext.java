@@ -86,7 +86,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final List<Object> parameters;
 
     @Setter
-    private Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap;
+    private SubqueryTableContext subqueryTableContext;
 
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);

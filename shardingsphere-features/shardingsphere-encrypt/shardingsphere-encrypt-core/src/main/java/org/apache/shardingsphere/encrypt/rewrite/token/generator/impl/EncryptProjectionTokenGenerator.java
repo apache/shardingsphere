@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Sho
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SubqueryTableContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -46,11 +47,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -74,69 +73,68 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap = new HashMap<>();
+        SubqueryTableContext subqueryTableContext = new SubqueryTableContext();
         if (sqlStatementContext instanceof InsertStatementContext) {
             result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), SubqueryEnum.InsertSelectSubquery,
-                    rewriteMetaDataMap));
+                    subqueryTableContext));
         }
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            result.addAll(generateSQLTokens(selectStatementContext, rewriteMetaDataMap));
-            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), SubqueryEnum.None, rewriteMetaDataMap));
+            result.addAll(generateSQLTokens(selectStatementContext, subqueryTableContext));
+            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), SubqueryEnum.None, subqueryTableContext));
         }
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, 
-                                                                       final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final SubqueryTableContext subqueryTableContext) {
         if (!selectStatementContext.isContainsSubquery()) {
             return Collections.emptyList();
         }
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         result.addAll(SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).stream().map(
-            each -> generateSQLTokens(selectStatementContext, each, rewriteMetaDataMap)).flatMap(Collection::stream).collect(Collectors.toList()));
+            each -> generateSQLTokens(selectStatementContext, each, subqueryTableContext)).flatMap(Collection::stream).collect(Collectors.toList()));
         result.addAll(SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).stream().map(
-            each -> generateSQLTokens(selectStatementContext, each, SubqueryEnum.ProjectionSubqery, rewriteMetaDataMap)).flatMap(Collection::stream).collect(Collectors.toList()));
+            each -> generateSQLTokens(selectStatementContext, each, SubqueryEnum.ProjectionSubqery, subqueryTableContext)).flatMap(Collection::stream).collect(Collectors.toList()));
         selectStatementContext.getWhere().ifPresent(where -> result.addAll(SubqueryExtractUtil.getSubquerySegmentsFromExpression(where.getExpr()).stream().map(
-            each -> generateSQLTokens(selectStatementContext, each, SubqueryEnum.ExpressionSubqery, rewriteMetaDataMap)).flatMap(Collection::stream).collect(Collectors.toList())));
+            each -> generateSQLTokens(selectStatementContext, each, SubqueryEnum.ExpressionSubqery, subqueryTableContext)).flatMap(Collection::stream).collect(Collectors.toList())));
         return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final SubquerySegment subquerySegment, 
-                                                                       final SubqueryEnum subqueryEnum, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+                                                                       final SubqueryEnum subqueryEnum, final SubqueryTableContext subqueryTableContext) {
         return generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subquerySegment.getSelect(),
-                   selectStatementContext.getSchemaName()), Optional.empty(), subqueryEnum, rewriteMetaDataMap);
+                   selectStatementContext.getSchemaName()), Optional.empty(), subqueryEnum, subqueryTableContext);
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final SubqueryTableSegment subqueryTableSegment, 
-                                                                       final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+                                                                       final SubqueryTableContext subqueryTableContext) {
         return generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subqueryTableSegment.getSubquery().getSelect(),
-                   selectStatementContext.getSchemaName()), subqueryTableSegment.getAlias(), SubqueryEnum.NestedProjectionTabsegmentSubquery, rewriteMetaDataMap);
+                   selectStatementContext.getSchemaName()), subqueryTableSegment.getAlias(), SubqueryEnum.NestedProjectionTabsegmentSubquery, subqueryTableContext);
     }
 
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final Optional<String> alias,
-                                                                       final SubqueryEnum subqueryEnum, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+                                                                       final SubqueryEnum subqueryEnum, final SubqueryTableContext subqueryTableContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             getEncryptRule().findEncryptTable(each).map(optional -> generateSQLTokens(projectionsSegment, each, selectStatementContext, optional, alias, subqueryEnum,
-                    rewriteMetaDataMap)).ifPresent(result::addAll);
+                    subqueryTableContext)).ifPresent(result::addAll);
         }
-        selectStatementContext.setRewriteMetaDataMap(rewriteMetaDataMap);
+        selectStatementContext.setSubqueryTableContext(subqueryTableContext);
         return result;
     }
     
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, final SelectStatementContext selectStatementContext,
-            final EncryptTable encryptTable, final Optional<String> alias, final SubqueryEnum subqueryEnum, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+            final EncryptTable encryptTable, final Optional<String> alias, final SubqueryEnum subqueryEnum, final SubqueryTableContext subqueryTableContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
-                if (!rewriteMetaDataMap.isEmpty() && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
-                    result.addAll(generateSQLTokens(each, rewriteMetaDataMap));
+                if (!subqueryTableContext.isEmpty() && ((ColumnProjectionSegment) each).getColumn().getOwner().isPresent()) {
+                    result.addAll(generateSQLTokens(each, subqueryTableContext));
                 }
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())
                         && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
-                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, subqueryEnum, rewriteMetaDataMap));
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName, alias, subqueryEnum, subqueryTableContext));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
@@ -149,16 +147,12 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
 
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionSegment each, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionSegment each, final SubqueryTableContext subqueryTableContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         ColumnSegment column = ((ColumnProjectionSegment) each).getColumn();
         int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
         int stopIndex = column.getStopIndex();
-        Map<String, Map<String, String>> rewritedColumnMap = rewriteMetaDataMap.get(column.getOwner().get().getIdentifier().getValue());
-        if (null != rewritedColumnMap && rewritedColumnMap.containsKey(column.getIdentifier().getValue())) {
-            result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(rewritedColumnMap.get(column.getIdentifier().getValue()).get("cipherColumn"),
-                    column.getIdentifier().getValue())));
-        }
+        subqueryTableContext.getCipherColumn(column).ifPresent(item -> result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(item, column.getIdentifier().getValue()))));
         return result;
     }
 
@@ -209,10 +203,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
 
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final SubqueryEnum subqueryEnum,
-                                                          final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+                                                          final SubqueryTableContext subqueryTableContext) {
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
         Collection<ColumnProjection> projections = getColumnProjections(segment, tableName, alias, encryptColumnName, subqueryEnum,
-                rewriteMetaDataMap);
+                subqueryTableContext);
         return segment.getColumn().getOwner().isPresent()
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections)
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
@@ -233,7 +227,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
 
     private Collection<ColumnProjection> getColumnProjections(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final String encryptColumnName,
-                                                              final SubqueryEnum subqueryEnum, final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+                                                              final SubqueryEnum subqueryEnum, final SubqueryTableContext subqueryTableContext) {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (SubqueryEnum.InsertSelectSubquery.equals(subqueryEnum)) {
             result.addAll(getColumnProjectionsForInsertSelect(segment, tableName, encryptColumnName));
@@ -243,7 +237,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         }
         if (SubqueryEnum.NestedProjectionTabsegmentSubquery.equals(subqueryEnum)) {
             result.add(columnProjection(null, encryptColumnName, null));
-            result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, rewriteMetaDataMap));
+            result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, subqueryTableContext));
         }
         if (SubqueryEnum.ExpressionSubqery.equals(subqueryEnum)) {
             result.addAll(getColumnProjectionsForInExpression(segment, tableName));
@@ -272,18 +266,13 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
 
-    private Collection<ColumnProjection> getColumnProjectionsForSubqueryProjectionOrTabSegment(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias,
-                                                                                               final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap) {
+    private Collection<ColumnProjection> getColumnProjectionsForSubqueryProjectionOrTabSegment(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, 
+                                                                                               final SubqueryTableContext subqueryTableContext) {
         Collection<ColumnProjection> result = new LinkedList<>();
         String plainColumn = segment.getColumn().getIdentifier().getValue();
         Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, plainColumn);
         assistedQueryColumn.ifPresent(each -> result.add(new ColumnProjection(null, assistedQueryColumn.get(), null)));
-        Map<String, String> rewriteColumnMap = new HashMap<>();
-        rewriteColumnMap.put("cipherColumn", getEncryptColumnName(tableName, plainColumn));
-        alias.ifPresent(item -> {
-            rewriteColumnMap.put("assistedQueryColumn", assistedQueryColumn.get());
-            rewriteMetaDataMap.put(alias.get(), Collections.singletonMap(plainColumn, rewriteColumnMap));
-        });
+        subqueryTableContext.put(alias, plainColumn, getEncryptColumnName(tableName, plainColumn), assistedQueryColumn);
         return result;
     }
 
