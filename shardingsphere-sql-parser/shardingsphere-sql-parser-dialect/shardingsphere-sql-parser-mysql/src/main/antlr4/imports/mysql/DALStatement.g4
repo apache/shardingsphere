@@ -346,11 +346,11 @@ binlog
     ;
 
 cacheIndex
-    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN (identifier | DEFAULT)
+    : CACHE INDEX (cacheTableIndexList (COMMA_ cacheTableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN (identifier | DEFAULT)
     ;
 
-tableIndexList
-    : tableName ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
+cacheTableIndexList
+    : tableName ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)?
     ;
 
 partitionList
@@ -376,7 +376,11 @@ kill
     ;
 
 loadIndexInfo
-    : LOAD INDEX INTO CACHE tableIndexList (COMMA_ tableIndexList)*
+    : LOAD INDEX INTO CACHE loadTableIndexList (COMMA_ loadTableIndexList)*
+    ;
+
+loadTableIndexList
+    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
     ;
 
 resetStatement
