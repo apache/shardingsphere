@@ -125,6 +125,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereCl
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TrimFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValuesFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
@@ -739,88 +742,104 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
+        FunctionSegment functionSegment;
         if (null != ctx.groupConcatFunction()) {
-            return visit(ctx.groupConcatFunction());
+            functionSegment = (FunctionSegment) visit(ctx.groupConcatFunction());
+        } else if (null != ctx.windowFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.windowFunction());
+        } else if (null != ctx.castFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.castFunction());
+        } else if (null != ctx.convertFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.convertFunction());
+        } else if (null != ctx.positionFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.positionFunction());
+        } else if (null != ctx.substringFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.substringFunction());
+        } else if (null != ctx.extractFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.extractFunction());
+        } else if (null != ctx.charFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.charFunction());
+        } else if (null != ctx.trimFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.trimFunction());
+        } else if (null != ctx.weightStringFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.weightStringFunction());
+        } else if (null != ctx.valuesFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.valuesFunction());
+        } else if (null != ctx.currentUserFunction()) {
+            functionSegment = (FunctionSegment) visit(ctx.currentUserFunction());
+        } else {
+            functionSegment = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
         }
-        if (null != ctx.windowFunction()) {
-            return visit(ctx.windowFunction());
-        }
-        if (null != ctx.castFunction()) {
-            return visit(ctx.castFunction());
-        }
-        if (null != ctx.convertFunction()) {
-            return visit(ctx.convertFunction());
-        }
-        if (null != ctx.positionFunction()) {
-            return visit(ctx.positionFunction());
-        }
-        if (null != ctx.substringFunction()) {
-            return visit(ctx.substringFunction());
-        }
-        if (null != ctx.extractFunction()) {
-            return visit(ctx.extractFunction());
-        }
-        if (null != ctx.charFunction()) {
-            return visit(ctx.charFunction());
-        }
-        if (null != ctx.weightStringFunction()) {
-            return visit(ctx.weightStringFunction());
-        }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), functionSegment);
     }
     
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         super.visitWindowFunction(ctx);
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.POSITION().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null == ctx.SUBSTR() ? ctx.SUBSTRING().getText() : ctx.SUBSTR().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
     }
     
     @Override
     public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.WEIGHT_STRING().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitValuesFunction(final ValuesFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitCurrentUserFunction(final CurrentUserFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURRENT_USER().getText(), getOriginalText(ctx));
     }
     
     @Override

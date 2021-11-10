@@ -896,11 +896,11 @@ distinct
     ;
     
 overClause
-    : OVER (LP_ windowSpecification RP_ | identifier)
+    : OVER (windowSpecification | identifier)
     ;
     
 windowSpecification
-    : identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause?
+    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
     ;
     
 frameClause
@@ -1007,7 +1007,8 @@ charFunction
     ;
     
 trimFunction
-    : TRIM LP_ (LEADING | BOTH | TRAILING) string_ FROM string_ RP_
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) string_? FROM)? string_ RP_
+    | TRIM LP_ (string_ FROM)? string_ RP_
     ;
     
 valuesFunction
