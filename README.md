@@ -57,11 +57,11 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ## Status:
 
-:white_check_mark: Version 5.0.0-beta: released, stable enough & anyone can sign up :tada:
+:white_check_mark: Version 5.0.0: released, stable enough & anyone can sign up :tada:
 
-:soon: Version 5.0.0-RC1
+:soon: Version 5.0.1
 
-We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
+We are currently working towards our 5.0.1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 ## How it Works:
 
