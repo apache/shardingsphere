@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Properties;
 
@@ -29,13 +31,15 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Integer, Integer> {
+public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
     
     private static final String TEST_KEY = "TEST";
     
     private Properties props = new Properties();
     
     private byte[] key = DigestUtils.sha256(TEST_KEY);
+    
+    private ShardingSphereSchema schema;
     
     @Override
     public void init() {
@@ -80,5 +84,10 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
         result[2] = (byte) (intValue >>> 8);
         result[3] = (byte) intValue;
         return result;
+    }
+    
+    @Override
+    public void setSchema(final ShardingSphereSchema schema) {
+        this.schema = schema;
     }
 }
