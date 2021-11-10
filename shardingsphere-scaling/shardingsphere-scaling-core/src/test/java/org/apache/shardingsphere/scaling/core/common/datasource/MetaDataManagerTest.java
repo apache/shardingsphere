@@ -58,7 +58,7 @@ public final class MetaDataManagerTest {
     
     private static final String TEST_TABLE = "test";
     
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
     @Mock
