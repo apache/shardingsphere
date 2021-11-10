@@ -97,4 +97,5 @@
     </show-procedure-code>
     <show-relaylog-events sql-case-id="show_relaylog_events" channel="TEST_CHANNEL" /> 
     <show-relaylog-events sql-case-id="show_relaylog_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
+    <show-slave-hosts sql-case-id="show_slave_hosts" />
 </sql-parser-test-cases>
