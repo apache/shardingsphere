@@ -810,6 +810,18 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')">
+                                                    <parameter>
+                                                        <literal-expression value="%%" start-index="74" stop-index="77" />
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" start-index="80" stop-index="80" literal-start-index="80" literal-stop-index="85" />
+                                                        <parameter-marker-expression value="0" start-index="80" stop-index="80" />
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" start-index="83" stop-index="86" literal-start-index="88" literal-stop-index="91" />
+                                                    </parameter>
+                                                </function>
                                                 <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" />
                                             </items>
                                         </list-expression>
@@ -2674,18 +2686,14 @@
                 <expr>
                     <function function-name="CONCAT" start-index="7" stop-index="37" text="CONCAT(LEFT(status, 7), 'test')">
                         <parameter>
-                            <expression-projection start-index="14" stop-index="28" text="LEFT(status, 7)">
-                                <expr>
-                                    <function function-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
-                                        <parameter>
-                                            <column name="status" start-index="19" stop-index="24" />
-                                        </parameter>
-                                        <parameter>
-                                            <literal-expression value="7" start-index="27" stop-index="27" />
-                                        </parameter>
-                                    </function>
-                                </expr>
-                            </expression-projection>
+                            <function function-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
+                                <parameter>
+                                    <column name="status" start-index="19" stop-index="24" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="7" start-index="27" stop-index="27" />
+                                </parameter>
+                            </function>
                         </parameter>
                         <parameter>
                             <literal-expression value="test" start-index="31" stop-index="36" />
@@ -2730,18 +2738,14 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="47">
                     <left>
-                        <expression-projection text="MOD(order_id, 1)" start-index="28" stop-index="43">
-                            <expr>
-                                <function function-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
-                                    <parameter>
-                                        <column name="order_id" start-index="32" stop-index="39" />
-                                    </parameter>
-                                    <parameter>
-                                        <literal-expression value="1" start-index="42" stop-index="42" />
-                                    </parameter>
-                                </function>
-                            </expr>
-                        </expression-projection>
+                        <function function-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
+                            <parameter>
+                                <column name="order_id" start-index="32" stop-index="39" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="1" start-index="42" stop-index="42" />
+                            </parameter>
+                        </function>
                     </left>
                     <operator>=</operator>
                     <right>
@@ -2763,22 +2767,14 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="79">
                     <left>
-                        <expression-projection text="DATE_FORMAT(current_date, '%Y-%m-%d')" start-index="28" stop-index="64">
-                            <expr>
-                                <function function-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
-                                    <parameter>
-                                        <expression-projection text="current_date" start-index="40" stop-index="51">
-                                            <expr>
-                                                <function function-name="current_date" start-index="40" stop-index="51" text="current_date"/>
-                                            </expr>
-                                        </expression-projection>
-                                    </parameter>
-                                    <parameter>
-                                        <literal-expression value="%Y-%m-%d" start-index="54" stop-index="63" />
-                                    </parameter>
-                                </function>
-                            </expr>
-                        </expression-projection>
+                        <function function-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
+                            <parameter>
+                                <function function-name="current_date" start-index="40" stop-index="51" text="current_date"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="%Y-%m-%d" start-index="54" stop-index="63" />
+                            </parameter>
+                        </function>
                     </left>
                     <operator>=</operator>
                     <right>
@@ -2800,40 +2796,28 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="106">
                     <left>
-                        <expression-projection text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))" start-index="28" stop-index="101">
-                            <expr>
-                                <function function-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
+                        <function function-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
+                            <parameter>
+                                <function function-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
                                     <parameter>
-                                        <expression-projection start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
-                                            <expr>
-                                                <function function-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
-                                                    <parameter>
-                                                        <literal-expression value="113.358772" start-index="53" stop-index="62" />
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="23.1273723" start-index="65" stop-index="74" />
-                                                    </parameter>
-                                                </function>
-                                            </expr>
-                                        </expression-projection>
+                                        <literal-expression value="113.358772" start-index="53" stop-index="62" />
                                     </parameter>
                                     <parameter>
-                                        <expression-projection start-index="78" stop-index="100" text="POINT(user_id,order_id)">
-                                            <expr>
-                                                <function function-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
-                                                    <parameter>
-                                                        <column name="user_id" start-index="84" stop-index="90" />
-                                                    </parameter>
-                                                    <parameter>
-                                                        <column name="order_id" start-index="92" stop-index="99" />
-                                                    </parameter>
-                                                </function>
-                                            </expr>
-                                        </expression-projection>
+                                        <literal-expression value="23.1273723" start-index="65" stop-index="74" />
                                     </parameter>
                                 </function>
-                            </expr>
-                        </expression-projection>
+                            </parameter>
+                            <parameter>
+                                <function function-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
+                                    <parameter>
+                                        <column name="user_id" start-index="84" stop-index="90" />
+                                    </parameter>
+                                    <parameter>
+                                        <column name="order_id" start-index="92" stop-index="99" />
+                                    </parameter>
+                                </function>
+                            </parameter>
+                        </function>
                     </left>
                     <operator>!=</operator>
                     <right>
@@ -3378,11 +3362,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_DATE" start-index="35" stop-index="46">
-                            <expr>
-                                <function function-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3404,11 +3384,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_DATE()" start-index="35" stop-index="48">
-                            <expr>
-                                <function function-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3430,11 +3406,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_TIME" start-index="35" stop-index="46">
-                            <expr>
-                                <function function-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3456,11 +3428,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_TIME()" start-index="35" stop-index="48">
-                            <expr>
-                                <function function-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>

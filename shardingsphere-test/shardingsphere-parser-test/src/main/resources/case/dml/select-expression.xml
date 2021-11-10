@@ -1328,11 +1328,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="43">
                     <left>
-                        <expression-projection text="now()" start-index="28" stop-index="32">
-                            <expr>
-                                <function function-name="now" start-index="28" stop-index="32" text="now()" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="now" start-index="28" stop-index="32" text="now()" />
                     </left>
                     <operator>&lt;</operator>
                     <right>

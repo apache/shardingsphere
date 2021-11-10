@@ -742,35 +742,43 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
-        FunctionSegment functionSegment;
         if (null != ctx.groupConcatFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.groupConcatFunction());
-        } else if (null != ctx.windowFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.windowFunction());
-        } else if (null != ctx.castFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.castFunction());
-        } else if (null != ctx.convertFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.convertFunction());
-        } else if (null != ctx.positionFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.positionFunction());
-        } else if (null != ctx.substringFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.substringFunction());
-        } else if (null != ctx.extractFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.extractFunction());
-        } else if (null != ctx.charFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.charFunction());
-        } else if (null != ctx.trimFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.trimFunction());
-        } else if (null != ctx.weightStringFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.weightStringFunction());
-        } else if (null != ctx.valuesFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.valuesFunction());
-        } else if (null != ctx.currentUserFunction()) {
-            functionSegment = (FunctionSegment) visit(ctx.currentUserFunction());
-        } else {
-            functionSegment = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
+            return visit(ctx.groupConcatFunction());
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), functionSegment);
+        if (null != ctx.windowFunction()) {
+            return visit(ctx.windowFunction());
+        }
+        if (null != ctx.castFunction()) {
+            return visit(ctx.castFunction());
+        }
+        if (null != ctx.convertFunction()) {
+            return visit(ctx.convertFunction());
+        }
+        if (null != ctx.positionFunction()) {
+            return visit(ctx.positionFunction());
+        }
+        if (null != ctx.substringFunction()) {
+            return visit(ctx.substringFunction());
+        }
+        if (null != ctx.extractFunction()) {
+            return visit(ctx.extractFunction());
+        }
+        if (null != ctx.charFunction()) {
+            return visit(ctx.charFunction());
+        }
+        if (null != ctx.trimFunction()) {
+            return visit(ctx.trimFunction());
+        }
+        if (null != ctx.weightStringFunction()) {
+            return visit(ctx.weightStringFunction());
+        }
+        if (null != ctx.valuesFunction()) {
+            return visit(ctx.valuesFunction());
+        }
+        if (null != ctx.currentUserFunction()) {
+            return visit(ctx.currentUserFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
     }
     
     @Override
@@ -844,9 +852,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        FunctionSegment functionSegment = null != ctx.completeRegularFunction() ? (FunctionSegment) visit(ctx.completeRegularFunction()) : (FunctionSegment) visit(ctx.shorthandRegularFunction());
-        // TODO Function call should return function segment.
-        return new ExpressionProjectionSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment.getText(), functionSegment);
+        return null != ctx.completeRegularFunction() ? visit(ctx.completeRegularFunction()) : visit(ctx.shorthandRegularFunction());
     }
     
     @Override
