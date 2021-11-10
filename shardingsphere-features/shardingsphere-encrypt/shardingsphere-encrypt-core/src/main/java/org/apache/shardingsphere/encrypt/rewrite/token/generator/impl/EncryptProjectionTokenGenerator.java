@@ -152,7 +152,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         ColumnSegment column = ((ColumnProjectionSegment) each).getColumn();
         int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
         int stopIndex = column.getStopIndex();
-        subqueryTableContext.getCipherColumn(column).ifPresent(item -> result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(item, column.getIdentifier().getValue()))));
+        subqueryTableContext.getCipherColumn(column).ifPresent(item -> 
+            result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(item, column.getIdentifier().getValue()))));
         return result;
     }
 
