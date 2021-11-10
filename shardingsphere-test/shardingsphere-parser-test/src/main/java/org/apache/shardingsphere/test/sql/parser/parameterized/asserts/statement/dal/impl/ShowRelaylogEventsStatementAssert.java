@@ -31,13 +31,13 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowRelaylogEventsStatementAssert {
-
+    
     /**
      * Assert show relay log events statement is correct with expected show relay log events statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual show relay log events statement
-     * @param expected      expected show relay log events statement test case
+     * @param actual actual show relay log events statement
+     * @param expected expected show relay log events statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowRelaylogEventsStatement actual, final ShowRelaylogEventsStatementTestCase expected) {
         assertThat(assertContext.getText("Actual show relay log channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));

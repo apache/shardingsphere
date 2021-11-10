@@ -31,13 +31,13 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLResetPersistStatementAssert {
-
+    
     /**
      * Assert reset persist statement is correct with expected reset persist statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual reset persist statement
-     * @param expected      expected reset persist statement test case
+     * @param actual actual reset persist statement
+     * @param expected expected reset persist statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetPersistStatement actual, final ResetPersistStatementTestCase expected) {
         assertThat(assertContext.getText("Actual reset persist exist clause does not match: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowEncryptRulesStatementAssert {
-
+    
     /**
      * Assert Show encrypt rule statement is correct with expected parser result.
      *
