@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, Literals, PostgreSQLKeyword, BaseRule;
 
 insert
     : withClause? INSERT INTO insertTarget insertRest optOnConflict? returningClause?
