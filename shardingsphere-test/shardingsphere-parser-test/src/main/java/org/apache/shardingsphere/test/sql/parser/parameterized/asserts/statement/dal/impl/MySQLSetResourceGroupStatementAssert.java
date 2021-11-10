@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLSetResourceGroupStatementAssert {
-
+    
     /**
      * Assert set resource group statement is correct with expected parser result.
      *

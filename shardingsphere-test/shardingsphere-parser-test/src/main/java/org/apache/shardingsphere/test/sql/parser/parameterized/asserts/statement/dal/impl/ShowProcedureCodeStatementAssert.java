@@ -30,13 +30,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcedureCodeStatementAssert {
-
+    
     /**
      * Assert show procedure code statement is correct with expected show procedure code statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual show procedure code statement
-     * @param expected      expected show procedure code statement test case
+     * @param actual actual show procedure code statement
+     * @param expected expected show procedure code statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowProcedureCodeStatement actual, final ShowProcedureCodeStatementTestCase expected) {
         ExpressionAssert.assertFunction(assertContext, actual.getFunction(), expected.getFunction());

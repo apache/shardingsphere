@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShadowTableRulesStatementAssert {
-
+    
     /**
      * Assert show shadow table rules statement is correct with expected parser result.
      *

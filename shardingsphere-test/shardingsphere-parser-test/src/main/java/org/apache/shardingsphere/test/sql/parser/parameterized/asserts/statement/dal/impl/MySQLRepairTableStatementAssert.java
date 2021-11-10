@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLRepairTableStatementAssert {
-
+    
     /**
      * Assert repair table statement is correct with expected parser result.
      *

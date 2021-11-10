@@ -46,13 +46,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DMLStatementAssert {
-
+    
     /**
      * Assert DML statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual DML statement
-     * @param expected      expected parser result
+     * @param actual actual DML statement
+     * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SelectStatement) {
