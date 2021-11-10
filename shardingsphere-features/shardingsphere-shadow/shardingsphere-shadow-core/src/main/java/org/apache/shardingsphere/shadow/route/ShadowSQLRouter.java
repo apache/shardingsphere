@@ -22,9 +22,15 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngineFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Shadow SQL router.
@@ -40,13 +46,31 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+        doDecorate(routeContext, rule);
         if (rule.isEnable()) {
-            doShadowDecorate(routeContext, logicSQL, rule, props);
+            doShadowDecorate(routeContext, logicSQL, rule);
         }
     }
     
-    private void doShadowDecorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
-        ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, rule);
+    private void doDecorate(final RouteContext routeContext, final ShadowRule shadowRule) {
+        Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
+        Collection<RouteUnit> toBeAdded = new LinkedList<>();
+        for (RouteUnit each : routeUnits) {
+            String logicName = each.getDataSourceMapper().getLogicName();
+            String actualName = each.getDataSourceMapper().getActualName();
+            Optional<String> sourceDataSourceName = shadowRule.getSourceDataSourceName(actualName);
+            if (sourceDataSourceName.isPresent()) {
+                toBeRemoved.add(each);
+                toBeAdded.add(new RouteUnit(new RouteMapper(logicName, sourceDataSourceName.get()), each.getTableMappers()));
+            }
+        }
+        routeUnits.removeAll(toBeRemoved);
+        routeUnits.addAll(toBeAdded);
+    }
+    
+    private void doShadowDecorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule shadowRule) {
+        ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, shadowRule);
     }
     
     @Override

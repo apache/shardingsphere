@@ -32,9 +32,7 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -192,14 +190,36 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
      * @return all shadow data source mappings
      */
     public Map<String, String> getAllShadowDataSourceMappings() {
-        return shadowDataSourceMappings.values().stream().collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, ShadowDataSourceRule::getShadowDataSource, (key, value) -> value,
-                LinkedHashMap::new));
+        return shadowDataSourceMappings.values().stream()
+                .collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, ShadowDataSourceRule::getShadowDataSource, (a, b) -> b, LinkedHashMap::new));
+    }
+    
+    /**
+     * Get source data source name.
+     *
+     * @param actualDataSourceName actual data source name
+     * @return source data source name
+     */
+    public Optional<String> getSourceDataSourceName(final String actualDataSourceName) {
+        ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(actualDataSourceName);
+        if (null != shadowDataSourceRule) {
+            return Optional.of(shadowDataSourceRule.getSourceDataSource());
+        }
+        return Optional.empty();
     }
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        return shadowDataSourceMappings.values().stream().collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, each ->
-                Arrays.asList(each.getSourceDataSource(), each.getShadowDataSource()), (key, value) -> value, () -> new HashMap<>(shadowDataSourceMappings.size(), 1)));
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        shadowDataSourceMappings.forEach((key, value) -> result.put(key, createShadowDataSources(value)));
+        return result;
+    }
+    
+    private Collection<String> createShadowDataSources(final ShadowDataSourceRule shadowDataSourceRule) {
+        Collection<String> result = new LinkedList<>();
+        result.add(shadowDataSourceRule.getSourceDataSource());
+        result.add(shadowDataSourceRule.getShadowDataSource());
+        return result;
     }
     
     @Override
