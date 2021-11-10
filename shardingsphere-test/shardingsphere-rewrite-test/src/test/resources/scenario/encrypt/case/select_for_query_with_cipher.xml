@@ -61,17 +61,17 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand" db-types="MySQL">
         <input sql="SELECT * FROM t_account" />
-        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS certificate_number, `t_account`.`cipher_password` AS password, `t_account`.`cipher_amount` AS amount, `t_account`.`status` FROM t_account" />
+        <output sql="SELECT `t_account`.`account_id` AS t_account.account_id, `t_account`.`cipher_certificate_number` AS t_account.certificate_number, `t_account`.`cipher_password` AS t_account.password, `t_account`.`cipher_amount` AS t_account.amount, `t_account`.`status` AS t_account.status FROM t_account" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status` FROM t_account a" />
+        <output sql="SELECT `a`.`account_id` AS a.account_id, `a`.`cipher_certificate_number` AS a.certificate_number, `a`.`cipher_password` AS a.password, `a`.`cipher_amount` AS a.amount, `a`.`status` AS a.status FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account a" />
+        <output sql="SELECT `a`.`account_id` AS a.account_id, `a`.`cipher_certificate_number` AS a.certificate_number, `a`.`cipher_password` AS a.password, `a`.`cipher_amount` AS a.amount, `a`.`status` AS a.status, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_join" db-types="MySQL">
