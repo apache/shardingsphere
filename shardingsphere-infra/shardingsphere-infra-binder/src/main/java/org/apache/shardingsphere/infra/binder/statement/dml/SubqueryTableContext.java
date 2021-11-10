@@ -33,17 +33,17 @@ public final class SubqueryTableContext {
     private final Map<String, Map<String, Map<String, String>>> rewriteMetaDataMap;
     
     public SubqueryTableContext() {
-        this.rewriteMetaDataMap =  new LinkedHashMap<>();
+        this.rewriteMetaDataMap = new LinkedHashMap<>();
     }
     
     /**
-     * Put rewrite meta data map
+     * Put rewrite meta data map.
      * @param alias alias
      * @param plainColumn plainColumn
      * @param cipherColumn cipherColumn
      * @param assistedQueryColumn assistedQueryColumn
      */
-    public void put(Optional<String> alias, String plainColumn, String cipherColumn, Optional<String> assistedQueryColumn) {
+    public void put(final Optional<String> alias, final String plainColumn, final String cipherColumn, final Optional<String> assistedQueryColumn) {
         Map<String, String> rewriteColumnMap = new HashMap<>();
         rewriteColumnMap.put("cipherColumn", cipherColumn);
         assistedQueryColumn.ifPresent(each -> rewriteColumnMap.put("assistedQueryColumn", each));
@@ -51,24 +51,24 @@ public final class SubqueryTableContext {
     }
     
     /**
-     * Get cipherColumn
+     * Get cipherColumn.
      * @param column ColumnSegment
      * @return cipherColumn
      */
-    public Optional<String> getCipherColumn(ColumnSegment column) {
+    public Optional<String> getCipherColumn(final ColumnSegment column) {
         return getColumn(column, "cipherColumn");
     }
     
     /**
-     * Get assistedQueryColumn
+     * Get assistedQueryColumn.
      * @param column ColumnSegment
      * @return assistedQueryColumn
      */
-    public Optional<String> getAssistedQueryColumn(ColumnSegment column) {
+    public Optional<String> getAssistedQueryColumn(final ColumnSegment column) {
         return getColumn(column, "assistedQueryColumn");
     }
     
-    private Optional<String> getColumn(ColumnSegment column, String columnName) {
+    private Optional<String> getColumn(final ColumnSegment column, final String columnName) {
         String alias = column.getOwner().isPresent() ? column.getOwner().get().getIdentifier().getValue() : "";
         String plainColumn = column.getIdentifier().getValue();
         Map<String, Map<String, String>> rewriteColumnMap = rewriteMetaDataMap.get(alias);
@@ -79,7 +79,7 @@ public final class SubqueryTableContext {
     }
     
     /**
-     * Get rewrite meta data map is empty or not
+     * Get rewrite meta data map is empty or not.
      * @return map is empty or not
      */
     public boolean isEmpty() {
