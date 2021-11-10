@@ -79,8 +79,8 @@ public final class SubqueryTableContext {
     }
     
     /**
-     * Get rewrite meta data map is empty or not.
-     * @return map is empty or not
+     * Get rewriteMetaDataMap is empty or not.
+     * @return rewriteMetaDataMap is empty or not
      */
     public boolean isEmpty() {
         return rewriteMetaDataMap.isEmpty();
