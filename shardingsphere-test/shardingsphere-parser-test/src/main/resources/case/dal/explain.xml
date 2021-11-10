@@ -88,4 +88,67 @@
         </delete>
     </describe>
 
+    <describe sql-case-id="explain_select_with_binding_tables">
+        <select>
+            <from>
+                <join-table>
+                    <left>
+                        <simple-table name="DimGeography" alias="G" start-index="63" stop-index="83" >
+                            <owner name="dbo" start-index="63" stop-index="65" />
+                        </simple-table>
+                    </left>
+                    <right>
+                        <simple-table name="DimSalesTerritory" alias="T" start-index="90" stop-index="115" >
+                            <owner name="dbo" start-index="90" stop-index="92" />
+                        </simple-table>
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="120" stop-index="160">
+                            <left>
+                                <column name="SalesTerritoryKey" start-index="120" stop-index="138">
+                                    <owner name="G" start-index="120" stop-index="120" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="SalesTerritoryKey" start-index="142" stop-index="160">
+                                    <owner name="T" start-index="142" stop-index="142" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+            <projections start-index="15" stop-index="56">
+                <column-projection name="StateProvinceName" start-index="15" stop-index="33">
+                    <owner name="G" start-index="15" stop-index="15"/>
+                </column-projection>
+                <column-projection name="SalesTerritoryGroup" start-index="36" stop-index="56">
+                    <owner name="T" start-index="36" stop-index="36"/>
+                </column-projection>
+            </projections>
+            <where start-index="162" stop-index="220">
+                <expr>
+                    <in-expression start-index="168" stop-index="220">
+                        <not>false</not>
+                        <left>
+                            <column name="SalesTerritoryGroup" start-index="168" stop-index="188">
+                                <owner name="T" start-index="168" stop-index="168" />
+                            </column>
+                        </left>
+                        <right>
+                            <list-expression start-index="193" stop-index="220">
+                                <items>
+                                    <literal-expression value="North America" start-index="194" stop-index="208" />
+                                </items>
+                                <items>
+                                    <literal-expression value="Pacific" start-index="211" stop-index="219" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>
