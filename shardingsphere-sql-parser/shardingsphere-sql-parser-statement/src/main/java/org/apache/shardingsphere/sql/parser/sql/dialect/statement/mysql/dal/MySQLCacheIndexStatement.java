@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ public final class MySQLCacheIndexStatement extends AbstractSQLStatement impleme
     private Collection<TableIndexSegment> tableIndexes = new LinkedList<>();
     
     @Setter
-    private PartitionsSegment partitions;
+    private PartitionDefinitionSegment partitions;
     
     @Setter
     private IdentifierValue name;

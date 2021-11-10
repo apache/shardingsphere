@@ -26,6 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * Table index segment.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class TableIndexSegment implements SQLSegment {

@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitions;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedTableIndex;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;
 
@@ -76,7 +76,7 @@ public final class CacheIndexStatementAssert {
         }
     }
     
-    private static void assertPartitions(final SQLCaseAssertContext assertContext, final PartitionsSegment actual, final ExpectedPartitions expected) {
+    private static void assertPartitions(final SQLCaseAssertContext assertContext, final PartitionDefinitionSegment actual, final ExpectedPartitionDefinition expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         int count = 0;
         for (PartitionSegment each : actual.getPartitions()) {

@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected partitions.
+ * Expected partition definition.
  */
 @Getter
 @Setter
-public final class ExpectedPartitions extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedPartitionDefinition extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;

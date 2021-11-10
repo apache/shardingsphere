@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitions;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedTableIndex;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -36,8 +36,8 @@ public final class CacheIndexStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "table-index")
     private final List<ExpectedTableIndex> tableIndexes = new LinkedList<>();
     
-    @XmlElement(name = "partitions")
-    private ExpectedPartitions partitions;
+    @XmlElement(name = "partition-definition")
+    private ExpectedPartitionDefinition partitions;
     
     @XmlAttribute
     private String name;

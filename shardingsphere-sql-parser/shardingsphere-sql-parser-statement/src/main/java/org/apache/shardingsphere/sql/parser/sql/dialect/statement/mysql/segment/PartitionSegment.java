@@ -23,6 +23,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+/**
+ * Partition segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter

@@ -164,7 +164,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
@@ -347,7 +347,8 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             }
         }
         if (null != ctx.partitionList()) {
-            PartitionsSegment segment = new PartitionsSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
+            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+            PartitionDefinitionSegment segment = new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), table);
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
             result.setPartitions(segment);
         }
