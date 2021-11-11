@@ -57,7 +57,8 @@ public final class DataSourcesMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> dataSourceMetaDataMap.get(dataSourceName).isInSameDatabaseInstance(dataSourceMetaDataMap.get(each)));
+        DataSourceMetaData dataSourceMetaData = dataSourceMetaDataMap.get(dataSourceName);
+        return existedDataSourceNames.stream().anyMatch(each -> dataSourceMetaData.isInSameDatabaseInstance(dataSourceMetaDataMap.get(each)));
     }
     
     /**
