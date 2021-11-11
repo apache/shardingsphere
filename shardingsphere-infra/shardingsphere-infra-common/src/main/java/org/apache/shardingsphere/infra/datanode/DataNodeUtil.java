@@ -49,4 +49,21 @@ public final class DataNodeUtil {
         }
         return result;
     }
+    
+    /**
+     * Build data node.
+     * 
+     * @param dataNode data node
+     * @param dataSources dataSource map
+     * @return data node collection
+     */
+    public static Collection<DataNode> buildDataNode(final DataNode dataNode, final Map<String, Collection<String>> dataSources) {
+        Collection<DataNode> result = new LinkedList<>();
+        if (dataSources.containsKey(dataNode.getDataSourceName())) {
+            for (String each : dataSources.get(dataNode.getDataSourceName())) {
+                result.add(new DataNode(each, dataNode.getTableName()));
+            }
+        }
+        return result;
+    }
 }

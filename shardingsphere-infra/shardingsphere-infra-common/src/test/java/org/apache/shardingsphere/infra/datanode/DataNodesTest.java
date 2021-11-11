@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -137,40 +136,5 @@ public final class DataNodesTest {
     
     private List<DataNode> getActualDataNode(final Collection<String> dataSources, final String tableName) {
         return dataSources.stream().map(each -> new DataNode(each, tableName)).collect(Collectors.toList());
-    }
-    
-    @Test
-    public void assertGetDataNodeGroups() {
-        DataNodes dataNodes = getRoutedRuleDataNodes();
-        assertThat(dataNodes.getDataNodeGroups(logicTableName1), is(getExpectedDataNodeGroups(dataSourceNames1, logicTableName1)));
-        assertThat(dataNodes.getDataNodeGroups(logicTableName2), is(getExpectedDataNodeGroups(dataSourceNames2, logicTableName2)));
-    }
-    
-    private DataNodes getRoutedRuleDataNodes() {
-        Map<String, Collection<DataNode>> nodeMap = new HashMap<>(2, 1);
-        nodeMap.put(logicTableName1, getExpectedDataNodes(dataSourceNames1, logicTableName1));
-        nodeMap.put(logicTableName2, getExpectedDataNodes(dataSourceNames2, logicTableName2));
-        DataNodeContainedRule rule1 = mock(DataNodeContainedRule.class);
-        when(rule1.getAllDataNodes()).thenReturn(nodeMap);
-        Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap(logicDataSourceName, replicaDataSourceNames);
-        DataSourceContainedRule rule2 = mock(DataSourceContainedRule.class);
-        when(rule2.getDataSourceMapper()).thenReturn(dataSourceMapper);
-        return new DataNodes(Arrays.asList(rule1, rule2));
-    }
-    
-    private Collection<DataNode> getExpectedDataNodes(final Collection<String> dataSourceNames, final String logicTableName) {
-        Collection<DataNode> result = new LinkedList<>();
-        for (String each : dataSourceNames) {
-            if (logicDataSourceName.equals(each)) {
-                replicaDataSourceNames.forEach(dataSourceName -> result.add(new DataNode(dataSourceName, logicTableName)));
-            } else {
-                result.add(new DataNode(each, logicTableName));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, List<DataNode>> getExpectedDataNodeGroups(final Collection<String> dataSourceNames, final String logicTableName) {
-        return getExpectedDataNodes(dataSourceNames, logicTableName).stream().collect(Collectors.groupingBy(DataNode::getDataSourceName));
     }
 }
