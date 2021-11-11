@@ -65,6 +65,12 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     @Override
     protected void createPreProcessing() {
+        if (actualTableName.isEmpty()) {
+            return;
+        }
+        if (tableNames.size() > getRows().size()) {
+            return;
+        }
         List<Map<String, Object>> subList = new LinkedList<>(getRows().subList(0, tableNames.size()));
         for (int i = 0; i < subList.size(); i++) {
             subList.get(i).replace(actualTableName, tableNames.get(i));
