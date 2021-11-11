@@ -29,15 +29,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class TableMetaDataUtilTest {
@@ -60,11 +60,10 @@ public final class TableMetaDataUtilTest {
     @Test
     public void assertGetTableMetaDataLoadMaterial() {
         Map<String, Collection<DataNode>> dataNodes = new HashMap<>();
-        dataNodes.put("t_user", Arrays.asList(new DataNode("ds0.t_user")));
-        dataNodes.put("t_order", Arrays.asList(new DataNode("ds1.t_order")));
+        dataNodes.put("t_user", Collections.singletonList(new DataNode("ds0.t_user")));
+        dataNodes.put("t_order", Collections.singletonList(new DataNode("ds1.t_order")));
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(dataNodes);
         Map<String, Collection<String>> dataSourceMapper = new HashMap<>();
-        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(dataSourceMapper);
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(dataNodeContainedRule);
         rules.add(dataSourceContainedRule);
