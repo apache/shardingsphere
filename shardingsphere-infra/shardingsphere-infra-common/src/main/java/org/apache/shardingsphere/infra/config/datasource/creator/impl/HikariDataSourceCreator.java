@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.creator.impl;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import javax.sql.DataSource;
@@ -67,6 +68,6 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
     public String getType() {
-        return "com.zaxxer.hikari.HikariDataSource";
+        return HikariDataSource.class.getCanonicalName();
     }
 }
