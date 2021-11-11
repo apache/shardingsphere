@@ -65,13 +65,13 @@ dataSource1.setUsername("root");
 dataSource1.setPassword("");
 dataSourceMap.put("ds_1", dataSource1);
 
-// 配置第 n 个数据源
-HikariDataSource dataSourceN = new HikariDataSource();
-dataSourceN.setDriverClassName("com.mysql.jdbc.Driver");
-dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds_n");
-dataSourceN.setUsername("root");
-dataSourceN.setPassword("");
-dataSourceMap.put("ds_n", dataSourceN);
+// 配置第 2 个数据源
+HikariDataSource dataSource2 = new HikariDataSource();
+dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds_2");
+dataSource2.setUsername("root");
+dataSource2.setPassword("");
+dataSourceMap.put("ds_2", dataSource2);
 ```
 
 ### 构建规则

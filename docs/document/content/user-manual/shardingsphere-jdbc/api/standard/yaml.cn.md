@@ -34,22 +34,22 @@ dataSources:
     jdbcUrl: jdbc:mysql://localhost:3306/ds_1
     username: root
     password:
-  # 配置第 n 个数据源
-  ds_n: !!com.zaxxer.hikari.HikariDataSource
+  # 配置第 2 个数据源
+  ds_2: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_n
+    jdbcUrl: jdbc:mysql://localhost:3306/ds_2
     username: root
     password: 
 
 rules:
-- !XXX_1
+- !FOO_XXX
     ...
-- !XXX_N
+- !BAR_XXX
     ...
 
 props:
   key_1: value_1
-  key_n: value_n
+  key_2: value_2
 ```
 
 ### 构建 ShardingSphere 数据源

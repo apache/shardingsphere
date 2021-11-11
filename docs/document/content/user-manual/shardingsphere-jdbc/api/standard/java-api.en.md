@@ -65,14 +65,14 @@ dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds_1");
 dataSource1.setUsername("root");
 dataSource1.setPassword("");
 dataSourceMap.put("ds_1", dataSource1);
-
-// Configure the n data source
-HikariDataSource dataSourceN = new HikariDataSource();
-dataSourceN.setDriverClassName("com.mysql.jdbc.Driver");
-dataSourceN.setJdbcUrl("jdbc:mysql://localhost:3306/ds_n");
-dataSourceN.setUsername("root");
-dataSourceN.setPassword("");
-dataSourceMap.put("ds_n", dataSourceN);
+        
+// Configure the 2ND data source
+HikariDataSource dataSource2 = new HikariDataSource();
+dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds_2");
+dataSource2.setUsername("root");
+dataSource2.setPassword("");
+dataSourceMap.put("ds_2", dataSource2);
 ```
 
 ### Build Rules
