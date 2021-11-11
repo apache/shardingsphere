@@ -24,5 +24,5 @@ explain
     ;
 
 explainableStatement
-    : (select | insert | update | delete)
+    : select | insert | update | delete
     ;

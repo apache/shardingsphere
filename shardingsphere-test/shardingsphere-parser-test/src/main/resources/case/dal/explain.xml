@@ -93,60 +93,32 @@
             <from>
                 <join-table>
                     <left>
-                        <simple-table name="DimGeography" alias="G" start-index="63" stop-index="83" >
-                            <owner name="dbo" start-index="63" stop-index="65" />
-                        </simple-table>
+                        <simple-table name="t_order" alias="o" start-index="24" stop-index="32" />
                     </left>
                     <right>
-                        <simple-table name="DimSalesTerritory" alias="T" start-index="90" stop-index="115" >
-                            <owner name="dbo" start-index="90" stop-index="92" />
-                        </simple-table>
+                        <simple-table name="t_order_item" alias="i" start-index="39" stop-index="52" />
                     </right>
-                    <on-condition>
-                        <binary-operation-expression start-index="120" stop-index="160">
-                            <left>
-                                <column name="SalesTerritoryKey" start-index="120" stop-index="138">
-                                    <owner name="G" start-index="120" stop-index="120" />
-                                </column>
-                            </left>
-                            <operator>=</operator>
-                            <right>
-                                <column name="SalesTerritoryKey" start-index="142" stop-index="160">
-                                    <owner name="T" start-index="142" stop-index="142" />
-                                </column>
-                            </right>
-                        </binary-operation-expression>
-                    </on-condition>
+                    <using-columns name="order_id" start-index="60" stop-index="67" />
                 </join-table>
             </from>
-            <projections start-index="15" stop-index="56">
-                <column-projection name="StateProvinceName" start-index="15" stop-index="33">
-                    <owner name="G" start-index="15" stop-index="15"/>
-                </column-projection>
-                <column-projection name="SalesTerritoryGroup" start-index="36" stop-index="56">
-                    <owner name="T" start-index="36" stop-index="36"/>
-                </column-projection>
+            <projections start-index="15" stop-index="17">
+                <shorthand-projection start-index="15" stop-index="17">
+                    <owner name="i" start-index="15" stop-index="15" />
+                </shorthand-projection>
             </projections>
-            <where start-index="162" stop-index="220">
+            <where start-index="70" stop-index="90">
                 <expr>
-                    <in-expression start-index="168" stop-index="220">
-                        <not>false</not>
+                    <binary-operation-expression start-index="76" stop-index="90">
                         <left>
-                            <column name="SalesTerritoryGroup" start-index="168" stop-index="188">
-                                <owner name="T" start-index="168" stop-index="168" />
+                            <column name="order_id" start-index="76" stop-index="85">
+                                <owner name="o" start-index="76" stop-index="76" />
                             </column>
                         </left>
+                        <operator>=</operator>
                         <right>
-                            <list-expression start-index="193" stop-index="220">
-                                <items>
-                                    <literal-expression value="North America" start-index="194" stop-index="208" />
-                                </items>
-                                <items>
-                                    <literal-expression value="Pacific" start-index="211" stop-index="219" />
-                                </items>
-                            </list-expression>
+                            <literal-expression value="10" start-index="89" stop-index="90" />
                         </right>
-                    </in-expression>
+                    </binary-operation-expression>
                 </expr>
             </where>
         </select>
