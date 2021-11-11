@@ -4,6 +4,47 @@ weight = 8
 chapter = true
 +++
 
+##Prepare
+
+**1. Confirm release notes**
+
+The release note should be provided in Chinese / English， confirm whether the Chinese description is clear and whether the English translation is accurate, 
+and shall be classified according to the following labels:
+
+1. New Feature
+1. API Change
+1. Enhancement
+1. Refactor
+1. Bug Fix
+
+**2. Confirm issue list**
+
+Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${release. Version}` and status is open:
+
+1. Close the completed issue
+1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
+1. Confirm that there is no issue in open status under milestone of release version
+
+**3. Confirm pull request list**
+
+Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${release. Version}` and status is open:
+
+1. Review the open pull request and merge 
+1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
+1. Confirm that there is no open pull request under milestone of release version
+
+**4. Close milestone**
+
+Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
+
+1. Confirm that the milestone completion status of `${release. Version}` is 100%
+1. Click `close` to close milestone
+
+**5. Call for a discussion**
+
+1. Send email to` dev@shardingsphere.apache.org `, describe or link the release note in the message body
+1. Follow the mailing list and confirm that the community developers have no questions about the release note
+
 ## GPG Settings
 
 **1. Install GPG**
@@ -452,8 +493,6 @@ git branch -d ${RELEASE.VERSION}-release
 
 Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
-
 **5. Docker Release**
 
 5.1 Preparation
@@ -509,7 +548,7 @@ Keep one latest versions in `Latest releases`. Incubating stage versions will be
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
-Announcement e-mail template:
+Announcement e-mail template(Plain text mode):
 
 Title:
 
@@ -524,11 +563,10 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisting of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
-They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share.
-Therefore, we prefer to focus on its increment instead of a total overturn.
+Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
+They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database. 
+As the cornerstone of enterprises, relational database still takes a huge market share. Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 

@@ -4,6 +4,46 @@ weight = 8
 chapter = true
 +++
 
+## 准备工作
+
+**1. 确认 Release Note**
+
+Release Note 需提供中文/英文两种版本，确认中文描述是否明确，英文翻译是否准确，并按以下标签进行分类：
+
+1. 新功能
+1. API 变更
+1. 功能增强
+1. 重构
+1. 漏洞修复
+
+**2. 确认 Issue 列表**
+
+打开 [Github Issues](https://github.com/apache/shardingsphere/issues) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
+
+1. 关闭已完成的 Issue 
+1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本
+1. 确认发布版本的 Milestone 下没有打开状态的 Issue
+
+**3. 确认 Pull request 列表**
+
+打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull request:
+
+1. 对打开的 Pull request 进行 Review 并且 Merge
+1. 无法 Merge 且不影响本次发版的 Pull request，修改 Milestone 为下一个版本
+1. 确认发布版本的 Milestone 下没有打开状态的 Pull request
+
+**4. 关闭 Milestone**
+
+打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones) 
+
+1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%
+1. 点击 `Close` 关闭 Milestone
+
+**5. 发送讨论邮件**
+
+1. 发送邮件至 `dev@shardingsphere.apache.org`，在邮件正文中描述或链接 Release Note
+1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问
+
 ## GPG 设置
 
 **1. 安装 GPG**
@@ -448,8 +488,6 @@ git branch -d ${RELEASE.VERSION}-release
 
 将`README.md`和`README_ZH.md`里的`${PREVIOUS.RELEASE.VERSION}`修改为`${RELEASE.VERSION}`
 
-将`MySQLServerInfo.java`中的`SERVER_VERSION`从`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
-
 **5. 发布 Docker**
 
 5.1 准备工作
@@ -507,7 +545,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀：`h
 
 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
-通知邮件模板：
+通知邮件模板(使用纯文本模式)：
 
 标题：
 
@@ -522,11 +560,10 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisting of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
-They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share.
-Therefore, we prefer to focus on its increment instead of a total overturn.
+Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
+They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database. 
+As the cornerstone of enterprises, relational database still takes a huge market share. Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
