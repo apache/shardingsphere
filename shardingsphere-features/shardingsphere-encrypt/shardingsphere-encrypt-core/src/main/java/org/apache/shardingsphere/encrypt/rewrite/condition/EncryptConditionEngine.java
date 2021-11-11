@@ -141,12 +141,8 @@ public final class EncryptConditionEngine {
             return Collections.emptyList();
         }
         Collection<EncryptCondition> result = new LinkedList<>();
-        result.addAll(SubqueryExtractUtil.getSubqueryTableSegmentsFromTableSegment(selectStatementContext.getSqlStatement().getFrom()).stream().map(
+        result.addAll(SubqueryExtractUtil.getSubquerySegments(selectStatementContext.getSqlStatement()).stream().map(
             each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
-        result.addAll(SubqueryExtractUtil.getSubquerySegmentsFromProjections(selectStatementContext.getSqlStatement().getProjections()).stream().map(
-            each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
-        selectStatementContext.getWhere().ifPresent(where -> result.addAll(SubqueryExtractUtil.getSubquerySegmentsFromExpression(where.getExpr()).stream().map(
-            each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList())));
         return result;
     }
     

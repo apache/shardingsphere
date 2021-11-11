@@ -21,9 +21,9 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
  * Subquery enum.
  */
 public enum SubqueryEnum {
-    None,
-    InsertSelectSubquery,
-    ProjectionSubqery,
-    NestedProjectionTabsegmentSubquery,
-    ExpressionSubqery
+    None, 
+    INSERTSELECT, 
+    PROJECTION, 
+    NESTEDPROJECTIONTABSEGMENT, 
+    EXPRESSION
 }
