@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.column;
+package org.apache.shardingsphere.shadow.algorithm.shadow.validator.column;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
+import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 
 /**
- * Column regex match shadow algorithm.
+ * Shadow value validator of enum.
  */
-public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
-    
-    private static final String REGEX_PROPS_KEY = "regex";
+public final class ShadowEnumValueValidator implements ShadowValueValidator {
     
     @Override
-    protected void checkProps() {
-        Preconditions.checkNotNull(getProps().get(REGEX_PROPS_KEY), "Column regex match shadow algorithm regex cannot be null.");
-    }
-    
-    @Override
-    protected boolean isMatchValue(final Comparable<?> value) {
-        return String.valueOf(value).matches(String.valueOf(getProps().get(REGEX_PROPS_KEY)));
-    }
-    
-    @Override
-    public String getType() {
-        return "REGEX_MATCH";
+    public void preValidate(final String table, final String column, final Comparable<?> shadowValue) {
+        if (shadowValue instanceof Enum) {
+            throw new ShadowAlgorithmException("Shadow column `%s` data of shadow table `%s` matching does not support type: `%s`.", column, table, Enum.class);
+        }
     }
 }
