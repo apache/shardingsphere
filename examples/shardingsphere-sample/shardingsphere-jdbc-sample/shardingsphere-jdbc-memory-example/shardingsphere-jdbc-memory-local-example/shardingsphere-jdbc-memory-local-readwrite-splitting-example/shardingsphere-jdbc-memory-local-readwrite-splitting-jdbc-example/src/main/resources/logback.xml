@@ -16,20 +16,19 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>shardingsphere-jdbc-memory-example</artifactId>
-        <groupId>org.apache.shardingsphere.example</groupId>
-        <version>5.0.1-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
-    <name>${project.artifactId}</name>
-    <modules>
-        <module>shardingsphere-jdbc-memory-local-sharding-example</module>
-        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-example</module>
-    </modules>
-</project>
+<configuration>
+    <property name="log.context.name" value="shardingsphere-jdbc-memory-local-readwrite-splitting-jdbc-example" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <contextName>${log.context.name}</contextName>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

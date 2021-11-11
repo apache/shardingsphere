@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework};
+package org.apache.shardingsphere.example.readwrite.splitting.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-<#if feature=="sharding">
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-</#if>
-<#if feature=="readwrite-splitting">
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-</#if>
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -41,25 +30,39 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
-public final class ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration {
+public final class MemoryLocalReadwriteSplittingJdbcConfiguration {
     
-    private static final String HOST = "${host}";
+    private static final String HOST = "localhost";
     
-    private static final int PORT = ${(port)?c};
+    private static final int PORT = 3306;
     
-    private static final String USER_NAME = "${username}";
+    private static final String USER_NAME = "root";
     
-    private static final String PASSWORD = "${(password)?c}";
-<#if feature=="sharding">
-    <#include "shardingConfiguration.ftl">
-</#if>
-<#if feature=="readwrite-splitting">
-    <#include "readwritesplittingConfiguration.ftl">
-</#if>
+    private static final String PASSWORD = "123456";
+    
+    /**
+     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
+     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
+     * @return
+     * @throws SQLException
+    */
+    public DataSource getDataSource() throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createReadwriteSplittingRuleConfiguration()), new Properties());
+    }
+    
+    private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
+                "demo_read_query_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(3, 1);
+        result.put("demo_write_ds", createDataSource("demo_write_ds"));
+        result.put("demo_read_ds_0", createDataSource("demo_read_ds_0"));
+        result.put("demo_read_ds_1", createDataSource("demo_read_ds_1"));
+        return result;
+    }
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();

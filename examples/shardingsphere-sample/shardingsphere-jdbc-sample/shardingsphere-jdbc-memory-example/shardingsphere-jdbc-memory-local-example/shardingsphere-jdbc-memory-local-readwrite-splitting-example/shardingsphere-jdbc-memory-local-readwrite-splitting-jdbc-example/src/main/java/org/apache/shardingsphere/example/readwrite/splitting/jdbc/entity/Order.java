@@ -15,55 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity;
+package org.apache.shardingsphere.example.readwrite.splitting.jdbc.entity;
 
-<#if framework?contains("jpa")>
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-</#if>
 import java.io.Serializable;
 
-<#if framework?contains("jpa")>
-@Entity
-@Table(name = "t_order_item")
-</#if>
-public class OrderItem implements Serializable {
+public class Order implements Serializable {
     
-    private static final long serialVersionUID = 1332162822494069342L;
+    private static final long serialVersionUID = 8306802022239174861L;
     
-    <#if framework?contains("jpa")>
-    @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    </#if>
-    private long orderItemId;
-    
-    <#if framework?contains("jpa")>
-    @Column(name = "order_id")
-    </#if>
     private long orderId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "user_id")
-    </#if>
     private int userId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "status")
-    </#if>
+    private long addressId;
+    
     private String status;
-    
-    public long getOrderItemId() {
-        return orderItemId;
-    }
-    
-    public void setOrderItemId(final long orderItemId) {
-        this.orderItemId = orderItemId;
-    }
     
     public long getOrderId() {
         return orderId;
@@ -89,8 +55,16 @@ public class OrderItem implements Serializable {
         this.status = status;
     }
     
+    public long getAddressId() {
+        return addressId;
+    }
+    
+    public void setAddressId(final long addressId) {
+        this.addressId = addressId;
+    }
+    
     @Override
     public String toString() {
-        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
+        return String.format("order_id: %s, user_id: %s, address_id: %s, status: %s", orderId, userId, addressId, status);
     }
 }
