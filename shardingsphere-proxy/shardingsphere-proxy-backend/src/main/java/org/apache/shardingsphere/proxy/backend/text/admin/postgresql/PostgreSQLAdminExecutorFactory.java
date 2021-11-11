@@ -52,11 +52,11 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql) {
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
-            if (selectedTableNames.contains(PG_TABLESPACE)) {
-                return Optional.of(new SelectTableExecutor(sql));
-            }
             if (selectedTableNames.contains(PG_DATABASE)) {
                 return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql));
+            }
+            if (selectedTableNames.contains(PG_TABLESPACE)) {
+                return Optional.of(new SelectTableExecutor(sql));
             }
             if (selectedTableNames.contains(PG_NAMESPACE)) {
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
