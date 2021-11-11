@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.infra.fixture.ReadWriteSplittingRuleFixture;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.junit.Test;
@@ -37,28 +38,16 @@ import static org.mockito.Mockito.when;
 
 public final class DataNodesTest {
     
-    private static Map<String, Collection<String>> replicaDataSourcesMap = new HashMap<>();
+    private static final Map<String, Collection<String>> READ_WRITE_SPLITTING_DATASOURCE_MAP = new HashMap<>();
     
-    private static Map<String, List<String>> shardingActualTablesMap = new HashMap<>();
+    private static final Map<String, List<String>> SHARDING_ACTUAL_TABLE_MAP = new HashMap<>();
     
-    private static Map<String, List<String>> dataSourceSingleTablesMap = new HashMap<>();
-    
-    private final String logicTableName1 = "user";
-    
-    private final String logicTableName2 = "dept";
-    
-    private final Collection<String> dataSourceNames1 = Arrays.asList("primary_db_1", "primary_db_2", "replica_db_1", "replica_db_2");
-    
-    private final Collection<String> dataSourceNames2 = Arrays.asList("primary_db_3", "replica_db_3");
-    
-    private final String logicDataSourceName = "primary_db_1";
-    
-    private final Collection<String> replicaDataSourceNames = Arrays.asList("route_db_1", "route_db_2");
+    private static final Map<String, List<String>> DATASOURCE_SINGLE_TABLE_MAP = new HashMap<>();
     
     static {
-        replicaDataSourcesMap.putIfAbsent("node_0", Arrays.asList("primary_ds0", "replica_ds0_0", "replica_ds0_1"));
-        shardingActualTablesMap.put("user", Arrays.asList("user_0", "user_1"));
-        dataSourceSingleTablesMap.put("primary_ds0", Arrays.asList("primary_ds0_table_0", "primary_ds0_table_1"));
+        READ_WRITE_SPLITTING_DATASOURCE_MAP.putIfAbsent("node_0", Arrays.asList("primary_ds0", "replica_ds0_0", "replica_ds0_1"));
+        SHARDING_ACTUAL_TABLE_MAP.put("user", Arrays.asList("user_0", "user_1"));
+        DATASOURCE_SINGLE_TABLE_MAP.put("primary_ds0", Arrays.asList("primary_ds0_table_0", "primary_ds0_table_1"));
     }
     
     @Test
@@ -66,7 +55,7 @@ public final class DataNodesTest {
         DataNodes dataNodes = new DataNodes(Arrays.asList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("user");
         assertThat(userDataNodes, is(getShardingActualDataNode().get("user")));
-        List<String> primaryDs0SingleTables = dataSourceSingleTablesMap.get("primary_ds0");
+        List<String> primaryDs0SingleTables = DATASOURCE_SINGLE_TABLE_MAP.get("primary_ds0");
         for (String primaryDs0SingleTable : primaryDs0SingleTables) {
             Collection<DataNode> primaryDs0SingleTableDataNodes = dataNodes.getDataNodes(primaryDs0SingleTable);
             assertThat(primaryDs0SingleTableDataNodes, is(getSingleTableDataNode().get(primaryDs0SingleTable)));
@@ -95,8 +84,8 @@ public final class DataNodesTest {
     }
     
     private DataSourceContainedRule buildDataSourceContainedRule() {
-        DataSourceContainedRule result = mock(DataSourceContainedRule.class);
-        when(result.getDataSourceMapper()).thenReturn(replicaDataSourcesMap);
+        DataSourceContainedRule result = mock(ReadWriteSplittingRuleFixture.class);
+        when(result.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
         return result;
     }
     
@@ -111,7 +100,7 @@ public final class DataNodesTest {
     
     private Map<String, Collection<DataNode>> getSingleTableDataNode() {
         Map<String, Collection<DataNode>> result = new HashMap<>();
-        for (Entry<String, List<String>> entry :dataSourceSingleTablesMap.entrySet()) {
+        for (Entry<String, List<String>> entry : DATASOURCE_SINGLE_TABLE_MAP.entrySet()) {
             Map<String, Collection<DataNode>> map = entry.getValue().stream().collect(Collectors.toMap(singleTable -> singleTable,
                 singleTable -> Collections.singletonList(new DataNode(entry.getKey(), singleTable)), (Collection<DataNode> oldList, Collection<DataNode> newList) -> {
                     oldList.addAll(newList);
@@ -124,13 +113,13 @@ public final class DataNodesTest {
     }
     
     private Map<String, Collection<DataNode>> getReplicaShardingDataNode() {
-        return shardingActualTablesMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().stream().map(
-            shardingTable -> getActualDataNode(replicaDataSourcesMap.keySet(), shardingTable)).flatMap(Collection::stream).collect(Collectors.toList())));
+        return SHARDING_ACTUAL_TABLE_MAP.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().stream().map(
+            shardingTable -> getActualDataNode(READ_WRITE_SPLITTING_DATASOURCE_MAP.keySet(), shardingTable)).flatMap(Collection::stream).collect(Collectors.toList())));
     }
     
     private Map<String, Collection<DataNode>> getShardingActualDataNode() {
-        List<String> allDataSources = replicaDataSourcesMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
-        return shardingActualTablesMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().stream()
+        List<String> allDataSources = READ_WRITE_SPLITTING_DATASOURCE_MAP.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        return SHARDING_ACTUAL_TABLE_MAP.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().stream()
                 .map(shardingTable -> getActualDataNode(allDataSources, shardingTable)).flatMap(Collection::stream).collect(Collectors.toList())));
     }
     

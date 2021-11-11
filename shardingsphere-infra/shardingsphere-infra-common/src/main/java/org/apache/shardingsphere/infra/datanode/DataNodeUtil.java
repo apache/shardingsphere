@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,11 +59,12 @@ public final class DataNodeUtil {
      * @return data node collection
      */
     public static Collection<DataNode> buildDataNode(final DataNode dataNode, final Map<String, Collection<String>> dataSources) {
+        if (!dataSources.containsKey(dataNode.getDataSourceName())) {
+            return Collections.singletonList(dataNode);
+        }
         Collection<DataNode> result = new LinkedList<>();
-        if (dataSources.containsKey(dataNode.getDataSourceName())) {
-            for (String each : dataSources.get(dataNode.getDataSourceName())) {
-                result.add(new DataNode(each, dataNode.getTableName()));
-            }
+        for (String each : dataSources.get(dataNode.getDataSourceName())) {
+            result.add(new DataNode(each, dataNode.getTableName()));
         }
         return result;
     }
