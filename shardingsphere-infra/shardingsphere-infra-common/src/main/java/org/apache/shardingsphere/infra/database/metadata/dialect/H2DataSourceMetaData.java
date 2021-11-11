@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,9 +29,11 @@ import java.util.regex.Pattern;
  * Data source meta data for H2.
  */
 @Getter
-public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
+public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = -1;
+    
+    private static final String DEFAULT_HOST_NAME = "";
     
     private final String hostName;
     
@@ -56,9 +59,15 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         String hostNameFromMatcher = matcher.group("hostName");
         boolean setPort = null != portFromMatcher && !portFromMatcher.isEmpty();
         String name = null == nameFromMatcher ? fileNameFromMatcher : nameFromMatcher;
-        hostName = null == hostNameFromMatcher ? "" : hostNameFromMatcher;
+        hostName = null == hostNameFromMatcher ? DEFAULT_HOST_NAME : hostNameFromMatcher;
         port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
         catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
+    }
+    
+    @Override
+    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return DEFAULT_HOST_NAME.equals(hostName) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
+                : DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
     }
 }
