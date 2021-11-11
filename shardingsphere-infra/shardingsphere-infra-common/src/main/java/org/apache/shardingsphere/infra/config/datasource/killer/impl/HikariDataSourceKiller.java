@@ -30,7 +30,7 @@ public final class HikariDataSourceKiller implements DataSourceKiller {
     
     @Override
     public String getType() {
-        return "com.zaxxer.hikari.HikariDataSource";
+        return HikariDataSource.class.getCanonicalName();
     }
     
     @Override
