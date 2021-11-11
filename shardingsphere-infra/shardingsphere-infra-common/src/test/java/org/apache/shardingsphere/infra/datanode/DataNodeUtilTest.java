@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.datanode;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,5 +41,27 @@ public final class DataNodeUtilTest {
         expected.values().forEach(dataNodes::addAll);
         Map<String, List<DataNode>> actual = DataNodeUtil.getDataNodeGroups(dataNodes);
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertBuildDataNodeWithSameDataSource() {
+        DataNode dataNode = new DataNode("pr_ds.t_order");
+        Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
+        dataSources.put("pr_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
+        assertThat(dataNodes.size(), is(2));
+        Iterator<DataNode> iterator = dataNodes.iterator();
+        assertThat(iterator.next().getDataSourceName(), is("ds_0"));
+        assertThat(iterator.next().getDataSourceName(), is("shadow_ds_0"));
+    }
+    
+    @Test
+    public void assertBuildDataNodeWithoutSameDataSource() {
+        DataNode dataNode = new DataNode("read_ds.t_order");
+        Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
+        dataSources.put("pr_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
+        assertThat(dataNodes.size(), is(1));
+        assertThat(dataNodes.iterator().next().getDataSourceName(), is("read_ds"));
     }
 }
