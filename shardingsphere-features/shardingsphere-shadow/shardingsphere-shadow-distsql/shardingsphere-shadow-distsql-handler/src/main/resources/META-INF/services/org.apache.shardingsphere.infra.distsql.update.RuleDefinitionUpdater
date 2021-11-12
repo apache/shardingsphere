@@ -19,5 +19,6 @@ org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementU
 org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleStatementUpdater
+org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowAlgorithmStatementUpdater
 org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowAlgorithmStatementUpdater

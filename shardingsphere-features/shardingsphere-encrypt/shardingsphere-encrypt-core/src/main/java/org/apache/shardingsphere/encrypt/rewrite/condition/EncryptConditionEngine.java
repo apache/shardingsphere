@@ -34,10 +34,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,7 +75,23 @@ public final class EncryptConditionEngine {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.addAll(createEncryptConditionsOnWhereSegment(selectStatementContext));
         }
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+            result.addAll(createEncryptConditionsOnSubquerySegment(selectStatementContext));
+        }
         return result;
+    }
+    
+    private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubquerySegment subquerySegment) {
+        SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subquerySegment.getSelect(),
+                selectStatementContext.getSchemaName());
+        return createEncryptConditions(subSelectStatementContext);
+    }
+    
+    private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubqueryTableSegment subqueryTableSegment) {
+        SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), 
+            subqueryTableSegment.getSubquery().getSelect(), selectStatementContext.getSchemaName());
+        return createEncryptConditions(subSelectStatementContext);
     }
     
     private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
@@ -116,6 +136,16 @@ public final class EncryptConditionEngine {
         return Optional.empty();
     }
     
+    private Collection<EncryptCondition> createEncryptConditionsOnSubquerySegment(final SelectStatementContext selectStatementContext) {
+        if (!selectStatementContext.isContainsSubquery()) {
+            return Collections.emptyList();
+        }
+        Collection<EncryptCondition> result = new LinkedList<>();
+        result.addAll(SubqueryExtractUtil.getSubquerySegments(selectStatementContext.getSqlStatement()).stream().map(
+            each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
+        return result;
+    }
+    
     private Collection<EncryptCondition> createEncryptConditionsOnWhereSegment(final SQLStatementContext sqlStatementContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
         if (!(sqlStatementContext instanceof WhereAvailable)) {
@@ -144,7 +174,7 @@ public final class EncryptConditionEngine {
         if (!(expression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
         }
-        return compareRightValue instanceof SimpleExpressionSegment
+        return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
                 ? Optional.of(new EncryptEqualCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), tableName, compareRightValue.getStartIndex(),
                 expression.getStopIndex(), compareRightValue))
                 : Optional.empty();
@@ -159,6 +189,9 @@ public final class EncryptConditionEngine {
             if (each instanceof SimpleExpressionSegment) {
                 expressionSegments.add(each);
             }
+        }
+        if (expressionSegments.isEmpty()) {
+            return Optional.empty();
         }
         return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(),
                 tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));

@@ -88,4 +88,39 @@
         </delete>
     </describe>
 
+    <describe sql-case-id="explain_select_with_binding_tables">
+        <select>
+            <from>
+                <join-table>
+                    <left>
+                        <simple-table name="t_order" alias="o" start-index="24" stop-index="32" />
+                    </left>
+                    <right>
+                        <simple-table name="t_order_item" alias="i" start-index="39" stop-index="52" />
+                    </right>
+                    <using-columns name="order_id" start-index="60" stop-index="67" />
+                </join-table>
+            </from>
+            <projections start-index="15" stop-index="17">
+                <shorthand-projection start-index="15" stop-index="17">
+                    <owner name="i" start-index="15" stop-index="15" />
+                </shorthand-projection>
+            </projections>
+            <where start-index="70" stop-index="90">
+                <expr>
+                    <binary-operation-expression start-index="76" stop-index="90">
+                        <left>
+                            <column name="order_id" start-index="76" stop-index="85">
+                                <owner name="o" start-index="76" stop-index="76" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="89" stop-index="90" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>

@@ -46,8 +46,8 @@ public final class CacheIndexStatementAssert {
      * Assert cache index statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual cache index statement
-     * @param expected      expected cache index statement test case
+     * @param actual actual cache index statement
+     * @param expected expected cache index statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCacheIndexStatement actual, final CacheIndexStatementTestCase expected) {
         if (!expected.getTableIndexes().isEmpty()) {

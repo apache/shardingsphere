@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Map;
 
 /**
@@ -43,15 +44,19 @@ public abstract class ExampleGenerateEngine {
             + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${feature}-example"
             + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/";
 
-    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/${feature}/${framework?replace('-', '/')}";
+    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/${feature?replace('-', '/')}/${framework?replace('-', '/')}";
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}${feature?cap_first}" +
-            "<#assign frameworkName=\"\">" +
-            "<#list framework?split(\"-\") as framework1>" +
-            "<#assign frameworkName=frameworkName + framework1?cap_first>" +
-            "</#list>${frameworkName}";
+    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}"
+            + "<#assign featureName=\"\">"
+            + "<#list feature?split(\"-\") as feature1>"
+            + "<#assign featureName=featureName + feature1?cap_first>"
+            + "</#list>${featureName}"
+            + "<#assign frameworkName=\"\">"
+            + "<#list framework?split(\"-\") as framework1>"
+            + "<#assign frameworkName=frameworkName + framework1?cap_first>"
+            + "</#list>${frameworkName}";
     
     private static final String FRAMEWORK_PATH = "/dataModel/%s/data-model.yaml";
     
@@ -77,10 +82,10 @@ public abstract class ExampleGenerateEngine {
      * @param outputFile Output directory and file name.
      */
     public static void processFile(final Object model, final String templateFile, final String outputFile) {
-        try {
+        try (Writer writer = new FileWriter(outputFile)) {
             Template template = CONFIGURATION.getTemplate(templateFile);
-            template.process(model, new FileWriter(outputFile));
-        } catch (IOException | TemplateException e) {
+            template.process(model, writer);
+        } catch (TemplateException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -92,9 +97,9 @@ public abstract class ExampleGenerateEngine {
      * @return Replace the placeholder string
      */
     public static String processString(final Object model, final String templateString) {
-        try {
-            StringWriter result = new StringWriter();
-            Template t = new Template("string", new StringReader(templateString), CONFIGURATION);
+        try (StringWriter result = new StringWriter();
+             StringReader reader = new StringReader(templateString)) {
+            Template t = new Template("string", reader, CONFIGURATION);
             t.process(model, result);
             return result.toString();
         } catch (IOException | TemplateException e) {

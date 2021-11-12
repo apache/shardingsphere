@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.resource;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 
@@ -27,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -59,12 +57,8 @@ public final class DataSourcesMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName), dataSourceMetaDataMap.get(each)));
-    }
-    
-    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
-        return sample instanceof MemorizedDataSourceMetaData
-                ? Objects.equals(target.getSchema(), sample.getSchema()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+        DataSourceMetaData dataSourceMetaData = dataSourceMetaDataMap.get(dataSourceName);
+        return existedDataSourceNames.stream().anyMatch(each -> dataSourceMetaData.isInSameDatabaseInstance(dataSourceMetaDataMap.get(each)));
     }
     
     /**

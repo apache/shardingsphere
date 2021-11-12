@@ -31,13 +31,13 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KillStatementAssert {
-
+    
     /**
      * Assert kill statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual kill statement
-     * @param expected      expected kill statement test case
+     * @param actual actual kill statement
+     * @param expected expected kill statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLKillStatement actual, final KillStatementTestCase expected) {
         assertThat(assertContext.getText("Kill statement context does not match: "), actual.getThreadId(), is(expected.getThreadId()));

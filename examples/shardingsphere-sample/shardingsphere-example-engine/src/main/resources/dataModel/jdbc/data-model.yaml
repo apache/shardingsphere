@@ -17,7 +17,7 @@
 
 mode: memory
 transaction: local
-feature: sharding
+feature: readwrite-splitting
 framework: jdbc
 
 host: localhost

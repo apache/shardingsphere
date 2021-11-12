@@ -80,7 +80,7 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Optional<Collection<String>> parseSqlNotes() {
+    protected Optional<Collection<String>> parseSQLComments() {
         Collection<String> result = new LinkedList<>();
         selectStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);

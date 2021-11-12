@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -137,7 +138,7 @@ public final class TableRule {
     }
     
     private Set<String> getActualTables() {
-        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toSet());
+        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {

@@ -22,21 +22,28 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.fixture.CustomizedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class EncryptRuleTest {
     
@@ -143,11 +150,24 @@ public final class EncryptRuleTest {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getType(), is(EncryptRule.class.getSimpleName()));
     }
     
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void assertSetUpEncryptorSchema() {
+        EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration());
+        encryptRule.setUpEncryptorSchema(mock(ShardingSphereSchema.class));
+        Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(CustomizedEncryptAlgorithm.class));
+        assertNotNull(((CustomizedEncryptAlgorithm) actual.get()).getSchema());
+    }
+    
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptor = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration customizedEncryptor = new ShardingSphereAlgorithmConfiguration("CUSTOMIZED", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig), null);
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", encryptAlgorithmConfig));
+        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
     }
 }

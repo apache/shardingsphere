@@ -35,7 +35,7 @@ The encryption configuration is mainly divided into four parts: data source conf
 **Datasource Configuration**：The configuration of DataSource.
 
 **Encrypt Algorithm Configuration**：What kind of encryption strategy to use for encryption and decryption. 
-Currently ShardingSphere has two built-in encryption/decryption strategies: AES / MD5. 
+Currently ShardingSphere has three built-in encryption/decryption strategies: AES, MD5, RC4. 
 Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by Apache ShardingSphere.
 
 **Encryption Table Configuration**：Show the ShardingSphere data table which column is used to store cipher column data (cipherColumn), 
@@ -262,7 +262,7 @@ The solution has provided two methods `encrypt()` and `decrypt()` to encrypt/dec
 When users `INSERT`, `DELETE` and `UPDATE`, ShardingSphere will parse, rewrite and route SQL according to the configuration. It will also use `encrypt()` to encrypt data and store them in the database. When using `SELECT`, 
 they will decrypt sensitive data from the database with `decrypt()` reversely and return them to users at last.
 
-Currently, Apache ShardingSphere has provided two types of implementations for this kind of encrypt solution, MD5 (irreversible) and AES (reversible), which can be used after configuration.
+Currently, Apache ShardingSphere has provided three types of implementations for this kind of encrypt solution, MD5 (irreversible), AES (reversible) and RC4 (reversible), which can be used after configuration.
 
 ### QueryAssistedEncryptAlgorithm
 

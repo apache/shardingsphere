@@ -18,6 +18,8 @@ DROP SHADOW RULE ruleName [, ruleName] ...
 
 DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
+CREATE DEFAULT SHADOW ALGORITHM NAME = algorithmName
+
 shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
 
 resourceMapping: SOURCE=resourceName, SHADOW=resourceName
@@ -67,4 +69,6 @@ ALTER SHADOW ALGORITHM
 DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_note_algorithm;
+
+CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
 ```

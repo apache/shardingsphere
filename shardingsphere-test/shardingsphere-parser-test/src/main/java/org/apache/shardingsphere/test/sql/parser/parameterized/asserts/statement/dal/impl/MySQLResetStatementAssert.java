@@ -38,19 +38,19 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLResetStatementAssert {
-
+    
     /**
      * Assert reset statement is correct with expected reset statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual reset statement
-     * @param expected      expected reset statement test case
+     * @param actual actual reset statement
+     * @param expected expected reset statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetStatement actual, final ResetStatementTestCase expected) {
         assertThat(assertContext.getText("Actual options size assertion error: "), actual.getOptions().size(), is(expected.getOptions().size()));
         assertOptions(assertContext, actual.getOptions(), expected.getOptions());
     }
-
+    
     private static void assertOptions(final SQLCaseAssertContext assertContext, final List<ResetOptionSegment> actual, final List<ExpectedResetOptionSegment> expected) {
         int i = 0;
         for (ExpectedResetOptionSegment each : expected) {
@@ -63,13 +63,13 @@ public final class MySQLResetStatementAssert {
             i++;
         }
     }
-
+    
     private static void assertMasterOption(final SQLCaseAssertContext assertContext, final ResetMasterOptionSegment actual, final ExpectedResetOptionSegment expected) {
         if (null != expected.getBinaryLogFileIndexNumber()) {
             assertThat(assertContext.getText("Actual reset master binlog index does not match: "), actual.getBinaryLogFileIndexNumber().getValue(), is(expected.getBinaryLogFileIndexNumber()));
         }
     }
-
+    
     private static void assertSlaveOption(final SQLCaseAssertContext assertContext, final ResetSlaveOptionSegment actual, final ExpectedResetOptionSegment expected) {
         assertThat(assertContext.getText("Actual reset slave all does not match: "), actual.isAll(), is(expected.isAll()));
         if (null != expected.getChannel()) {

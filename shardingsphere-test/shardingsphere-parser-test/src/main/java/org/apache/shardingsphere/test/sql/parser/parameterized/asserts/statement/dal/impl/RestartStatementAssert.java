@@ -33,8 +33,8 @@ public final class RestartStatementAssert {
      * Assert restart statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual restart statement
-     * @param expected      expected restart statement test case
+     * @param actual actual restart statement
+     * @param expected expected restart statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRestartStatement actual, final RestartStatementTestCase expected) {
     }

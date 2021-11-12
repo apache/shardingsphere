@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShardingAlgorithmsStatementAssert {
-
+    
     /**
      * Assert show sharding algorithms statement is correct with expected parser result.
      *

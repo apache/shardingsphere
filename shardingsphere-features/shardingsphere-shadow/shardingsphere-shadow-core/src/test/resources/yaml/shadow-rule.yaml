@@ -56,7 +56,7 @@ rules:
       shadowAlgorithmNames:
         - user-id-insert-match-algorithm
         - user-id-select-match-algorithm
-        - simple-note-algorithm
+        - simple-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
       type: REGEX_MATCH
@@ -76,7 +76,7 @@ rules:
         operation: select
         column: user_id
         regex: "[1]"
-    simple-note-algorithm:
+    simple-hint-algorithm:
       type: SIMPLE_HINT
       props:
         shadow: true

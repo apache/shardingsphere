@@ -33,8 +33,8 @@ public final class PreviewStatementAssert {
      * Assert preview statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual preview statement
-     * @param expected      expected preview statement test case
+     * @param actual actual preview statement
+     * @param expected expected preview statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
         if (null == expected) {
