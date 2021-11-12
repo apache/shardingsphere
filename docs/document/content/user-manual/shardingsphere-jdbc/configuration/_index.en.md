@@ -17,5 +17,3 @@ Mixed rule configurations are very similar to single rule configuration, except 
 It should be noted that the superposition between rules are data source and table name related.
 If the previous rule is data source oriented aggregation, the next rule needs to use the aggregated logical data source name configured by the previous rule when configuring the data source;
 Similarly, if the previous rule is table oriented aggregation, the next rule needs to use the aggregated logical table name configured by the previous rule when configuring the table.
-
-Users do not have to read this chapter through, but can refer to it as a dictionary when necessary.
