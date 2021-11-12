@@ -515,17 +515,17 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
         OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
-        ASTNode astNode = visit(ctx.aExpr());
-        if (astNode instanceof ColumnSegment) {
-            ColumnSegment column = (ColumnSegment) astNode;
+        ASTNode expr = visit(ctx.aExpr());
+        if (expr instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) expr;
             return new ColumnOrderByItemSegment(column, orderDirection);
         }
-        if (astNode instanceof LiteralExpressionSegment) {
-            LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
+        if (expr instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment index = (LiteralExpressionSegment) expr;
             return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
         }
-        if (astNode instanceof ExpressionSegment) {
-            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection, (ExpressionSegment) astNode);
+        if (expr instanceof ExpressionSegment) {
+            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection, (ExpressionSegment) expr);
         }
         return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection);
     }
