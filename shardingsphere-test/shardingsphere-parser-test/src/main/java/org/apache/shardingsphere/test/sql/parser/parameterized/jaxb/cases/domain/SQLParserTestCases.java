@@ -46,8 +46,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureCodeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelaylogEventsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowReplicasStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveHostsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
@@ -716,7 +718,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-replicas")
     private final List<ShowReplicasStatementTestCase> showReplicasStatementTestCases = new LinkedList<>();
-    
+
+    @XmlElement(name = "show-replica-status")
+    private final List<ShowReplicaStatusStatementTestCase> showReplicaStatusStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-slave-status")
+    private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "alter-sharding-algorithm")
     private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmStatementTestCases = new LinkedList<>();
     
@@ -909,6 +917,8 @@ public final class SQLParserTestCases {
         putAll(resetStatementTestCases, result);
         putAll(resetPersistStatementTestCases, result);
         putAll(showReplicasStatementTestCases, result);
+        putAll(showReplicaStatusStatementTestCases, result);
+        putAll(showSlaveStatusStatementTestCases, result);
         putAll(alterShardingAlgorithmStatementTestCases, result);
         putAll(killStatementTestCases, result);
         putAll(createDefaultShadowAlgorithmStatementTestCases, result);

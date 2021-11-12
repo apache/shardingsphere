@@ -43,4 +43,8 @@
     <sql-case id="show_relaylog_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_relaylog_events_with_log" value="SHOW RELAYLOG EVENTS IN 'TEST_LOG' FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_hosts" value="SHOW SLAVE HOST" db-types="MySQL" />
+    <sql-case id="show_replica_status" value="SHOW REPLICA STATUS" db-types="MySQL" />
+    <sql-case id="show_replica_status_with_channel" value="SHOW REPLICA STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
+    <sql-case id="show_slave_status" value="SHOW SLAVE STATUS" db-types="MySQL" />
+    <sql-case id="show_slave_status_with_channel" value="SHOW SLAVE STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
 </sql-cases>
