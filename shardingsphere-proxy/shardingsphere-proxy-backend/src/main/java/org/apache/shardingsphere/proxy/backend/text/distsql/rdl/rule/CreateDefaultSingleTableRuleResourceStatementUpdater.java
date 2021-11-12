@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Create default sharding strategy statement updater.
+ * Create default single table rule resource statement updater.
  */
 public final class CreateDefaultSingleTableRuleResourceStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultSingleTableRuleResourceStatement, SingleTableRuleConfiguration> {
     
