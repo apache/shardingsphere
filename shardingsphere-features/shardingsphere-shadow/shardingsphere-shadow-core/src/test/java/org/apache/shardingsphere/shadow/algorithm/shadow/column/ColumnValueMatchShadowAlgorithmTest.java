@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,11 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     private void assertFalseCase() {
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(false)));
+    }
+    
+    @Test(expected = ShadowAlgorithmException.class)
+    public void assertExceptionCase() {
+        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(false)));
     }
     
     @Test

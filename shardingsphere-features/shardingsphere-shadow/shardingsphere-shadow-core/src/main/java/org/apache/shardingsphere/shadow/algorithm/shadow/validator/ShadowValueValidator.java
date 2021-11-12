@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.column;
-
-import com.google.common.base.Preconditions;
+package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
 /**
- * Column regex match shadow algorithm.
+ * Shadow value validator.
  */
-public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
+public interface ShadowValueValidator {
     
-    private static final String REGEX_PROPS_KEY = "regex";
-    
-    @Override
-    protected void checkProps() {
-        Preconditions.checkNotNull(getProps().get(REGEX_PROPS_KEY), "Column regex match shadow algorithm regex cannot be null.");
-    }
-    
-    @Override
-    protected boolean isMatchValue(final Comparable<?> value) {
-        return String.valueOf(value).matches(String.valueOf(getProps().get(REGEX_PROPS_KEY)));
-    }
-    
-    @Override
-    public String getType() {
-        return "REGEX_MATCH";
-    }
+    /**
+     * Validate shadow value.
+     *
+     * @param table table name
+     * @param column column name
+     * @param shadowValue shadow value
+     */
+    void preValidate(String table, String column, Comparable<?> shadowValue);
 }
