@@ -320,3 +320,39 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://sh
 更多关于 alias 使用方法请参考 [Proxool官网](http://proxool.sourceforge.net/configure.html)。
 
 PS：sourceforge 网站需要翻墙访问。
+
+## 27. [分片] 设置分片策略和自增主键策略时，*props*属性设置未生效？
+
+回答：
+
+须要特别注意自定义的算法名称约束（仅允许`[a-z][0-9]`和`-`）
+
+原因如下:
+
+ShardingSphere底层通过Spring的Binder来绑定Properties实例，假如格式不规范会抛出`InvalidConfigurationPropertyNameException`异常，但是ShardingSphere内部消化了这个异常，
+参考`org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry#registerBean(String, Class, BeanDefinitionRegistry)` 方法:
+
+关键代码：
+
+```java
+    boolean existProps = PropertyUtil.containPropertyPrefix(environment, propsPrefix);
+    if (existProps) {
+        Map<String, Object> propsMap = PropertyUtil.handle(environment, propsPrefix, Map.class);
+        config.getProps().putAll(propsMap);
+    }
+```
+`PropertyUtil#containPropertyPrefix(Environment, String)` 方法:
+
+```java
+    public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
+        try {
+            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
+            return !props.isEmpty();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return false;
+        }
+    }
+
+```
