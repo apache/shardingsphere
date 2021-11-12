@@ -15,46 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity;
+package org.apache.shardingsphere.example.readwrite.splitting.jdbc.entity;
 
-<#if framework?contains("jpa")>
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-</#if>
 import java.io.Serializable;
 
-<#if framework?contains("jpa")>
-@Entity
-@Table(name = "t_order_item")
-</#if>
 public class OrderItem implements Serializable {
     
     private static final long serialVersionUID = 1332162822494069342L;
     
-    <#if framework?contains("jpa")>
-    @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    </#if>
     private long orderItemId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "order_id")
-    </#if>
     private long orderId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "user_id")
-    </#if>
     private int userId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "status")
-    </#if>
     private String status;
     
     public long getOrderItemId() {

@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
+package org.apache.shardingsphere.example.readwrite.splitting.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
-<#if framework?contains("spring")>
-import org.springframework.stereotype.Service;
-</#if>
+import org.apache.shardingsphere.example.readwrite.splitting.jdbc.entity.Order;
+import org.apache.shardingsphere.example.readwrite.splitting.jdbc.entity.OrderItem;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,19 +31,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
-</#list>
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
-<#if framework?contains("spring")>
-@Service
-</#if>
 @AllArgsConstructor
-public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
+public final class MemoryLocalReadwriteSplittingJdbcExampleService {
     
     private final DataSource dataSource;
 
