@@ -148,6 +148,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AlterShardingAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowAlgorithmStatementTestCase;
@@ -724,6 +725,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-default-single-table-resource")
+    private final List<CreateDefaultSingleTableRuleResourceStatementTestCase> createDefaultSingleTableRuleResourceStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -904,6 +908,7 @@ public final class SQLParserTestCases {
         putAll(killStatementTestCases, result);
         putAll(cacheIndexStatementTestCases, result);
         putAll(createShadowAlgorithmTestCase, result);
+        putAll(createDefaultSingleTableRuleResourceStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementBa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
@@ -108,6 +110,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
         return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
+    }
+    
+    @Override
+    public ASTNode visitCreateDefaultSingleTableRuleResource(final CreateDefaultSingleTableRuleResourceContext ctx) {
+        return new CreateDefaultSingleTableRuleResourceStatement(getIdentifierValue(ctx.dataSourceName()));
     }
     
     private Properties getPoolProperties(final PoolPropertiesContext ctx) {
