@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
+grammar DALStatement;
 
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import SQLServerKeyword, DMLStatement;
 
-import java.util.Properties;
+explain
+    : EXPLAIN WITH_RECOMMENDATIONS? explainableStatement
+    ;
 
-/**
- * DML Statement SQL visitor for SQLServer.
- */
-@NoArgsConstructor
-public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
-    public SQLServerDMLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
-}
+explainableStatement
+    : select | insert | update | delete
+    ;
