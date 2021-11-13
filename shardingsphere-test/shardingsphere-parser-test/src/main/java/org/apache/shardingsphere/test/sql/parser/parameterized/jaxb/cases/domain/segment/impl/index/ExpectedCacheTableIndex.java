@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected table index.
+ * Expected cache table index.
  */
 @Getter
 @Setter
-public final class ExpectedTableIndex extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedCacheTableIndex extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
