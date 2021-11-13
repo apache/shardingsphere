@@ -4,8 +4,6 @@ weight = 6
 chapter = true
 +++
 
-## 简介
-
 Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 
 ## 配置项说明

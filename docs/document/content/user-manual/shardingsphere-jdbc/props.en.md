@@ -4,8 +4,6 @@ weight = 6
 chapter = true
 +++
 
-## Introduction
-
 Apache ShardingSphere provides the way of property configuration to configure system level configuration.
 
 ## Configuration Item Explanation
