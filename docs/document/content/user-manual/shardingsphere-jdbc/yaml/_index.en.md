@@ -1,9 +1,19 @@
 +++
-title = "Use YAML"
+title = "YAML"
 weight = 2
+chapter = true
 +++
 
-## Import Maven Dependency
+## Overview
+
+YAML configuration provides interaction with ShardingSphere JDBC through configuration files.
+When used with the governance module together, the configuration of persistence in the configuration center is YAML format.
+
+YAML configuration is the most common configuration mode, which can omit the complexity of programming and simplify user configuration.
+
+## Usage
+
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -13,9 +23,7 @@ weight = 2
 </dependency>
 ```
 
-## Build Data Source
-
-### YAML Configuration
+### YAML Format
 
 ShardingSphere-JDBC YAML file consists of schema name, mode configuration, data source map, rule configurations and properties.
 
@@ -39,12 +47,15 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/ds_2
     username: root
-    password:
+    password: 
+
+  # Configure more data sources
+  # ...
 
 rules:
-  - !FOO_XXX
+- !FOO_XXX
     ...
-  - !BAR_XXX
+- !BAR_XXX
     ...
 
 props:
@@ -52,13 +63,26 @@ props:
   key_2: value_2
 ```
 
-### Build ShardingSphere Data Source
+### Create Data Source
+
+The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
 ```java
+
+File yamlFile = // Indicate YAML file
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## Use ShardingSphere Data Source
+### Use Data Source
 
 Same with Java API.
 
+## YAML Syntax Explanation
+
+`!!` means instantiation of that class
+
+`!` means self-defined alias
+
+`-` means one or multiple can be included
+
+`[]` means array, can substitutable with `-` each other
