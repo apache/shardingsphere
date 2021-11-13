@@ -22,13 +22,13 @@ spring.shardingsphere.datasource.write-ds0.password= # 数据库密码
 spring.shardingsphere.datasource.write-ds0.xxx=  # 数据库连接池的其它属性
 
 spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接
-... 忽略其他数据库配置项
+# 忽略其他数据库配置项
 
 spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接
-... 忽略其他数据库配置项
+# 忽略其他数据库配置项
 
 spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接
-... 忽略其他数据库配置项
+# 忽略其他数据库配置项
 
 # 分片规则配置
 # 分库策略

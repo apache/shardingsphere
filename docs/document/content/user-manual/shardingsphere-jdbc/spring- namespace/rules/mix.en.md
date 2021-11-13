@@ -7,17 +7,11 @@ weight = 6
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://www.springframework.org/schema/context 
-                           http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/tx 
-                           http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
@@ -25,30 +19,30 @@ weight = 6
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
-    <bean id="write_ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="write_ds0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/write_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <bean id="read_ds0_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds0_0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
-    <bean id="read_ds0_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds0_1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
-    <bean id="write_ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="write_ds1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
-    <bean id="read_ds1_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds1_0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
-    <bean id="read_ds1_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds1_1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
         <!-- ...Omit specific configuration. -->
     </bean>
     
