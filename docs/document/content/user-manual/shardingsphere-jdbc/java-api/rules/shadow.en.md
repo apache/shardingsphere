@@ -9,13 +9,13 @@ Class name: org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration
 
 Attributes:
 
-| *Name* | *DataType* | *Description* | *Default Value* |
-| ------ | ---------- | ------------- | --------------- |
-| enable | boolean    | Shadow DB switch. Optional values: true/false |false|
-| dataSources | Map\<String, ShadowDataSourceConfiguration\> | Shadow data source mapping name and configuration | None |
-| tables | Map\<String, ShadowTableConfiguration\> | Shadow table name and configuration | None |
-| defaultShadowAlgorithmName | String | default shadow algorithm name | Option item |
-| shadowAlgorithms | Map\<String, ShardingSphereAlgorithmConfiguration\> | Shadow algorithm name and configuration | None |
+| *Name*                     | *DataType*                                          | *Description*                                     | *Default Value* |
+| -------------------------- | --------------------------------------------------- | ------------------------------------------------- | --------------- |
+| enable                     | boolean                                             | Shadow database switch                            | false           |
+| dataSources                | Map\<String, ShadowDataSourceConfiguration\>        | Shadow data source mapping name and configuration |                 |
+| tables                     | Map\<String, ShadowTableConfiguration\>             | Shadow table name and configuration               |                 |
+| defaultShadowAlgorithmName | String                                              | default shadow algorithm name                     |                 |
+| shadowAlgorithms           | Map\<String, ShardingSphereAlgorithmConfiguration\> | Shadow algorithm name and configuration           |                 |
 
 ## Shadow Data Source Configuration
 
@@ -23,10 +23,10 @@ Class name: org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSou
 
 Attributes:
 
-| *Name* | *DataType* | *Description* | *Default Value* |
-| ------ | ---------- | ------------- | --------------- |
-| sourceDataSourceName | String | Production data source name | None |
-| shadowDataSourceName | String | Shadow data source name | None |
+| *Name*               | *DataType* | *Description*               |
+| -------------------- | ---------- | --------------------------- |
+| sourceDataSourceName | String     | Production data source name |
+| shadowDataSourceName | String     | Shadow data source name     |
 
 ## Shadow Table Configuration
 
@@ -34,10 +34,10 @@ Class name: org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfigu
 
 Attributes:
 
-| *Name* | *DataType* | *Description* | *Default Value* |
-| ------ | ---------- | ------------- | --------------- |
-| dataSourceNames | Collection\<String\> | Shadow table location shadow data source names | None |
-| shadowAlgorithmNames | Collection\<String\> | Shadow table location shadow algorithm names | None |
+| *Name*               | *DataType*           | *Description*                                  |
+| -------------------- | -------------------- | ---------------------------------------------- |
+| dataSourceNames      | Collection\<String\> | Shadow table location shadow data source names |
+| shadowAlgorithmNames | Collection\<String\> | Shadow table location shadow algorithm names   |
 
 ## Shadow Algorithm Configuration
 

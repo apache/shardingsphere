@@ -9,13 +9,13 @@ weight = 5
 
 可配置属性：
 
-| *名称* | *数据类型* | *说明* | *默认值* |
-| ------ | ---------- | ------ | -------- |
-| enable | boolean    | 影子库开关。可选值：true/false |false|
-| dataSources | Map\<String, ShadowDataSourceConfiguration\> | 影子数据源映射名称和配置 |无|
-| tables | Map\<String, ShadowTableConfiguration\> | 影子表名称和配置 |无|
-| defaultShadowAlgorithmName | String | 默认影子算法名称 | 选配项 |
-| shadowAlgorithms | Map\<String, ShardingSphereAlgorithmConfiguration\> | 影子算法名称和配置 |无|
+| *名称*                      | *数据类型*                                           | *说明*               | *默认值* |
+| -------------------------- | --------------------------------------------------- | ------------------- | ------- |
+| enable                     | boolean                                             | 影子库开关            | false   |
+| dataSources                | Map\<String, ShadowDataSourceConfiguration\>        | 影子数据源映射名称和配置 |        |
+| tables                     | Map\<String, ShadowTableConfiguration\>             | 影子表名称和配置       |        |
+| defaultShadowAlgorithmName | String                                              | 默认影子算法名称       |        |
+| shadowAlgorithms           | Map\<String, ShardingSphereAlgorithmConfiguration\> | 影子算法名称和配置     | 无      |
 
 ## 影子数据源配置
 
@@ -23,10 +23,10 @@ weight = 5
 
 可配置属性：
 
-| *名称* | *数据类型* | *说明* | *默认值* |
-| ------ | ---------- | ------ | -------- |
-| sourceDataSourceName | String | 生产数据源名称 |无|
-| shadowDataSourceName | String | 影子数据源名称 |无|
+| *名称*                | *数据类型* | *说明*       |
+| -------------------- | --------- | ----------- |
+| sourceDataSourceName | String    | 生产数据源名称 |
+| shadowDataSourceName | String    | 影子数据源名称 |
 
 ## 影子表配置
 
@@ -34,10 +34,10 @@ weight = 5
 
 可配置属性：
 
-| *名称* | *数据类型* | *说明* | *默认值* |
-| ------ | ---------- | ------ | -------- |
-| dataSourceNames | Collection\<String\> | 影子表关联影子数据源名称列表 |无|
-| shadowAlgorithmNames | Collection\<String\> | 影子表关联影子算法名称列表 |无|
+| *名称*                | *数据类型*            | *说明*                   |
+| -------------------- | -------------------- | ----------------------- |
+| dataSourceNames      | Collection\<String\> | 影子表关联影子数据源名称列表 |
+| shadowAlgorithmNames | Collection\<String\> | 影子表关联影子算法名称列表   |
 
 ## 影子算法配置
 
