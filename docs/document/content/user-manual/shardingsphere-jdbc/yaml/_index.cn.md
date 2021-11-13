@@ -6,7 +6,8 @@ chapter = true
 
 ## 简介
 
-YAML 提供通过配置文件的方式与 ShardingSphere-JDBC 交互。配合治理模块一同使用时，持久化在配置中心的配置均为 YAML 格式。
+YAML 提供通过配置文件的方式与 ShardingSphere-JDBC 交互。
+配合治理模块一同使用时，持久化在配置中心的配置均为 YAML 格式。
 
 YAML 配置是最常见的配置方式，可以省略编程的复杂度，简化用户配置。
 
