@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -79,13 +80,25 @@ public final class EncryptConditionEngine {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(createEncryptConditionsOnSubquerySegment(selectStatementContext));
         }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            result.addAll(createEncryptConditionsOnSubquerySegment(updateStatementContext));
+        }
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubquerySegment subquerySegment) {
-        SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subquerySegment.getSelect(),
-                selectStatementContext.getSchemaName());
-        return createEncryptConditions(subSelectStatementContext);
+    private Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext, final SubquerySegment subquerySegment) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            SelectStatementContext subSelectStatementContext = (SelectStatementContext) sqlStatementContext;
+            return createEncryptConditions(new SelectStatementContext(subSelectStatementContext.getMetaDataMap(), subSelectStatementContext.getParameters(), subquerySegment.getSelect(),
+                    subSelectStatementContext.getSchemaName()));
+        }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext subUpdateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            return createEncryptConditions(new SelectStatementContext(subUpdateStatementContext.getMetaDataMap(), subUpdateStatementContext.getParameters(), subquerySegment.getSelect(),
+                    subUpdateStatementContext.getSchemaName()));
+        }
+        return Collections.emptyList();
     }
     
     private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubqueryTableSegment subqueryTableSegment) {
@@ -136,13 +149,13 @@ public final class EncryptConditionEngine {
         return Optional.empty();
     }
     
-    private Collection<EncryptCondition> createEncryptConditionsOnSubquerySegment(final SelectStatementContext selectStatementContext) {
-        if (!selectStatementContext.isContainsSubquery()) {
+    private Collection<EncryptCondition> createEncryptConditionsOnSubquerySegment(final SQLStatementContext sqlStatementContext) {
+        if (SubqueryExtractUtil.getSubquerySegments(sqlStatementContext.getSqlStatement()).isEmpty()) {
             return Collections.emptyList();
         }
         Collection<EncryptCondition> result = new LinkedList<>();
-        result.addAll(SubqueryExtractUtil.getSubquerySegments(selectStatementContext.getSqlStatement()).stream().map(
-            each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
+        result.addAll(SubqueryExtractUtil.getSubquerySegments(sqlStatementContext.getSqlStatement()).stream().map(
+            each -> createEncryptConditions(sqlStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
         return result;
     }
     

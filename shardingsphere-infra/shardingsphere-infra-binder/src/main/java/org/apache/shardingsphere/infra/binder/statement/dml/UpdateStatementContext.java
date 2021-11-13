@@ -23,12 +23,15 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,8 +44,14 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     private final String schemaName;
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement, final String schemaName) {
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
+    
+    private final List<Object> parameters;
+    
+    public UpdateStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final UpdateStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
+        this.metaDataMap = metaDataMap;
+        this.parameters = parameters;
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.schemaName = schemaName;
     }

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SubqueryTableContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -67,7 +68,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty())
-                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
+                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext())
+                || ((sqlStatementContext instanceof UpdateStatementContext)
+                && !(SubqueryExtractUtil.getSubquerySegments(((UpdateStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()));
     }
     
     @Override
@@ -82,6 +85,15 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(generateSQLTokens(selectStatementContext, subqueryTableContext));
             result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), SubqueryEnum.None, subqueryTableContext));
+        }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            SubqueryExtractUtil.getSubquerySegmentsFromSetAssignmentSegment(updateStatementContext.getSqlStatement().getSetAssignment()).forEach(each -> result.addAll(generateSQLTokens(
+                    new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(),
+                            updateStatementContext.getSchemaName()), Optional.empty(), SubqueryEnum.NESTEDPROJECTIONTABSEGMENT, subqueryTableContext)));
+            updateStatementContext.getWhere().ifPresent(where -> SubqueryExtractUtil.getSubquerySegmentsFromExpression(where.getExpr()).forEach(each -> result.addAll(generateSQLTokens(
+                    new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(), each.getSelect(),
+                            updateStatementContext.getSchemaName()), Optional.empty(), SubqueryEnum.EXPRESSION, subqueryTableContext))));
         }
         return result;
     }

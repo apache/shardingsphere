@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SubqueryTableContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -33,10 +34,12 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
@@ -63,7 +66,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent())
                 || (sqlStatementContext instanceof SelectStatementContext && (((SelectStatementContext) sqlStatementContext).isContainsJoinQuery()
                 || ((SelectStatementContext) sqlStatementContext).isContainsSubquery()))
-                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
+                || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext())
+                || ((sqlStatementContext instanceof UpdateStatementContext)
+                && !(SubqueryExtractUtil.getSubquerySegments(((UpdateStatementContext) sqlStatementContext).getSqlStatement()).isEmpty()));
     }
     
     @Override
@@ -120,7 +125,18 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.addAll(getWhereSegmentsFromWhereAvailable(selectStatementContext));
         }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+            result.addAll(SubqueryExtractUtil.getSubquerySegments(updateStatementContext.getSqlStatement()).stream().map(
+                each -> getWhereSegmentsOnSubquery(updateStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
+        }
         return result;
+    }
+    
+    private Collection<WhereSegment> getWhereSegmentsOnSubquery(final UpdateStatementContext updateStatementContext, final SubquerySegment subquerySegment) {
+        SelectStatementContext subSelectStatementContext = new SelectStatementContext(updateStatementContext.getMetaDataMap(), updateStatementContext.getParameters(),
+                subquerySegment.getSelect(), updateStatementContext.getSchemaName());
+        return getWhereSegmentsFromWhereAvailable(subSelectStatementContext);
     }
     
     private Collection<WhereSegment> getWhereSegmentsOnSubquery(final SelectStatementContext selectStatementContext) {

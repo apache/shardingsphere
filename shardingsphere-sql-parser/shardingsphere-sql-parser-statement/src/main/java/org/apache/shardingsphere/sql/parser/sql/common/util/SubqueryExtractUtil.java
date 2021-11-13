@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -32,7 +34,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,17 +49,27 @@ import java.util.LinkedList;
 public final class SubqueryExtractUtil {
     
     /**
-     * Get subquery segment from SelectStatement.
+     * Get subquery segment from SelectStatement and UpdateStatement.
      *
-     * @param selectStatement SelectStatement
+     * @param sqlStatement SelectStatement or UpdateStatement
      * @return subquery segment collection
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
+    public static Collection<SubquerySegment> getSubquerySegments(final SQLStatement sqlStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();
-        result.addAll(getSubquerySegmentsFromProjections(selectStatement.getProjections()));
-        result.addAll(getSubquerySegmentsFromTableSegment(selectStatement.getFrom()));
-        if (selectStatement.getWhere().isPresent()) {
-            result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
+        if (sqlStatement instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            result.addAll(getSubquerySegmentsFromProjections(selectStatement.getProjections()));
+            result.addAll(getSubquerySegmentsFromTableSegment(selectStatement.getFrom()));
+            if (selectStatement.getWhere().isPresent()) {
+                result.addAll(getSubquerySegmentsFromExpression(selectStatement.getWhere().get().getExpr()));
+            }
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
+            result.addAll(getSubquerySegmentsFromSetAssignmentSegment(updateStatement.getSetAssignment()));
+            if (updateStatement.getWhere().isPresent()) {
+                result.addAll(getSubquerySegmentsFromExpression(updateStatement.getWhere().get().getExpr()));
+            }
         }
         return result;
     }
@@ -157,6 +171,23 @@ public final class SubqueryExtractUtil {
         if (expressionSegment instanceof BetweenExpression) {
             result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getBetweenExpr()));
             result.addAll(getSubquerySegmentsFromExpression(((BetweenExpression) expressionSegment).getAndExpr()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get subquery segment from SetAssignment.
+     *
+     * @param setAssignmentSegment SetAssignmentSegment
+     * @return subquery segment collection
+     */
+    public static Collection<SubquerySegment> getSubquerySegmentsFromSetAssignmentSegment(final SetAssignmentSegment setAssignmentSegment) {
+        if (null == setAssignmentSegment || setAssignmentSegment.getAssignments().isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<SubquerySegment> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignmentSegment.getAssignments()) {
+            result.addAll(getSubquerySegmentsFromExpression(each.getValue()));
         }
         return result;
     }
