@@ -28,7 +28,7 @@ algorithmProperty:
     key=value                          
 ```
 - `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列
-- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt/)
+- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/)
 - 重复的 `tableName` 将无法被创建
 - `queryWithCipherColumn` 支持大写或小写的 true 或 false
 

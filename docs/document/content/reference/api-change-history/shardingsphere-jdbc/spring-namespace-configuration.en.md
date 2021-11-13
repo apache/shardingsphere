@@ -115,7 +115,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | type      | Attribute | Key generate algorithm type       |
 | props (?) | Tag       | Key generate algorithm properties |
 
-Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) and [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen) for more details about type of algorithm.
+Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen) for more details about type of algorithm.
 
 ##### Attention
 
@@ -151,7 +151,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | type      | Attribute  | Load balance algorithm type       |
 | props (?) | Tag        | Load balance algorithm properties |
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
 Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.
 
 ### Encryption
@@ -193,7 +193,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 | type      | Attribute  | Encrypt algorithm type       |
 | props (?) | Tag        | Encrypt algorithm properties |
 
-Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt) for more details about type of algorithm.
 
 ### Shadow-DB
 
