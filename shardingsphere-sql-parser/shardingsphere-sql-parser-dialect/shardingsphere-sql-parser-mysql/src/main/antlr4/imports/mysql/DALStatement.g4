@@ -249,6 +249,10 @@ showWarnings
 showReplicas
     : SHOW REPLICAS
     ;
+    
+showReplicaStatus
+    : SHOW REPLICA STATUS (FOR CHANNEL channelName)?
+    ;
 
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
@@ -456,4 +460,5 @@ show
     | showWarnings
     | showVariables
     | showReplicas
+    | showReplicaStatus
     ;

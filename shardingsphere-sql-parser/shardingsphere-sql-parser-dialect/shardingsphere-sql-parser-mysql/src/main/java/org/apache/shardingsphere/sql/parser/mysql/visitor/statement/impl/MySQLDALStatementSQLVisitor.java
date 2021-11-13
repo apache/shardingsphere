@@ -82,7 +82,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRelaylogEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
@@ -154,8 +156,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelaylogEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicasStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveHostsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -594,6 +598,24 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowSlavehost(final ShowSlavehostContext ctx) {
         return new MySQLShowSlaveHostsStatement();
+    }
+
+    @Override
+    public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
+        MySQLShowReplicaStatusStatement result = new MySQLShowReplicaStatusStatement();
+        if (null != ctx.channelName()) {
+            result.setChannel(ctx.channelName().getText());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
+        MySQLShowSlaveStatusStatement result = new MySQLShowSlaveStatusStatement();
+        if (null != ctx.channelName()) {
+            result.setChannel(ctx.channelName().getText());
+        }
+        return result;
     }
 
     @Override
