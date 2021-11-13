@@ -77,7 +77,7 @@ DROP SCHEMA sharding_db;
 
 1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `schema` 或者没有添加 `resource` 时，ShardingSphere-Proxy 无法执行 SQL。
 2. 推荐先创建 `schema` 和 `resource` 之后再使用第三方数据库工具连接。
-3. 有关 `resource` 的详情请参考。[相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+3. 有关 `resource` 的详情请参考。[相关介绍](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/)
 
 ## 8. [分片] Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -131,7 +131,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 具体的 SPI 使用方式，请大家自行搜索。
 
-与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/)也需要用相同的方式注入才能生效。
+与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](https://shardingsphere.apache.org/document/current/cn/concepts/pluggable/)也需要用相同的方式注入才能生效。
 
 ## 15. [分片] ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
@@ -159,7 +159,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+3. 以上规则请参考 [相关介绍](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/)
 
 ## 18. [其他] 如果 SQL 在 ShardingSphere 中执行不正确，该如何调试？
 
@@ -284,7 +284,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 回答：
 
-ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
+ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://shardingsphere.apache.org/document/current/cn/concepts/pluggable/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
 
 ## 24. [其他] 服务启动时如何加快 `metadata` 加载速度？
 
