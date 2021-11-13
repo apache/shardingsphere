@@ -34,7 +34,7 @@ algorithmProperty:
 
 - Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules
 - Dynamic readwrite-splitting rules rely on database discovery rules
-- `loadBanlancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance/)
+- `loadBanlancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/)
 - Duplicate `ruleName` will not be created
 
 ## Example

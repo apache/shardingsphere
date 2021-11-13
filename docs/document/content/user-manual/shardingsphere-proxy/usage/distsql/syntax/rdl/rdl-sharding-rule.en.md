@@ -83,8 +83,8 @@ algorithmProperty:
     key=value                          
 ```
 - `RESOURCES` needs to use data source resources managed by RDL
-- `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding/)
-- `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen/)
+- `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`

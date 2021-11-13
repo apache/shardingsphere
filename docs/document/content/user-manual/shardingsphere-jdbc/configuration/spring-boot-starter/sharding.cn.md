@@ -59,7 +59,7 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # 分布式序列算法属性配置
 ```
 
-算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
 
 ## 注意事项
 

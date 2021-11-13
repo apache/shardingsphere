@@ -6,8 +6,6 @@ weight = 4
 ## Configuration Item Explanation
 
 ```yaml
-dataSources: # Omit the data source configuration, please refer to the usage
-
 rules:
   - !SHADOW
     enable: # Shadow function switch. Optional values: true/false, the default is false
@@ -27,7 +25,4 @@ rules:
         type: # Shadow algorithm type
         props: # Shadow algorithm property configuration
         # ...
-
-props:
-# ...
 ```

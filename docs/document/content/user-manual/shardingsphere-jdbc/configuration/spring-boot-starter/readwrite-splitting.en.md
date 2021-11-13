@@ -17,5 +17,5 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-alg
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.props.xxx= # Load balance algorithm properties
 ```
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
 Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.

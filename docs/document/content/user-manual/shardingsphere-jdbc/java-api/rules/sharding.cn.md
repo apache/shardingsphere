@@ -89,7 +89,7 @@ weight = 1
 
 可配置属性：无
 
-算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)。
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)。
 
 ## 分布式序列策略配置
 
@@ -102,4 +102,4 @@ weight = 1
 | column           | String   | 分布式序列列名称   |
 | keyGeneratorName | String   | 分布式序列算法名称 |
 
-算法类型的详情，请参见[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+算法类型的详情，请参见[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。

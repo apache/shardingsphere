@@ -6,8 +6,6 @@ weight = 4
 ## 配置项说明
 
 ```yaml
-dataSources: # 省略数据源配置，请参考使用手册
-
 rules:
 - !SHADOW
   enable: # Shadow功能开关。 可选值：true/false，默认为false
@@ -27,7 +25,4 @@ rules:
       type: # 影子算法类型
       props: # 影子算法属性配置
         # ...
-      
-props:
-  # ...
 ```

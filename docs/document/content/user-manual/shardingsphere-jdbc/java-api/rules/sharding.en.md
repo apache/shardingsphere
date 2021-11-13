@@ -89,7 +89,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.None
 
 Attributes: None
 
-Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) for more details about type of algorithm.
+Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) for more details about type of algorithm.
 
 ## Key Generate Strategy Configuration
 
@@ -102,4 +102,4 @@ Attributes:
 | column           | String     | Column name of key generate |
 | keyGeneratorName | String     | key generate algorithm name |
 
-Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen) for more details about type of algorithm.
+Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen) for more details about type of algorithm.

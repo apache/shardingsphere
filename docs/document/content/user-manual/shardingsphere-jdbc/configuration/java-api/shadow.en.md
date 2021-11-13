@@ -41,4 +41,4 @@ Attributes:
 
 ## Shadow Algorithm Configuration
 
-Please refer to [Built-in Shadow Algorithm List](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow).
+Please refer to [Built-in Shadow Algorithm List](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow).

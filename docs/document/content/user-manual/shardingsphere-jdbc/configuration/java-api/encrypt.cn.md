@@ -52,4 +52,4 @@ weight = 3
 | type       | String     | 加解密算法类型     |
 | properties | Properties | 加解密算法属性配置 |
 
-算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)。
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。

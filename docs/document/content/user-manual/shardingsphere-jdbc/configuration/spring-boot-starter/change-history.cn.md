@@ -21,7 +21,7 @@ spring.shardingsphere.rules.replica-query.load-balancers.<load-balance-algorithm
 spring.shardingsphere.rules.replica-query.load-balancers.<load-balance-algorithm-name>.props.xxx= # 负载均衡算法属性配置
 ```
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 
 ### 数据分片
 
@@ -80,7 +80,7 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # 分布式序列算法属性配置
 ```
 
-算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
 
 ### 数据加密
 
@@ -99,7 +99,7 @@ spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.type= # 
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xxx= # 加密算法属性配置
 ```
 
-算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)
 
 ### 影子库
 

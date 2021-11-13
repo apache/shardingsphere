@@ -36,7 +36,7 @@ weight = 7
 | type      | 属性  | 负载均衡算法类型    |
 | props (?) | 标签  | 负载均衡算法属性配置 |
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 
 ## 4.x
 

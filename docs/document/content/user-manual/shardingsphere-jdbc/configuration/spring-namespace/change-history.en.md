@@ -35,7 +35,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/replica-query
 | type      | Attribute  | Load balance algorithm type       |
 | props (?) | Tag        | Load balance algorithm properties |
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/  builtin-algorithm/load-balance) for more details about type of algorithm.
 
 ## 4.x
 
