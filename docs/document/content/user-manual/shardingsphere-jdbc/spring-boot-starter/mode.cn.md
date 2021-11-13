@@ -9,7 +9,7 @@ weight = 1
 
 ```properties
 spring.shardingsphere.mode.type= # 运行模式类型。可选配置：Memory、Standalone、Cluster
-spring.shardingsphere.mode.repository= # 久化仓库配置。Memory 类型无需持久化
+spring.shardingsphere.mode.repository= # 持久化仓库配置。Memory 类型无需持久化
 spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
 ```
 
