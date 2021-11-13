@@ -26,30 +26,14 @@ YAML 配置是最常见的配置方式，可以省略编程的复杂度，简化
 
 ShardingSphere-JDBC 的 YAML 配置文件通过 Schema 名称、运行模式、数据源集合、规则集合以及属性配置组成。
 
-注：示例的数据库连接池为 HikariCP，可根据业务场景更换为其他数据库连接池。
-
 ```yaml
-schemaName: my_schema
+# JDBC 中的数据源的别名。在集群模式，使用该参数联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy 共同使用。
+# 默认值：logic_db
+schemaName (?):
 
 mode:
-  type: Memory
 
 dataSources:
-  # 配置第 1 个数据源
-  ds_1: !!com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_1
-    username: root
-    password:
-  # 配置第 2 个数据源
-  ds_2: !!com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_2
-    username: root
-    password: 
-
-  # 配置更多数据源
-  # ...
 
 rules:
 - !FOO_XXX
