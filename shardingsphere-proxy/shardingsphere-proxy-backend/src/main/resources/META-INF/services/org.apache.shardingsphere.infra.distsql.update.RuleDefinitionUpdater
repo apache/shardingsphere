@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.CreateDefaultSingleTableRuleResourceStatementUpdater
+org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.AlterDefaultSingleTableRuleResourceStatementUpdater

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.core.common;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterDefaultSingleTableRuleResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleResourceContext;
@@ -46,6 +47,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -115,6 +117,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitCreateDefaultSingleTableRuleResource(final CreateDefaultSingleTableRuleResourceContext ctx) {
         return new CreateDefaultSingleTableRuleResourceStatement(getIdentifierValue(ctx.dataSourceName()));
+    }
+    
+    @Override
+    public ASTNode visitAlterDefaultSingleTableRuleResource(final AlterDefaultSingleTableRuleResourceContext ctx) {
+        return new AlterDefaultSingleTableRuleResourceStatement(getIdentifierValue(ctx.dataSourceName()));
     }
     
     private Properties getPoolProperties(final PoolPropertiesContext ctx) {
