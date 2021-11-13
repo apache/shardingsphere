@@ -1,6 +1,6 @@
 +++
 title = "Load Balance Algorithm"
-weight = 3
+weight = 4
 +++
 
 ## Round Robin Algorithm

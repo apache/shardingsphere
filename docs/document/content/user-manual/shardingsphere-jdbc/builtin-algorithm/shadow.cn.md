@@ -1,6 +1,6 @@
 +++
 title = "影子算法"
-weight = 5
+weight = 6
 +++
 
 ## 列影子算法

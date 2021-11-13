@@ -1,6 +1,6 @@
 +++
 title = "Sharding Algorithm"
-weight = 1
+weight = 2
 +++
 
 ## Auto Sharding Algorithm

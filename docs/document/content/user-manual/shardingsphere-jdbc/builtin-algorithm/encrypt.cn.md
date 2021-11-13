@@ -1,6 +1,6 @@
 +++
 title = "加密算法"
-weight = 4
+weight = 5
 +++
 
 ## MD5 加密算法

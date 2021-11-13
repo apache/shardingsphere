@@ -1,6 +1,6 @@
 +++
 title = "Shadow Algorithm"
-weight = 5
+weight = 6
 +++
 
 ## Column Shadow Algorithm

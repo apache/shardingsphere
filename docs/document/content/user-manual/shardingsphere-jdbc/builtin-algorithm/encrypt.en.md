@@ -1,6 +1,6 @@
 +++
 title = "Encryption Algorithm"
-weight = 4
+weight = 5
 +++
 
 ## MD5 Encrypt Algorithm

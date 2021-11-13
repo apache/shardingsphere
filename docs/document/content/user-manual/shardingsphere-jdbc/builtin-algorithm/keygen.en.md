@@ -1,6 +1,6 @@
 +++
 title = "Key Generate Algorithm"
-weight = 2
+weight = 3
 +++
 
 ## Snowflake

@@ -1,6 +1,6 @@
 +++
 title = "分片算法"
-weight = 1
+weight = 2
 +++
 
 ## 自动分片算法
@@ -132,4 +132,3 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | ------------------ | --------- | -------------------------------------------------- |
 | strategy           | String    | 分片策略类型，支持STANDARD、COMPLEX或HINT（不区分大小写） |
 | algorithmClassName | String    | 分片算法全限定名                                      |
-
