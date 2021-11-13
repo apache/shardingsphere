@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Setter
 public final class RandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    private Properties props = new Properties();
+    private Properties props;
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {

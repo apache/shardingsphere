@@ -35,7 +35,7 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
     
-    private Properties props = new Properties();
+    private Properties props;
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
