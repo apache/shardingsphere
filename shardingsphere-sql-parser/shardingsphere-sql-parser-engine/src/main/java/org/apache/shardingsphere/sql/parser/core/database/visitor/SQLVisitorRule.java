@@ -296,7 +296,7 @@ public enum SQLVisitorRule {
 
     CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
     
-    LOAD_INDEX_INTO_CACHE("LoadIndexIntoCache", SQLStatementType.DAL),
+    LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     
