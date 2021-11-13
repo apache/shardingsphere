@@ -37,6 +37,12 @@ Properties props = ... // 构建属性配置
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
 ```
 
+模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/java-api/mode)。
+
+数据源详情请参见[数据源配置](/cn/user-manual/shardingsphere-jdbc/java-api/data-source)。
+
+规则详情请参见[规则配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules)。
+
 ### 使用数据源
 
 可通过 DataSource 选择使用原生 JDBC，或 JPA、Hibernate、MyBatis 等 ORM 框架。

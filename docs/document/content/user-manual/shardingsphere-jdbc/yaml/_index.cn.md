@@ -62,6 +62,13 @@ props:
   key_2: value_2
 ```
 
+模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml/mode)。
+
+数据源详情请参见[数据源配置](/cn/user-manual/shardingsphere-jdbc/yaml/data-source)。
+
+规则详情请参见[规则配置](/cn/user-manual/shardingsphere-jdbc/yaml/rules)。
+
+
 ### 构建数据源
 
 通过 YamlShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
