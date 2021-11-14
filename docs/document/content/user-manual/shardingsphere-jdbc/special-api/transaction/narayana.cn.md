@@ -56,7 +56,7 @@ weight = 5
 
 可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Narayana 配置项。
 
-详情请参见[Narayana官方文档](https://narayana.io/documentation/index.html)。
+详情请参见 [Narayana 官方文档](https://narayana.io/documentation/index.html)。
 
 ## 设置 XA 事务管理类型
 

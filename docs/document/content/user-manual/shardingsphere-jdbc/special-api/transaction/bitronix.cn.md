@@ -38,7 +38,7 @@ weight = 6
 
 ## 定制化配置项
 
-详情请参见[Bitronix官方文档](https://github.com/bitronix/btm/wiki)。
+详情请参见 [Bitronix 官方文档](https://github.com/bitronix/btm/wiki)。
 
 ## 设置 XA 事务管理类型
 

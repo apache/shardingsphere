@@ -5,7 +5,7 @@ weight = 7
 
 ## 启动 Seata 服务
 
-按照 [seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动 Seata 服务器。
+按照 [seata-work-shop](https://github.com/seata/seata-workshop) 中的步骤，下载并启动 Seata 服务器。
 
 ## 创建日志表
 
