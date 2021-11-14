@@ -1,6 +1,6 @@
 +++
 title = "Builtin Algorithm"
-weight = 5
+weight = 6
 chapter = true
 +++
 
