@@ -59,6 +59,10 @@
       ]
     },
     {
+      "name": "spring.shardingsphere.rules.database-discovery.discovery-types.keys",
+      "values": []
+    },
+    {
       "name": "spring.shardingsphere.rules.database-discovery.discovery-types.values",
       "values": [],
       "providers": [

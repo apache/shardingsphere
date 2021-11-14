@@ -221,6 +221,10 @@
       ]
     },
     {
+      "name": "spring.shardingsphere.rules.sharding.sharding-algorithms.keys",
+      "values": []
+    },
+    {
       "name": "spring.shardingsphere.rules.sharding.sharding-algorithms.values",
       "values": [
       ],
@@ -232,6 +236,10 @@
           }
         }
       ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.key-generators.keys",
+      "values": []
     },
     {
       "name": "spring.shardingsphere.rules.sharding.key-generators.values",
