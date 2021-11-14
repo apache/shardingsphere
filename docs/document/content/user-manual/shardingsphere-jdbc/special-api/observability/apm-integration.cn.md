@@ -21,7 +21,7 @@ weight = 2
 ShardingTracer.init();
 ```
 
-* 方法2：通过参数注入APM系统提供的 Tracer 实现类。
+* 方法2：通过参数注入 APM 系统提供的 Tracer 实现类。
 
 ```java
 ShardingTracer.init(new SkywalkingTracer());
@@ -51,7 +51,7 @@ OpenTelemetry:
 
 ### 应用架构
 
-使用 ShardingSphere-Proxy 访问两个数据库`192.168.0.1:3306` 和 `192.168.0.2:3306`，且每个数据库中有两个分表。
+使用 ShardingSphere-Proxy 访问两个数据库 `192.168.0.1:3306` 和 `192.168.0.2:3306`，且每个数据库中有两个分表。
 
 ### 拓扑图展示
 
@@ -65,11 +65,11 @@ OpenTelemetry:
 
 从跟踪图中可以能够看到 SQL 解析和执行的情况。
 
-`/Sharding-Sphere/parseSQL/` : 表示本次 SQL 的解析性能。
+`/Sharding-Sphere/parseSQL/`: 表示本次 SQL 的解析性能。
 
 ![解析节点](https://shardingsphere.apache.org/document/current/img/apm/5x_parse.png)
 
-`/Sharding-Sphere/executeSQL/` : 表示具体执行的实际 SQL 的性能。
+`/Sharding-Sphere/executeSQL/`: 表示具体执行的实际 SQL 的性能。
 
 ![实际访问节点](https://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL.png)
 
@@ -79,10 +79,10 @@ OpenTelemetry:
 
 从跟踪图中可以能够看到发生异常的节点。
 
-`/Sharding-Sphere/executeSQL/` : 表示执行 SQL 异常的结果。
+`/Sharding-Sphere/executeSQL/`: 表示执行 SQL 异常的结果。
 
 ![异常节点](https://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL_Tags_err.png)
 
-`/Sharding-Sphere/executeSQL/` : 表示执行 SQL 异常的日志。
+`/Sharding-Sphere/executeSQL/`: 表示执行 SQL 异常的日志。
 
 ![异常节点日志](https://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL_Logs_err.png)
