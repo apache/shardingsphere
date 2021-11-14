@@ -39,3 +39,5 @@ chapter = true
 | namespace   | String     | 注册中心命名空间   |
 | serverLists | String     | 注册中心连接地址   |
 | props       | Properties | 持久化仓库所需属性 |
+
+持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。

@@ -46,3 +46,5 @@ mode:
       bar_key: bar_value
   overwrite: # 是否使用本地配置覆盖持久化配置
 ```
+
+持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。

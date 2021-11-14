@@ -38,3 +38,5 @@ spring.shardingsphere.mode.repository.serverLists= # Server lists of registry ce
 spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
 spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
 ```
+
+Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.

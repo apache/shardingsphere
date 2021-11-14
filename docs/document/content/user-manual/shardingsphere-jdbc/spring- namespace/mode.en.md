@@ -117,3 +117,5 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
     </shardingsphere:data-source>
 </beans>
 ```
+
+Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.

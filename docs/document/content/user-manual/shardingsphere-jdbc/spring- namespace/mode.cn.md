@@ -117,3 +117,5 @@ weight = 1
     </shardingsphere:data-source>
 </beans>
 ```
+
+持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
