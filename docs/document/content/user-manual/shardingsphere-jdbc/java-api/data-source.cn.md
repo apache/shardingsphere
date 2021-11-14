@@ -6,6 +6,8 @@ chapter = true
 
 ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
 
+## 配置示例
+
 示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。
 
 ```java

@@ -39,3 +39,5 @@ Attributes:
 | namespace   | String     | Namespace of registry center     |
 | serverLists | String     | Server lists of registry center  |
 | props       | Properties | Properties of persist repository |
+
+Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.

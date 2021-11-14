@@ -46,3 +46,5 @@ mode:
       bar_key: bar_value
   overwrite: # Whether overwrite persistent configuration with local configuration
 ```
+
+Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.
