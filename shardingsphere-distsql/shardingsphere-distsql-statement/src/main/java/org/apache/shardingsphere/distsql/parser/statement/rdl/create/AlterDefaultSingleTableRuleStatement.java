@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 /**
- * Alter default single table rule resource statement.
+ * Alter default single table rule statement.
  */
 @RequiredArgsConstructor
 @Getter

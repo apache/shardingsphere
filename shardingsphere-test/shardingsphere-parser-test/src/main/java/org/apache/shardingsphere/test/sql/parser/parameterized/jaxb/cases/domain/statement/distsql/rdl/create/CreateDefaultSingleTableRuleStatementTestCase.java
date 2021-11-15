@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Create default single table rule resource statement test case.
+ * Create default single table rule statement test case.
  */
 @Getter
 @Setter

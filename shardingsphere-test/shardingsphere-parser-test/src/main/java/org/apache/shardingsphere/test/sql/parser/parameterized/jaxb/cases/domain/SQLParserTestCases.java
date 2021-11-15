@@ -735,13 +735,13 @@ public final class SQLParserTestCases {
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-default-single-table-resource")
+    @XmlElement(name = "create-default-single-table")
     private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-default-single-table-resource")
+    @XmlElement(name = "alter-default-single-table")
     private final List<AlterDefaultSingleTableRuleStatementTestCase> alterDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-default-single-table-resource")
+    @XmlElement(name = "drop-default-single-table")
     private final List<DropDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
     /**

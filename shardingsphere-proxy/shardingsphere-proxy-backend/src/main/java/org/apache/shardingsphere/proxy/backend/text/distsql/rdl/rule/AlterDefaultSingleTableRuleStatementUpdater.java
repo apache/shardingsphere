@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Alter default single table rule resource statement updater.
+ * Alter default single table rule statement updater.
  */
 public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     

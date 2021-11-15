@@ -240,5 +240,5 @@
         </shardingAlgorithm>
     </alter-sharding-algorithm>
 
-    <alter-default-single-table-resource sql-case-id="alter-default-single-table-resource" default-data-source="ds_0" />
+    <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 </sql-parser-test-cases>

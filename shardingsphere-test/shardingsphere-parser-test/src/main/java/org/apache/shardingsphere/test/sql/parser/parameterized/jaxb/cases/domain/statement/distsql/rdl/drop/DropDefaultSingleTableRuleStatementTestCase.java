@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Drop default single table rule resource statement test case.
+ * Drop default single table rule statement test case.
  */
 @Getter
 @Setter

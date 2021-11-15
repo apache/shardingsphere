@@ -27,17 +27,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Drop default single table rule resource statement assert.
+ * Drop default single table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropDefaultSingleTableRuleAssert {
     
     /**
-     * Assert drop default single table rule resource statement is correct with expected parser result.
+     * Assert drop default single table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop default single table rule resource statement
-     * @param expected expected drop default single table rule resource statement test case
+     * @param actual actual drop default single table rule statement
+     * @param expected expected drop default single table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropDefaultSingleTableRuleStatement actual, 
                                 final DropDefaultSingleTableRuleStatementTestCase expected) {

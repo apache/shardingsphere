@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Drop default single table rule resource statement.
+ * Drop default single table rule statement.
  */
 @RequiredArgsConstructor
 @Getter

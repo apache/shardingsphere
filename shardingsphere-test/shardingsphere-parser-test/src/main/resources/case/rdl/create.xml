@@ -343,5 +343,5 @@
         </shadow-algorithm>
     </create-shadow-algorithm>
     
-    <create-default-single-table-resource sql-case-id="create-default-single-table-resource" default-data-source="ds_0" />
+    <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0" />
 </sql-parser-test-cases>

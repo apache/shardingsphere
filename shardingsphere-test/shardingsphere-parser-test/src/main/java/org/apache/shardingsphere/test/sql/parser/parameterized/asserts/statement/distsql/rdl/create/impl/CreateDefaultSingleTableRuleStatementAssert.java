@@ -29,17 +29,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Create default single table rule resource statement assert.
+ * Create default single table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateDefaultSingleTableRuleStatementAssert {
     
     /**
-     * Assert create default single table rule resource statement is correct with expected parser result.
+     * Assert create default single table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create default single table rule resource statement
-     * @param expected expected create default single table rule resource statement test case
+     * @param actual actual create default single table rule statement
+     * @param expected expected create default single table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultSingleTableRuleStatement actual, 
                                 final CreateDefaultSingleTableRuleStatementTestCase expected) {

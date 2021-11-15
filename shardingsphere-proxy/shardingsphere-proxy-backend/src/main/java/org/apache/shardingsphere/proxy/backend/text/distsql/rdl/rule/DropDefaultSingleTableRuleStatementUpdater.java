@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 /**
- * Drop default single table rule resource statement updater.
+ * Drop default single table rule statement updater.
  */
 public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
