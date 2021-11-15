@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show single table rules statement test case.
+ * Show single table statement test case.
  */
 @Getter
 @Setter
-public final class ShowSingleTableRulesStatementTestCase extends SQLParserTestCase {
+public final class ShowSingleTableStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute
     private String name;

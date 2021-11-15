@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
@@ -36,17 +36,17 @@ import java.util.stream.Stream;
 /**
  * Result set for show single table rules.
  */
-public final class SingleTableRuleQueryResultSet implements DistSQLResultSet {
+public final class SingleTableQueryResultSet implements DistSQLResultSet {
     
     private Iterator<SingleTableDataNode> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        ShowSingleTableRulesStatement showSingleTableRulesStatement = (ShowSingleTableRulesStatement) sqlStatement;
+        ShowSingleTableStatement showSingleTableStatement = (ShowSingleTableStatement) sqlStatement;
         Stream<SingleTableDataNode> singleTableRules = metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleTableRule)
                 .map(each -> (SingleTableRule) each).map(each -> each.getSingleTableDataNodes().entrySet()).flatMap(Collection::stream).map(Entry::getValue);
-        if (null != showSingleTableRulesStatement.getTableName()) {
-            singleTableRules = singleTableRules.filter(each -> showSingleTableRulesStatement.getTableName().equals(each.getTableName()));
+        if (null != showSingleTableStatement.getTableName()) {
+            singleTableRules = singleTableRules.filter(each -> showSingleTableStatement.getTableName().equals(each.getTableName()));
         }
         data = singleTableRules.collect(Collectors.toCollection(LinkedList::new)).iterator();
     }
@@ -69,6 +69,6 @@ public final class SingleTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowSingleTableRulesStatement.class.getCanonicalName();
+        return ShowSingleTableStatement.class.getCanonicalName();
     }
 }
