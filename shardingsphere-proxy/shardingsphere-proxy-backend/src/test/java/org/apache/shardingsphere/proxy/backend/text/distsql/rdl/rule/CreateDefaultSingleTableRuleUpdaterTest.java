@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterDefaultSingleTableRuleResourceUpdaterTest {
+public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
@@ -47,7 +47,7 @@ public final class AlterDefaultSingleTableRuleResourceUpdaterTest {
     @Mock
     private SingleTableRuleConfiguration currentConfiguration;
     
-    private final AlterDefaultSingleTableRuleStatementUpdater updater = new AlterDefaultSingleTableRuleStatementUpdater();
+    private CreateDefaultSingleTableRuleStatementUpdater updater = new CreateDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
@@ -55,36 +55,30 @@ public final class AlterDefaultSingleTableRuleResourceUpdaterTest {
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithNotExistConfiguration() throws Exception {
-        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_1");
-        updater.checkSQLStatement(shardingSphereMetaData, statement, null);
-    }
-    
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckWithInvalidResource() throws Exception {
-        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_1");
+        CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_1");
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithNotExistResource() throws Exception {
-        when(currentConfiguration.getDefaultDataSource()).thenReturn(Optional.empty());
-        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckWithDuplicateResource() throws Exception {
+        when(currentConfiguration.getDefaultDataSource()).thenReturn(Optional.of("single_table"));
+        CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
     }
     
     @Test
     public void assertBuild() {
-        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
+        CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
+        SingleTableRuleConfiguration configuration = updater.buildToBeCreatedRuleConfiguration(statement);
         assertThat(configuration.getDefaultDataSource().get(), is("ds_0"));
     }
     
     @Test
     public void assertUpdate() {
-        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
+        CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
+        SingleTableRuleConfiguration configuration = updater.buildToBeCreatedRuleConfiguration(statement);
         SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
         updater.updateCurrentRuleConfiguration(currentConfiguration, configuration);
         assertThat(currentConfiguration.getDefaultDataSource().get(), is("ds_0"));
