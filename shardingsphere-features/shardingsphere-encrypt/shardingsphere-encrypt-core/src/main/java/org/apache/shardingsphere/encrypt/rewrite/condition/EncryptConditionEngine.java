@@ -35,21 +35,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -58,9 +58,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class EncryptConditionEngine {
     
+    private static final Set<String> LOGICAL_OPERATOR = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
     private final EncryptRule encryptRule;
     
     private final ShardingSphereSchema schema;
+    
+    static {
+        LOGICAL_OPERATOR.add("AND");
+        LOGICAL_OPERATOR.add("&&");
+        LOGICAL_OPERATOR.add("OR");
+        LOGICAL_OPERATOR.add("||");
+    }
     
     /**
      * Create encrypt conditions.
@@ -68,30 +77,17 @@ public final class EncryptConditionEngine {
      * @param sqlStatementContext SQL statement context
      * @return encrypt conditions
      */
-    public Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
+    public Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext<?> sqlStatementContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
-        result.addAll(createEncryptConditionsOnWhereSegment(sqlStatementContext));
-        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
-            result.addAll(createEncryptConditionsOnWhereSegment(selectStatementContext));
-        }
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-            result.addAll(createEncryptConditionsOnSubquerySegment(selectStatementContext));
+        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
+            Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
+            Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
+            String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
+            for (AndPredicate predicate : andPredicates) {
+                result.addAll(createEncryptConditions(schemaName, predicate.getPredicates(), columnTableNames));
+            }
         }
         return result;
-    }
-    
-    private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubquerySegment subquerySegment) {
-        SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subquerySegment.getSelect(),
-                selectStatementContext.getSchemaName());
-        return createEncryptConditions(subSelectStatementContext);
-    }
-    
-    private Collection<EncryptCondition> createEncryptConditions(final SelectStatementContext selectStatementContext, final SubqueryTableSegment subqueryTableSegment) {
-        SelectStatementContext subSelectStatementContext = new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), 
-            subqueryTableSegment.getSubquery().getSelect(), selectStatementContext.getSchemaName());
-        return createEncryptConditions(subSelectStatementContext);
     }
     
     private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
@@ -119,13 +115,10 @@ public final class EncryptConditionEngine {
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
             String operator = ((BinaryOperationExpression) expression).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (!logical) {
+            if (!LOGICAL_OPERATOR.contains(operator)) {
                 ExpressionSegment rightValue = ((BinaryOperationExpression) expression).getRight();
-                return isSupportedOperator(((BinaryOperationExpression) expression).getOperator()) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue)
-                        : Optional.empty();
+                return isSupportedOperator(operator) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue) : Optional.empty();
             }
-            
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
@@ -136,30 +129,17 @@ public final class EncryptConditionEngine {
         return Optional.empty();
     }
     
-    private Collection<EncryptCondition> createEncryptConditionsOnSubquerySegment(final SelectStatementContext selectStatementContext) {
-        if (!selectStatementContext.isContainsSubquery()) {
-            return Collections.emptyList();
+    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        if (sqlStatementContext instanceof WhereAvailable) {
+            ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
         }
-        Collection<EncryptCondition> result = new LinkedList<>();
-        result.addAll(SubqueryExtractUtil.getSubquerySegments(selectStatementContext.getSqlStatement()).stream().map(
-            each -> createEncryptConditions(selectStatementContext, each)).flatMap(Collection::stream).collect(Collectors.toList()));
-        return result;
-    }
-    
-    private Collection<EncryptCondition> createEncryptConditionsOnWhereSegment(final SQLStatementContext sqlStatementContext) {
-        Collection<EncryptCondition> result = new LinkedList<>();
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
-            return Collections.emptyList();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
+            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
         }
-        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
-        if (!whereSegment.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(whereSegment.get().getExpr());
-        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
-        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
-        for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(schemaName, each.getPredicates(), columnTableNames));
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            result.addAll(getWhereSegments(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()));
         }
         return result;
     }
