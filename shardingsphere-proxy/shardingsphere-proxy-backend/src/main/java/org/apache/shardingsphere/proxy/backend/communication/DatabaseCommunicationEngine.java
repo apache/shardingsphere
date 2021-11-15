@@ -44,6 +44,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,11 +73,11 @@ public final class DatabaseCommunicationEngine {
     
     private final KernelProcessor kernelProcessor;
     
+    private final MetaDataRefreshEngine metadataRefreshEngine;
+    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
-    
-    private ProxyLockEngine proxyLockEngine;
     
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
@@ -88,9 +89,9 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         kernelProcessor = new KernelProcessor();
-        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, new MetaDataRefreshEngine(metaData,
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().get(backendConnection.getSchemaName()),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps()), backendConnection.getSchemaName());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
     }
     
     /**
@@ -123,11 +124,22 @@ public final class DatabaseCommunicationEngine {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        Collection<ExecuteResult> executeResults = proxyLockEngine.execute(executionContext);
+        Collection<ExecuteResult> executeResults = doExecute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
+    }
+    
+    private Collection<ExecuteResult> doExecute(final ExecutionContext executionContext) throws SQLException {
+        Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
+        refreshMetaData(executionContext);
+        return result;
+    }
+    
+    private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        metadataRefreshEngine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
