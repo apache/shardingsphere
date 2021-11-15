@@ -36,6 +36,11 @@ Default integration.
 
 1. Copy Etcd's client driver to folder `ext-lib/`.
 
+## Using Distributed Transaction
+
+Same with ShardingSphere-JDBC.
+please refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/special-api/transaction/) for more details.
+
 ## Using user-defined algorithm
 
 When developer need to use user-defined algorithm, should use the way below to configure algorithm, use sharding algorithm as example. 

@@ -36,6 +36,11 @@ weight = 1
 
 1. 将 Etcd 的客户端驱动程序复制至目录 `ext-lib/`。
 
+## 使用分布式事务
+
+与 ShardingSphere-JDBC 使用方式相同。
+具体可参考[分布式事务](/cn/user-manual/shardingsphere-jdbc/special-api/transaction/)。
+
 ## 使用自定义算法
 
 当用户需要使用自定义的算法类时，可通过以下方式配置使用自定义算法，以分片为例：
