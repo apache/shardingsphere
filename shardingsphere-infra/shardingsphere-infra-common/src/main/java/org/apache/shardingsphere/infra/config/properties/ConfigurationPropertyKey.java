@@ -88,11 +88,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
     
     /**
-     * Whether enable lock.
-     */
-    LOCK_ENABLED("lock-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */

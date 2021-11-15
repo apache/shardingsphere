@@ -67,4 +67,6 @@
         <rule>shadow_algorithm_1</rule>
         <rule>shadow_algorithm_2</rule>
     </drop-shadow-algorithm>
+
+    <drop-default-single-table sql-case-id="drop-default-single-table" />
 </sql-parser-test-cases>
