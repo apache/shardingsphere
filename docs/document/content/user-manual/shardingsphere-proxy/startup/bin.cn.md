@@ -1,5 +1,5 @@
 +++
-title = "启动"
+title = "使用二进制发布包"
 weight = 1
 +++
 
@@ -8,7 +8,6 @@ weight = 1
 1. 下载 ShardingSphere-Proxy 的最新发行版。
 1. 解压缩后修改 `conf/server.yaml` 和以 `config-` 前缀开头的文件，如：`conf/config-xxx.yaml` 文件，进行分片规则、读写分离规则配置。配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/configuration/)。
 1. Linux 操作系统请运行 `bin/start.sh`，Windows 操作系统请运行 `bin/start.bat` 启动 ShardingSphere-Proxy。如需配置启动端口、配置文件位置，可参考[快速入门](/cn/quick-start/shardingsphere-proxy-quick-start/)。
-1. 使用 docker 请参考[Docker镜像](/cn/user-manual/shardingsphere-proxy/docker/)。
 
 ## 选择数据库协议
 
@@ -35,6 +34,11 @@ weight = 1
 ### 使用 Etcd
 
 1. 将 Etcd 的客户端驱动程序复制至目录 `ext-lib/`。
+
+## 使用分布式事务
+
+与 ShardingSphere-JDBC 使用方式相同。
+具体可参考[分布式事务](/cn/user-manual/shardingsphere-jdbc/special-api/transaction/)。
 
 ## 使用自定义算法
 

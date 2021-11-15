@@ -1,6 +1,6 @@
 +++
-title = "Docker Image"
-weight = 3
+title = "Use Docker"
+weight = 2
 +++
 
 ## Pull Official Docker Image
