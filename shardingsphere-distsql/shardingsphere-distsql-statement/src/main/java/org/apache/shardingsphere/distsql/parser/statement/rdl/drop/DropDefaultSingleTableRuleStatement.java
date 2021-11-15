@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSinglesTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    ) SEMI?
-    ;
+/**
+ * Drop default single table rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
+}

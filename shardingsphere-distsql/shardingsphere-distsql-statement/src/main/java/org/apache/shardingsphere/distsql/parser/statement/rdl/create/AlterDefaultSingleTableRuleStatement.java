@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSinglesTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    ) SEMI?
-    ;
+/**
+ * Alter default single table rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterDefaultSingleTableRuleStatement extends AlterRuleStatement {
+    
+    private final String defaultResource;
+}
