@@ -37,6 +37,14 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
 
     private static final String DEFAULT_H2_MODEL = "";
 
+    private static final String MODEL_MEM = "mem";
+    
+    private static final String MODEL_PWD = "~";
+    
+    private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
+    
     private final String hostName;
 
     private final String model;
@@ -47,16 +55,10 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|"
-            + "(ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
-            + "file:[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
-
-    private final Pattern modelPattern = Pattern.compile("((mem|~)[:/]|(ssl:|tcp:)|(file:))");
-
     public H2DataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
+        Matcher matcher = PATTERN.matcher(url);
         if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+            throw new UnrecognizedDatabaseURLException(url, PATTERN.pattern());
         }
         String portFromMatcher = matcher.group("port");
         String catalogFromMatcher = matcher.group("catalog");
@@ -69,13 +71,14 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
         catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
-        String modelPathFromMatcher = matcher.group(1);
-        Matcher modelMatcher = modelPattern.matcher(modelPathFromMatcher);
-        if (!modelMatcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+        String modelMemFromMatcher = matcher.group("modelMem");
+        String modelSslOrTcpFromMatcher = matcher.group("modelSslOrTcp");
+        String modelFileFromMatcher = matcher.group("modelFile");
+        if (modelMemFromMatcher == null) {
+            model = null == modelSslOrTcpFromMatcher ? modelFileFromMatcher : modelSslOrTcpFromMatcher;
+        } else {
+            model = modelMemFromMatcher;
         }
-        String modelFromMatcher = modelMatcher.group(1);
-        model = null == modelFromMatcher ? DEFAULT_H2_MODEL : modelFromMatcher;
     }
     
     @Override
@@ -83,10 +86,20 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (!(dataSourceMetaData instanceof H2DataSourceMetaData)) {
             return false;
         }
-        if (!getModel().equals(((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
+        if (!isSameModel(getModel(), ((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
             return false;
         }
         return DEFAULT_HOST_NAME.equals(hostName) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
                 : DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
+    }
+    
+    private boolean isSameModel(final String model1, final String model2) {
+        if (MODEL_MEM.equalsIgnoreCase(model1)) {
+            return model1.equalsIgnoreCase(model2) || MODEL_PWD.equalsIgnoreCase(model2);
+        } else if (MODEL_PWD.equalsIgnoreCase(model1)) {
+            return model1.equalsIgnoreCase(model2) || MODEL_MEM.equalsIgnoreCase(model2);
+        } else {
+            return model1.equalsIgnoreCase(model2);
+        }
     }
 }

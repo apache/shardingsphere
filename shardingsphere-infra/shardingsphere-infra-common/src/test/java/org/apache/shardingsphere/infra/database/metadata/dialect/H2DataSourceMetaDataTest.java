@@ -84,10 +84,10 @@ public final class H2DataSourceMetaDataTest {
     }
 
     @Test
-    public void assertFalseIsInSameDatabaseInstance() {
+    public void assertIsInSameDatabaseInstance() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertFalse(actual1.isInSameDatabaseInstance(actual2));
+        assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
 
     @Test
@@ -104,7 +104,6 @@ public final class H2DataSourceMetaDataTest {
         assertFalse(actual1.isInSameDatabaseInstance(actual2));
     }
 
-
     @Test
     public void assertIsInSameDatabaseInstanceWithSsl() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-one");
@@ -118,7 +117,6 @@ public final class H2DataSourceMetaDataTest {
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:ssl:181.76.76.76/home/test-two");
         assertFalse(actual1.isInSameDatabaseInstance(actual2));
     }
-
 
     @Test
     public void assertIsInSameDatabaseInstanceWithFile() {
