@@ -6,9 +6,9 @@ weight = 7
 ## 定义
 
 ```sql
-SHOW SINGLE TABLES (table | RULES) [FROM schemaName]
-
 SHOW SINGLE TABLE RULES [FROM schemaName]
+
+SHOW SINGLE TABLES (table | RULES) [FROM schemaName]
 
 table:
     RULE tableName

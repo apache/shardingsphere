@@ -704,7 +704,7 @@ public final class SQLParserTestCases {
     private final List<ShowSingleTableStatementTestCase> showSingleTableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-single-table-rules")
-    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRuleStatementTestCases = new LinkedList<>();
+    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-resource-group")
     private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
@@ -927,7 +927,7 @@ public final class SQLParserTestCases {
         putAll(binlogStatementTestCases, result);
         putAll(uninstallPluginStatementTestCases, result);
         putAll(showSingleTableStatementTestCases, result);
-        putAll(showSingleTableRuleStatementTestCases, result);
+        putAll(showSingleTableRulesStatementTestCases, result);
         putAll(setResourceGroupStatementTestCases, result);
         putAll(optimizeTableStatementTestCases, result);
         putAll(repairTableStatementTestCases, result);
