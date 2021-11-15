@@ -26,7 +26,10 @@ showResources
 showSingleTableRules
     : SHOW SINGLE TABLE RULES (FROM schemaName)?
     ;
-
+    
+showSingleTable
+    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;    
+    
 schemaName
     : IDENTIFIER
     ;
