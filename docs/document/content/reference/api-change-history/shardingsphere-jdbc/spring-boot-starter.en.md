@@ -62,7 +62,7 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # Key generate algorithm properties
 ```
 
-Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
 
 ### Readwrite-splitting
 
@@ -80,7 +80,7 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-alg
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.props.xxx= # Load balance algorithm properties
 ```
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
 
 ### Encryption
 

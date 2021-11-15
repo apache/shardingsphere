@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Schemata query executor, used to query the schemata table.
+ * Database metadata query executor, used to query the schemata database.
  */
 public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecutor {
     
@@ -53,10 +53,10 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     @Override
-    protected void addDefaultRow(final LinkedList<Map<String, Object>> rows) {
+    protected void createPreProcessing() {
         LinkedList<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllSchemaNames().stream()
                 .filter(each -> !hasDatasource(each)).collect(Collectors.toCollection(LinkedList::new));
-        schemaWithoutDataSource.forEach(each -> rows.addLast(getDefaultRowData(each)));
+        schemaWithoutDataSource.forEach(each -> getRows().addLast(getDefaultRowData(each)));
     }
     
     @Override

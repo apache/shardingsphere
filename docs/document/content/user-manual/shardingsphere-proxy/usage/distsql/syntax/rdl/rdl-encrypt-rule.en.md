@@ -28,7 +28,7 @@ algorithmProperty:
     key=value                          
 ```
 - `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt/)
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/)
 - Duplicate `tableName` will not be created
 - `queryWithCipherColumn` support uppercase or lowercase true or false
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity;
+package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity;
 
 <#if framework?contains("jpa")>
 import javax.persistence.Column;

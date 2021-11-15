@@ -66,7 +66,7 @@ The executed SQL does not contain notes, or shadow algorithms are unsuccessful, 
 
 ## Shadow Algorithm
 
-Shadow algorithm details, please refer to [List of built-in shadow algorithms](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)
+Shadow algorithm details, please refer to [List of built-in shadow algorithms](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
 
 ## Use Example
 

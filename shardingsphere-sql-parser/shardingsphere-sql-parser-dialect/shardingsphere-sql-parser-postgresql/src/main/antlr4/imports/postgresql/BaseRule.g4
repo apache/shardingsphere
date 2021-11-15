@@ -420,6 +420,7 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | PARAM
     ;
 
 typeFuncNameKeyword

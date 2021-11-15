@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.${framework};
+package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework};
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+<#if feature=="sharding">
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
@@ -26,15 +27,25 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+</#if>
+<#if feature=="readwrite-splitting">
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+</#if>
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${framework?cap_first}Configuration {
+<#assign featureName="">
+<#list feature?split("-") as feature1>
+    <#assign featureName=featureName + feature1?cap_first>
+</#list>
+public final class ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration {
     
     private static final String HOST = "${host}";
     
@@ -43,58 +54,12 @@ public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}
     private static final String USER_NAME = "${username}";
     
     private static final String PASSWORD = "${(password)?c}";
-    
-    /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
-    */
-    public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
-    }
-    
-    private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(getOrderTableRuleConfiguration());
-        result.getTables().add(getOrderItemTableRuleConfiguration());
-        result.getBroadcastTables().add("t_address");
-        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "${r"demo_ds_${user_id % 2}"}");
-        result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
-        return result;
-    }
-    
-    private static ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
-    }
-    
-    private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
-        return result;
-    }
-    
-    private static ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
-        return result;
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("demo_ds_0", createDataSource("demo_ds_0"));
-        result.put("demo_ds_1", createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
-        return result;
-    }
+<#if feature=="sharding">
+    <#include "shardingConfiguration.ftl">
+</#if>
+<#if feature=="readwrite-splitting">
+    <#include "readwritesplittingConfiguration.ftl">
+</#if>
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();

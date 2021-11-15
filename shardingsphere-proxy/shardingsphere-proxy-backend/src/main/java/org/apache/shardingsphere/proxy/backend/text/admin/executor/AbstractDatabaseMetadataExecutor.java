@@ -40,7 +40,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,17 +67,18 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     public final void execute(final BackendConnection backendConnection) throws SQLException {
         List<String> schemaNames = getSchemaNames();
         for (String schemaName : schemaNames) {
+            initSchemaData(schemaName);
             getSourceData(schemaName, resultSet -> handleResultSet(schemaName, resultSet));
         }
-        addDefaultRow(rows);
+        createPreProcessing();
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
     }
     
     private void handleResultSet(final String schemaName, final ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
-            Map<String, Object> rowMap = new HashMap<>();
-            Map<String, String> aliasMap = new HashMap<>();
+            Map<String, Object> rowMap = new LinkedHashMap<>();
+            Map<String, String> aliasMap = new LinkedHashMap<>();
             ResultSetMetaData metaData = resultSet.getMetaData();
             for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
@@ -90,6 +92,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     }
     
     /**
+     * Initialize the schema data.
+     */
+    protected abstract void initSchemaData(String schemaName);
+    
+    /**
      * Get the schema names as a condition for SQL execution.
      *
      * @return schema names
@@ -99,9 +106,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Add default row data.
      *
-     * @param rows row
      */
-    protected abstract void addDefaultRow(LinkedList<Map<String, Object>> rows);
+    protected abstract void createPreProcessing();
     
     /**
      * Get the source object of the row data.
@@ -123,13 +129,13 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream()
-                .map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
+                .map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toCollection(LinkedList::new));
         return new TransparentMergedResult(new RawMemoryQueryResult(queryResultMetaData, resultDataRows));
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toSet())
-                .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
+        List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
+                .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toCollection(LinkedList::new));
         return new RawQueryResultMetaData(columns);
     }
     
@@ -155,7 +161,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         public DefaultDatabaseMetadataExecutor(final String sql) {
             this.sql = sql;
         }
-        
+    
+        @Override
+        protected void initSchemaData(final String schemaName) {
+        }
+    
         /**
          * Get the schema names as a condition for SQL execution.
          *
@@ -194,14 +204,13 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         @Override
         protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         }
-    
+        
         /**
          * Add default row data.
          *
-         * @param rows row
          */
         @Override
-        protected void addDefaultRow(final LinkedList<Map<String, Object>> rows) {
+        protected void createPreProcessing() {
         }
     }
 }

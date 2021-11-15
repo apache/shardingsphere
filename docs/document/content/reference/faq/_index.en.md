@@ -77,7 +77,7 @@ Answer:
 
 1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `schema` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
 2. It is recommended to create `schema` and `resource` first, and then use third-party database tools to connect.
-3. Please refer to the details about `resource`.
+3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) the details about `resource`.
 
 ## 8. [Sharding] How to solve `Cloud not resolve placeholder … in string value …` error?
 
@@ -131,7 +131,7 @@ Answer:
 
 More detail for SPI usage, please search by yourself.
 
-Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/) will take effect in the same way.
+Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/concepts/pluggable/) will take effect in the same way.
 
 ## 15. [Sharding] In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
@@ -161,7 +161,7 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.
+3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for above rules.
 
 ## 18. [Other] How to debug when SQL can not be executed rightly in ShardingSphere?
 
@@ -285,7 +285,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
 ## 24. [Other] How to speed up the metadata loading when service starts up?
 

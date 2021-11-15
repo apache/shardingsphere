@@ -244,6 +244,12 @@ public enum SQLVisitorRule {
 
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
+    SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),
+    
     SHOW("Show", SQLStatementType.DAL),
 
     SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),

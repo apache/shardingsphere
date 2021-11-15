@@ -877,6 +877,84 @@
         </where>
     </select>
 
+    <select sql-case-id="select_count_like_concat_postgres" parameters="'init', 1, 2, 9, 10">
+        <from>
+            <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="47" stop-index="142" literal-stop-index="148">
+            <expr>
+                <binary-operation-expression start-index="53" stop-index="142" literal-stop-index="148">
+                    <left>
+                        <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
+                            <left>
+                                <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
+                                    <left>
+                                        <column name="status" start-index="53" stop-index="60">
+                                            <owner name="o" start-index="53" stop-index="53" />
+                                        </column>
+                                    </left>
+                                    <operator>LIKE</operator>
+                                    <right>
+                                        <list-expression start-index="67" stop-index="87" literal-stop-index="92">
+                                            <items>
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <in-expression start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
+                                            <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="106" stop-index="111" literal-start-index="111" literal-stop-index="116">
+                                            <items>
+                                                <literal-expression value="1" start-index="112" stop-index="112" />
+                                                <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                                            </items>
+                                            <items>
+                                                <literal-expression value="2" start-index="115" stop-index="115" />
+                                                <parameter-marker-expression value="2" start-index="110" stop-index="110" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <between-expression start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
+                            <not>false</not>
+                            <left>
+                                <column name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
+                                    <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
+                                </column>
+                            </left>
+                            <between-expr>
+                                <literal-expression value="9" start-index="141" stop-index="141" />
+                                <parameter-marker-expression value="3" start-index="136" stop-index="136" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="10" start-index="147" stop-index="148" />
+                                <parameter-marker-expression value="4" start-index="142" stop-index="142" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_like_with_single_quotes" >
         <from>
             <simple-table name="admin" start-index="15" stop-index="19" />
@@ -926,7 +1004,7 @@
                                     <right>
                                         <list-expression start-index="65" stop-index="85" literal-stop-index="90">
                                             <items>
-                                                <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1838,7 +1916,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1919,7 +1997,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -2002,7 +2080,7 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
                                     </right>
                                 </binary-operation-expression>
                             </right>

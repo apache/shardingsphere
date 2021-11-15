@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -35,7 +37,11 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
     
+    private static final String PG_TABLESPACE = "pg_tablespace";
+    
     private static final String PG_DATABASE = "pg_database";
+    
+    private static final String PG_NAMESPACE = "pg_namespace";
     
     @Override
     public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
@@ -48,6 +54,12 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
             if (selectedTableNames.contains(PG_DATABASE)) {
                 return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql));
+            }
+            if (selectedTableNames.contains(PG_TABLESPACE)) {
+                return Optional.of(new SelectTableExecutor(sql));
+            }
+            if (selectedTableNames.contains(PG_NAMESPACE)) {
+                return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
         return Optional.empty();

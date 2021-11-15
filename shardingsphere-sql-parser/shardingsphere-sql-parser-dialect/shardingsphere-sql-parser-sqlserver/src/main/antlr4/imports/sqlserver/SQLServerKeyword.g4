@@ -1742,3 +1742,11 @@ AUTHORIZATION
 TRANSFER
     : T R A N S F E R
     ;
+
+EXPLAIN
+    : E X P L A I N
+    ;
+
+WITH_RECOMMENDATIONS
+    : W I T H UL_ R E C O M M E N D A T I O N S
+    ;

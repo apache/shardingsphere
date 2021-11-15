@@ -49,4 +49,14 @@ public interface DataSourceMetaData {
      * @return schema
      */
     String getSchema();
+    
+    /**
+     * Judge whether two of data sources are in the same database instance.
+     *
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
+     */
+    default boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return getHostName().equals(dataSourceMetaData.getHostName()) && getPort() == dataSourceMetaData.getPort();
+    }
 }
