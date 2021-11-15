@@ -39,6 +39,10 @@ alterDefaultSingleTableRuleResource
     : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
     ;
 
+dropDefaultSingleTableRuleResource
+    : DROP DEFAULT SINGLE TABLE RULE RESOURCE
+    ;
+
 dataSource
     : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;
