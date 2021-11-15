@@ -3,4 +3,4 @@ title = "Usage"
 weight = 1
 +++
 
-This chapter will introduce the use of ShardingSphere-Proxy.
+This chapter will introduce the deployment and startup of ShardingSphere-Proxy.
