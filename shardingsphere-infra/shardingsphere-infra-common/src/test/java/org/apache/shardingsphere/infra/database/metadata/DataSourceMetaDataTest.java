@@ -1,17 +1,17 @@
 package org.apache.shardingsphere.infra.database.metadata;
 
-import org.apache.shardingsphere.infra.database.metadata.dialect.*;
+import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 import static org.junit.Assert.assertFalse;
-/**
- * DataSourceMetaDataTest
- *
- * @author YangDy
- * @version 1.0
- * @date 2021/11/15 09:11
- * @since 1.0
- */
+import static org.junit.Assert.assertTrue;
+
 public final class DataSourceMetaDataTest {
 
     @Test
