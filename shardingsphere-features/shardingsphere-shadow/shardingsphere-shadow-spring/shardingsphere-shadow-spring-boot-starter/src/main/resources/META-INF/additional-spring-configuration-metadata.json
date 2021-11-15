@@ -45,6 +45,11 @@
       "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
     },
     {
+      "name": "spring.shardingsphere.rules.shadow.default-shadow-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
       "name": "spring.shardingsphere.rules.shadow.data-sources",
       "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration>",
       "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
