@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.database.metadata.dialect;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class H2DataSourceMetaDataTest {

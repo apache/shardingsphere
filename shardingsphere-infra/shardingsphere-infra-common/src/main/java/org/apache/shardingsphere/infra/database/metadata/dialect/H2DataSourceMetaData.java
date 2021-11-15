@@ -41,6 +41,8 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private static final String MODEL_PWD = "~";
     
+    private static final String MODEL_FILE = "file:";
+    
     private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
             + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
@@ -95,9 +97,11 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private boolean isSameModel(final String model1, final String model2) {
         if (MODEL_MEM.equalsIgnoreCase(model1)) {
-            return model1.equalsIgnoreCase(model2) || MODEL_PWD.equalsIgnoreCase(model2);
+            return model1.equalsIgnoreCase(model2) || MODEL_PWD.equalsIgnoreCase(model2) || MODEL_FILE.equalsIgnoreCase(model2);
         } else if (MODEL_PWD.equalsIgnoreCase(model1)) {
-            return model1.equalsIgnoreCase(model2) || MODEL_MEM.equalsIgnoreCase(model2);
+            return model1.equalsIgnoreCase(model2) || MODEL_MEM.equalsIgnoreCase(model2) || MODEL_FILE.equalsIgnoreCase(model2);
+        } else if (MODEL_FILE.equalsIgnoreCase(model1)) {
+            return model1.equalsIgnoreCase(model2) || MODEL_MEM.equalsIgnoreCase(model2) || MODEL_PWD.equalsIgnoreCase(model2);
         } else {
             return model1.equalsIgnoreCase(model2);
         }
