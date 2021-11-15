@@ -64,24 +64,26 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private List<SQLToken> previousSQLTokens;
     
+    @SuppressWarnings("rawtypes")
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return (sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty())
                 || ((sqlStatementContext instanceof InsertStatementContext) && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         SubqueryTableContext subqueryTableContext = new SubqueryTableContext();
         if (sqlStatementContext instanceof InsertStatementContext) {
-            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), SubqueryEnum.INSERTSELECT,
+            result.addAll(generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), Optional.empty(), SubqueryEnum.INSERT_SELECT,
                     subqueryTableContext));
         }
         if (sqlStatementContext instanceof SelectStatementContext) {
             SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
             result.addAll(generateSQLTokens(selectStatementContext, subqueryTableContext));
-            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), SubqueryEnum.None, subqueryTableContext));
+            result.addAll(generateSQLTokens(selectStatementContext, Optional.empty(), SubqueryEnum.NONE, subqueryTableContext));
         }
         return result;
     }
@@ -109,7 +111,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final SubqueryTableSegment subqueryTableSegment, 
                                                                        final SubqueryTableContext subqueryTableContext) {
         return generateSQLTokens(new SelectStatementContext(selectStatementContext.getMetaDataMap(), selectStatementContext.getParameters(), subqueryTableSegment.getSubquery().getSelect(),
-                   selectStatementContext.getSchemaName()), subqueryTableSegment.getAlias(), SubqueryEnum.NESTEDPROJECTIONTABSEGMENT, subqueryTableContext);
+                   selectStatementContext.getSchemaName()), subqueryTableSegment.getAlias(), SubqueryEnum.NESTED_PROJECTION_TABLE_SEGMENT, subqueryTableContext);
     }
 
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final Optional<String> alias,
@@ -230,20 +232,20 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private Collection<ColumnProjection> getColumnProjections(final ColumnProjectionSegment segment, final String tableName, final Optional<String> alias, final String encryptColumnName,
                                                               final SubqueryEnum subqueryEnum, final SubqueryTableContext subqueryTableContext) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        if (SubqueryEnum.INSERTSELECT.equals(subqueryEnum)) {
+        if (SubqueryEnum.INSERT_SELECT.equals(subqueryEnum)) {
             result.addAll(getColumnProjectionsForInsertSelect(segment, tableName, encryptColumnName));
         }
         if (SubqueryEnum.PROJECTION.equals(subqueryEnum)) {
             result.add(columnProjection(null, encryptColumnName, null));
         }
-        if (SubqueryEnum.NESTEDPROJECTIONTABSEGMENT.equals(subqueryEnum)) {
+        if (SubqueryEnum.NESTED_PROJECTION_TABLE_SEGMENT.equals(subqueryEnum)) {
             result.add(columnProjection(null, encryptColumnName, null));
             result.addAll(getColumnProjectionsForSubqueryProjectionOrTabSegment(segment, tableName, alias, subqueryTableContext));
         }
         if (SubqueryEnum.EXPRESSION.equals(subqueryEnum)) {
             result.addAll(getColumnProjectionsForInExpression(segment, tableName));
         }
-        if (SubqueryEnum.None.equals(subqueryEnum)) {
+        if (SubqueryEnum.NONE.equals(subqueryEnum)) {
             result.add(columnProjection(null, encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue())));
         }
         return result;
