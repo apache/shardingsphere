@@ -234,8 +234,8 @@ showStatus
     : SHOW (GLOBAL | SESSION)? STATUS showFilter?
     ;
 
-showTrriggers
-    : SHOW TRIGGER fromSchema? showFilter?
+showTriggers
+    : SHOW TRIGGERS fromSchema? showFilter?
     ;
 
 showVariables
