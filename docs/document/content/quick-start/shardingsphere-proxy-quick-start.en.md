@@ -4,21 +4,23 @@ title = "ShardingSphere-Proxy"
 weight = 2
 +++
 
-## 1. Rule Configuration
+## Rule Configuration
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`.
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`.
 
-> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /Users/ss/shardingsphere-proxy-bin/
+> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /opt/shardingsphere-proxy-bin/
 
-## 2. Import Dependencies
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
+
+## Import Dependencies
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.
 
 If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) or [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar) and put it into `%SHARDINGSPHERE_PROXY_HOME%/lib` directory.
 
-## 3. Start Server
+## Start Server
 
 * Use default configuration to start
 
@@ -34,7 +36,7 @@ Default port is `3307`, default profile directory is `%SHARDINGSPHERE_PROXY_HOME
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh ${port} ${proxy_conf_directory}
 ```
 
-## 4. Use ShardingSphere-Proxy
+## Use ShardingSphere-Proxy
 
 Use MySQL or PostgreSQL client to connect ShardingSphere-Proxy. For example with MySQL:
 
