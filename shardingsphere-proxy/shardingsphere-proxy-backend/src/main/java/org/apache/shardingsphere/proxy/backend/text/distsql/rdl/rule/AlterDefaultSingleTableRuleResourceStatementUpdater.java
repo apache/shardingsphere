@@ -39,7 +39,7 @@ public final class AlterDefaultSingleTableRuleResourceStatementUpdater implement
         String schemaName = shardingSphereMetaData.getName();
         checkConfigurationExist(schemaName, currentRuleConfig);
         checkResourceExist(schemaName, shardingSphereMetaData, sqlStatement);
-        checkDefaultResourceDuplicate(schemaName, currentRuleConfig);
+        checkDefaultResourceExist(schemaName, currentRuleConfig);
     }
     
     private void checkConfigurationExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -52,7 +52,7 @@ public final class AlterDefaultSingleTableRuleResourceStatementUpdater implement
                 new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
-    private void checkDefaultResourceDuplicate(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDefaultResourceExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
     }
     
