@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedCacheTableIndex;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Cache index statement test case.
+ * Expected partition definition.
  */
 @Getter
-public final class CacheIndexStatementTestCase extends SQLParserTestCase {
+@Setter
+public final class ExpectedPartitionDefinition extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "table-index")
-    private final List<ExpectedCacheTableIndex> tableIndexes = new LinkedList<>();
+    @XmlElement(name = "table")
+    private ExpectedSimpleTable table;
     
-    @XmlElement(name = "partition-definition")
-    private ExpectedPartitionDefinition partitionDefinition;
-    
-    @XmlAttribute
-    private String name;
+    @XmlElement(name = "partition")
+    private final List<ExpectedPartition> partitions = new LinkedList<>();
 }

@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
+import java.util.List;
 
-@RequiredArgsConstructor
+/**
+ * Expected load table index.
+ */
 @Getter
-public final class PartitionsSegment implements SQLSegment {
+@Setter
+public final class ExpectedLoadTableIndex extends AbstractExpectedIdentifierSQLSegment {
     
-    private final int startIndex;
+    @XmlElement(name = "table")
+    private ExpectedSimpleTable table;
     
-    private final int stopIndex;
+    @XmlElement(name = "index")
+    private List<ExpectedIndex> indexNames = new LinkedList<>();
     
-    private final SimpleTableSegment table;
-    
-    private Collection<PartitionSegment> partitions = new LinkedList<>();
+    @XmlElement(name = "partition")
+    private List<ExpectedPartition> partitions = new LinkedList<>();
 }

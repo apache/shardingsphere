@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedLoadTableIndex;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected table index.
+ * Load index info statement test case.
  */
 @Getter
-@Setter
-public final class ExpectedTableIndex extends AbstractExpectedIdentifierSQLSegment {
+public final class LoadIndexInfoStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "index")
-    private List<ExpectedIndex> indexNames = new LinkedList<>();
+    @XmlElement(name = "table-index")
+    private final List<ExpectedLoadTableIndex> tableIndexes = new LinkedList<>();
 }
