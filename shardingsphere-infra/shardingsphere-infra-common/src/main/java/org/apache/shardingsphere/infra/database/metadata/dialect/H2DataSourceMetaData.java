@@ -34,9 +34,13 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final int DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST_NAME = "";
-    
+
+    private static final String DEFAULT_H2_MODEL = "";
+
     private final String hostName;
-    
+
+    private final String model;
+
     private final int port;
     
     private final String catalog;
@@ -46,7 +50,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private final Pattern pattern = Pattern.compile("jdbc:h2:((mem|~)[:/](?<catalog>[\\w\\-]+)|"
             + "(ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "file:[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
-    
+
+    private final Pattern modelPattern = Pattern.compile("((mem|~)[:/]|(ssl:|tcp:)|(file:))");
+
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
@@ -63,10 +69,23 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
         catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
+        String modelPathFromMatcher = matcher.group(1);
+        Matcher modelMatcher = modelPattern.matcher(modelPathFromMatcher);
+        if (!modelMatcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+        }
+        String modelFromMatcher = modelMatcher.group(1);
+        model = null == modelFromMatcher ? DEFAULT_H2_MODEL : modelFromMatcher;
     }
     
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        if (!(dataSourceMetaData instanceof H2DataSourceMetaData)) {
+            return false;
+        }
+        if (!getModel().equals(((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
+            return false;
+        }
         return DEFAULT_HOST_NAME.equals(hostName) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
                 : DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
     }
