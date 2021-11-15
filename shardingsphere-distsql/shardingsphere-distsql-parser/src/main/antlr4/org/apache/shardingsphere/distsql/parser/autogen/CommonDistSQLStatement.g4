@@ -32,5 +32,8 @@ execute
     | disableInstance
     | showInstance
     | showSinglesTableRules
+    | createDefaultSingleTableRule
+    | alterDefaultSingleTableRule
+    | dropDefaultSingleTableRule
     ) SEMI?
     ;

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Analyze
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheTableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChannelOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Install
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadIndexInfoContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadTableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptimizeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueListContext;
@@ -82,7 +84,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRelaylogEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
@@ -92,7 +96,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
@@ -155,8 +158,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelaylogEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicasStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveHostsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -165,14 +170,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CloneInstanceSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.LoadTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -345,23 +351,24 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
         MySQLCacheIndexStatement result = new MySQLCacheIndexStatement();
-        if (null != ctx.tableIndexList()) {
-            for (TableIndexListContext each : ctx.tableIndexList()) {
-                result.getTableIndexes().add((TableIndexSegment) visit(each));
+        if (null != ctx.cacheTableIndexList()) {
+            for (CacheTableIndexListContext each : ctx.cacheTableIndexList()) {
+                result.getTableIndexes().add((CacheTableIndexSegment) visit(each));
             }
         }
         if (null != ctx.partitionList()) {
-            PartitionsSegment segment = new PartitionsSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
+            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+            PartitionDefinitionSegment segment = new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), table);
             segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
-            result.setPartitions(segment);
+            result.setPartitionDefinition(segment);
         }
         result.setName((IdentifierValue) visit(ctx.identifier()));
         return result;
     }
     
     @Override
-    public ASTNode visitTableIndexList(final TableIndexListContext ctx) {
-        TableIndexSegment result = new TableIndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
+    public ASTNode visitCacheTableIndexList(final CacheTableIndexListContext ctx) {
+        CacheTableIndexSegment result = new CacheTableIndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
         for (IndexNameContext each : ctx.indexName()) {
             result.getIndexes().add((IndexSegment) visitIndexName(each));
         }
@@ -415,7 +422,25 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
-        return new MySQLLoadIndexInfoStatement();
+        MySQLLoadIndexInfoStatement result = new MySQLLoadIndexInfoStatement();
+        for (LoadTableIndexListContext each : ctx.loadTableIndexList()) {
+            result.getTableIndexes().add((LoadTableIndexSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitLoadTableIndexList(final LoadTableIndexListContext ctx) {
+        LoadTableIndexSegment result = new LoadTableIndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.indexName()) {
+            for (IndexNameContext each : ctx.indexName()) {
+                result.getIndexes().add((IndexSegment) visitIndexName(each));
+            }
+        }
+        if (null != ctx.partitionList()) {
+            result.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
+        }
+        return result;
     }
     
     @Override
@@ -610,6 +635,24 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowSlavehost(final ShowSlavehostContext ctx) {
         return new MySQLShowSlaveHostsStatement();
+    }
+
+    @Override
+    public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
+        MySQLShowReplicaStatusStatement result = new MySQLShowReplicaStatusStatement();
+        if (null != ctx.channelName()) {
+            result.setChannel(ctx.channelName().getText());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
+        MySQLShowSlaveStatusStatement result = new MySQLShowSlaveStatusStatement();
+        if (null != ctx.channelName()) {
+            result.setChannel(ctx.channelName().getText());
+        }
+        return result;
     }
 
     @Override

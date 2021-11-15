@@ -49,7 +49,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ## 影子算法
 
-影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)
+影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
 
 ## 使用案例
 

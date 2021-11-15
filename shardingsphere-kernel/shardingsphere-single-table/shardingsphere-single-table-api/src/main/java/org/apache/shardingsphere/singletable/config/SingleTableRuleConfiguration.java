@@ -17,11 +17,25 @@
 
 package org.apache.shardingsphere.singletable.config;
 
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+
+import java.util.Optional;
 
 /**
  * Single table rule configuration.
  */
+@Setter
 public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
+    
+    private String defaultDataSource;
+    
+    /**
+     * Get default data source.
+     * @return default data source
+     */
+    public Optional<String> getDefaultDataSource() {
+        return Optional.ofNullable(defaultDataSource);
+    }
 }

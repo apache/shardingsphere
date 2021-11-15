@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowVal
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 
 public abstract class AbstractColumnShadowAlgorithmTest {
@@ -30,6 +31,10 @@ public abstract class AbstractColumnShadowAlgorithmTest {
     protected static final String SHADOW_TABLE = "t_user";
     
     protected static final String SHADOW_COLUMN = "shadow";
+    
+    enum ShadowEnum {
+        SHADOW_VALUE
+    }
     
     protected Collection<PreciseColumnShadowValue<Comparable<?>>> createPreciseColumnShadowValuesTrueCase() {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
@@ -62,6 +67,13 @@ public abstract class AbstractColumnShadowAlgorithmTest {
         result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, '1'));
         result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, new BigInteger("1")));
         result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, new BigDecimal("1")));
+        return result;
+    }
+    
+    protected Collection<PreciseColumnShadowValue<Comparable<?>>> createPreciseColumnShadowValuesExceptionCase() {
+        Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
+        result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.INSERT, SHADOW_COLUMN, new Date()));
+        result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.INSERT, SHADOW_COLUMN, ShadowEnum.SHADOW_VALUE));
         return result;
     }
     

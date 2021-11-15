@@ -24,8 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CacheTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,10 +37,10 @@ import java.util.LinkedList;
 @ToString
 public final class MySQLCacheIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 
-    private Collection<TableIndexSegment> tableIndexes = new LinkedList<>();
+    private Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
     
     @Setter
-    private PartitionsSegment partitions;
+    private PartitionDefinitionSegment partitionDefinition;
     
     @Setter
     private IdentifierValue name;

@@ -132,7 +132,7 @@ weight = 3
 | type      | 属性  | 分布式序列算法类型    |
 | props (?) | 标签  | 分布式序列算法属性配置 |
 
-算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
 
 #### 注意事项
 
@@ -169,7 +169,7 @@ weight = 3
 | type      | 属性  | 负载均衡算法类型    |
 | props (?) | 标签  | 负载均衡算法属性配置 |
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 
 ### 数据加密
 
@@ -210,7 +210,7 @@ weight = 3
 | type      | 属性  | 加密算法类型    |
 | props (?) | 标签  | 加密算法属性配置 |
 
-算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)。
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。
 
 ### 影子库
 

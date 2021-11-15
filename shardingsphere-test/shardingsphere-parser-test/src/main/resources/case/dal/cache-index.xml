@@ -48,15 +48,15 @@
         </table-index>
     </cache-index>
     <cache-index sql-case-id="cache_index_all_partition" name="hot_cache_index">
-        <partitions start-index="12" stop-index="33">
+        <partition-definition start-index="12" stop-index="33">
             <table name="t_order" start-index="12" stop-index="18"/>
-        </partitions>
+        </partition-definition>
     </cache-index>
     <cache-index sql-case-id="cache_index_multiple_partition" name="hot_cache_index">
-        <partitions start-index="12" stop-index="36">
+        <partition-definition start-index="12" stop-index="36">
             <table name="t_order" start-index="12" stop-index="18"/>
             <partition name="p0" start-index="31" stop-index="32"/>
             <partition name="p1" start-index="35" stop-index="36"/>
-        </partitions>
+        </partition-definition>
     </cache-index>
 </sql-parser-test-cases>

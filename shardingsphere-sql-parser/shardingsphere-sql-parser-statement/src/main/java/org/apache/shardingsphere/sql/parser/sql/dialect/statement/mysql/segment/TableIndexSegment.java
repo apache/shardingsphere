@@ -20,21 +20,18 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
+/**
+ * Table index segment.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class TableIndexSegment implements SQLSegment {
+public abstract class TableIndexSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
     private final SimpleTableSegment table;
-    
-    private Collection<IndexSegment> indexes = new LinkedList<>();
 }
