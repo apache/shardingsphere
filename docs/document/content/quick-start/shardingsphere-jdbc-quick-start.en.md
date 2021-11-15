@@ -20,7 +20,7 @@ weight = 1
 
 ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. 
 Developers can choose the suitable method according to different situations. 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/) for more details.
+Please refer to [User Manual](/en/user-manual/shardingsphere-jdbc/) for more details.
 
 ## 3. Create Data Source
 
