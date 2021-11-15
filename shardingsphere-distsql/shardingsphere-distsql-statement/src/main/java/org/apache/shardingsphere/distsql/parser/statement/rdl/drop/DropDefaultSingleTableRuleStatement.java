@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Drop default single table rule resource statement test case.
+ * Drop default single table rule resource statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DropDefaultSingleTableRuleResourceStatementTestCase extends SQLParserTestCase {
+public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
 }

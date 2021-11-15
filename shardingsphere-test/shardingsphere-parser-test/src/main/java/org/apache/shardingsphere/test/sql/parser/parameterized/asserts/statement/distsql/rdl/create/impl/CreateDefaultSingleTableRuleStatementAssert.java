@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,20 +29,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Alter default single table rule resource statement assert.
+ * Create default single table rule resource statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterDefaultSingleTableRuleResourceStatementAssert {
+public final class CreateDefaultSingleTableRuleStatementAssert {
     
     /**
-     * Assert alter default single table rule resource statement is correct with expected parser result.
+     * Assert create default single table rule resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter default single table rule resource statement
-     * @param expected expected alter default single table rule resource statement test case
+     * @param actual actual create default single table rule resource statement
+     * @param expected expected create default single table rule resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultSingleTableRuleResourceStatement actual, 
-                                final AlterDefaultSingleTableRuleResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultSingleTableRuleStatement actual, 
+                                final CreateDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

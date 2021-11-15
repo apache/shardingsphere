@@ -15,36 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.drop.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultSingleTableRuleResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
- * Drop default single table rule resource statement assert.
+ * Alter default single table rule resource statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropDefaultSingleTableRuleResourceAssert {
+public final class AlterDefaultSingleTableRuleStatementAssert {
     
     /**
-     * Assert drop default single table rule resource statement is correct with expected parser result.
+     * Assert alter default single table rule resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop default single table rule resource statement
-     * @param expected expected drop default single table rule resource statement test case
+     * @param actual actual alter default single table rule resource statement
+     * @param expected expected alter default single table rule resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDefaultSingleTableRuleResourceStatement actual, 
-                                final DropDefaultSingleTableRuleResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultSingleTableRuleStatement actual, 
+                                final AlterDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())), 
+                    actual.getDefaultResource(), is(expected.getDefaultDataSource()));
         }
     }
 }
