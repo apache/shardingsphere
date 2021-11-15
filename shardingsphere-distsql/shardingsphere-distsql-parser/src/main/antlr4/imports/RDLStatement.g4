@@ -31,16 +31,16 @@ dropResource
     : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
-createDefaultSingleTableRuleResource
+createDefaultSingleTableRule
     : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
     ;
 
-alterDefaultSingleTableRuleResource
+alterDefaultSingleTableRule
     : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
     ;
 
-dropDefaultSingleTableRuleResource
-    : DROP DEFAULT SINGLE TABLE RULE RESOURCE
+dropDefaultSingleTableRule
+    : DROP DEFAULT SINGLE TABLE RULE
     ;
 
 dataSource
