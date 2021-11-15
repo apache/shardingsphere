@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -48,6 +49,9 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
+    
+    @Setter
+    private String defaultDataSource;
     
     private final Collection<String> dataSourceNames;
     
@@ -111,6 +115,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
             }
         }
         return true;
+    }
+    
+    /**
+     * Get default data source.
+     * @return default data source
+     */
+    public Optional<String> getDefaultDataSource() {
+        return Optional.ofNullable(defaultDataSource);
     }
     
     /**

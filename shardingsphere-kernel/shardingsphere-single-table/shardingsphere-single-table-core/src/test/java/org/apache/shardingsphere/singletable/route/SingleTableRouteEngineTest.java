@@ -106,6 +106,23 @@ public final class SingleTableRouteEngineTest {
         assertThat(tableMapper0.getLogicName(), is("t_order"));
     }
     
+    @Test
+    public void assertRouteWithDefaultSingleTableRule() {
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        singleTableRule.setDefaultDataSource("ds_0");
+        RouteContext routeContext = new RouteContext();
+        singleTableRouteEngine.route(routeContext, singleTableRule);
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
+        RouteMapper tableMapper0 = tableMappers.next();
+        assertThat(tableMapper0.getActualName(), is("t_order"));
+        assertThat(tableMapper0.getLogicName(), is("t_order"));
+    }
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
