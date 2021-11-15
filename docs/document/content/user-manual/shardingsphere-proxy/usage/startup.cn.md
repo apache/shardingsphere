@@ -10,7 +10,7 @@ weight = 1
 1. Linux 操作系统请运行 `bin/start.sh`，Windows 操作系统请运行 `bin/start.bat` 启动 ShardingSphere-Proxy。如需配置启动端口、配置文件位置，可参考[快速入门](/cn/quick-start/shardingsphere-proxy-quick-start/)。
 1. 使用 docker 请参考[Docker镜像](/cn/user-manual/shardingsphere-proxy/docker/)。
 
-## 采用数据库协议
+## 选择数据库协议
 
 ### 使用 PostgreSQL
 
@@ -25,6 +25,16 @@ weight = 1
 
 1. 将 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
 1. 使用任何 openGauss 的客户端连接。如: `gsql -U root -h 127.0.0.1 -p 3307`
+
+## 选择元数据持久化仓库
+
+### 使用 ZooKeeper
+
+默认集成。
+
+### 使用 Etcd
+
+1. 将 Etcd 的客户端驱动程序复制至目录 `ext-lib/`。
 
 ## 使用自定义算法
 

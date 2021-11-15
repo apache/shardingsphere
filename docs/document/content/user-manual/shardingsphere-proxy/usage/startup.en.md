@@ -26,6 +26,16 @@ weight = 1
 1. Copy openGauss's JDBC driver to folder `ext-lib/`.
 1. Use any openGauss terminal to connect, such as `gsql -U root -h 127.0.0.1 -p 3307`.
 
+## Using metadata persist repository
+
+### Using ZooKeeper
+
+Default integration.
+
+### Using Etcd
+
+1. Copy Etcd's client driver to folder `ext-lib/`.
+
 ## Using user-defined algorithm
 
 When developer need to use user-defined algorithm, should use the way below to configure algorithm, use sharding algorithm as example. 
@@ -37,6 +47,6 @@ When developer need to use user-defined algorithm, should use the way below to c
 
 ## Notices
 
-1. ShardingSphere-Proxy uses 3307 port in default. Users can start the script parameter as the start port number, like `bin/start.sh 3308`.
+1. ShardingSphere-Proxy uses `3307` port in default. Users can start the script parameter as the start port number, like `bin/start.sh 3308`.
 1. ShardingSphere-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and public properties.
 1. ShardingSphere-Proxy supports multi-logic data sources, with each yaml configuration document named by `config-` prefix as a logic data source.

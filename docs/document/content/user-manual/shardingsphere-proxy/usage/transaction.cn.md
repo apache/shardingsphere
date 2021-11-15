@@ -1,6 +1,6 @@
 +++
 title = "分布式事务"
-weight = 3
+weight = 2
 +++
 
 ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持一致，支持 LOCAL，XA，BASE 类型的事务。

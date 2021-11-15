@@ -1,6 +1,6 @@
 +++
 title = "Docker Image"
-weight = 4
+weight = 3
 +++
 
 ## Pull Official Docker Image
