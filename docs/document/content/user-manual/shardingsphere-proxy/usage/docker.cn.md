@@ -1,6 +1,6 @@
 +++
 title = "Docker 镜像"
-weight = 3
+weight = 4
 +++
 
 ## 拉取官方 Docker 镜像

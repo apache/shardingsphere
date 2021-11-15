@@ -1,6 +1,6 @@
 +++
 title = "DistSQL"
-weight = 4
+weight = 3
 chapter = true
 +++
 
