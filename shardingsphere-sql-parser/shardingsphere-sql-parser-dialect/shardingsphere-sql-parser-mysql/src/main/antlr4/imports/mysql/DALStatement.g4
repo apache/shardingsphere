@@ -460,7 +460,7 @@ show
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus
-    | showTrriggers
+    | showTriggers
     | showWarnings
     | showVariables
     | showReplicas
