@@ -1,6 +1,6 @@
 +++
-title = "权限配置"
-weight = 2
+title = "权限"
+weight = 1
 +++
 
 用于执行登录 Sharding Proxy 的权限验证。
