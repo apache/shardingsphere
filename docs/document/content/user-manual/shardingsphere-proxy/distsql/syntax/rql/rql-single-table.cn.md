@@ -8,10 +8,10 @@ weight = 7
 ```sql
 SHOW SINGLE TABLE RULES [FROM schemaName]
 
-SHOW SINGLE TABLES (table | RULES) [FROM schemaName]
+SHOW SINGLE table | TABLES [FROM schemaName]
 
 table:
-    RULE tableName
+    TABLE tableName
 ```
 
 ## 说明
@@ -28,7 +28,7 @@ table:
 | 列            | 说明          |
 | ------------- | ------------ |
 | table_name    | 单表名称      |
-| resource_name | 数据源名称    |
+| resource_name | 数据源名称     |
 
 ## 示例
 
