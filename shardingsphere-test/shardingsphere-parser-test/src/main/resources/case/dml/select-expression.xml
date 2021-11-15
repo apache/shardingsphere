@@ -1816,4 +1816,16 @@
             <simple-table name="t_order" start-index="65" stop-index="71" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_amp">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="1 &amp; 1" start-index="7" stop-index="11"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_vertical_bar">
+        <projections start-index="7" stop-index="11">
+            <expression-projection text="1 | 1" start-index="7" stop-index="11"/>
+        </projections>
+    </select>
 </sql-parser-test-cases>
