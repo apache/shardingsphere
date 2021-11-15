@@ -1,6 +1,6 @@
 +++
-title = "Authentication"
-weight = 2
+title = "Authority"
+weight = 1
 +++
 
 It is used to verify the authentication to log in ShardingSphere-Proxy, which must use correct user name and password after the configuration of them.
