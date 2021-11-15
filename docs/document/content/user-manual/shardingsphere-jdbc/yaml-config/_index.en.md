@@ -1,5 +1,5 @@
 +++
-title = "YAML"
+title = "YAML Configuration"
 weight = 2
 chapter = true
 +++
