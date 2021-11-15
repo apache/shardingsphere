@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
@@ -27,10 +27,10 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 /**
  * Drop default single table rule resource statement updater.
  */
-public final class DropDefaultSingleTableRuleResourceStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultSingleTableRuleResourceStatement, SingleTableRuleConfiguration> {
+public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleResourceStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
@@ -41,7 +41,7 @@ public final class DropDefaultSingleTableRuleResourceStatementUpdater implements
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropDefaultSingleTableRuleResourceStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultDataSource(null);
         return false;
     }
@@ -53,6 +53,6 @@ public final class DropDefaultSingleTableRuleResourceStatementUpdater implements
     
     @Override
     public String getType() {
-        return DropDefaultSingleTableRuleResourceStatement.class.getCanonicalName();
+        return DropDefaultSingleTableRuleStatement.class.getCanonicalName();
     }
 }

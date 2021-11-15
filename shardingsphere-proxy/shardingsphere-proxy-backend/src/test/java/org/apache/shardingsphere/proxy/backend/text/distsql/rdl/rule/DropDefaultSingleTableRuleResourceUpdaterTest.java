@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -41,7 +41,7 @@ public final class DropDefaultSingleTableRuleResourceUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    private DropDefaultSingleTableRuleResourceStatementUpdater updater = new DropDefaultSingleTableRuleResourceStatementUpdater();
+    private DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
@@ -51,20 +51,20 @@ public final class DropDefaultSingleTableRuleResourceUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutConfig() throws Exception {
-        DropDefaultSingleTableRuleResourceStatement statement = new DropDefaultSingleTableRuleResourceStatement();
+        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         updater.checkSQLStatement(shardingSphereMetaData, statement, null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutResource() throws Exception {
-        DropDefaultSingleTableRuleResourceStatement statement = new DropDefaultSingleTableRuleResourceStatement();
+        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
     }
     
     @Test
     public void assertUpdate() {
-        DropDefaultSingleTableRuleResourceStatement statement = new DropDefaultSingleTableRuleResourceStatement();
+        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
         currentConfiguration.setDefaultDataSource("default");
         updater.updateCurrentRuleConfiguration(statement, currentConfiguration);

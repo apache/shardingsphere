@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
@@ -29,32 +29,35 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Create default single table rule resource statement updater.
+ * Alter default single table rule resource statement updater.
  */
-public final class CreateDefaultSingleTableRuleResourceStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultSingleTableRuleResourceStatement, SingleTableRuleConfiguration> {
+public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultSingleTableRuleResourceStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
+        checkConfigurationExist(schemaName, currentRuleConfig);
         checkResourceExist(schemaName, shardingSphereMetaData, sqlStatement);
-        checkDefaultResourceDuplicate(schemaName, currentRuleConfig);
+        checkDefaultResourceExist(schemaName, currentRuleConfig);
     }
     
-    private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleResourceStatement sqlStatement) throws DistSQLException {
+    private void checkConfigurationExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(schemaName, "single table"));
+    }
+    
+    private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Set<String> resourceNames = metaData.getResource().getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
                 new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
-    private void checkDefaultResourceDuplicate(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (null != currentRuleConfig) {
-            DistSQLException.predictionThrow(!currentRuleConfig.getDefaultDataSource().isPresent(), new DuplicateRuleException("default single table rule", schemaName));
-        }
+    private void checkDefaultResourceExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
     }
     
     @Override
-    public SingleTableRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultSingleTableRuleResourceStatement sqlStatement) {
+    public SingleTableRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultSingleTableRuleStatement sqlStatement) {
         SingleTableRuleConfiguration result = new SingleTableRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultResource());
         return result;
@@ -72,6 +75,6 @@ public final class CreateDefaultSingleTableRuleResourceStatementUpdater implemen
     
     @Override
     public String getType() {
-        return CreateDefaultSingleTableRuleResourceStatement.class.getCanonicalName();
+        return AlterDefaultSingleTableRuleStatement.class.getCanonicalName();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -47,7 +47,7 @@ public final class AlterDefaultSingleTableRuleResourceUpdaterTest {
     @Mock
     private SingleTableRuleConfiguration currentConfiguration;
     
-    private final AlterDefaultSingleTableRuleResourceStatementUpdater updater = new AlterDefaultSingleTableRuleResourceStatementUpdater();
+    private final AlterDefaultSingleTableRuleStatementUpdater updater = new AlterDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
@@ -57,33 +57,33 @@ public final class AlterDefaultSingleTableRuleResourceUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithNotExistConfiguration() throws Exception {
-        AlterDefaultSingleTableRuleResourceStatement statement = new AlterDefaultSingleTableRuleResourceStatement("ds_1");
+        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_1");
         updater.checkSQLStatement(shardingSphereMetaData, statement, null);
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckWithInvalidResource() throws Exception {
-        AlterDefaultSingleTableRuleResourceStatement statement = new AlterDefaultSingleTableRuleResourceStatement("ds_1");
+        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_1");
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithNotExistResource() throws Exception {
         when(currentConfiguration.getDefaultDataSource()).thenReturn(Optional.empty());
-        AlterDefaultSingleTableRuleResourceStatement statement = new AlterDefaultSingleTableRuleResourceStatement("ds_0");
+        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
     }
     
     @Test
     public void assertBuild() {
-        AlterDefaultSingleTableRuleResourceStatement statement = new AlterDefaultSingleTableRuleResourceStatement("ds_0");
+        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
         SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
         assertThat(configuration.getDefaultDataSource().get(), is("ds_0"));
     }
     
     @Test
     public void assertUpdate() {
-        AlterDefaultSingleTableRuleResourceStatement statement = new AlterDefaultSingleTableRuleResourceStatement("ds_0");
+        AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
         SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
         SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
         updater.updateCurrentRuleConfiguration(currentConfiguration, configuration);
