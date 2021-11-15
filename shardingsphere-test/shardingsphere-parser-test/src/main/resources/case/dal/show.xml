@@ -98,4 +98,10 @@
     <show-relaylog-events sql-case-id="show_relaylog_events" channel="TEST_CHANNEL" /> 
     <show-relaylog-events sql-case-id="show_relaylog_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
     <show-slave-hosts sql-case-id="show_slave_hosts" />
+
+    <show-triggers sql-case-id="show_triggers_with_filter">
+        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="14" stop-index="31" />
+        <like pattern="acc%" start-index="33" stop-index="43"/>
+    </show-triggers>
+
 </sql-parser-test-cases>
