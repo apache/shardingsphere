@@ -301,7 +301,9 @@ public enum SQLVisitorRule {
     RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
 
     CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
-
+    
+    LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

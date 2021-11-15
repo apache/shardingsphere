@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.KillStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.LoadIndexInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetPersistStatementTestCase;
@@ -736,6 +737,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "cache-index")
     private final List<CacheIndexStatementTestCase> cacheIndexStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "load-index")
+    private final List<LoadIndexInfoStatementTestCase> loadIndexInfoStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
@@ -923,6 +927,7 @@ public final class SQLParserTestCases {
         putAll(killStatementTestCases, result);
         putAll(createDefaultShadowAlgorithmStatementTestCases, result);
         putAll(cacheIndexStatementTestCases, result);
+        putAll(loadIndexInfoStatementTestCases, result);
         putAll(createShadowAlgorithmTestCase, result);
         return result;
     }

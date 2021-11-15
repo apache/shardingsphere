@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Expected partitions.
+ * Load table index segment.
  */
 @Getter
-@Setter
-public final class ExpectedPartitions extends AbstractExpectedIdentifierSQLSegment {
+public final class LoadTableIndexSegment extends TableIndexSegment {
     
-    @XmlElement(name = "table")
-    private ExpectedSimpleTable table;
+    private Collection<IndexSegment> indexes = new LinkedList<>();
     
-    @XmlElement(name = "partition")
-    private final List<ExpectedPartition> partitions = new LinkedList<>();
+    private Collection<PartitionSegment> partitions = new LinkedList<>();
+    
+    public LoadTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
+        super(startIndex, stopIndex, table);
+    }
 }
