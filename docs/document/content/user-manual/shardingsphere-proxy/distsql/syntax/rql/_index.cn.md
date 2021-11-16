@@ -4,4 +4,4 @@ weight = 2
 chapter = true
 +++
 
-RQL (Resource & Rule Query Language) 为 Apache ShardingSphere 的查询语言，负责资源和规则的查询。
+RQL (Resource & Rule Query Language) 为 Apache ShardingSphere 的资源和规则查询语言。
