@@ -1,9 +1,9 @@
 +++
 title = "DB Discovery"
-weight = 5
+weight = 3
 +++
 
-## Definition
+## Syntax
 
 ```sql
 CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition [, databaseDiscoveryRuleDefinition] ...

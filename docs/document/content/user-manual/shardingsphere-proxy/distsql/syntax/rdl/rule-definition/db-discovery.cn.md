@@ -1,9 +1,9 @@
 +++
 title = "数据库发现"
-weight = 5
+weight = 3
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition [, databaseDiscoveryRuleDefinition] ...

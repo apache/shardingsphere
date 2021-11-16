@@ -1,9 +1,9 @@
 +++
-title = "Encrypt"
+title = "数据加密"
 weight = 4
 +++
 
-## Definition
+## 语法说明
 
 ```sql
 CREATE ENCRYPT RULE encryptRuleDefinition [, encryptRuleDefinition] ...
@@ -27,19 +27,19 @@ algorithmProperties:
 algorithmProperty:
     key=value                          
 ```
-- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/)
-- Duplicate `tableName` will not be created
-- `queryWithCipherColumn` support uppercase or lowercase true or false
+- `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列
+- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/)
+- 重复的 `tableName` 将无法被创建
+- `queryWithCipherColumn` 支持大写或小写的 true 或 false
 
-## Example
+## 示例
 
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
 (NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))
-), QUERY_WITH_CIPHER_COLUMN=true),
+),QUERY_WITH_CIPHER_COLUMN=true),
 t_encrypt_2 (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),

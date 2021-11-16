@@ -1,9 +1,9 @@
 +++
 title = "Readwrite-Splitting"
-weight = 3
+weight = 2
 +++
 
-## Definition
+## Syntax
 
 ```sql
 CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition [, readwriteSplittingRuleDefinition] ...

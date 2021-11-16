@@ -1,9 +1,9 @@
 +++
-title = "数据分片"
-weight = 2
+title = "Sharding"
+weight = 1
 +++
 
-## 定义
+## Definition
 
 ### Sharding Table Rule
 
@@ -15,8 +15,8 @@ SHOW SHARDING ALGORITHMS [FROM schemaName]
 tableRule:
     RULE tableName
 ```
--  支持查询所有数据分片规则和指定表查询
--  支持查询所有分片算法
+-  Support query all data fragmentation rules and specified table query
+-  Support query all sharding algorithms
 
 ### Sharding Binding Table Rule
 
@@ -30,48 +30,48 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
-## 说明
+## Description
 
 ### Sharding Table Rule
 
-| 列                                | 说明                                 |
-| --------------------------------- | ----------------------------------- |
-| table                             | 逻辑表名                             |
-| actual_data_nodes                 | 实际的数据节点                        |
-| actual_data_sources               | 实际的数据源（通过 RDL 创建的规则时显示） |
-| database_strategy_type            | 数据库分片策略类型                     |
-| database_sharding_column          | 数据库分片键                          |
-| database_sharding_algorithm_type  | 数据库分片算法类型                     |
-| database_sharding_algorithm_props | 数据库分片算法参数                     |
-| table_strategy_type               | 表分片策略类型                        |
-| table_sharding_column             | 表分片键                             |
-| table_sharding_algorithm_type     | 表分片算法类型                        |
-| table_sharding_algorithm_props    | 表分片算法参数                        |
-| key_generate_column               | 分布式主键生成列                      |
-| key_generator_type                | 分布式主键生成器类型                   |
-| key_generator_props               | 分布式主键生成器参数                   |
+| Column                            | Description                                              |
+| --------------------------------- | -------------------------------------------------------- |
+| table                             | Logical table name                                       |
+| actual_data_nodes                 | Actual data node                                         |
+| actual_data_sources               | Actual data source（Displayed when creating rules by RDL）|
+| database_strategy_type            | Database sharding strategy type                          |
+| database_sharding_column          | Database sharding column                                 |
+| database_sharding_algorithm_type  | Database sharding algorithm type                         |
+| database_sharding_algorithm_props | Database sharding algorithm parameter                    |
+| table_strategy_type               | Table sharding strategy type                             |
+| table_sharding_column             | Table sharding column                                    |
+| table_sharding_algorithm_type     | Database sharding algorithm type                         |
+| table_sharding_algorithm_props    | Database sharding algorithm parameter                    |
+| key_generate_column               | Distributed primary key generation column                |
+| key_generator_type                | Distributed primary key generation type                  |
+| key_generator_props               | Distributed primary key generation parameter             |
 
 ### Sharding Algorithms
 
-| 列     | 说明          |
-| ------| --------------|
-| name  | 分片算法名称    |
-| type  | 分片算法类型    |
-| props | 分片算法参数    |
+| Column | Description                  |
+| -------| -----------------------------|
+| name   | Sharding algorithm name      |
+| type   | Sharding algorithm type      |
+| props  | Sharding algorithm parameters|
 
 ### Sharding Binding Table Rule
 
-| 列                      | 说明      |
-| ----------------------- | -------- |
-| sharding_binding_tables | 绑定表名称 |
+| Column                | Description                 | 
+| --------------------- | --------------------------  |
+| sharding_binding_tables | sharding Binding Table list |
 
 ### Sharding Broadcast Table Rule
 
-| 列                        | 说明      |
-| ------------------------- | -------- |
-| sharding_broadcast_tables | 广播表名称 |
+| Column                  | Description                   |
+| ----------------------- | ----------------------------- |
+| sharding_broadcast_tables | sharding Broadcast Table list |
 
-## 示例
+## Example
 
 ### Sharding Table Rule
 

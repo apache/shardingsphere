@@ -1,15 +1,15 @@
 +++
 title = "Shadow"
-weight = 6
+weight = 5
 +++
 
-## Definition
+## Syntax
 
 ```sql
 CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
-
+```
 CREATE SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
 ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
