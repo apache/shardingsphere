@@ -26,10 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
 @Getter
 public final class ShowSingleTableRulesStatement extends ShowRulesStatement {
     
-    private final String tableName;
-    
-    public ShowSingleTableRulesStatement(final String tableName, final SchemaSegment schema) {
+    public ShowSingleTableRulesStatement(final SchemaSegment schema) {
         super(schema);
-        this.tableName = tableName;
     }
 }

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SingleTableRuleQueryResultSetTest {
+public final class SingleTableQueryResultSetTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
@@ -64,8 +65,8 @@ public final class SingleTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DistSQLResultSet resultSet = new SingleTableRuleQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableRulesStatement.class));
+        DistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -84,8 +85,8 @@ public final class SingleTableRuleQueryResultSetTest {
         singleTableDataNodeMap.put("t_order_multiple", new SingleTableDataNode("t_order_multiple", "ds_1_multiple"));
         singleTableDataNodeMap.put("t_order_item_multiple", new SingleTableDataNode("t_order_item_multiple", "ds_2_multiple"));
         addShardingSphereRule(mockSingleTableRule(singleTableDataNodeMap));
-        DistSQLResultSet resultSet = new SingleTableRuleQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableRulesStatement.class));
+        DistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -111,8 +112,8 @@ public final class SingleTableRuleQueryResultSetTest {
     @Test
     public void assertGetRowDataWithOtherRules() {
         addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class)));
-        DistSQLResultSet resultSet = new SingleTableRuleQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableRulesStatement.class));
+        DistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
