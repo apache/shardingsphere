@@ -40,7 +40,7 @@ public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeB
     
     @Override
     public int getOrder() {
-        return 1;
+        return 3;
     }
     
     @Override
