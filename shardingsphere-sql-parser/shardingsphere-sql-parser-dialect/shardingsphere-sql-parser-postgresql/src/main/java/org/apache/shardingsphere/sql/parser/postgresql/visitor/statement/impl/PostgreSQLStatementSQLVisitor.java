@@ -99,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -140,6 +141,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
@@ -770,7 +772,28 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     
     @Override
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
-        return null == ctx.simpleSelect() ? new PostgreSQLSelectStatement() : visit(ctx.simpleSelect());
+        if (null != ctx.simpleSelect()) {
+            return visit(ctx.simpleSelect());
+        } else if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
+            PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
+            UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1)),
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex());
+            result.getUnionSegments().add(unionSegment);
+            return result;
+        } else {
+            return visit(ctx.selectWithParens());
+        }
+    }
+    
+    private UnionType getUnionType(final SelectClauseNContext ctx) {
+        boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
+        if (null != ctx.UNION()) {
+            return isDistinct ? UnionType.UNION_DISTINCT : UnionType.UNION_ALL;
+        } else if (null != ctx.INTERSECT()) {
+            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
+        } else {
+            return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
+        }
     }
     
     @Override

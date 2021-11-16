@@ -85,12 +85,12 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimePattern() {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "% can not be null.", DATE_TIME_PATTERN_KEY);
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "%s can not be null.", DATE_TIME_PATTERN_KEY);
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
     private LocalDateTime getDateTimeLower(final String dateTimePattern) {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "% can not be null.", DATE_TIME_LOWER_KEY);
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null.", DATE_TIME_LOWER_KEY);
         return getDateTime(DATE_TIME_LOWER_KEY, props.getProperty(DATE_TIME_LOWER_KEY), dateTimePattern);
     }
     

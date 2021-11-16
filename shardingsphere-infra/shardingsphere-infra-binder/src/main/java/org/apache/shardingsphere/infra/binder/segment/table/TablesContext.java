@@ -21,9 +21,14 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.subquery.SubqueryTableContext;
+import org.apache.shardingsphere.infra.binder.segment.select.subquery.engine.SubqueryTableContextEngine;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,20 +52,36 @@ public final class TablesContext {
     
     private final Map<String, SimpleTableSegment> uniqueTables = new HashMap<>();
     
+    private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
+    
     private final Collection<String> schemaNames = new HashSet<>();
     
     public TablesContext(final SimpleTableSegment tableSegment) {
-        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
+        this(Collections.singletonList(tableSegment));
     }
     
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
+        this(tableSegments, Collections.emptyMap());
+    }
+    
+    public TablesContext(final Collection<? extends TableSegment> tableSegments, final Map<Integer, SelectStatementContext> subqueryContexts) {
         if (tableSegments.isEmpty()) {
             return;
         }
-        for (SimpleTableSegment each : tableSegments) {
+        Collection<SimpleTableSegment> simpleTableSegments = tableSegments.stream().filter(each 
+            -> each instanceof SimpleTableSegment).map(each -> (SimpleTableSegment) each).collect(Collectors.toList());
+        for (SimpleTableSegment each : simpleTableSegments) {
             originalTables.add(each);
             uniqueTables.putIfAbsent(each.getTableName().getIdentifier().getValue(), each);
             each.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
+        }
+        Collection<SubqueryTableSegment> subqueryTableSegments = tableSegments.stream().filter(each
+            -> each instanceof SubqueryTableSegment).map(each -> (SubqueryTableSegment) each).collect(Collectors.toList());
+        for (SubqueryTableSegment each : subqueryTableSegments) {
+            SelectStatementContext subqueryContext = subqueryContexts.get(each.getSubquery().getStartIndex());
+            subqueryContext.setSubqueryTable(true);
+            Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, each.getAlias().orElse(null));
+            subqueryTables.putAll(subqueryTableContexts.stream().collect(Collectors.groupingBy(SubqueryTableContext::getAlias)));
         }
     }
     
@@ -122,6 +143,7 @@ public final class TablesContext {
     
     /**
      * Find table name from SQL.
+     * 
      * @param tableNameOrAlias table name or alias
      * @return table name
      */
@@ -174,6 +196,21 @@ public final class TablesContext {
             if (schema.containsColumn(each, columnName)) {
                 return Optional.of(each);
             }
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Find table name from subquery.
+     * 
+     * @param columnName column name
+     * @param owner column owner
+     * @return table name
+     */
+    public Optional<String> findTableNameFromSubquery(final String columnName, final String owner) {
+        Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.get(owner);
+        if (null != subqueryTableContexts) {
+            return subqueryTableContexts.stream().filter(each -> each.getColumnNames().contains(columnName)).map(SubqueryTableContext::getTableName).findFirst();
         }
         return Optional.empty();
     }
