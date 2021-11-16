@@ -3,7 +3,7 @@ title = "Sharding"
 weight = 1
 +++
 
-## Definition
+## Syntax
 
 ### Sharding Table Rule
 
@@ -30,7 +30,7 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
-## Description
+## Return Value Description
 
 ### Sharding Table Rule
 

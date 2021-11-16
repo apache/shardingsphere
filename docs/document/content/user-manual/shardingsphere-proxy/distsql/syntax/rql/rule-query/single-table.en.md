@@ -3,7 +3,7 @@ title = "Single Table"
 weight = 2
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW SINGLE TABLE (tableRule | RULES) [FROM schemaName]
@@ -12,7 +12,7 @@ tableRule:
     RULE tableName
 ```
 
-## Description
+## Return Value Description
 
 | Column        | Description        |
 | ------------- | -------------------|

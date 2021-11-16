@@ -3,13 +3,13 @@ title = "Resource Query"
 weight = 1
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW SCHEMA RESOURCES [FROM schemaName]
 ```
 
-## Description
+## Return Value Description
 
 | Column        | Description             |
 | ------------- | ----------------------- |

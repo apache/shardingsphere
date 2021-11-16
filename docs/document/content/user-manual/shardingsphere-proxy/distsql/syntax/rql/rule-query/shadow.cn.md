@@ -3,7 +3,7 @@ title = "影子库压测"
 weight = 6 
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 SHOW SHADOW shadowRule | RULES [FROM schemaName]
@@ -19,7 +19,7 @@ shadowRule:
 - 支持查询所有表规则
 - 支持查询所有影子算法
 
-## 说明
+## 返回值说明
 
 ### Shadow Rule
 

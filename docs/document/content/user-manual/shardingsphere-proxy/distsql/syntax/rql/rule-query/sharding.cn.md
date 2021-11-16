@@ -3,7 +3,7 @@ title = "数据分片"
 weight = 1
 +++
 
-## 定义
+## 语法说明
 
 ### Sharding Table Rule
 
@@ -30,7 +30,7 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
-## 说明
+## 返回值说明
 
 ### Sharding Table Rule
 

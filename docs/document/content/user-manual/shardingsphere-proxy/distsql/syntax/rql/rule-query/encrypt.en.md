@@ -3,7 +3,7 @@ title = "Encrypt"
 weight = 5
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW ENCRYPT RULES [FROM schemaName]
@@ -12,7 +12,7 @@ SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 ```
 - Support to query all data encryption rules and specify logical table name query
 
-## Description
+## Return Value Description
 
 | Column          | Description                     |
 | --------------- | ------------------------------- |

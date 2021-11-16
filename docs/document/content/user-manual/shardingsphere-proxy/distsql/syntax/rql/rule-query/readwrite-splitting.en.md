@@ -3,13 +3,13 @@ title = "Readwrite-Splitting"
 weight = 3
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 ```
 
-## Description
+## Return Value Description
 
 | Column                      | Description                          |
 | --------------------------- | ------------------------------------ |

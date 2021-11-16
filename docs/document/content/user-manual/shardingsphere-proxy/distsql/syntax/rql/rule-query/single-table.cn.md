@@ -3,7 +3,7 @@ title = "单表"
 weight = 2
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 SHOW SINGLE TABLE (tableRule | RULES) [FROM schemaName]
@@ -12,7 +12,7 @@ tableRule:
     RULE tableName
 ```
 
-## 说明
+## 返回值说明
 
 | 列            | 说明          |
 | ------------- | ------------ |
