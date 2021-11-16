@@ -34,7 +34,6 @@ public final class ShowTriggersStatementTestCase extends SQLParserTestCase {
 
     @XmlElement
     private ExpectedSchema schema;
-
     @XmlElement
     private ExpectedLikeClause like;
 }
