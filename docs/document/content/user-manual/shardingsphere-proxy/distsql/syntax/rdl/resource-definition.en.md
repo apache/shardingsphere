@@ -10,6 +10,8 @@ ADD RESOURCE dataSource [, dataSource] ...
 
 ALTER RESOURCE dataSource [, dataSource] ...
 
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
+
 dataSource:
     simpleSource | urlSource
 
@@ -21,8 +23,6 @@ urlSource:
 
 poolProperty:
     "key"= ("value" | value)
-    
-DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 ```
 
 - Before adding resources, please confirm that a distributed database has been created, and execute the `use` command to successfully select a database
