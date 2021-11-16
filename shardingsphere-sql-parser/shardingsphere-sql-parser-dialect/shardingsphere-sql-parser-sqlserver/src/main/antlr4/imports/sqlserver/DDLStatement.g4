@@ -148,11 +148,11 @@ fileTableClause
     ;
 
 createDefinitionClause
-    : createTableDefinitions partitionScheme fileGroup
+    : createTableAsSelect? createTableDefinitions partitionScheme fileGroup
     ;
 
 createTableDefinitions
-    : LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_
+    : (LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_)?
     ;
 
 createTableDefinition
@@ -357,6 +357,7 @@ tableOption
     | distributionOption
     | dataWareHouseTableOption
     | dataDelectionOption
+    | dataWareHousePartitionOption
     ;
 
 dataDelectionOption
@@ -384,7 +385,7 @@ distributionOption
     ;
 
 dataWareHouseTableOption
-    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
+    : CLUSTERED COLUMNSTORE INDEX | CLUSTERED COLUMNSTORE INDEX ORDER columnNames | HEAP | CLUSTERED INDEX LP_ (columnName (ASC | DESC)?) (COMMA_ (columnName (ASC | DESC)?))* RP_
     ;
 
 dataWareHousePartitionOption
@@ -1064,4 +1065,16 @@ schemaNameClause
 
 schemaElement
     : createTable | createView | grant | revoke | deny
+    ;
+
+createTableAsSelect
+    : columnNames? withDistributionOption AS select optionQueryHintClause
+    ;
+
+withDistributionOption
+    : WITH LP_ distributionOption (COMMA_ tableOption (COMMA_ tableOption)*)? RP_
+    ;
+
+optionQueryHintClause
+    : (OPTION LP_ queryHint (COMMA_ queryHint)* RP_)?
     ;

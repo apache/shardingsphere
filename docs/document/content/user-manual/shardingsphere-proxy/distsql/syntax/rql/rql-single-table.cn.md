@@ -6,23 +6,48 @@ weight = 7
 ## 定义
 
 ```sql
-SHOW SINGLE TABLE (tableRule | RULES) [FROM schemaName]
+SHOW SINGLE TABLE RULES [FROM schemaName]
 
-tableRule:
-    RULE tableName
+SHOW SINGLE tableDefinition | TABLES [FROM schemaName]
+
+tableDefinition:
+    TABLE tableName
 ```
 
 ## 说明
 
+### Single Table Rule
+
+| 列            | 说明          |
+| ------------- | ------------ |
+| name          | 规则名称      |
+| resource_name | 数据源名称    |
+
+### Single Table
+
 | 列            | 说明          |
 | ------------- | ------------ |
 | table_name    | 单表名称      |
-| resource_name | 数据源名称    |
+| resource_name | 数据源名称     |
 
 ## 示例
 
+### Single Table Rule
+
 ```sql
 mysql> show single table rules;
++---------+---------------+
+| name    | resource_name |
++---------+---------------+
+| default | ds_0          |
++---------+---------------+
+1 row in set (3.59 sec)
+```
+
+### Single Table
+
+```sql
+mysql> show single tables;
 +--------------+---------------+
 | table_name   | resource_name |
 +--------------+---------------+

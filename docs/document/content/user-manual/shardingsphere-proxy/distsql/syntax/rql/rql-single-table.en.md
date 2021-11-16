@@ -6,23 +6,48 @@ weight = 7
 ## Definition
 
 ```sql
-SHOW SINGLE TABLE (tableRule | RULES) [FROM schemaName]
+SHOW SINGLE TABLE RULES [FROM schemaName]
 
-tableRule:
-    RULE tableName
+SHOW SINGLE tableDefinition | TABLES [FROM schemaName]
+
+tableDefinition:
+    TABLE tableName
 ```
 
 ## Description
 
+### Single Table Rule
+
+| Column        | Description       |
+| ------------- | ------------------|
+| name          | Rule name         |
+| resource_name | Data source name  |
+
+### Single Table
+
 | Column        | Description        |
-| ------------- | -------------------|
+| ------------- | ------------------ |
 | table_name    | Single table name  |
 | resource_name | Data source name   |
 
 ## Example
 
+### Single Table Rule
+
 ```sql
 mysql> show single table rules;
++---------+---------------+
+| name    | resource_name |
++---------+---------------+
+| default | ds_0          |
++---------+---------------+
+1 row in set (3.59 sec)
+```
+
+### Single Table
+
+```sql
+mysql> show single tables;
 +--------------+---------------+
 | table_name   | resource_name |
 +--------------+---------------+
