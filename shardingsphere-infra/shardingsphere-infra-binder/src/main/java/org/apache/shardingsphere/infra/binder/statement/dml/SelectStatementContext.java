@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Te
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -248,8 +250,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Collection<TableSegment> getAllTableSegments() {
+        Collection<TableSegment> result = new LinkedList<>();
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
-        return tableExtractor.getTableContext();
+        result.addAll(tableExtractor.getRewriteTables());
+        result.addAll(tableExtractor.getTableContext().stream().filter(each -> each instanceof SubqueryTableSegment).collect(Collectors.toList()));
+        return result;
     }
 }

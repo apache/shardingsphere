@@ -59,14 +59,8 @@ public final class SubqueryExtractUtil {
         }
         return result;
     }
-
-    /**
-     * Get subquery segment from projections.
-     *
-     * @param projections ProjectionsSegment
-     * @return subquery segment collection
-     */
-    public static Collection<SubquerySegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
+    
+    private static Collection<SubquerySegment> getSubquerySegmentsFromProjections(final ProjectionsSegment projections) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return Collections.emptyList();
         }
@@ -81,14 +75,8 @@ public final class SubqueryExtractUtil {
         }
         return result;
     }
-
-    /**
-     * Get subquery segment from tableSegment.
-     *
-     * @param tableSegment TableSegment
-     * @return subquery segment collection
-     */
-    public static Collection<SubquerySegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
+    
+    private static Collection<SubquerySegment> getSubquerySegmentsFromTableSegment(final TableSegment tableSegment) {
         if (null == tableSegment) {
             return Collections.emptyList();
         }
