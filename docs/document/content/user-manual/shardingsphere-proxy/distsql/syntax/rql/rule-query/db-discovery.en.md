@@ -1,25 +1,25 @@
 +++
-title = "数据库发现"
-weight = 5
+title = "DB Discovery"
+weight = 4
 +++
 
-## 定义
+## Definition
 
 ```sql
 SHOW DB_DISCOVERY RULES [FROM schemaName]
 ```
 
-## 说明
+## Description
 
-| 列                       | 说明            |
-| ------------------------ | --------------- |
-| name                     | 规则名称         |
-| data_source_names        | 数据源名称列表    |
-| primary_data_source_name | 主数据源名称      |
-| discover_type            | 数据库发现服务类型 |
-| discover_props           | 数据库发现服务参数 |
+| Column                   | Description                            |
+| ------------------------ | -------------------------------------- |
+| name                     | Rule name                              |
+| data_source_names        | Data source name list                  |
+| primary_data_source_name | Primary data source name               |
+| discover_type            | Database discovery service type        |
+| discover_props           | Database discovery service parameters  |
 
-## 示例
+## Example
 
 ```sql
 mysql> show db_discovery rules from database_discovery_db;

@@ -1,9 +1,9 @@
 +++
 title = "Sharding"
-weight = 2
+weight = 1
 +++
 
-## Definition
+## Syntax
 
 ### Sharding Table Rule
 

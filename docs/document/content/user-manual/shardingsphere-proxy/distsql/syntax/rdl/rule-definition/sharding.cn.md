@@ -1,9 +1,9 @@
 +++
 title = "数据分片"
-weight = 2
+weight = 1
 +++
 
-## 定义
+## 语法说明
 
 ### Sharding Table Rule
 

@@ -1,9 +1,9 @@
 +++
 title = "读写分离"
-weight = 3
+weight = 2
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition [, readwriteSplittingRuleDefinition] ...
