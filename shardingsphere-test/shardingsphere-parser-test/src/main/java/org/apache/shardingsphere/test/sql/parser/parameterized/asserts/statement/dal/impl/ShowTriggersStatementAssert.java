@@ -62,5 +62,4 @@ public class ShowTriggersStatementAssert {
             assertFalse(assertContext.getText("Actual like should not exist."), actual.getLike().isPresent());
         }
     }
-
 }

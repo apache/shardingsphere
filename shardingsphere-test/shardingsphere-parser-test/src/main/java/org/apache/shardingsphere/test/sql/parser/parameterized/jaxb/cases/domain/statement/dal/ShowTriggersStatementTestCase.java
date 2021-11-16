@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show tables statement test case.
+ * show triggers statement test case.
  */
 @Getter
 @Setter
@@ -37,5 +37,4 @@ public final class ShowTriggersStatementTestCase extends SQLParserTestCase {
 
     @XmlElement
     private ExpectedLikeClause like;
-
 }

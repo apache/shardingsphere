@@ -56,5 +56,4 @@ public final class MySQLShowTriggersStatement extends AbstractSQLStatement imple
     public Optional<ShowLikeSegment> getLike() {
         return Optional.ofNullable(like);
     }
-
 }
