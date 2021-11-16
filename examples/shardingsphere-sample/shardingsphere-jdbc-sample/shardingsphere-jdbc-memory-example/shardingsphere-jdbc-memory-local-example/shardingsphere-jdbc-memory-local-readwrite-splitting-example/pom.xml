@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jdbc-example</module>
     </modules>
 </project>

@@ -29,5 +29,5 @@
     <distsql-case id="drop-encrypt-rule" value="DROP ENCRYPT RULE t_encrypt,t_encrypt_order" />
     <distsql-case id="drop-shadow-rule" value="DROP SHADOW RULE shadow_rule_1,shadow_rule_2" />
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
-    <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE RESOURCE" />
+    <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE" />
 </sql-cases>
