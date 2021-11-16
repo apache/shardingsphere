@@ -8,9 +8,9 @@ weight = 7
 ```sql
 SHOW SINGLE TABLE RULES [FROM schemaName]
 
-SHOW SINGLE table | TABLES [FROM schemaName]
+SHOW SINGLE tableDefinition | TABLES [FROM schemaName]
 
-table:
+tableDefinition:
     TABLE tableName
 ```
 
