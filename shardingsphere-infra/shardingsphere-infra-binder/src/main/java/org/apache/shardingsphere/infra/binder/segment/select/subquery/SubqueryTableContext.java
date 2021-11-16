@@ -15,11 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.infra.binder.segment.select.subquery;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Subquery enum.
+ * Subquery table context.
  */
-public enum SubqueryEnum {
-    NONE, INSERT_SELECT, PROJECTION, NESTED_PROJECTION_TABLE_SEGMENT, EXPRESSION
+@RequiredArgsConstructor
+@Getter
+public final class SubqueryTableContext {
+    
+    private final String tableName;
+    
+    private final String alias;
+    
+    private final Collection<String> columnNames;
 }
