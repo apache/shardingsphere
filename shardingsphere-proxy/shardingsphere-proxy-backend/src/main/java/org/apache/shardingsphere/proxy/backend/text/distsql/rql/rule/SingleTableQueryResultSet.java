@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Result set for show single table rules.
+ * Result set for show single table.
  */
 public final class SingleTableQueryResultSet implements DistSQLResultSet {
     
