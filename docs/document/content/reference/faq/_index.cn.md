@@ -320,3 +320,15 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://sh
 更多关于 alias 使用方法请参考 [Proxool官网](http://proxool.sourceforge.net/configure.html)。
 
 PS：sourceforge 网站需要翻墙访问。
+
+## 27. [DistSQL] 使用 `DistSQL` 删除资源时，出现 Resource [xxx] is still used by [SingleTableRule].
+
+回答：
+
+1. 被规则引用的资源将无法被删除
+
+2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除
+
+```
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
+```
