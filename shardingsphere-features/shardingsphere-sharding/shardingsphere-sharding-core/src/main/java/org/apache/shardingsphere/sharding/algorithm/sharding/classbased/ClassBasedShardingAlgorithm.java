@@ -59,7 +59,7 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     @Override
     public void init() {
         String strategyKey = props.getProperty(STRATEGY_KEY);
-        Preconditions.checkNotNull(strategyKey, "The props`%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
+        Preconditions.checkNotNull(strategyKey, "The props `%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
         strategy = ClassBasedShardingAlgorithmStrategyType.valueOf(strategyKey.toUpperCase().trim());
         algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
         Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
