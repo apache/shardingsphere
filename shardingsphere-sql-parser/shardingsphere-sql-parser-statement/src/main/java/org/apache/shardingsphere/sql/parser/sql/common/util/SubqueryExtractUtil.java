@@ -83,29 +83,6 @@ public final class SubqueryExtractUtil {
     }
 
     /**
-     * Get subquery table segment from tableSegment.
-     *
-     * @param tableSegment TableSegment
-     * @return subquery table segment collection
-     */
-    public static Collection<SubqueryTableSegment> getSubqueryTableSegmentsFromTableSegment(final TableSegment tableSegment) {
-        if (null == tableSegment) {
-            return Collections.emptyList();
-        }
-        Collection<SubqueryTableSegment> result = new LinkedList<>();
-        if (tableSegment instanceof SubqueryTableSegment) {
-            SubqueryTableSegment subqueryTableSegment = (SubqueryTableSegment) tableSegment;
-            result.add(subqueryTableSegment);
-            result.addAll(getSubqueryTableSegmentsFromTableSegment(subqueryTableSegment.getSubquery().getSelect().getFrom()));
-        }
-        if (tableSegment instanceof JoinTableSegment) {
-            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getLeft()));
-            result.addAll(getSubqueryTableSegmentsFromTableSegment(((JoinTableSegment) tableSegment).getRight()));
-        }
-        return result;
-    }
-
-    /**
      * Get subquery segment from tableSegment.
      *
      * @param tableSegment TableSegment
