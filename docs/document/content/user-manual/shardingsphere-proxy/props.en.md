@@ -1,6 +1,6 @@
 +++
 title = "Properties"
-weight = 2
+weight = 4
 chapter = true
 +++
 
@@ -10,7 +10,7 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 
 ## Configuration Item Explanation
 
-| *Name*                              | *Data Type* | *Description*                                                                                                                                                                                                                                                                                           | *Default Value* | *dynamic update* | 
+| *Name*                              | *Data Type* | *Description*                                                                                                                                                                                                                                                                                           | *Default Value* | *Dynamic Update* | 
 | ----------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --------------- |----------------- | 
 | sql-show (?)                        | boolean     | Whether show SQL or not in log. <br /> Print SQL details can help developers debug easier. The log details include: logic SQL, actual SQL and SQL parse result. <br /> Enable this property will log into log topic `ShardingSphere-SQL`, log level is INFO.                                            | false           | true             |
 | sql-simple (?)                      | boolean     | Whether show SQL details in simple style.                                                                                                                                                                                                                                                               | false           | true             |
@@ -25,7 +25,7 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | sql-comment-parse-enabled (?)       | boolean     | Whether parse the comment of SQL.                                                                                                                                                                                                                                                                       | false           | true             |
 | proxy-frontend-executor-size (?)    | int         | Proxy frontend Netty executor size. The default value is 0, which means let Netty decide.                                                                                                                                                                                                               | 0               | false            |
 | proxy-backend-executor-suitable (?) | String      | Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution if client connections are more than `proxy-frontend-netty-executor-size`, especially executing slow SQL. | OLAP            | false            |
-| sql-federation-enabled (?)          | boolean     | Whether enable sql federation.                                                                                                                                                                                                                                                                          | false           | true             | 
+| sql-federation-enabled (?)          | boolean     | Whether enable sql federation.                                                                                                                                                                                                                                                                          | false           | true             |
 
-Properties that support dynamic modification can take effect immediately after being configured through [DistSQL](/en/user-manual/shardingsphere-proxy/usage/distsql/). 
-Properties that do not support dynamic modification can also be configured through DistSQL but need to be restarted to take effect.
+Properties can be updated by [DistSQL](/cn/user-manual/shardingsphere-proxy/usage/distsql/).
+Dynamic update can take effect immediately, static update can take effect after restarted.
