@@ -3,13 +3,13 @@ title = "DB Discovery"
 weight = 4
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW DB_DISCOVERY RULES [FROM schemaName]
 ```
 
-## Description
+## Return Value Description
 
 | Column                   | Description                            |
 | ------------------------ | -------------------------------------- |

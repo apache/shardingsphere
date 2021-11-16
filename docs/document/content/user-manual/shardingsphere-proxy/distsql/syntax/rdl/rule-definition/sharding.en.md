@@ -88,7 +88,7 @@ algorithmProperty:
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
-- `strategyType` specifies the sharding strategy，please refer to[Sharding Strategy](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/#sharding-strategy)
+- `strategyType` specifies the sharding strategy，please refer to[Sharding Strategy](/en/features/sharding/concept/sharding/#sharding-strategy)
 
 ### Sharding Binding Table Rule
 

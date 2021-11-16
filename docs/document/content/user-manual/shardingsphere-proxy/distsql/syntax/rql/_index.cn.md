@@ -4,4 +4,4 @@ weight = 2
 chapter = true
 +++
 
-本章节将对 RQL 的语法进行详细说明，并以实际的列子介绍 RQL 的使用。
+RQL (Resource & Rule Query Language) 为 Apache ShardingSphere 的资源和规则查询语言。

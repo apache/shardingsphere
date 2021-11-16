@@ -3,13 +3,13 @@ title = "资源查询"
 weight = 1
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 SHOW SCHEMA RESOURCES [FROM schemaName]
 ```
 
-## 说明
+## 返回值说明
 
 | 列        | 说明      |
 | --------- | -------- |

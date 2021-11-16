@@ -9,6 +9,8 @@ weight = 1
 ADD RESOURCE dataSource [, dataSource] ...
 
 ALTER RESOURCE dataSource [, dataSource] ...
+    
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 
 dataSource:
     simpleSource | urlSource
@@ -21,8 +23,6 @@ urlSource:
 
 poolProperty:
     "key"= ("value" | value)
-    
-DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 ```
 
 - 添加资源前请确认已经创建分布式数据库，并执行 `use` 命令成功选择一个数据库

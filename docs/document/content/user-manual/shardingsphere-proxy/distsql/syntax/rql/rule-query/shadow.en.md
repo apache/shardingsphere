@@ -3,7 +3,7 @@ title = "Shadow"
 weight = 6 
 +++
 
-## Definition
+## Syntax
 
 ```sql
 SHOW SHADOW shadowRule | RULES [FROM schemaName]
@@ -19,12 +19,12 @@ shadowRule:
 - Support querying all shadow table rules
 - Support querying all shadow algorithms
 
-## Description
+## Return Value Description
 
 ### Shadow Rule
 
-| Column      | Description      |
-| -----------  | -----------     |
+| Column       | Description     |
+| ------------ | -----------     |
 | rule_name    | Rule name       |
 | source_name  | Source database |
 | shadow_name  | Shadow database |
@@ -32,18 +32,18 @@ shadowRule:
 
 ### Shadow Table Rule
 
-| Column                 | Description          |
-| ----------------------| --------------------- |
+| Column                | Description           |
+| --------------------- | --------------------- |
 | shadow_table          | Shadow table          |
 | shadow_algorithm_name | Shadow algorithm name |
 
 ### Shadow Algorithms
 
-| Column                | Description                  |
-| -------------------   | ---------------------------- |
-| shadow_algorithm_name | Shadow algorithm name        |
-| type                  | Shadow algorithm type        |
-| properties            | Shadow algorithm parameters  |
+| Column                | Description                 |
+| --------------------- | --------------------------- |
+| shadow_algorithm_name | Shadow algorithm name       |
+| type                  | Shadow algorithm type       |
+| properties            | Shadow algorithm parameters |
 
 ## Example
 

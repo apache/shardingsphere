@@ -3,7 +3,7 @@ title = "Sharding"
 weight = 1
 +++
 
-## Definition
+## Syntax
 
 ### Sharding Table Rule
 
@@ -30,45 +30,45 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
-## Description
+## Return Value Description
 
 ### Sharding Table Rule
 
-| Column                            | Description                                              |
-| --------------------------------- | -------------------------------------------------------- |
-| table                             | Logical table name                                       |
-| actual_data_nodes                 | Actual data node                                         |
-| actual_data_sources               | Actual data source（Displayed when creating rules by RDL）|
-| database_strategy_type            | Database sharding strategy type                          |
-| database_sharding_column          | Database sharding column                                 |
-| database_sharding_algorithm_type  | Database sharding algorithm type                         |
-| database_sharding_algorithm_props | Database sharding algorithm parameter                    |
-| table_strategy_type               | Table sharding strategy type                             |
-| table_sharding_column             | Table sharding column                                    |
-| table_sharding_algorithm_type     | Database sharding algorithm type                         |
-| table_sharding_algorithm_props    | Database sharding algorithm parameter                    |
-| key_generate_column               | Distributed primary key generation column                |
-| key_generator_type                | Distributed primary key generation type                  |
-| key_generator_props               | Distributed primary key generation parameter             |
+| Column                            | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| table                             | Logical table name                                        |
+| actual_data_nodes                 | Actual data node                                          |
+| actual_data_sources               | Actual data source (Displayed when creating rules by RDL) |
+| database_strategy_type            | Database sharding strategy type                           |
+| database_sharding_column          | Database sharding column                                  |
+| database_sharding_algorithm_type  | Database sharding algorithm type                          |
+| database_sharding_algorithm_props | Database sharding algorithm parameter                     |
+| table_strategy_type               | Table sharding strategy type                              |
+| table_sharding_column             | Table sharding column                                     |
+| table_sharding_algorithm_type     | Database sharding algorithm type                          |
+| table_sharding_algorithm_props    | Database sharding algorithm parameter                     |
+| key_generate_column               | Distributed primary key generation column                 |
+| key_generator_type                | Distributed primary key generation type                   |
+| key_generator_props               | Distributed primary key generation parameter              |
 
 ### Sharding Algorithms
 
-| Column | Description                  |
-| -------| -----------------------------|
-| name   | Sharding algorithm name      |
-| type   | Sharding algorithm type      |
-| props  | Sharding algorithm parameters|
+| Column | Description                   |
+| ------ | ----------------------------- |
+| name   | Sharding algorithm name       |
+| type   | Sharding algorithm type       |
+| props  | Sharding algorithm parameters |
 
 ### Sharding Binding Table Rule
 
-| Column                | Description                 | 
-| --------------------- | --------------------------  |
+| Column                  | Description                 | 
+| ----------------------- | --------------------------- |
 | sharding_binding_tables | sharding Binding Table list |
 
 ### Sharding Broadcast Table Rule
 
-| Column                  | Description                   |
-| ----------------------- | ----------------------------- |
+| Column                    | Description                   |
+| ------------------------- | ----------------------------- |
 | sharding_broadcast_tables | sharding Broadcast Table list |
 
 ## Example

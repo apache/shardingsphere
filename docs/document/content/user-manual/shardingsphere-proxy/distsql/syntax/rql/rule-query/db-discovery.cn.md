@@ -3,13 +3,13 @@ title = "数据库发现"
 weight = 4
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 SHOW DB_DISCOVERY RULES [FROM schemaName]
 ```
 
-## 说明
+## 返回值说明
 
 | 列                       | 说明            |
 | ------------------------ | --------------- |

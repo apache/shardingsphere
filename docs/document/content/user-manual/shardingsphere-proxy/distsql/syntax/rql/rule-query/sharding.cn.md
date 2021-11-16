@@ -3,7 +3,7 @@ title = "数据分片"
 weight = 1
 +++
 
-## 定义
+## 语法说明
 
 ### Sharding Table Rule
 
@@ -30,26 +30,26 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
-## 说明
+## 返回值说明
 
 ### Sharding Table Rule
 
-| 列                                | 说明                                 |
-| --------------------------------- | ----------------------------------- |
-| table                             | 逻辑表名                             |
-| actual_data_nodes                 | 实际的数据节点                        |
-| actual_data_sources               | 实际的数据源（通过 RDL 创建的规则时显示） |
-| database_strategy_type            | 数据库分片策略类型                     |
-| database_sharding_column          | 数据库分片键                          |
-| database_sharding_algorithm_type  | 数据库分片算法类型                     |
-| database_sharding_algorithm_props | 数据库分片算法参数                     |
-| table_strategy_type               | 表分片策略类型                        |
-| table_sharding_column             | 表分片键                             |
-| table_sharding_algorithm_type     | 表分片算法类型                        |
-| table_sharding_algorithm_props    | 表分片算法参数                        |
-| key_generate_column               | 分布式主键生成列                      |
-| key_generator_type                | 分布式主键生成器类型                   |
-| key_generator_props               | 分布式主键生成器参数                   |
+| 列                                | 说明                                |
+| --------------------------------- | ---------------------------------- |
+| table                             | 逻辑表名                            |
+| actual_data_nodes                 | 实际的数据节点                       |
+| actual_data_sources               | 实际的数据源（通过 RDL 创建的规则时显示）|
+| database_strategy_type            | 数据库分片策略类型                    |
+| database_sharding_column          | 数据库分片键                         |
+| database_sharding_algorithm_type  | 数据库分片算法类型                    |
+| database_sharding_algorithm_props | 数据库分片算法参数                    |
+| table_strategy_type               | 表分片策略类型                       |
+| table_sharding_column             | 表分片键                            |
+| table_sharding_algorithm_type     | 表分片算法类型                       |
+| table_sharding_algorithm_props    | 表分片算法参数                       |
+| key_generate_column               | 分布式主键生成列                     |
+| key_generator_type                | 分布式主键生成器类型                  |
+| key_generator_props               | 分布式主键生成器参数                  |
 
 ### Sharding Algorithms
 

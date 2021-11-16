@@ -3,7 +3,7 @@ title = "数据加密"
 weight = 5
 +++
 
-## 定义
+## 语法说明
 
 ```sql
 SHOW ENCRYPT RULES [FROM schemaName]
@@ -12,7 +12,7 @@ SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 ```
 - 支持查询所有的数据加密规则和指定逻辑表名查询
 
-## 说明
+## 返回值说明
 
 | 列              | 说明        |
 | --------------- | ---------- |
