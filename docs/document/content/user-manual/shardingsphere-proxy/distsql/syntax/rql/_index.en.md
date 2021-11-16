@@ -4,4 +4,4 @@ weight = 2
 chapter = true
 +++
 
-This chapter describes the syntax of RQL in detail, and introduce the use of RQL with actual examples.
+RQL (Resource & Rule Query Language) responsible for resources/rules query.

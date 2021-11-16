@@ -24,7 +24,7 @@ shadowRule:
 ### Shadow Rule
 
 | 列           | 说明         |
-| -----------  | ----------- |
+| ------------ | ----------- |
 | rule_name    | 规则名称     |
 | source_name  | 源数据库     |
 | shadow_name  | 影子数据库   |
