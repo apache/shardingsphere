@@ -15,7 +15,7 @@ DROP DEFAULT SINGLE TABLE RULE
 singleTableRuleDefinition:
     RESOURCE = resourceName
 ```
-- `RESOURCE` needs to use data source resources managed by RDL
+- `RESOURCE` needs to use data source resource managed by RDL
 
 
 ## Example
