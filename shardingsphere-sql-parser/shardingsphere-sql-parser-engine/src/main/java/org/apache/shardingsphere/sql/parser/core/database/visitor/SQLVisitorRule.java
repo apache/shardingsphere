@@ -281,6 +281,8 @@ public enum SQLVisitorRule {
     FLUSH("Flush", SQLStatementType.DAL),
 
     RESTART("Restart", SQLStatementType.DAL),
+    
+    SHUTDOWN("Shutdown", SQLStatementType.DAL),
 
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
