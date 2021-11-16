@@ -592,6 +592,10 @@ EXCEPT
     : E X C E P T
     ;
 
+MINUS
+    : M I N U S
+    ;
+
 TIES
     : T I E S
     ;
