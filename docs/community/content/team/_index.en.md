@@ -50,6 +50,7 @@ chapter = true
 | Lu Qiu          | Lucas-307               |
 | Hongsheng Zhong | sandynz                 |
 | Longtao Jiang   | RaigorJiang             |
+| Thanoshan MV | ThanoshanMV |
 
 ## Contributors
 
