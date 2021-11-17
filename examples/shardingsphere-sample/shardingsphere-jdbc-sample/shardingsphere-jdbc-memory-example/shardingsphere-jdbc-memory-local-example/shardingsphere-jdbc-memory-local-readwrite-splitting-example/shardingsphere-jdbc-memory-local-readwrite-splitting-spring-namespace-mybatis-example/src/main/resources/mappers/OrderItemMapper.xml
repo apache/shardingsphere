@@ -17,7 +17,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository.OrderItemRepository">
+<mapper namespace="org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository.OrderItemRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.mybatis.entity.OrderItem">
         <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
         <result column="order_id" property="orderId" jdbcType="INTEGER"/>

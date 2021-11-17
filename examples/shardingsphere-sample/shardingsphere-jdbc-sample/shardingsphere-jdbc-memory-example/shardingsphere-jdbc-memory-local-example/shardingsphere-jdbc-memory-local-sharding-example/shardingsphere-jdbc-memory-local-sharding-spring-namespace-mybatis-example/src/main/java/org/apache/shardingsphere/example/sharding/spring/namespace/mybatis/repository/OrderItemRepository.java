@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository;
+package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.Order;
+import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.OrderItem;
 
 import java.util.List;
 
 @Mapper
-public interface OrderRepository {
-
+public interface OrderItemRepository {
+    
     void createTableIfNotExists();
-
+    
     void truncateTable();
-
+    
     void dropTable();
-
-    void insert(Order order);
-
+    
+    void insert(OrderItem orderItem);
+    
     void delete(long orderId);
-
-    List<Order> selectAll();
+    
+    List<OrderItem> selectAll();
 }
