@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.projection;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
@@ -98,6 +99,9 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
             if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName())) {
                 return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+            }
+            if (null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()) {
+                return new ColumnProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
             }
             return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         } else if (sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy) {

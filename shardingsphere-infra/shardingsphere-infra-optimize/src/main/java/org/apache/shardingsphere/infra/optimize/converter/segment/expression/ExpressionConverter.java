@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.expression.imp
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.InExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ListExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.LiteralExpressionConverter;
+import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 import java.util.Optional;
@@ -78,6 +81,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new InExpressionConverter().convertToSQLNode((InExpression) segment).map(optional -> optional);
         } else if (segment instanceof BetweenExpression) {
             return new BetweenExpressionConverter().convertToSQLNode((BetweenExpression) segment).map(optional -> optional);
+        } else if (segment instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerExpressionConverter().convertToSQLNode((ParameterMarkerExpressionSegment) segment).map(optional -> optional);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }
@@ -98,6 +103,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (sqlNode instanceof SqlLiteral) {
             return new LiteralExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
+        if (sqlNode instanceof SqlDynamicParam) {
+            return new ParameterMarkerExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
         return Optional.empty();
     }

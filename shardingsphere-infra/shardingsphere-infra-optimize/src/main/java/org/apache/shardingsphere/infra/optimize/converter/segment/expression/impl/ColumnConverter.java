@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.expression.im
 
 import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -31,10 +32,10 @@ import java.util.Optional;
 /**
  * Column converter.
  */
-public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment, SqlIdentifier> {
+public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlIdentifier> convertToSQLNode(final ColumnSegment segment) {
+    public Optional<SqlNode> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
         SqlIdentifier sqlIdentifier = owner.map(optional 
@@ -43,17 +44,20 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     }
     
     @Override
-    public Optional<ColumnSegment> convertToSQLSegment(final SqlIdentifier sqlIdentifier) {
-        if (null == sqlIdentifier) {
+    public Optional<ColumnSegment> convertToSQLSegment(final SqlNode sqlNode) {
+          if (null == sqlNode) {
             return Optional.empty();
         }
-        ImmutableList<String> names = sqlIdentifier.names;
-        if (1 == names.size()) {
-            return Optional.of(new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(names.get(0))));    
+        if (sqlNode instanceof SqlIdentifier) {
+            ImmutableList<String> names = ((SqlIdentifier) sqlNode).names;
+            if (1 == names.size()) {
+                return Optional.of(new ColumnSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(names.get(0))));
+            }
+            ColumnSegment result = new ColumnSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(names.get(1)));
+            SqlIdentifier owner = ((SqlIdentifier) sqlNode).getComponent(0);
+            result.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(names.get(0))));
+            return Optional.of(result);
         }
-        ColumnSegment result = new ColumnSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier), new IdentifierValue(names.get(1)));
-        SqlIdentifier owner = sqlIdentifier.getComponent(0);
-        result.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(names.get(0))));
-        return Optional.of(result);
+        return Optional.empty();
     }
 }
