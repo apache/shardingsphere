@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * MySQL binary prepared statement registry.
+ * MySQL prepared statement registry.
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class MySQLPreparedStatementRegistry {
