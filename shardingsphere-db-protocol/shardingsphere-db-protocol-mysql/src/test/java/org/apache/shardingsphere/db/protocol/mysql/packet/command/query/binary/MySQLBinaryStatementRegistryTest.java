@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,36 +27,45 @@ import static org.junit.Assert.assertThat;
 
 public final class MySQLBinaryStatementRegistryTest {
     
-    private final String sql = "SELECT * FROM tbl WHERE id=?";
+    private static final int CONNECTION_ID = 1;
+    
+    private static final String SQL = "SELECT * FROM tbl WHERE id=?";
     
     @Before
-    @After
-    public void reset() {
-        BinaryStatementRegistryUtil.reset();
+    public void setup() {
+        MySQLBinaryStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
     }
     
     @Test
     public void assertRegisterIfAbsent() {
-        assertThat(MySQLBinaryStatementRegistry.getInstance().register(sql, 1), is(1));
-        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().get(1);
-        assertThat(actual.getSql(), is(sql));
+        assertThat(MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(1));
+        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
+        assertThat(actual.getSql(), is(SQL));
         assertThat(actual.getParameterCount(), is(1));
     }
     
     @Test
-    public void assertRegisterIfPresent() {
-        assertThat(MySQLBinaryStatementRegistry.getInstance().register(sql, 1), is(1));
-        assertThat(MySQLBinaryStatementRegistry.getInstance().register(sql, 1), is(1));
-        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().get(1);
-        assertThat(actual.getSql(), is(sql));
+    public void assertPrepareSameSQL() {
+        assertThat(MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(1));
+        assertThat(MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(2));
+        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
+        assertThat(actual.getSql(), is(SQL));
+        assertThat(actual.getParameterCount(), is(1));
+        actual = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
+        assertThat(actual.getSql(), is(SQL));
         assertThat(actual.getParameterCount(), is(1));
     }
     
     @Test
-    public void assertUnregisterIfPresent() {
-        MySQLBinaryStatementRegistry.getInstance().register(sql, 1);
-        MySQLBinaryStatementRegistry.getInstance().unregister(1);
-        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().get(1);
+    public void assertCloseStatement() {
+        MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1);
+        MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).closeStatement(1);
+        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
         assertNull(actual);
+    }
+    
+    @After
+    public void tearDown() {
+        MySQLBinaryStatementRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
 }

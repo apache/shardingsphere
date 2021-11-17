@@ -47,8 +47,6 @@ import java.util.Map;
  */
 public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
-    private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
-    
     private final MySQLComStmtPreparePacket packet;
     
     private final BackendConnection backendConnection;
@@ -74,7 +72,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
-        int statementId = PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount);
+        int statementId = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(backendConnection.getConnectionId()).prepareStatement(packet.getSql(), parameterCount);
         return createPackets(statementId, projectionCount, parameterCount);
     }
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,11 +33,7 @@ public final class MySQLBinaryStatementRegistry {
     
     private static final MySQLBinaryStatementRegistry INSTANCE = new MySQLBinaryStatementRegistry();
     
-    private final ConcurrentMap<String, Integer> statementIdAssigner = new ConcurrentHashMap<>(65535, 1);
-    
-    private final ConcurrentMap<Integer, MySQLBinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
-    
-    private final AtomicInteger sequence = new AtomicInteger();
+    private final ConcurrentMap<Integer, MySQLConnectionPreparedStatements> connectionRegistry = new ConcurrentHashMap<>(8192, 1);
     
     /**
      * Get prepared statement registry instance.
@@ -48,42 +45,69 @@ public final class MySQLBinaryStatementRegistry {
     }
     
     /**
-     * Register.
+     * Register connection.
      *
-     * @param sql SQL
-     * @param parameterCount parameter count
-     * @return statement ID
+     * @param connectionId connection ID
      */
-    public synchronized int register(final String sql, final int parameterCount) {
-        Integer result = statementIdAssigner.get(sql);
-        if (null != result) {
+    public void registerConnection(final int connectionId) {
+        connectionRegistry.put(connectionId, new MySQLConnectionPreparedStatements());
+    }
+    
+    /**
+     * Get connection prepared statements.
+     * 
+     * @param connectionId connection ID
+     * @return MySQL connection prepared statements
+     */
+    public MySQLConnectionPreparedStatements getConnectionPreparedStatements(final int connectionId) {
+        return connectionRegistry.get(connectionId);
+    }
+    
+    /**
+     * Unregister connection.
+     *
+     * @param connectionId connection ID
+     */
+    public void unregisterConnection(final int connectionId) {
+        connectionRegistry.remove(connectionId);
+    }
+    
+    public static class MySQLConnectionPreparedStatements {
+        
+        private final Map<Integer, MySQLBinaryStatement> preparedStatements = new ConcurrentHashMap<>(16384, 1);
+        
+        private final AtomicInteger sequence = new AtomicInteger();
+        
+        /**
+         * Register.
+         *
+         * @param sql SQL
+         * @param parameterCount parameter count
+         * @return statement ID
+         */
+        public int prepareStatement(final String sql, final int parameterCount) {
+            int result = sequence.incrementAndGet();
+            preparedStatements.put(result, new MySQLBinaryStatement(sql, parameterCount));
             return result;
         }
-        result = sequence.incrementAndGet();
-        statementIdAssigner.putIfAbsent(sql, result);
-        binaryStatements.putIfAbsent(result, new MySQLBinaryStatement(sql, parameterCount));
-        return result;
-    }
-    
-    /**
-     * Get binary statement.
-     *
-     * @param statementId statement ID
-     * @return binary prepared statement
-     */
-    public MySQLBinaryStatement get(final int statementId) {
-        return binaryStatements.get(statementId);
-    }
-    
-    /**
-     * Unregister.
-     *
-     * @param statementId statement ID
-     */
-    public synchronized void unregister(final int statementId) {
-        if (binaryStatements.containsKey(statementId)) {
-            statementIdAssigner.remove(binaryStatements.get(statementId).getSql());
-            binaryStatements.remove(statementId);
+        
+        /**
+         * Get prepared statement.
+         *
+         * @param statementId statement ID
+         * @return binary prepared statement
+         */
+        public MySQLBinaryStatement get(final int statementId) {
+            return preparedStatements.get(statementId);
+        }
+        
+        /**
+         * Close statement.
+         *
+         * @param statementId statement ID
+         */
+        public void closeStatement(final int statementId) {
+            preparedStatements.remove(statementId);
         }
     }
 }

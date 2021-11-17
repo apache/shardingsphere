@@ -64,10 +64,10 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     @Getter
     private final List<Object> parameters;
     
-    public MySQLComStmtExecutePacket(final MySQLPacketPayload payload) throws SQLException {
+    public MySQLComStmtExecutePacket(final MySQLPacketPayload payload, final int connectionId) throws SQLException {
         super(MySQLCommandPacketType.COM_STMT_EXECUTE);
         statementId = payload.readInt4();
-        binaryStatement = MySQLBinaryStatementRegistry.getInstance().get(statementId);
+        binaryStatement = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(connectionId).get(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
         int parameterCount = binaryStatement.getParameterCount();
