@@ -19,8 +19,8 @@ package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
 
 import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.Order;
 import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.OrderItem;
-import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository.OrderItemRepository;
-import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.repository.OrderRepository;
+import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository.OrderItemRepository;
+import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

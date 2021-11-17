@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.mybatis.entity.OrderItem;
+import org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.entity.OrderItem;
 
 import java.util.List;
 
