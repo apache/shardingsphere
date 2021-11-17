@@ -57,9 +57,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * SQL utility class.
@@ -80,6 +84,8 @@ public final class SQLUtil {
     private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
     
     private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
+    
+    private static final Pattern EQUATION_IN_COMMENT_PATTERN = Pattern.compile("(.*?=.*?[\\w]+)");
     
     /**
      * Get exactly number value and type.
@@ -285,6 +291,30 @@ public final class SQLUtil {
             result = result.substring(0, result.length() - 1);
         }
         return result.trim();
+    }
+    
+    /**
+     * Check the equation PARSE_PHASE_SKIPPED=TRUE contained the SQL comment.
+     *
+     * @param sql SQL to be checked
+     * @return boolean
+     */
+    public static boolean skipParse(final String sql) {
+        Collection<String> equations = SQLUtil.extractEquationsInComment(sql);
+        return 1 == equations.stream().filter(each -> each.equalsIgnoreCase("PARSE_PHASE_SKIPPED=TRUE")).collect(Collectors.toList()).size();
+    }
+    
+    private static Collection<String> extractEquationsInComment(final String sql) {
+        String comment = sql;
+        if (sql.startsWith(COMMENT_PREFIX)) {
+            comment = comment.substring(sql.indexOf(COMMENT_PREFIX) + 2, sql.indexOf(COMMENT_SUFFIX));
+        }
+        Collection<String> result = new ArrayList<>();
+        Matcher matcher = EQUATION_IN_COMMENT_PATTERN.matcher(comment.trim());
+        while (matcher.find()) {
+            result.add(matcher.group(1).replaceAll(" ", ""));
+        }
+        return result;
     }
     
     /**

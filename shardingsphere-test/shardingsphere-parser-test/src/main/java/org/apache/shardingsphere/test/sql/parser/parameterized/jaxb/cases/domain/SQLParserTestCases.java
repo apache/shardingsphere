@@ -193,6 +193,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.skipped.ParseSkippedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
@@ -325,6 +326,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "describe")
     private final List<ExplainStatementTestCase> describeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "parse-skipped")
+    private final List<ParseSkippedStatementTestCase> parseSkippedTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
@@ -808,6 +812,7 @@ public final class SQLParserTestCases {
         putAll(setPasswordTestCases, result);
         putAll(useTestCases, result);
         putAll(describeTestCases, result);
+        putAll(parseSkippedTestCases, result);
         putAll(showDatabasesTestCases, result);
         putAll(showTablesTestCases, result);
         putAll(showFunctionStatusStatementTestCases, result);

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.skipped.ParseSkippedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -69,6 +70,9 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
         }
         if (sqlStatement instanceof OpenGaussStatement) {
             return DatabaseTypeRegistry.getActualDatabaseType("openGauss");
+        }
+        if (sqlStatement instanceof ParseSkippedStatement) {
+            return DatabaseTypeRegistry.getActualDatabaseType(((ParseSkippedStatement) sqlStatement).getDatabaseName());
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
