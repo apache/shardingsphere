@@ -45,7 +45,7 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     
     @Override
     public Optional<ColumnSegment> convertToSQLSegment(final SqlNode sqlNode) {
-          if (null == sqlNode) {
+        if (null == sqlNode) {
             return Optional.empty();
         }
         if (sqlNode instanceof SqlIdentifier) {

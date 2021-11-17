@@ -34,7 +34,6 @@ public final class ParameterMarkerExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<ParameterMarkerExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        System.out.println(sqlNode);
-        return Optional.of(new ParameterMarkerExpressionSegment(getStartIndex(sqlNode),getStopIndex(sqlNode),((SqlDynamicParam)sqlNode).getIndex()));
+        return Optional.of(new ParameterMarkerExpressionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), ((SqlDynamicParam) sqlNode).getIndex()));
     }
 }
