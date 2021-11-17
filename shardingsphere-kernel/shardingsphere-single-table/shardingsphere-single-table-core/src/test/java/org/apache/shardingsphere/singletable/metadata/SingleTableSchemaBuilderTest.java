@@ -119,7 +119,8 @@ public final class SingleTableSchemaBuilderTest {
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(new SingleTableRuleConfiguration(), databaseType, Collections.singletonMap("logic_db", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        return new SingleTableRule(new SingleTableRuleConfiguration(), databaseType, Collections.singletonMap("logic_db", dataSource),
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private void assertActualOfSingleTables(final Collection<TableMetaData> actual) {
