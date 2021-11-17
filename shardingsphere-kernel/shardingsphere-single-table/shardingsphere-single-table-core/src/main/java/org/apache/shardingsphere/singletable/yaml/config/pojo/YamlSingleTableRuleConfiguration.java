@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture.ordered;
+package org.apache.shardingsphere.singletable.yaml.config.pojo;
 
-import org.apache.shardingsphere.spi.fixture.FixtureCustomInterfaceImpl;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
-public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCustomInterfaceImpl> {
+/**
+ * Single table rule configuration for YAML.
+ */
+@Getter
+@Setter
+public final class YamlSingleTableRuleConfiguration implements YamlRuleConfiguration {
+    
+    private String defaultDataSource;
     
     @Override
-    public int getOrder() {
-        return 3;
-    }
-    
-    @Override
-    public Class<FixtureCustomInterfaceImpl> getTypeClass() {
-        return FixtureCustomInterfaceImpl.class;
+    public Class<SingleTableRuleConfiguration> getRuleConfigurationType() {
+        return SingleTableRuleConfiguration.class;
     }
 }
