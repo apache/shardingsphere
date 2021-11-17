@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis.respository;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.mybatis.entity.Order;
 
 import java.util.List;
 

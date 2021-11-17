@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.entity;
+package org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

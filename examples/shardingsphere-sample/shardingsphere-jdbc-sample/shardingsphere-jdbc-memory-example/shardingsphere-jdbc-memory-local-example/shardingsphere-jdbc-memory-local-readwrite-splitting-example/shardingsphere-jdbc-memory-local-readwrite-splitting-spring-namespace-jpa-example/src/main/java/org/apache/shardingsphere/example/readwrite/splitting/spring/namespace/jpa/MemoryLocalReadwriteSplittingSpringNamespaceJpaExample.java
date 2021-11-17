@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+package org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.sql.SQLException;
 
-import java.util.List;
-
-@Mapper
-public interface OrderRepository {
-
-    void createTableIfNotExists();
-
-    void truncateTable();
-
-    void dropTable();
-
-    void insert(Order order);
-
-    void delete(long orderId);
-
-    List<Order> selectAll();
+public class MemoryLocalReadwriteSplittingSpringNamespaceJpaExample {
+    
+    public static void main(final String[] args) throws SQLException {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
+            MemoryLocalReadwriteSplittingSpringNamespaceJpaExampleService exampleService = applicationContext.getBean(MemoryLocalReadwriteSplittingSpringNamespaceJpaExampleService.class);
+            exampleService.run();
+        }
+    }
 }

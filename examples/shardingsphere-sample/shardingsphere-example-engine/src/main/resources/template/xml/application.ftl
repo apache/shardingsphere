@@ -45,7 +45,7 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
@@ -71,7 +71,6 @@
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
-    
 <#if feature=="sharding">
     <#include "shardingApplication.ftl">
 <#elseif feature=="readwrite-splitting">
@@ -90,7 +89,7 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.repository"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>

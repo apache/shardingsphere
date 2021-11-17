@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
+package org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa;
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
+import org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa.entity.Order;
+import org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa.entity.OrderItem;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -27,17 +27,9 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
-</#list>
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
 @Repository
 @Transactional
-public class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Repository {
+public class MemoryLocalReadwriteSplittingSpringNamespaceJpaRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
