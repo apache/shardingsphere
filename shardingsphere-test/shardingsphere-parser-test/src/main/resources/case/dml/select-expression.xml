@@ -1828,4 +1828,60 @@
             <expression-projection text="1 | 1" start-index="7" stop-index="11"/>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_abs_function">
+        <from>
+            <simple-table name="t_order" start-index="19" stop-index="25" />
+        </from>
+        <projections start-index="7" stop-index="12">
+            <expression-projection text="ABS(1)" start-index="7" stop-index="12">
+                <expr>
+                    <function function-name="ABS" text="ABS(1)" start-index="7" stop-index="12">
+                        <parameter>
+                            <literal-expression value="1" start-index="11" stop-index="11"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <where start-index="27" stop-index="42">
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="42">
+                    <left>
+                        <function function-name="ABS" text="ABS(1)" start-index="33" stop-index="38">
+                            <parameter>
+                                <literal-expression value="1" start-index="37" stop-index="37"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="1" start-index="42" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <expression-item expression="ABS(1)" start-index="53" stop-index="58">
+                <expr>
+                    <function function-name="ABS" text="ABS(1)" start-index="53" stop-index="58">
+                        <parameter>
+                            <literal-expression value="1" start-index="57" stop-index="57"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </group-by>
+        <order-by>
+            <expression-item expression="ABS(1)" start-index="69" stop-index="74">
+                <expr>
+                    <function function-name="ABS" text="ABS(1)" start-index="69" stop-index="74">
+                        <parameter>
+                            <literal-expression value="1" start-index="73" stop-index="73"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

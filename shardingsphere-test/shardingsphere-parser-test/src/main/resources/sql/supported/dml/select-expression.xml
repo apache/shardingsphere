@@ -82,4 +82,5 @@
     <sql-case id="select_projections_with_expr" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="MySQL"/>
     <sql-case id="select_with_amp" value="select 1 &amp; 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_vertical_bar" value="select 1 | 1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_abs_function" value="SELECT ABS(1) FROM t_order WHERE ABS(1) &gt; 1 GROUP BY ABS(1) ORDER BY ABS(1)" db-types="MySQL,Oracle" />
 </sql-cases>

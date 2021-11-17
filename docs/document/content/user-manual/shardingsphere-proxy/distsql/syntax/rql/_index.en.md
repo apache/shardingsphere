@@ -4,4 +4,4 @@ weight = 2
 chapter = true
 +++
 
-This chapter will explain the syntax of RQL in detail, list the meaning of all query columns, and show all the query information through examples.
+RQL (Resource & Rule Query Language) responsible for resources/rules query.
