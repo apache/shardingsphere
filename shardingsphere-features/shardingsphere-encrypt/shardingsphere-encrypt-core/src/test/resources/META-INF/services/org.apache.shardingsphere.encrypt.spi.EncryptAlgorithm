@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm
 org.apache.shardingsphere.encrypt.fixture.TestQueryAssistedEncryptAlgorithm
+org.apache.shardingsphere.encrypt.fixture.CustomizedEncryptAlgorithm

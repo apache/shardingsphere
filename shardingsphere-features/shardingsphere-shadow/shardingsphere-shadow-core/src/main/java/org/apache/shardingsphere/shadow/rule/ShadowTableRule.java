@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -41,19 +41,19 @@ public final class ShadowTableRule {
     
     private final Collection<String> shadowDataSources;
     
-    private final Collection<String> noteShadowAlgorithmNames;
+    private final Collection<String> hintShadowAlgorithmNames;
     
     private final Map<ShadowOperationType, Collection<String>> columnShadowAlgorithmNames;
     
     public ShadowTableRule(final String tableName, final Collection<String> shadowDataSources, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         this.tableName = tableName;
         this.shadowDataSources = shadowDataSources;
-        this.noteShadowAlgorithmNames = initNoteShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
+        this.hintShadowAlgorithmNames = initHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
         this.columnShadowAlgorithmNames = initColumnShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
     }
     
-    private Collection<String> initNoteShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof NoteShadowAlgorithm).collect(Collectors.toCollection(LinkedList::new));
+    private Collection<String> initHintShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+        return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof HintShadowAlgorithm).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private Map<ShadowOperationType, Collection<String>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {

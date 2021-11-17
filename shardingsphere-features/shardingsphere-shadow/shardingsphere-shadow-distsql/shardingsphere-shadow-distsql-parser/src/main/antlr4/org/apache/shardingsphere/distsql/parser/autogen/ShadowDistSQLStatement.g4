@@ -27,6 +27,8 @@ execute
     | showShadowTableRules
     | showShadowAlgorithms
     | dropShadowAlgorithm
+    | createDefaultShadowAlgorithm
     | alterShadowAlgorithm
+    | createShadowAlgorithm
     ) SEMI?
     ;

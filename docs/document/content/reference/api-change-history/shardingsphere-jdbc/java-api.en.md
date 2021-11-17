@@ -92,7 +92,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.None
 
 Attributes: None
 
-Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) for more details about type of algorithm.
+Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) for more details about type of algorithm.
 
 ##### Key Generate Strategy Configuration
 
@@ -105,7 +105,7 @@ Attributes:
 | column           | String     | Column name of key generate |
 | keyGeneratorName | String     | key generate algorithm name |
 
-Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen) for more details about type of algorithm.
+Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen) for more details about type of algorithm.
 
 ### Readwrite-splitting
 
@@ -133,7 +133,7 @@ Attributes:
 | readDataSourceNames (+)    | Collection\<String\> | Read sources source name list                  | -                                  |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
 
 ### Encryption
 
@@ -186,7 +186,7 @@ Attributes:
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |
 
-Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt) for more details about type of algorithm.
 
 ### Shadow DB
 

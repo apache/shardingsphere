@@ -22,7 +22,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -148,7 +150,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
         String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
         return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
     }
-
+    
     private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
@@ -286,6 +288,19 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     @Override
     public String getPrimaryDataSource() {
         return oldPrimaryDataSource;
+    }
+    
+    @Override
+    public void updateProperties(final String groupName, final Properties props) {
+        new JobConfigurationAPIImpl(coordinatorRegistryCenter).updateJobConfiguration(createJobConfiguration("MGR-" + groupName, props.getProperty("keepAliveCron")));
+    }
+    
+    private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
+        JobConfigurationPOJO result = new JobConfigurationPOJO();
+        result.setJobName(jobName);
+        result.setCron(cron);
+        result.setShardingTotalCount(1);
+        return result;
     }
     
     @Override

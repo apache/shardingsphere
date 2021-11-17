@@ -67,7 +67,7 @@
         </encrypt:table>
     </encrypt:rule>
 
-    <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">insert</prop>
             <prop key="column">user_type</prop>
@@ -75,7 +75,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">delete</prop>
             <prop key="column">user_type</prop>
@@ -83,7 +83,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="COLUMN_REGEX_MATCH">
+    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">select</prop>
             <prop key="column">user_type</prop>
@@ -91,7 +91,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:shadow-algorithm id="simple-note-algorithm" type="SIMPLE_NOTE">
+    <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
@@ -104,7 +104,7 @@
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref="simple-note-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
 

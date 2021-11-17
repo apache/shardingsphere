@@ -44,7 +44,7 @@ public final class MySQLPositionInitializerTest {
     
     private static final long SERVER_ID = 555555;
     
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
     @Mock

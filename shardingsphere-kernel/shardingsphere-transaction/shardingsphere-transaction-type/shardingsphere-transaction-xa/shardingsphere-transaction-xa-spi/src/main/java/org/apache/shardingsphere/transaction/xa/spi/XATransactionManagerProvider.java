@@ -45,7 +45,7 @@ public interface XATransactionManagerProvider extends AutoCloseable, TypedSPI, R
      * Remove recovery resource.
      *
      * @param dataSourceName data source name
-     * @param xaDataSource   XA data source
+     * @param xaDataSource XA data source
      */
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     

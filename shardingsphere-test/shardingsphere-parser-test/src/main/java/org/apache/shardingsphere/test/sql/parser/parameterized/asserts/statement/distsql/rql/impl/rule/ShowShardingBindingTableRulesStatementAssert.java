@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShardingBindingTableRulesStatementAssert {
-
+    
     /**
      * Assert show sharding binding table statement is correct with expected parser result.
      *

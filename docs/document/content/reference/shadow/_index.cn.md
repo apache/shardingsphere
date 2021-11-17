@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.5. </b>"
+pre = "<b>7.6. </b>"
 title = "影子库"
-weight = 5
+weight = 6
 +++
 
 ## 整体架构
@@ -49,7 +49,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ## 影子算法
 
-影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/shadow)
+影子算法详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
 
 ## 使用案例
 
@@ -71,16 +71,16 @@ tables:
   t_order:
     data-source-names: shadow-data-source
     shadow-algorithm-names:
-      - simple-note-algorithm
-      - user-id-match-algorithm
+      - simple-hint-algorithm
+      - user-id-value-match-algorithm
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -121,8 +121,8 @@ INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 
 ```yaml
 shadow-algorithms:
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -131,7 +131,7 @@ shadow-algorithms:
 
 **注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
 
-2. 使用注解影子算法
+2. 使用HINT影子算法
 
 假设 `t_order` 表中不包含可以对值进行匹配的列。添加注解 `/*shadow:true,foo:bar,...*/` 到执行 SQL 中，即：
 
@@ -145,8 +145,8 @@ SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/
 
 ```yaml
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
@@ -168,14 +168,14 @@ SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
 
 ```yaml
 shadow-algorithms:
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
       value: 0
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
@@ -209,17 +209,17 @@ tables:
   t_order:
     data-source-names: shadow-data-source
     shadow-algorithm-names:
-      - simple-note-algorithm
-      - user-id-match-algorithm
+      - simple-hint-algorithm
+      - user-id-value-match-algorithm
 default-shadow-algorithm-name: simple-note-algorithm
 shadow-algorithms:
-  simple-note-algorithm:
-    type: SIMPLE_NOTE
+  simple-hint-algorithm:
+    type: SIMPLE_HINT
     props:
       shadow: true
       foo: bar
-  user-id-match-algorithm:
-    type: COLUMN_VALUE_MATCH
+  user-id-value-match-algorithm:
+    type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
@@ -229,4 +229,4 @@ props:
   sql-comment-parse-enabled: true
 ```
 
-**注意**：默认影子算法仅支持注解影子算法。
+**注意**：默认影子算法仅支持HINT影子算法。

@@ -94,9 +94,6 @@
         </where>
     </select>
 
-    <select sql-case-id="select_with_union">
-    </select>
-
     <select sql-case-id="select_with_function_name" >
         <projections start-index="7" stop-index="23">
             <expression-projection text="current_timestamp" start-index="7" stop-index="23">
@@ -388,6 +385,46 @@
         </where>
     </select>
 
+    <select sql-case-id="select_equal_with_single_table_and_lowercase_keyword" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="38">
+                            <left>
+                                <column name="user_id" start-index="28" stop-index="34" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="38" stop-index="38" />
+                                <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>and</operator>
+                    <right>
+                        <binary-operation-expression start-index="44" stop-index="55">
+                            <left>
+                                <column name="order_id" start-index="44" stop-index="51" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="55" stop-index="55" />
+                                <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -770,7 +807,97 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')">
+                                                    <parameter>
+                                                        <literal-expression value="%%" start-index="74" stop-index="77" />
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" start-index="80" stop-index="80" literal-start-index="80" literal-stop-index="85" />
+                                                        <parameter-marker-expression value="0" start-index="80" stop-index="80" />
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" start-index="83" stop-index="86" literal-start-index="88" literal-stop-index="91" />
+                                                    </parameter>
+                                                </function>
                                                 <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <in-expression start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
+                                            <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="106" stop-index="111" literal-start-index="111" literal-stop-index="116">
+                                            <items>
+                                                <literal-expression value="1" start-index="112" stop-index="112" />
+                                                <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                                            </items>
+                                            <items>
+                                                <literal-expression value="2" start-index="115" stop-index="115" />
+                                                <parameter-marker-expression value="2" start-index="110" stop-index="110" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <between-expression start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
+                            <not>false</not>
+                            <left>
+                                <column name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
+                                    <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
+                                </column>
+                            </left>
+                            <between-expr>
+                                <literal-expression value="9" start-index="141" stop-index="141" />
+                                <parameter-marker-expression value="3" start-index="136" stop-index="136" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="10" start-index="147" stop-index="148" />
+                                <parameter-marker-expression value="4" start-index="142" stop-index="142" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_count_like_concat_postgres" parameters="'init', 1, 2, 9, 10">
+        <from>
+            <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="47" stop-index="142" literal-stop-index="148">
+            <expr>
+                <binary-operation-expression start-index="53" stop-index="142" literal-stop-index="148">
+                    <left>
+                        <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
+                            <left>
+                                <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
+                                    <left>
+                                        <column name="status" start-index="53" stop-index="60">
+                                            <owner name="o" start-index="53" stop-index="53" />
+                                        </column>
+                                    </left>
+                                    <operator>LIKE</operator>
+                                    <right>
+                                        <list-expression start-index="67" stop-index="87" literal-stop-index="92">
+                                            <items>
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -874,7 +1001,7 @@
                                     <right>
                                         <list-expression start-index="65" stop-index="85" literal-stop-index="90">
                                             <items>
-                                                <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1786,7 +1913,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1867,7 +1994,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1950,7 +2077,7 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2634,18 +2761,14 @@
                 <expr>
                     <function function-name="CONCAT" start-index="7" stop-index="37" text="CONCAT(LEFT(status, 7), 'test')">
                         <parameter>
-                            <expression-projection start-index="14" stop-index="28" text="LEFT(status, 7)">
-                                <expr>
-                                    <function function-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
-                                        <parameter>
-                                            <column name="status" start-index="19" stop-index="24" />
-                                        </parameter>
-                                        <parameter>
-                                            <literal-expression value="7" start-index="27" stop-index="27" />
-                                        </parameter>
-                                    </function>
-                                </expr>
-                            </expression-projection>
+                            <function function-name="LEFT" start-index="14" stop-index="28" text="LEFT(status, 7)">
+                                <parameter>
+                                    <column name="status" start-index="19" stop-index="24" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="7" start-index="27" stop-index="27" />
+                                </parameter>
+                            </function>
                         </parameter>
                         <parameter>
                             <literal-expression value="test" start-index="31" stop-index="36" />
@@ -2690,18 +2813,14 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="47">
                     <left>
-                        <expression-projection text="MOD(order_id, 1)" start-index="28" stop-index="43">
-                            <expr>
-                                <function function-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
-                                    <parameter>
-                                        <column name="order_id" start-index="32" stop-index="39" />
-                                    </parameter>
-                                    <parameter>
-                                        <literal-expression value="1" start-index="42" stop-index="42" />
-                                    </parameter>
-                                </function>
-                            </expr>
-                        </expression-projection>
+                        <function function-name="MOD" start-index="28" stop-index="43" text="MOD(order_id, 1)">
+                            <parameter>
+                                <column name="order_id" start-index="32" stop-index="39" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="1" start-index="42" stop-index="42" />
+                            </parameter>
+                        </function>
                     </left>
                     <operator>=</operator>
                     <right>
@@ -2723,22 +2842,14 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="79">
                     <left>
-                        <expression-projection text="DATE_FORMAT(current_date, '%Y-%m-%d')" start-index="28" stop-index="64">
-                            <expr>
-                                <function function-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
-                                    <parameter>
-                                        <expression-projection text="current_date" start-index="40" stop-index="51">
-                                            <expr>
-                                                <function function-name="current_date" start-index="40" stop-index="51" text="current_date"/>
-                                            </expr>
-                                        </expression-projection>
-                                    </parameter>
-                                    <parameter>
-                                        <literal-expression value="%Y-%m-%d" start-index="54" stop-index="63" />
-                                    </parameter>
-                                </function>
-                            </expr>
-                        </expression-projection>
+                        <function function-name="DATE_FORMAT" start-index="28" stop-index="64" text="DATE_FORMAT(current_date, '%Y-%m-%d')">
+                            <parameter>
+                                <function function-name="current_date" start-index="40" stop-index="51" text="current_date"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="%Y-%m-%d" start-index="54" stop-index="63" />
+                            </parameter>
+                        </function>
                     </left>
                     <operator>=</operator>
                     <right>
@@ -2760,40 +2871,28 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="106">
                     <left>
-                        <expression-projection text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))" start-index="28" stop-index="101">
-                            <expr>
-                                <function function-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
+                        <function function-name="ST_DISTANCE_SPHERE" start-index="28" stop-index="101" text="ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id))">
+                            <parameter>
+                                <function function-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
                                     <parameter>
-                                        <expression-projection start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
-                                            <expr>
-                                                <function function-name="POINT" start-index="47" stop-index="75" text="POINT(113.358772, 23.1273723)">
-                                                    <parameter>
-                                                        <literal-expression value="113.358772" start-index="53" stop-index="62" />
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="23.1273723" start-index="65" stop-index="74" />
-                                                    </parameter>
-                                                </function>
-                                            </expr>
-                                        </expression-projection>
+                                        <literal-expression value="113.358772" start-index="53" stop-index="62" />
                                     </parameter>
                                     <parameter>
-                                        <expression-projection start-index="78" stop-index="100" text="POINT(user_id,order_id)">
-                                            <expr>
-                                                <function function-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
-                                                    <parameter>
-                                                        <column name="user_id" start-index="84" stop-index="90" />
-                                                    </parameter>
-                                                    <parameter>
-                                                        <column name="order_id" start-index="92" stop-index="99" />
-                                                    </parameter>
-                                                </function>
-                                            </expr>
-                                        </expression-projection>
+                                        <literal-expression value="23.1273723" start-index="65" stop-index="74" />
                                     </parameter>
                                 </function>
-                            </expr>
-                        </expression-projection>
+                            </parameter>
+                            <parameter>
+                                <function function-name="POINT" start-index="78" stop-index="100" text="POINT(user_id,order_id)">
+                                    <parameter>
+                                        <column name="user_id" start-index="84" stop-index="90" />
+                                    </parameter>
+                                    <parameter>
+                                        <column name="order_id" start-index="92" stop-index="99" />
+                                    </parameter>
+                                </function>
+                            </parameter>
+                        </function>
                     </left>
                     <operator>!=</operator>
                     <right>
@@ -2871,7 +2970,11 @@
             <simple-table name="t_order" start-index="70" stop-index="76" />
         </from>
         <projections start-index="7" stop-index="63">
-            <expression-projection text="CONVERT(SUBSTRING(content, 5) , SIGNED)" alias="signed_content" start-index="7" stop-index="63" />
+            <expression-projection text="CONVERT(SUBSTRING(content, 5) , SIGNED)" alias="signed_content" start-index="7" stop-index="63">
+                <expr>
+                    <function function-name="CONVERT" start-index="7" stop-index="45" text="CONVERT(SUBSTRING(content, 5) , SIGNED)" />
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="78" stop-index="95">
             <expr>
@@ -3063,7 +3166,11 @@
         </from>
         <projections start-index="7" stop-index="38">
             <column-projection name="user_id" start-index="7" stop-index="13"/>
-            <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38" />
+            <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" />
+                </expr>
+            </expression-projection>
         </projections>
     </select>
 
@@ -3072,7 +3179,11 @@
             <simple-table name="t_order" start-index="47" stop-index="53"/>
         </from>
         <projections start-index="7" stop-index="40">
-            <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32" />
+            <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" />
+                </expr>
+            </expression-projection>
             <column-projection name="user_id" start-index="34" stop-index="40"/>
         </projections>
     </select>
@@ -3293,25 +3404,6 @@
         </order-by>
     </select>
 
-    <select sql-case-id="select_union">
-        <projections start-index="7" stop-index="14">
-            <column-projection name="order_id" start-index="7" stop-index="14" />
-        </projections>
-        <from>
-            <simple-table name="t_order" start-index="21" stop-index="27" />
-        </from>
-        <union union-type="UNION_DISTINCT" start-index="29" stop-index="67">
-            <select>
-                <projections start-index="42" stop-index="49">
-                    <column-projection name="order_id" start-index="42" stop-index="49" />
-                </projections>
-                <from>
-                    <simple-table name="t_order_item" start-index="56" stop-index="67" />
-                </from>
-            </select>
-        </union>
-    </select>
-
     <select sql-case-id="select_current_date_function_with_shorthand_regular_function">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -3326,11 +3418,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_DATE" start-index="35" stop-index="46">
-                            <expr>
-                                <function function-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_DATE" start-index="35" stop-index="46" text="CURRENT_DATE" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3352,11 +3440,7 @@
                         <column name="date" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_DATE()" start-index="35" stop-index="48">
-                            <expr>
-                                <function function-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_DATE" start-index="35" stop-index="48" text="CURRENT_DATE()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3378,11 +3462,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_TIME" start-index="35" stop-index="46">
-                            <expr>
-                                <function function-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_TIME" start-index="35" stop-index="46" text="CURRENT_TIME" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3404,11 +3484,7 @@
                         <column name="time" start-index="28" stop-index="31"/>
                     </left>
                     <right>
-                        <expression-projection text="CURRENT_TIME()" start-index="35" stop-index="48">
-                            <expr>
-                                <function function-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
-                            </expr>
-                        </expression-projection>
+                        <function function-name="CURRENT_TIME" start-index="35" stop-index="48" text="CURRENT_TIME()" />
                     </right>
                     <operator>=</operator>
                 </binary-operation-expression>
@@ -3651,6 +3727,7 @@
             <column-item name="product" start-index="309" stop-index="315" />
         </order-by>
     </select>
+    
     <select sql-case-id="select_with_comments">
         <from>
             <simple-table name="t_order" start-index="51" stop-index="57" />
@@ -3661,5 +3738,27 @@
         <comment start-index="0" stop-index="17" text="-- begin comments&#x000A;"/>
         <comment start-index="32" stop-index="49" text="# middle comments&#x000A;"/>
         <comment start-index="60" stop-index="74" text="-- end comments"/>
+    </select>
+
+    <select sql-case-id="select_with_model_in">
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="55" stop-index="107">
+                            <expression-projection text="1001" alias="order_id_value" start-index="55" stop-index="76" />
+                            <expression-projection text="100001" alias="order_item_id_value" start-index="79" stop-index="107" />
+                        </projections>
+                        <from>
+                            <simple-table name="dual" start-index="114" stop-index="117" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <projections start-index="7" stop-index="40">
+            <column-projection name="order_id_value" start-index="7" stop-index="20"/>
+            <column-projection name="order_item_id_value" start-index="22" stop-index="40"/>
+        </projections>
     </select>
 </sql-parser-test-cases>

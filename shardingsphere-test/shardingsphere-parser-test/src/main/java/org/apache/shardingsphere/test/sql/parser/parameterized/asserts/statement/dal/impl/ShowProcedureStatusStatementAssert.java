@@ -33,8 +33,8 @@ public final class ShowProcedureStatusStatementAssert {
      * Assert show procedure status statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual show procedure status statement
-     * @param expected      expected show procedure status statement test case
+     * @param actual actual show procedure status statement
+     * @param expected expected show procedure status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowProcedureStatusStatement actual, final ShowProcedureStatusStatementTestCase expected) {
     }

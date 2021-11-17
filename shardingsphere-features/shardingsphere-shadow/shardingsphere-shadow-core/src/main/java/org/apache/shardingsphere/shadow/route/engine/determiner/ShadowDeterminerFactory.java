@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shadow.route.engine.determiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.HintShadowAlgorithmDeterminer;
 
 /**
  * Shadow determiner factory.
@@ -33,11 +33,11 @@ public final class ShadowDeterminerFactory {
     /**
      * Create new instance of Shadow algorithm determiner.
      *
-     * @param noteShadowAlgorithm note shadow algorithm
+     * @param hintShadowAlgorithm hint shadow algorithm
      * @return new instance of Shadow algorithm determiner
      */
-    public static ShadowAlgorithmDeterminer newInstance(final NoteShadowAlgorithm<Comparable<?>> noteShadowAlgorithm) {
-        return new NoteShadowAlgorithmDeterminer(noteShadowAlgorithm);
+    public static ShadowAlgorithmDeterminer newInstance(final HintShadowAlgorithm<Comparable<?>> hintShadowAlgorithm) {
+        return new HintShadowAlgorithmDeterminer(hintShadowAlgorithm);
     }
     
     /**

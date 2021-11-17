@@ -19,7 +19,25 @@ The migration scene we support:
 
 **Attention**: 
 
-If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `${shardingsphere-proxy}/lib directory`.
+If the backend database is in following table, please download JDBC driver jar and put it into `${shardingsphere-proxy}/lib` directory.
+
+| RDBMS                 | JDBC driver                          | Reference            |
+| --------------------- | ------------------------------------ | -------------------- |
+| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
+| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
+
+Supported features:
+
+| Feature                                  | MySQL         | PostgreSQL    | openGauss     |
+| ---------------------------------------- | ------------- | ------------- | ------------- |
+| Inventory migration                      | Supported     | Supported     | Supported     |
+| Incremental migration                    | Supported     | Supported     | Supported     |
+| Create table automatically               | Supported     | Unsupported   | Supported     |
+| Default data consistency check algorithm | Supported     | Unsupported   | Unsupported   |
+
+**Attention**:
+
+For RDBMS which `Create table automatically` feature is not supported, we need to create sharding tables manually.
 
 ### Privileges
 
@@ -75,6 +93,8 @@ mysql> preview select count(1) from t_order;
 
 Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
 
+Create database on underlying RDBMS first, it will be used in following `DistSQL`.
+
 Example:
 ```sql
 ADD RESOURCE ds_2 (
@@ -90,7 +110,9 @@ ADD RESOURCE ds_2 (
 
 Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
 
-Example:
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types.
+
+Example of alter `AutoTableRule`:
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -101,6 +123,18 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 ```
 
 If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted.
+
+Uncompleted example of alter `TableRule`:
+```sql
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+);
+```
+
+**Attention**: We could not emit scaling job by altering `TableRule` in current version.
 
 #### List scaling jobs
 

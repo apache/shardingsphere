@@ -20,7 +20,7 @@ grammar DMLStatement;
 import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule;
 
 insert
-    : withClause? INSERT INTO insertTarget insertRest optOnConflict? returningClause?
+    : withClause? INSERT INTO insertTarget insertRest optOnDuplicateKey? returningClause?
     ;
 
 insertTarget
@@ -48,15 +48,14 @@ insertColumnItem
     : colId optIndirection
     ;
 
-optOnConflict
-    : ON CONFLICT optConfExpr DO UPDATE SET setClauseList whereClause?
-    | ON CONFLICT optConfExpr DO NOTHING
+optOnDuplicateKey
+    : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    | ON DUPLICATE KEY UPDATE NOTHING
     ;
 
-optConfExpr
-    : LP_ indexParams RP_ whereClause?
-    | ON CONSTRAINT name
-    |
+assignment
+    : setTarget EQ_ aExpr
+    | setTarget EQ_ VALUES LP_ name RP_
     ;
 
 update
@@ -125,6 +124,7 @@ selectClauseN
     | selectClauseN UNION allOrDistinct? selectClauseN
     | selectClauseN INTERSECT allOrDistinct? selectClauseN
     | selectClauseN EXCEPT allOrDistinct? selectClauseN
+    | selectClauseN MINUS allOrDistinct? selectClauseN
     ;
 
 simpleSelect

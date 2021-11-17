@@ -83,6 +83,7 @@ reservedKeyword
     | PRIMARY
     | REFERENCES
     | RETURNING
+    | ROW
     | SELECT
     | SESSION_USER
     | SOME
@@ -542,6 +543,8 @@ aExpr
     | aExpr SLASH_ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
+    | aExpr AMPERSAND_ aExpr
+    | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp

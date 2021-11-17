@@ -22,7 +22,6 @@
     <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>
     <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>
     <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />
-    <sql-case id="assert_select_with_model_in" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />
     <sql-case id="assert_dist_SQL_show_rule_parse_conflict" value="SHOW REPLICA_QUERY RULE FROM schema_name"/>
     <sql-case id="create_bit_xor_table" value="create table BIT_XOR (a int);" db-types="MySQL"/>
     <sql-case id="select_with_comment1" value="select 2 as expected, /*!01000/**/*/ 2 as result;" db-types="MySQL"/>

@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.7. </b>"
+pre = "<b>7.8. </b>"
 title = "FAQ"
-weight = 7
+weight = 8
 chapter = true
 +++
 
@@ -77,7 +77,7 @@ DROP SCHEMA sharding_db;
 
 1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `schema` 或者没有添加 `resource` 时，ShardingSphere-Proxy 无法执行 SQL。
 2. 推荐先创建 `schema` 和 `resource` 之后再使用第三方数据库工具连接。
-3. 有关 `resource` 的详情请参考。[相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+3. 有关 `resource` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/)
 
 ## 8. [分片] Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -131,7 +131,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 具体的 SPI 使用方式，请大家自行搜索。
 
-与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/)也需要用相同的方式注入才能生效。
+与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的[扩展功能](/cn/concepts/pluggable/)也需要用相同的方式注入才能生效。
 
 ## 15. [分片] ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
@@ -159,9 +159,21 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
+3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/)
 
-## 18. [其他] 如果 SQL 在 ShardingSphere 中执行不正确，该如何调试？
+## 18. [DistSQL] 使用 `DistSQL` 删除资源时，出现 Resource [xxx] is still used by [SingleTableRule].
+
+回答：
+
+1. 被规则引用的资源将无法被删除
+
+2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除
+
+```
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
+```
+
+## 19. [其他] 如果 SQL 在 ShardingSphere 中执行不正确，该如何调试？
 
 回答：
 
@@ -170,7 +182,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 > 注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
 
-## 19. [其他] 阅读源码时为什么会出现编译错误? IDEA 不索引生成的代码？
+## 20. [其他] 阅读源码时为什么会出现编译错误? IDEA 不索引生成的代码？
 
 回答：
 
@@ -185,7 +197,7 @@ ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细
 生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
 可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`
 
-## 20. [其他] 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
+## 21. [其他] 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
 
 回答：
 
@@ -203,7 +215,7 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-## 21. [其他] Oracle 数据库使用 Timestamp 类型的 Order By 语句抛出异常提示 “Order by value must implements Comparable”?
+## 22. [其他] Oracle 数据库使用 Timestamp 类型的 Order By 语句抛出异常提示 “Order by value must implements Comparable”?
 
 回答：
 
@@ -259,7 +271,7 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
     }
 ```
 
-## 22. [其他] Windows 环境下，通过 Git 克隆 ShardingSphere 源码时为什么提示文件名过长，如何解决？
+## 23. [其他] Windows 环境下，通过 Git 克隆 ShardingSphere 源码时为什么提示文件名过长，如何解决？
 
 回答：
 
@@ -280,13 +292,13 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 23. [其他] Type is required 异常的解决方法?
+## 24. [其他] Type is required 异常的解决方法?
 
 回答：
 
-ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
+ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concepts/pluggable/) 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
 
-## 24. [其他] 服务启动时如何加快 `metadata` 加载速度？
+## 25. [其他] 服务启动时如何加快 `metadata` 加载速度？
 
 回答：
 
@@ -295,7 +307,7 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://sh
 - 配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3 且低于 5.0.0）。
 - 配置项`max-connections-size-per-query`（默认值为1）调高（版本 >= 5.0.0）。
 
-## 25. [其他] ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
+## 26. [其他] ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
 
 回答：
 
@@ -303,7 +315,7 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](https://sh
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
 
-## 26. [其他] 使用 `Proxool` 时分库结果不正确？
+## 27. [其他] 使用 `Proxool` 时分库结果不正确？
 
 回答：
 

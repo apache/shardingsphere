@@ -43,6 +43,7 @@ public final class EncryptMergedResult implements MergedResult {
         return mergedResult.next();
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (!queryWithCipherColumn) {
@@ -52,8 +53,8 @@ public final class EncryptMergedResult implements MergedResult {
         if (!encryptAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        String ciphertext = (String) mergedResult.getValue(columnIndex, String.class);
-        return null == ciphertext ? null : encryptAlgorithm.get().decrypt(ciphertext);
+        Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
+        return null == cipherValue ? null : encryptAlgorithm.get().decrypt(cipherValue);
     }
     
     @Override

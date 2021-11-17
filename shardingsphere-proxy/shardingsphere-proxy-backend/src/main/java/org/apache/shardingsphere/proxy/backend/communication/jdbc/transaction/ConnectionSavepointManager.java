@@ -52,7 +52,7 @@ public final class ConnectionSavepointManager {
      *
      * @param connection connection
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     public void setSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Savepoint result = connection.setSavepoint(savepointName);
@@ -64,7 +64,7 @@ public final class ConnectionSavepointManager {
      *
      * @param connection connection
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     public void rollbackToSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Optional<Savepoint> result = lookupSavepoint(connection, savepointName);
@@ -78,7 +78,7 @@ public final class ConnectionSavepointManager {
      *
      * @param connection connection
      * @param savepointName savepoint name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Optional<Savepoint> result = lookupSavepoint(connection, savepointName);

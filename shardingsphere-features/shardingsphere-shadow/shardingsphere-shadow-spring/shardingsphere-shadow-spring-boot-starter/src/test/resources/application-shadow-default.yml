@@ -24,10 +24,10 @@ spring:
           shadow-data-source:
             source-data-source-name: ds
             shadow-data-source-name: ds-shadow
-        default-shadow-algorithm-name: simple-note-algorithm
+        default-shadow-algorithm-name: simple-hint-algorithm
         shadow-algorithms:
-          simple-note-algorithm:
-            type: SIMPLE_NOTE
+          simple-hint-algorithm:
+            type: SIMPLE_HINT
             props:
               shadow: true
               foo: bar

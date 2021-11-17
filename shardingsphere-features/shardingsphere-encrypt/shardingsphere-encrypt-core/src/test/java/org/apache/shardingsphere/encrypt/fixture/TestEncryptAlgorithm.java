@@ -19,19 +19,19 @@ package org.apache.shardingsphere.encrypt.fixture;
 
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-public final class TestEncryptAlgorithm implements EncryptAlgorithm {
+public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     @Override
     public void init() {
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
+    public String encrypt(final Object plainValue) {
         return "encryptValue";
     }
     
     @Override
-    public Object decrypt(final String ciphertext) {
+    public Object decrypt(final String cipherValue) {
         return "decryptValue";
     }
     

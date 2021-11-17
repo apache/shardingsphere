@@ -81,7 +81,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Optional<Collection<String>> parseSqlNotes() {
+    protected Optional<Collection<String>> parseSQLComments() {
         Collection<String> result = new LinkedList<>();
         insertStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);

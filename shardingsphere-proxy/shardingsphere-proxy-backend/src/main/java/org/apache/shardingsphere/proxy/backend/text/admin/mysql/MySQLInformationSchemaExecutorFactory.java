@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -47,7 +47,7 @@ public final class MySQLInformationSchemaExecutorFactory {
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return new SelectInformationSchemataExecutor(sqlStatement, sql);
         } else if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
-            return new DefaultSelectInformationExecutor(sql);
+            return new DefaultDatabaseMetadataExecutor(sql);
         }
         throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));
     }
