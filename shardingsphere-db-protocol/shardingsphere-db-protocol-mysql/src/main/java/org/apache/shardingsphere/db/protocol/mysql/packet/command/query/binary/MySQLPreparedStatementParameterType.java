@@ -19,21 +19,16 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 
 /**
- * Binary prepared statement for MySQL.
+ * Binary prepared statement parameter type for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class MySQLBinaryStatement {
+public final class MySQLPreparedStatementParameterType {
     
-    private final String sql;
+    private final MySQLBinaryColumnType columnType;
     
-    private final int parameterCount;
-    
-    private List<MySQLBinaryStatementParameterType> parameterTypes;
+    private final int unsignedFlag;
 }
