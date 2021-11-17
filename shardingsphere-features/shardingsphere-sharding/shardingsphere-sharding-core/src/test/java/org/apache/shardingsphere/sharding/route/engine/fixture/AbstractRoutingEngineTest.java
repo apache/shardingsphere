@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
@@ -242,7 +243,7 @@ public abstract class AbstractRoutingEngineTest {
     
     protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
         singleTableRule.addDataNode("t_category", dataSourceMap.keySet().iterator().next());
         return singleTableRule;
     }

@@ -33,9 +33,7 @@ public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTab
     
     @Override
     public SingleTableRule build(final SchemaRulesBuilderMaterials materials, final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        SingleTableRule singleTableRule = new SingleTableRule(materials.getDatabaseType(), materials.getDataSourceMap(), builtRules, materials.getProps());
-        config.getDefaultDataSource().ifPresent(singleTableRule::setDefaultDataSource);
-        return singleTableRule;
+        return new SingleTableRule(config, materials.getDatabaseType(), materials.getDataSourceMap(), builtRules, materials.getProps());
     }
     
     @Override
