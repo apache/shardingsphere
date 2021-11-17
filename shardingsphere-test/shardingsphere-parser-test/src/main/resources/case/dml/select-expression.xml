@@ -1884,4 +1884,94 @@
             </expression-item>
         </order-by>
     </select>
+
+    <select sql-case-id="select_with_regular_function">
+        <from>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </from>
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="A(1)" start-index="7" stop-index="10">
+                <expr>
+                    <function function-name="A" text="A(1)" start-index="7" stop-index="10">
+                        <parameter>
+                            <literal-expression value="1" start-index="9" stop-index="9"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <where start-index="25" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="31" stop-index="38">
+                    <left>
+                        <function function-name="A" text="A(1)" start-index="31" stop-index="34">
+                            <parameter>
+                                <literal-expression value="1" start-index="33" stop-index="33"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <expression-item expression="A(order_id)" start-index="49" stop-index="59">
+                <expr>
+                    <function function-name="A" text="A(order_id)" start-index="49" stop-index="59">
+                        <parameter>
+                            <column name="order_id" start-index="51" stop-index="58" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </group-by>
+        <order-by>
+            <expression-item expression="A(order_id)" start-index="70" stop-index="80">
+                <expr>
+                    <function function-name="A" text="A(order_id)" start-index="70" stop-index="80">
+                        <parameter>
+                            <column name="order_id" start-index="72" stop-index="79" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_regular_function_for_sql92">
+        <from>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </from>
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="A(1)" start-index="7" stop-index="10">
+                <expr>
+                    <function function-name="A" text="A(1)" start-index="7" stop-index="10">
+                        <parameter>
+                            <literal-expression value="1" start-index="9" stop-index="9"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <where start-index="25" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="31" stop-index="38">
+                    <left>
+                        <function function-name="A" text="A(1)" start-index="31" stop-index="34">
+                            <parameter>
+                                <literal-expression value="1" start-index="33" stop-index="33"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
