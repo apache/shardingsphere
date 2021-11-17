@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
@@ -72,7 +72,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
-        int statementId = MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(backendConnection.getConnectionId()).prepareStatement(packet.getSql(), parameterCount);
+        int statementId = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(backendConnection.getConnectionId()).prepareStatement(packet.getSql(), parameterCount);
         return createPackets(statementId, projectionCount, parameterCount);
     }
     

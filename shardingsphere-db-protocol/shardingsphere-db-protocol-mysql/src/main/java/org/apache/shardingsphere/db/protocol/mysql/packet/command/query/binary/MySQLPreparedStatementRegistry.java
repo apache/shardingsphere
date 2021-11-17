@@ -29,9 +29,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * MySQL binary prepared statement registry.
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class MySQLBinaryStatementRegistry {
+public final class MySQLPreparedStatementRegistry {
     
-    private static final MySQLBinaryStatementRegistry INSTANCE = new MySQLBinaryStatementRegistry();
+    private static final MySQLPreparedStatementRegistry INSTANCE = new MySQLPreparedStatementRegistry();
     
     private final ConcurrentMap<Integer, MySQLConnectionPreparedStatements> connectionRegistry = new ConcurrentHashMap<>(8192, 1);
     
@@ -40,7 +40,7 @@ public final class MySQLBinaryStatementRegistry {
      *
      * @return prepared statement registry instance
      */
-    public static MySQLBinaryStatementRegistry getInstance() {
+    public static MySQLPreparedStatementRegistry getInstance() {
         return INSTANCE;
     }
     
@@ -74,12 +74,12 @@ public final class MySQLBinaryStatementRegistry {
     
     public static class MySQLConnectionPreparedStatements {
         
-        private final Map<Integer, MySQLBinaryStatement> preparedStatements = new ConcurrentHashMap<>(16384, 1);
+        private final Map<Integer, MySQLPreparedStatement> preparedStatements = new ConcurrentHashMap<>(16384, 1);
         
         private final AtomicInteger sequence = new AtomicInteger();
         
         /**
-         * Register.
+         * Prepare statement.
          *
          * @param sql SQL
          * @param parameterCount parameter count
@@ -87,7 +87,7 @@ public final class MySQLBinaryStatementRegistry {
          */
         public int prepareStatement(final String sql, final int parameterCount) {
             int result = sequence.incrementAndGet();
-            preparedStatements.put(result, new MySQLBinaryStatement(sql, parameterCount));
+            preparedStatements.put(result, new MySQLPreparedStatement(sql, parameterCount));
             return result;
         }
         
@@ -95,9 +95,9 @@ public final class MySQLBinaryStatementRegistry {
          * Get prepared statement.
          *
          * @param statementId statement ID
-         * @return binary prepared statement
+         * @return prepared statement
          */
-        public MySQLBinaryStatement get(final int statementId) {
+        public MySQLPreparedStatement get(final int statementId) {
             return preparedStatements.get(statementId);
         }
         

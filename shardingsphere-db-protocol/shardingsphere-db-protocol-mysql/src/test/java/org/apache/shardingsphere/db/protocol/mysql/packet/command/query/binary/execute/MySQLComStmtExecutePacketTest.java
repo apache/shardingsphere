@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +44,8 @@ public final class MySQLComStmtExecutePacketTest {
     
     @Before
     public void setup() {
-        MySQLBinaryStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
-        MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement("SELECT id FROM tbl WHERE id=?", 1);
+        MySQLPreparedStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement("SELECT id FROM tbl WHERE id=?", 1);
     }
     
     @Test

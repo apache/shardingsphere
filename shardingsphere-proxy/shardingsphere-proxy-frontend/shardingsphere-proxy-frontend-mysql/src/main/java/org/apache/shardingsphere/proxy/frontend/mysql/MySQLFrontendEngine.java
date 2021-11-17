@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -46,7 +46,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        MySQLBinaryStatementRegistry.getInstance().unregisterConnection(backendConnection.getConnectionId());
+        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(backendConnection.getConnectionId());
     }
     
     @Override

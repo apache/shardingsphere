@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUns
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.ping.MySQLComPingPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit.MySQLComQuitPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
@@ -79,10 +79,10 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     public void assertNewInstanceWithComStmtExecutePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
-        MySQLBinaryStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
-        MySQLBinaryStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement("SELECT * FROM t_order", 1);
+        MySQLPreparedStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement("SELECT * FROM t_order", 1);
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, CONNECTION_ID), instanceOf(MySQLComStmtExecutePacket.class));
-        MySQLBinaryStatementRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
