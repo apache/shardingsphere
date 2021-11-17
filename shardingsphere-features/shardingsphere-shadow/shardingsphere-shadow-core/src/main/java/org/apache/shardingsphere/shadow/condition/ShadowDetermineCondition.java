@@ -33,7 +33,7 @@ public final class ShadowDetermineCondition {
     
     private final ShadowOperationType shadowOperationType;
     
-    private final Collection<ShadowColumnCondition> shadowColumnConditions = new LinkedList<>();
+    private ShadowColumnCondition shadowColumnCondition;
     
     private final Collection<String> sqlComments = new LinkedList<>();
     
@@ -56,11 +56,11 @@ public final class ShadowDetermineCondition {
     /**
      * Initialize shadow column condition.
      *
-     * @param shadowColumnConditions shadow column conditions
+     * @param shadowColumnCondition shadow column condition
      * @return shadow determine condition
      */
-    public ShadowDetermineCondition initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        this.shadowColumnConditions.addAll(shadowColumnConditions);
+    public ShadowDetermineCondition initShadowColumnCondition(final ShadowColumnCondition shadowColumnCondition) {
+        this.shadowColumnCondition = shadowColumnCondition;
         return this;
     }
 }
