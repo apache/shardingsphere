@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -100,67 +101,95 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private Collection<SubstitutableColumnNameToken> generateProjectionSQLTokens(final SelectStatementContext selectStatementContext, 
                                                                                  final EncryptTable encryptTable, final String tableName) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        boolean subqueryTable = selectStatementContext.isSubqueryTable();
-        for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
+        SubqueryType subqueryType = selectStatementContext.getSubqueryType();
+        TablesContext tablesContext = selectStatementContext.getTablesContext();
+        Collection<ProjectionSegment> projections = selectStatementContext.getSqlStatement().getProjections().getProjections();
+        for (ProjectionSegment each : projections) {
             if (each instanceof ColumnProjectionSegment) {
-                String columnName = ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue();
-                Optional<String> owner = ((ColumnProjectionSegment) each).getColumn().getOwner().map(optional -> optional.getIdentifier().getValue());
-                if (selectStatementContext.getTablesContext().findTableNameFromSubquery(columnName, owner.orElse(null)).isPresent()) {
-                    result.addAll(generateProjectionSQLTokens((ColumnProjectionSegment) each, selectStatementContext.getTablesContext()));
-                }
+                ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) each;
+                String columnName = columnSegment.getColumn().getIdentifier().getValue();
                 if (encryptTable.getLogicColumns().contains(columnName)
-                        && columnMatchTableAndCheckAmbiguous(selectStatementContext, (ColumnProjectionSegment) each, tableName)) {
-                    result.add(generateProjectionSQLTokens((ColumnProjectionSegment) each, tableName, subqueryTable));
+                        && columnMatchTableAndCheckAmbiguous(selectStatementContext, columnSegment, tableName)) {
+                    if (null == subqueryType || SubqueryType.PROJECTION_SUBQUERY.equals(subqueryType)) {
+                        result.add(generateProjectionSQLTokens(columnSegment, tableName));    
+                    } else if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
+                        result.add(generateProjectionSQLTokens(columnSegment, encryptTable, subqueryType));
+                    } else if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType)) {
+                        result.add(generateProjectionSQLTokens(columnSegment, encryptTable, tableName));
+                    }
                 }
-            }
-            if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
-                ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
+                String owner = columnSegment.getColumn().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
+                Optional<String> subqueryTableName = tablesContext.findTableNameFromSubquery(columnName, owner);
+                subqueryTableName.ifPresent(optional -> result.add(generateProjectionSQLTokens(columnSegment, optional)));
+            } else if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
+                ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) each;
+                ShorthandProjection shorthandProjection = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext());
                 if (!shorthandProjection.getActualColumns().isEmpty()) {
-                    result.add(generateProjectionSQLTokens((ShorthandProjectionSegment) each, shorthandProjection, 
-                            tableName, encryptTable, selectStatementContext.getDatabaseType(), subqueryTable));
+                    result.add(generateProjectionSQLTokens(shorthandSegment, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType(), subqueryType));
                 }
             }
         }
         return result;
     }
 
-    private Collection<SubstitutableColumnNameToken> generateProjectionSQLTokens(final ColumnProjectionSegment segment, final TablesContext tablesContext) {
-        ColumnSegment column = segment.getColumn();
-        String columnName = column.getIdentifier().getValue();
-        String owner = column.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        Optional<String> tableName = tablesContext.findTableNameFromSubquery(columnName, owner);
-        if (tableName.isPresent()) {
-            String cipherColumn = getEncryptRule().getCipherColumn(tableName.get(), columnName);
-            int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
-            int stopIndex = column.getStopIndex();
-            return Collections.singletonList(new SubstitutableColumnNameToken(startIndex, stopIndex, Collections.singletonList(new ColumnProjection(null, cipherColumn, columnName))));
-        }
-        return Collections.emptyList();
+    private SubstitutableColumnNameToken generateProjectionSQLTokens(final ColumnProjectionSegment segment, final String tableName) {
+        String logicColumnName = segment.getColumn().getIdentifier().getValue();
+        String encryptColumnName = getEncryptColumnName(tableName, logicColumnName);
+        String alias = segment.getAlias().orElseGet(() -> segment.getColumn().getIdentifier().getValue());
+        Collection<ColumnProjection> projections = generateColumnProjections(encryptColumnName, alias);
+        return segment.getColumn().getOwner().isPresent()
+                ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections)
+                : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
     }
-
-    private SubstitutableColumnNameToken generateProjectionSQLTokens(final ColumnProjectionSegment segment, final String tableName, final boolean subqueryTable) {
-        Collection<ColumnProjection> projections = new LinkedList<>();
-        String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
-        String alias = segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue());
-        projections.add(new ColumnProjection(null, encryptColumnName, alias));
-        Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, segment.getColumn().getIdentifier().getValue());
-        if (subqueryTable && assistedQueryColumn.isPresent()) {
-            projections.add(new ColumnProjection(null, assistedQueryColumn.get(), null));
+    
+    private Collection<ColumnProjection> generateColumnProjections(final String columnName, final String alias) {
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, columnName, alias));
+        return projections;
+    }
+    
+    private Collection<ColumnProjection> getColumnProjections(final String columnName) {
+        return Collections.singletonList(new ColumnProjection(null, columnName, null));
+    }
+    
+    private SubstitutableColumnNameToken generateProjectionSQLTokens(final ColumnProjectionSegment segment, final EncryptTable encryptTable, final SubqueryType subqueryType) {
+        ColumnSegment column = segment.getColumn();
+        int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
+        int stopIndex = segment.getStopIndex();
+        if (Boolean.FALSE.equals(encryptTable.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
+            Optional<String> plainColumn = encryptTable.findPlainColumn(column.getIdentifier().getValue());
+            if (plainColumn.isPresent()) {
+                return new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get()));
+            }
         }
+        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(column.getIdentifier().getValue());
+        return assistedQueryColumn.map(columnName
+            -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(()
+                -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.getCipherColumn(column.getIdentifier().getValue()))));
+    }
+    
+    private SubstitutableColumnNameToken generateProjectionSQLTokens(final ColumnProjectionSegment segment, final EncryptTable encryptTable, final String tableName) {
+        String logicColumnName = segment.getColumn().getIdentifier().getValue();
+        Collection<ColumnProjection> projections =  new LinkedList<>();
+        String alias = segment.getAlias().orElseGet(() -> segment.getColumn().getIdentifier().getValue());
+        projections.add(new ColumnProjection(null, getEncryptRule().getCipherColumn(tableName, logicColumnName), alias));
+        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, logicColumnName);
+        assistedQueryColumn.ifPresent(optional -> projections.addAll(getColumnProjections(optional)));
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, logicColumnName);
+        plainColumn.ifPresent(optional -> projections.addAll(getColumnProjections(optional)));
         return segment.getColumn().getOwner().isPresent()
                 ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), projections)
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections);
     }
     
     private SubstitutableColumnNameToken generateProjectionSQLTokens(final ShorthandProjectionSegment segment, final ShorthandProjection shorthandProjection, 
-                                                                     final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType, final boolean subqueryTable) {
+                                                                     final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType, final SubqueryType subqueryType) {
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
                 String owner = null == each.getOwner() ? null : each.getOwner();
                 projections.add(new ColumnProjection(owner, getEncryptColumnName(tableName, each.getName()), each.getName()));
                 Optional<String> assistedQueryColumn = findAssistedQueryColumn(tableName, each.getName());
-                if (subqueryTable && assistedQueryColumn.isPresent()) {
+                if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType) && assistedQueryColumn.isPresent()) {
                     projections.add(new ColumnProjection(owner, assistedQueryColumn.get(), null));
                 }
             } else {

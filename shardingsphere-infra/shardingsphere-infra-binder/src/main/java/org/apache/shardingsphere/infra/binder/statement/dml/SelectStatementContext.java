@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -86,7 +87,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final String schemaName;
     
     @Setter
-    private boolean subqueryTable;
+    private SubqueryType subqueryType;
     
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
@@ -105,7 +106,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            result.put(each.getStartIndex(), new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultSchemaName));
+            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultSchemaName);
+            subqueryContext.setSubqueryType(each.getSubqueryType());
+            result.put(each.getStartIndex(), subqueryContext);
         }
         return result;
     }

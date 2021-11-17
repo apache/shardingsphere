@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Subquery segment.
+ * Subquery type enum.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class SubquerySegment implements ExpressionSegment {
+public enum SubqueryType {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final SelectStatement select;
-    
-    @Setter
-    private SubqueryType subqueryType;
+    PROJECTION_SUBQUERY, TABLE_SUBQUERY, PREDICATE_SUBQUERY, INSERT_SELECT_SUBQUERY;
 }
