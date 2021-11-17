@@ -46,7 +46,7 @@ public final class PostgreSQLPositionInitializerTest {
     
     private static final String POSTGRESQL_10_LSN = "0/1634520";
     
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
     @Mock

@@ -17,12 +17,12 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
-    <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters" db-types="SQL92">
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters" db-types="SQL92,openGauss">
         <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE amount = VALUES(amount)" parameters="100, 1000, OK" />
         <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE amount = VALUES(amount)" parameters="100, 1000, OK" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-types="MySQL">
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-types="MySQL,openGauss">
         <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
         <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 1000, 'OK') ON DUPLICATE KEY UPDATE amount = VALUES(amount)" />
     </rewrite-assertion>

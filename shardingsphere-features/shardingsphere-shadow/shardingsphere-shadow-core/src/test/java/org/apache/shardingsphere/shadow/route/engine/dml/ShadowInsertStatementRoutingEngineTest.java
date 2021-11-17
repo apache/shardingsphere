@@ -111,7 +111,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
         assertThat(orderName.getColumn(), is("order_name"));
         assertThat(orderName.getOwner(), is("t_order"));
         assertThat(orderName.getValues().iterator().next(), is("orderName"));
-        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
+        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertThat(sqlNotes.isPresent(), is(true));
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.close;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -33,10 +34,11 @@ public final class MySQLComStmtCloseExecutor implements CommandExecutor {
     
     private final MySQLComStmtClosePacket packet;
     
+    private final int connectionId;
+    
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        //TODO we need to design the cache in future.
-//        packet.removeCachedStatement();
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionId).closeStatement(packet.getStatementId());
         return Collections.emptyList();
     }
 }

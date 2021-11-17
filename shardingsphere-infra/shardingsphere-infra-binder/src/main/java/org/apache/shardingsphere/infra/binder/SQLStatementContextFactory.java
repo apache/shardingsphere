@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.OptimizeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
@@ -79,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
@@ -221,6 +223,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof FlushStatement) {
             return new FlushStatementContext((FlushStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLOptimizeTableStatement) {
+            return new OptimizeTableStatementContext((MySQLOptimizeTableStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

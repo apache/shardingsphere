@@ -27,3 +27,4 @@ org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingBroadcas
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBroadcastTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBroadcastTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyStatementUpdater
+org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithmStatementUpdater

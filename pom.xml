@@ -25,14 +25,14 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.0.0-RC1-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
         <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-distsql-parser</module>
+        <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         <module>shardingsphere-mode</module>
@@ -72,7 +72,7 @@
         <commons-io.version>2.8.0</commons-io.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-        <atomikos.version>4.0.6</atomikos.version>
+        <atomikos.version>5.0.8</atomikos.version>
         <seata.version>1.4.2</seata.version>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -143,6 +143,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
+        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
 
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
@@ -765,6 +766,11 @@
                             </fileSet>
                         </fileSets>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>templating-maven-plugin</artifactId>
+                    <version>${templating-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

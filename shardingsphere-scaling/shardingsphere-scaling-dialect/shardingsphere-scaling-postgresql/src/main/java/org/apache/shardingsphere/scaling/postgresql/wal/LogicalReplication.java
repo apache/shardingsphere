@@ -39,7 +39,7 @@ public final class LogicalReplication {
      *
      * @param jdbcDataSourceConfig JDBC data source configuration
      * @return PostgreSQL connection
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public Connection createPgConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         return createConnection(jdbcDataSourceConfig);
@@ -62,7 +62,7 @@ public final class LogicalReplication {
      * @param slotName slot name
      * @param startPosition start position
      * @return replication stream
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public PGReplicationStream createReplicationStream(final Connection pgConnection, final String slotName, final BaseLogSequenceNumber startPosition) throws SQLException {
         return pgConnection.unwrap(PGConnection.class).getReplicationAPI()

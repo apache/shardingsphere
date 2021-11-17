@@ -35,6 +35,6 @@
     <row values="t_order| ds_${0..9}.t_order| | STANDARD_TEST| user_id| STANDARD_TEST| | | | | | | | " />
     <row values="t_order_item| ds_${0..9}.t_order_item| | STANDARD_TEST| user_id| STANDARD_TEST| | | | | | item_id| CONSTANT| " />
     <row values="t_order_details| ds_${0..9}.t_order_details| | STANDARD_TEST| user_id| STANDARD_TEST| | | | | | | " />
-    <row values="t_order_federate_sharding| ds_${0..1}.t_order_federate_sharding| | INLINE| order_id_sharding| INLINE| algorithm-expression=db_${order_id_sharding % 2}.t_order_federate_sharding| | | | | | | " />
-    <row values="t_order_item_federate_sharding| ds_${0..1}.t_order_item_federate_sharding| | INLINE| item_id| INLINE| algorithm-expression=db_${db_inline_item_id % 2}.t_order_item_federate_sharding| | | | | | | " />
+    <row values="t_order_federate_sharding| ds_${0..1}.t_order_federate_sharding| | INLINE| order_id_sharding| INLINE| algorithm-expression=ds_${order_id_sharding % 2}| | | | | | | " />
+    <row values="t_order_item_federate_sharding| ds_${0..1}.t_order_item_federate_sharding| | INLINE| item_id| INLINE| algorithm-expression=ds_${db_inline_item_id % 2}| | | | | | | " />
 </dataset>

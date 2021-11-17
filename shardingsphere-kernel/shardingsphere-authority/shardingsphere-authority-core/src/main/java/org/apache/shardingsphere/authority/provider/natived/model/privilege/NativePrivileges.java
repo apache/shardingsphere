@@ -28,6 +28,8 @@ import org.apache.shardingsphere.authority.provider.natived.model.subject.Schema
 import org.apache.shardingsphere.authority.provider.natived.model.subject.TableAccessSubject;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Native Privileges.
@@ -53,16 +55,16 @@ public final class NativePrivileges implements ShardingSpherePrivileges {
     
     @Override
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return administrativePrivileges.hasPrivileges(privileges);
+        return administrativePrivileges.hasPrivileges(filterPrivileges(privileges));
     }
     
     @Override
     public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
         if (accessSubject instanceof SchemaAccessSubject) {
-            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema(), privileges);
+            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema(), filterPrivileges(privileges));
         }
         if (accessSubject instanceof TableAccessSubject) {
-            return hasPrivileges(((TableAccessSubject) accessSubject).getSchema(), ((TableAccessSubject) accessSubject).getTable(), privileges);
+            return hasPrivileges(((TableAccessSubject) accessSubject).getSchema(), ((TableAccessSubject) accessSubject).getTable(), filterPrivileges(privileges));
         }
         throw new UnsupportedOperationException(accessSubject.getClass().getCanonicalName());
     }
@@ -73,5 +75,11 @@ public final class NativePrivileges implements ShardingSpherePrivileges {
     
     private boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
         return administrativePrivileges.hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, table, privileges);
+    }
+
+    private Collection<PrivilegeType> filterPrivileges(final Collection<PrivilegeType> privileges) {
+        return privileges.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

@@ -54,7 +54,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws ResourceDefinitionViolationException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables());
-        drop(schemaName, toBeDroppedResourceNames);
+        ProxyContext.getInstance().getContextManager().dropResource(schemaName, toBeDroppedResourceNames);
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(
             optional -> optional.getDataSourceService().drop(schemaName, toBeDroppedResourceNames));
         return new UpdateResponseHeader(sqlStatement);
@@ -126,11 +126,5 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
         }
         return result;
-    }
-    
-    private void drop(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
-        for (String each : toBeDroppedResourceNames) {
-            ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().remove(each);
-        }
     }
 }

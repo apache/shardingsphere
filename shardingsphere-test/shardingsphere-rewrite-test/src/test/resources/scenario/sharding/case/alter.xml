@@ -81,4 +81,19 @@
         <input sql="ALTER TABLE t_single RENAME TO t_single_extend" />
         <output sql="ALTER TABLE t_single RENAME TO t_single_extend" />
     </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_drop_constraint" db-types="MySQL,PostgreSQL,openGauss">
+        <input sql="ALTER TABLE t_account DROP CONSTRAINT t_account_fk" />
+        <output sql="ALTER TABLE t_account_0 DROP CONSTRAINT t_account_fk_t_account_0" />
+        <output sql="ALTER TABLE t_account_1 DROP CONSTRAINT t_account_fk_t_account_1" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_drop_constraint_restrict" db-types="PostgreSQL,openGauss">
+        <input sql="ALTER TABLE t_account DROP CONSTRAINT t_account_fk RESTRICT" />
+        <output sql="ALTER TABLE t_account_0 DROP CONSTRAINT t_account_fk_t_account_0 RESTRICT" />
+        <output sql="ALTER TABLE t_account_1 DROP CONSTRAINT t_account_fk_t_account_1 RESTRICT" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_drop_constraint_cascade" db-types="PostgreSQL,openGauss">
+        <input sql="ALTER TABLE t_account DROP CONSTRAINT t_account_fk CASCADE" />
+        <output sql="ALTER TABLE t_account_0 DROP CONSTRAINT t_account_fk_t_account_0 CASCADE" />
+        <output sql="ALTER TABLE t_account_1 DROP CONSTRAINT t_account_fk_t_account_1 CASCADE" />
+    </rewrite-assertion>
 </rewrite-assertions>

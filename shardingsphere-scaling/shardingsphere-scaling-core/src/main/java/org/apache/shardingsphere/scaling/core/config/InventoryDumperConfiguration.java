@@ -19,12 +19,14 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Inventory dumper configuration.
  */
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String tableName;

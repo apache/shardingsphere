@@ -92,7 +92,7 @@ weight = 2
 
 可配置属性：无
 
-算法类型的详情，请参见 [内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)。
+算法类型的详情，请参见 [内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)。
 
 ##### 分布式序列策略配置
 
@@ -105,7 +105,7 @@ weight = 2
 | column           | String   | 分布式序列列名称   |
 | keyGeneratorName | String   | 分布式序列算法名称 |
 
-算法类型的详情，请参见 [内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。
+算法类型的详情，请参见 [内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
 
 ### 读写分离
 
@@ -133,7 +133,7 @@ weight = 2
 | readDataSourceNames (+)    | Collection\<String\> | 读库数据源名称列表   | -             |
 | loadBalancerName (?)       | String               | 读库负载均衡算法名称 | 轮询负载均衡算法 |
 
-算法类型的详情，请参见 [内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
+算法类型的详情，请参见 [内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 
 ### 数据加密
 
@@ -186,7 +186,7 @@ weight = 2
 | type       | String     | 加解密算法类型     |
 | properties | Properties | 加解密算法属性配置 |
 
-算法类型的详情，请参见 [内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)。
+算法类型的详情，请参见 [内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。
 
 ### 影子库
 

@@ -302,8 +302,17 @@ public class ShardingTableMetaDataBuilderTest {
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
         Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         assertResult(actual);
+    }
+    
+    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_name")).thenReturn("t_order_0");
+        return result;
     }
     
     @Test

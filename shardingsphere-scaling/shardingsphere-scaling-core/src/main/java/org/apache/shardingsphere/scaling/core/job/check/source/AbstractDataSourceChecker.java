@@ -21,6 +21,7 @@ import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedExce
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,10 +56,12 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     
     private void checkEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         for (String each : tableNames) {
-            try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSQLBuilder().buildCheckEmptySQL(each));
+            String sql = getSQLBuilder().buildCheckEmptySQL(each);
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    throw new PrepareFailedException(String.format("Target table `%s` is not empty.", each));
+                    throw new PrepareFailedException(String.format("Target table `%s` is not empty, sql: %s.", each, sql));
                 }
             }
         }

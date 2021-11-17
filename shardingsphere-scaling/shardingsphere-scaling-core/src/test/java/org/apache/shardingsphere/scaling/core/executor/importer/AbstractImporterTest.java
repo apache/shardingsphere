@@ -75,7 +75,7 @@ public final class AbstractImporterTest {
     @Mock
     private Channel channel;
     
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
     @Mock

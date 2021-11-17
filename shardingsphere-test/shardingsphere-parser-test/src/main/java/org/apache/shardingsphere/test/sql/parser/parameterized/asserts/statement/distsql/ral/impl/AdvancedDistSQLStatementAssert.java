@@ -36,8 +36,8 @@ public final class AdvancedDistSQLStatementAssert {
      * Assert updatable RAL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual advanced dist SQL statement
-     * @param expected      expected advanced dist SQL statement test case
+     * @param actual actual advanced dist SQL statement
+     * @param expected expected advanced dist SQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AdvancedDistSQLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof PreviewStatement) {

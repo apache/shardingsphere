@@ -58,10 +58,10 @@ public final class MySQLDataSourcePreparerTest {
     @Mock
     private ShardingSphereJDBCDataSourceConfiguration targetScalingDataSourceConfiguration;
 
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource sourceDataSource;
 
-    @Mock
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource targetDataSource;
 
     @Mock

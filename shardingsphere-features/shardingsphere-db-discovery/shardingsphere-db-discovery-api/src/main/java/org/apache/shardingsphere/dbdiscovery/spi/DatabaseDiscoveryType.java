@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Database discovery type.
@@ -34,7 +35,7 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      *
      * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void checkDatabaseDiscoveryConfiguration(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
@@ -75,4 +76,12 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @return primary data source
      */
     String getPrimaryDataSource();
+    
+    /**
+     * update properties.
+     *
+     * @param groupName group name
+     * @param props properties
+     */
+    void updateProperties(String groupName, Properties props);
 }

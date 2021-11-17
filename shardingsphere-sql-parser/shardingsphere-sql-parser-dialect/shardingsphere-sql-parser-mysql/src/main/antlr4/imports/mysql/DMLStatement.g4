@@ -354,7 +354,7 @@ windowClause
     ;
 
 windowItem
-    : identifier AS LP_ windowSpecification RP_
+    : identifier AS windowSpecification
     ;
 
 subquery

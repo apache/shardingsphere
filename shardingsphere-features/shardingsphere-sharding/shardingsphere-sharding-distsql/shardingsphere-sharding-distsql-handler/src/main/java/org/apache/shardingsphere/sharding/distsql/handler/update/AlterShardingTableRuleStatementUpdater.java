@@ -31,7 +31,8 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -64,25 +65,17 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     }
     
     private void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        removeTableRule(currentRuleConfig, toBeAlteredRuleConfig);
-        removeAutoTableRule(currentRuleConfig, toBeAlteredRuleConfig);
-    }
-    
-    private void removeTableRule(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Map<String, ShardingTableRuleConfiguration> tableMap = currentRuleConfig.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, each -> each));
-        toBeAlteredRuleConfig.getTables().forEach(each -> {
-            ShardingTableRuleConfiguration toBeAlteredConfiguration = tableMap.get(each.getLogicTable());
-            currentRuleConfig.getTables().remove(toBeAlteredConfiguration);
+        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
+        toBeAlteredLogicTableNames.forEach(each -> {
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equals(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equals(each));
         });
     }
     
-    private void removeAutoTableRule(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
-        Map<String, ShardingAutoTableRuleConfiguration> autoTableMap = currentRuleConfig.getAutoTables().stream()
-                .collect(Collectors.toMap(ShardingAutoTableRuleConfiguration::getLogicTable, each -> each));
-        toBeAlteredRuleConfig.getAutoTables().forEach(each -> {
-            ShardingAutoTableRuleConfiguration toBeAlteredConfiguration = autoTableMap.get(each.getLogicTable());
-            currentRuleConfig.getAutoTables().remove(toBeAlteredConfiguration);
-        });
+    private Collection<String> getAlteredLogicalTableNames(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> result = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+        result.addAll(toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new)));
+        return result;
     }
     
     private void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {

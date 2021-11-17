@@ -86,4 +86,20 @@
 
     <show-function-status sql-case-id="show_function_status" />
     <show-procedure-status sql-case-id="show_procedure_status" />
+    <show-replicas sql-case-id="show_replicas" />
+    <show-procedure-code sql-case-id="show_procedure_code_func">
+        <function function-name="TEST_FUNC" start-index="20" stop-index="28" text="TEST_FUNC" />
+    </show-procedure-code>
+    <show-procedure-code sql-case-id="show_procedure_code_owner_func">
+        <function function-name="TEST_FUNC" start-index="20" stop-index="38" text="TEST_USER.TEST_FUNC">
+            <owner name="TEST_USER" start-index="20" stop-index="28"/>
+        </function>
+    </show-procedure-code>
+    <show-relaylog-events sql-case-id="show_relaylog_events" channel="TEST_CHANNEL" /> 
+    <show-relaylog-events sql-case-id="show_relaylog_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
+    <show-slave-hosts sql-case-id="show_slave_hosts" />
+    <show-replica-status sql-case-id="show_replica_status" />
+    <show-replica-status sql-case-id="show_replica_status_with_channel" channel="TEST_CHANNEL"/>
+    <show-slave-status sql-case-id="show_slave_status" />
+    <show-slave-status sql-case-id="show_slave_status_with_channel" channel="TEST_CHANNEL" />
 </sql-parser-test-cases>

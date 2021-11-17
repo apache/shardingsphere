@@ -39,15 +39,18 @@ public interface ShadowRouteEngine {
      */
     default void shadowRouteDecorate(final RouteContext routeContext, final Map<String, String> shadowDataSourceMappings) {
         Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeUnits) {
-            RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            String shadowActualName = shadowDataSourceMappings.get(dataSourceMapper.getActualName());
-            if (null != shadowActualName) {
-                toBeAdded.add(new RouteUnit(new RouteMapper(dataSourceMapper.getLogicName(), shadowActualName), each.getTableMappers()));
+            String logicName = each.getDataSourceMapper().getLogicName();
+            String actualName = each.getDataSourceMapper().getActualName();
+            String shadowDataSourceName = shadowDataSourceMappings.get(actualName);
+            if (null != shadowDataSourceName) {
+                toBeRemoved.add(each);
+                toBeAdded.add(new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
             }
         }
-        routeUnits.clear();
+        routeUnits.removeAll(toBeRemoved);
         routeUnits.addAll(toBeAdded);
     }
     

@@ -109,6 +109,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -713,6 +714,12 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             ((ExpressionProjectionSegment) projection).setAlias(alias);
             return projection;
         }
+        if (projection instanceof FunctionSegment) {
+            FunctionSegment segment = (FunctionSegment) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
+            result.setAlias(alias);
+            return result;
+        }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
@@ -910,8 +917,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         for (GroupByItemContext each : ctx.groupByItem()) {
             items.addAll(generateOrderByItemsFromGroupByItem(each));
         }
-        GroupBySegment result = new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
-        return result;
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
@@ -931,17 +937,14 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         ASTNode expression = visit(ctx);
         if (expression instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expression;
-            ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(column, OrderDirection.ASC);
-            return result;
+            return new ColumnOrderByItemSegment(column, OrderDirection.ASC);
         }
         if (expression instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
-            IndexOrderByItemSegment result = new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
+            return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
                     SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC);
-            return result;
         }
-        ExpressionOrderByItemSegment result = new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), OrderDirection.ASC);
-        return result;
+        return new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), OrderDirection.ASC, (ExpressionSegment) expression);
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromRollupCubeClause(final RollupCubeClauseContext ctx) {

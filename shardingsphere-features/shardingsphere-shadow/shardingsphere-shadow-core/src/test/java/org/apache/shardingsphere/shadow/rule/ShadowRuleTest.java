@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.rule;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -59,21 +59,21 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-note-algorithm", createNoteShadowAlgorithm());
+        result.put("simple-hint-algorithm", createHintShadowAlgorithm());
         result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
         result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm("user_id", "update"));
         result.put("order-id-insert-regex-algorithm", createColumnShadowAlgorithm("order_id", "insert"));
         return result;
     }
     
-    private ShadowAlgorithm createNoteShadowAlgorithm() {
-        SimpleSQLNoteShadowAlgorithm simpleSQLNoteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
-        simpleSQLNoteShadowAlgorithm.setProps(createNoteProperties());
-        simpleSQLNoteShadowAlgorithm.init();
-        return simpleSQLNoteShadowAlgorithm;
+    private ShadowAlgorithm createHintShadowAlgorithm() {
+        SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
+        simpleHintShadowAlgorithm.setProps(createHintProperties());
+        simpleHintShadowAlgorithm.init();
+        return simpleHintShadowAlgorithm;
     }
     
-    private Properties createNoteProperties() {
+    private Properties createHintProperties() {
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
         return properties;
@@ -103,7 +103,7 @@ public final class ShadowRuleTest {
     
     private Collection<String> createShadowAlgorithmNames(final String tableName) {
         Collection<String> result = new LinkedList<>();
-        result.add("simple-note-algorithm");
+        result.add("simple-hint-algorithm");
         if ("t_user".equals(tableName)) {
             result.add("user-id-insert-regex-algorithm");
             result.add("user-id-update-regex-algorithm");
@@ -140,10 +140,10 @@ public final class ShadowRuleTest {
     
     private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
         if ("t_user".equals(tableName)) {
-            assertThat(shadowTableRule.getNoteShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
             assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(2));
         } else {
-            assertThat(shadowTableRule.getNoteShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
             assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(1));
         }
     }

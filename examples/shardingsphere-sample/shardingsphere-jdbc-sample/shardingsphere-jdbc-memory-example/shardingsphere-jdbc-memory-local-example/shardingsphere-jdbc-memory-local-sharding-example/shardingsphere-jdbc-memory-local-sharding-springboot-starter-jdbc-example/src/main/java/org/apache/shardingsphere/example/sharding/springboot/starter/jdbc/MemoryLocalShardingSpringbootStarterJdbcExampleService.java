@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.example.sharding.springboot.starter.jdbc;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.example.core.api.entity.Address;
-import org.apache.shardingsphere.example.core.api.entity.Order;
-import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.sharding.springboot.starter.jdbc.entity.Order;
+import org.apache.shardingsphere.example.sharding.springboot.starter.jdbc.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -52,7 +51,7 @@ public final class MemoryLocalShardingSpringbootStarterJdbcExampleService {
             this.cleanEnvironment();
         }
     }
-
+    
     /**
      * Initialize the database test environment.
      * @throws SQLException
@@ -77,7 +76,6 @@ public final class MemoryLocalShardingSpringbootStarterJdbcExampleService {
             statement.executeUpdate(truncateOrderItemTable);
             statement.executeUpdate(truncateAddressTableSql);
         }
-        initAddressData(dataSource);
     }
     
     private void processSuccess() throws SQLException {
@@ -209,21 +207,6 @@ public final class MemoryLocalShardingSpringbootStarterJdbcExampleService {
             }
         }
         return result;
-    }
-    
-    private void initAddressData(DataSource dataSource) throws SQLException {
-        for (int i = 0; i < 10; i++) {
-            Address address = new Address();
-            address.setAddressId((long) i);
-            address.setAddressName("address_" + i);
-            String sql = "INSERT INTO t_address (address_id, address_name) VALUES (?, ?)";
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, address.getAddressId());
-                preparedStatement.setString(2, address.getAddressName());
-                preparedStatement.executeUpdate();
-            }
-        }
     }
     
     /**

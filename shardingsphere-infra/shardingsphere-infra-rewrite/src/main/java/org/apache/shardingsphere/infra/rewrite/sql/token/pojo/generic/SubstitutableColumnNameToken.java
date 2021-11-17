@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Substitutable column name token.
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     @Getter

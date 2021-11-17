@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
@@ -27,6 +29,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Create table statement handler for different dialect SQL statements.
@@ -51,5 +59,31 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
             return ((OpenGaussCreateTableStatement) createTableStatement).isContainsNotExistClause();
         }
         return false;
+    }
+    
+    /**
+     * Get select statement.
+     *
+     * @param createTableStatement create table statement
+     * @return select statement
+     */
+    public static Optional<SelectStatement> getSelectStatement(final CreateTableStatement createTableStatement) {
+        if (createTableStatement instanceof SQLServerStatement) {
+            return ((SQLServerCreateTableStatement) createTableStatement).getSelectStatement();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get list of columns.
+     *
+     * @param createTableStatement create table statement
+     * @return list of columns
+     */
+    public static List<ColumnSegment> getColumns(final CreateTableStatement createTableStatement) {
+        if (createTableStatement instanceof SQLServerStatement) {
+            return ((SQLServerCreateTableStatement) createTableStatement).getColumns();
+        }
+        return Collections.emptyList();
     }
 }

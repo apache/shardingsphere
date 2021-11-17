@@ -16,7 +16,7 @@ weight = 2
 
 ### 基于列的影子算法
 
-* 不支持 DDL 语句；
+* 不支持 DDL；
 * 不支持范围、分组和子查询，如：BETWEEN、GROUP BY ... HAVING 等。
 
 SQL 支持列表：

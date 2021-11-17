@@ -19,17 +19,34 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected function.
  */
 @Getter
 @Setter
-public final class ExpectedFunction extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedFunction extends AbstractExpectedSQLSegment implements ExpectedProjection {
+
+    @XmlAttribute(name = "function-name")
+    private String functionName;
+
+    @XmlElement(name = "parameter")
+    private List<ExpectedExpression> parameters = new LinkedList<>();
+    
+    @XmlAttribute(name = "text")
+    private String text;
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
     
     @XmlElement
     private ExpectedOwner owner;

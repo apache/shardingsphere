@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Proxy context.
@@ -95,15 +93,6 @@ public final class ProxyContext {
      */
     public Collection<String> getAllSchemaNames() {
         return contextManager.getMetaDataContexts().getAllSchemaNames();
-    }
-    
-    /**
-     * Get lock.
-     * 
-     * @return lock
-     */
-    public Optional<ShardingSphereLock> getLock() {
-        return Optional.empty();
     }
     
     /**

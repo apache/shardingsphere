@@ -70,7 +70,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
     }
     
-    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes, 
+    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes,
                                   final String schemaName, final Map<String, DataSource> dataSourceMap) {
         checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
         this.discoveryTypes = discoveryTypes;
@@ -141,7 +141,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return found data source rule
      */
