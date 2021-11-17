@@ -100,7 +100,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     /**
      * Judge whether all tables are in same data source or not.
-     *
+     * 
      * @param routeContext route context
      * @param singleTableNames single table names
      * @return whether all tables are in same data source or not
