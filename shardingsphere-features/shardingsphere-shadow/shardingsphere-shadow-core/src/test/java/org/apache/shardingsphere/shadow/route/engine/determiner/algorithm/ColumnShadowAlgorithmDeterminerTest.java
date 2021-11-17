@@ -106,15 +106,13 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        result.initShadowColumnCondition(createColumnValuesMappings());
+        result.initShadowColumnCondition(createColumnValuesMapping());
         return result;
     }
     
-    private Collection<ShadowColumnCondition> createColumnValuesMappings() {
-        Collection<ShadowColumnCondition> result = new LinkedList<>();
+    private ShadowColumnCondition createColumnValuesMapping() {
         Collection<Comparable<?>> values = new LinkedList<>();
         values.add(1);
-        result.add(new ShadowColumnCondition("t_order", "user_id", values));
-        return result;
+        return new ShadowColumnCondition("t_order", "user_id", values);
     }
 }
