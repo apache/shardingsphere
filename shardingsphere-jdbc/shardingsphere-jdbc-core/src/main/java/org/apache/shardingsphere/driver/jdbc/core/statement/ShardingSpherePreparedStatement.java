@@ -154,13 +154,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = sql;
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        if (!SQLUtil.skipParse(sql)) {
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), metaDataContexts.getProps());
-            sqlStatement = sqlParserEngine.parse(sql, true);
-        } else {
-            sqlStatement = new ParseSkippedStatement(sql, metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType().getName());
-        }
+        sqlStatement = getSqlStatement(sql);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -168,6 +162,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, connection.getSchema());
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getConfigurations());
+    }
+    
+    private SQLStatement getSqlStatement (final String sql) {
+        if (SQLUtil.skipParse(sql)) {
+            return new ParseSkippedStatement(sql, metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType().getName());
+        }
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), metaDataContexts.getProps());
+        return sqlParserEngine.parse(sql, true);
     }
     
     private boolean isStatementsCacheable(final Collection<RuleConfiguration> configurations) {
