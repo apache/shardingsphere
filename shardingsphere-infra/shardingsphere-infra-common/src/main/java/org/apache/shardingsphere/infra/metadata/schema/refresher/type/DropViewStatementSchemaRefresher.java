@@ -36,7 +36,7 @@ public final class DropViewStatementSchemaRefresher implements SchemaRefresher<D
         sqlStatement.getViews().forEach(each -> schemaMetaData.getSchema().remove(each.getTableName().getIdentifier().getValue()));
         Collection<MutableDataNodeRule> rules = schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            rules.forEach(rule -> rule.dropDataNode(each.getTableName().getIdentifier().getValue()));
+            rules.forEach(rule -> rule.remove(each.getTableName().getIdentifier().getValue()));
         }
     }
 }

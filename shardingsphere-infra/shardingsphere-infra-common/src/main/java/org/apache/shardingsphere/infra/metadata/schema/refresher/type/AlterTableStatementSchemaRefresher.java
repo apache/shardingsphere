@@ -51,13 +51,13 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     
     private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final String tableName) {
         schemaMetaData.getSchema().remove(tableName);
-        schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.dropDataNode(tableName));
+        schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(tableName));
     }
     
     private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, 
                                   final Collection<String> logicDataSourceNames, final String tableName, final ConfigurationProperties props) throws SQLException {
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(tableName, logicDataSourceNames.iterator().next()));
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);

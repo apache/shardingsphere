@@ -20,6 +20,7 @@ package org.apache.shardingsphere.singletable.rule;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -80,7 +81,8 @@ public final class SingleTableRuleTest {
     
     @Test
     public void assertGetRuleType() {
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         assertThat(singleTableRule.getType(), is(SingleTableRule.class.getSimpleName()));
     }
     
@@ -88,25 +90,23 @@ public final class SingleTableRuleTest {
     public void assertGetSingleTableDataNodes() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllTables()).thenReturn(Arrays.asList("t_order", "t_order_0", "t_order_1"));
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, 
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Map<String, SingleTableDataNode> actual = singleTableRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
-        Iterator<SingleTableDataNode> iterator = actual.values().iterator();
-        assertThat(iterator.next().getTableName(), is("employee"));
-        assertThat(iterator.next().getTableName(), is("student"));
+        assertTrue(actual.containsKey("employee"));
+        assertTrue(actual.containsKey("student"));
     }
     
     @Test
     public void assertGetSingleTableDataNodesWithUpperCase() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllTables()).thenReturn(Arrays.asList("T_ORDER", "T_ORDER_0", "T_ORDER_1"));
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap,
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Map<String, SingleTableDataNode> actual = singleTableRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
-        Iterator<SingleTableDataNode> iterator = actual.values().iterator();
-        assertThat(iterator.next().getTableName(), is("employee"));
-        assertThat(iterator.next().getTableName(), is("student"));
+        assertTrue(actual.containsKey("employee"));
+        assertTrue(actual.containsKey("student"));
     }
 }

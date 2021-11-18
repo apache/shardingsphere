@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.11. </b>"
+pre = "<b>6.5. </b>"
 title = "Proxy"
-weight = 11
+weight = 5
 chapter = true
 +++
 

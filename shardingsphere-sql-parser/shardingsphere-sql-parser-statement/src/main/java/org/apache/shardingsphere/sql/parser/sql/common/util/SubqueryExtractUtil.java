@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -70,6 +71,7 @@ public final class SubqueryExtractUtil {
                 continue;
             }
             SubquerySegment subquery = ((SubqueryProjectionSegment) each).getSubquery();
+            subquery.setSubqueryType(SubqueryType.PROJECTION_SUBQUERY);
             result.add(subquery);
             result.addAll(getSubquerySegments(subquery.getSelect()));
         }
@@ -83,6 +85,7 @@ public final class SubqueryExtractUtil {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (tableSegment instanceof SubqueryTableSegment) {
             SubquerySegment subquery = ((SubqueryTableSegment) tableSegment).getSubquery();
+            subquery.setSubqueryType(SubqueryType.TABLE_SUBQUERY);
             result.add(subquery);
             result.addAll(getSubquerySegments(subquery.getSelect()));
         }
@@ -96,9 +99,10 @@ public final class SubqueryExtractUtil {
     private static Collection<SubquerySegment> getSubquerySegmentsFromExpression(final ExpressionSegment expressionSegment) {
         Collection<SubquerySegment> result = new LinkedList<>();
         if (expressionSegment instanceof SubqueryExpressionSegment) {
-            SubquerySegment subquerySegment = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
-            result.add(subquerySegment);
-            result.addAll(getSubquerySegments(subquerySegment.getSelect()));
+            SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
+            subquery.setSubqueryType(SubqueryType.PREDICATE_SUBQUERY);
+            result.add(subquery);
+            result.addAll(getSubquerySegments(subquery.getSelect()));
         }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {

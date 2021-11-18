@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -38,12 +37,5 @@ public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
     public MySQLComStmtClosePacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_STMT_CLOSE);
         statementId = payload.readInt4();
-    }
-    
-    /**
-     * Remove cached statement.
-     */
-    public void removeCachedStatement() {
-        MySQLBinaryStatementRegistry.getInstance().unregister(statementId);
     }
 }

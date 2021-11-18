@@ -34,7 +34,7 @@ public final class ResultMergerEngineFixture implements ResultMergerEngine<Merge
     
     @Override
     public int getOrder() {
-        return 0;
+        return 3;
     }
     
     @Override

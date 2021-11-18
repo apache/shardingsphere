@@ -83,7 +83,8 @@ public final class SingleTableRouteEngine {
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(rule, routeContext, existSingleTables);
             } else {
-                routeContext.getRouteUnits().add(getRandomRouteUnit(rule));
+                RouteUnit routeUnit = rule.getDefaultDataSource().isPresent() ? getDefaultRouteUnit(rule.getDefaultDataSource().get()) : getRandomRouteUnit(rule);
+                routeContext.getRouteUnits().add(routeUnit);
             }
         } else {
             decorateRouteContextForFederate(routeContext);
@@ -110,6 +111,11 @@ public final class SingleTableRouteEngine {
     private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {
         Collection<String> dataSourceNames = singleTableRule.getDataSourceNames();
         String dataSource = new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        String table = singleTableNames.iterator().next();
+        return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
+    }
+    
+    private RouteUnit getDefaultRouteUnit(final String dataSource) {
         String table = singleTableNames.iterator().next();
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
     }

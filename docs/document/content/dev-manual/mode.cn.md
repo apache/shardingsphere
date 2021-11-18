@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.9. </b>"
-title = "Mode"
-weight = 9
+pre = "<b>6.1. </b>"
+title = "运行模式"
+weight = 1
 chapter = true
 +++
 
@@ -12,19 +12,19 @@ chapter = true
 | StandalonePersistRepository   | Standalone 模式配置信息持久化 |
 
 | *已知实现类*                    | *详细说明*                  |
-| ----------------------------- | -----------------------     |
-| FileRepository                | 基于 File 的持久化            |
+| ----------------------------- | -------------------------- |
+| FileRepository                | 基于 File 的持久化           |
 
 ## ClusterPersistRepository
 
 | *SPI 名称*                     | *详细说明*                  |
 | ----------------------------- | -------------------------- |
-| ClusterPersistRepository      | Cluster 模式配置信息持久化   |
+| ClusterPersistRepository      | Cluster 模式配置信息持久化    |
 
 | *已知实现类*                    | *详细说明*                 |
 | ----------------------------- | ------------------------- |
 | CuratorZookeeperRepository    | 基于 ZooKeeper 的持久化     |
-| EtcdRepository                | 基于 etcd 的持久化         |
+| EtcdRepository                | 基于 etcd 的持久化          |
 
 ## GovernanceWatcher
 

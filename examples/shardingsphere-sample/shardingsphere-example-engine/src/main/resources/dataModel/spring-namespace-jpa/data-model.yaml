@@ -17,6 +17,6 @@
 
 mode: memory
 transaction: local
-feature: sharding
+feature: readwrite-splitting
 framework: spring-namespace-jpa
 

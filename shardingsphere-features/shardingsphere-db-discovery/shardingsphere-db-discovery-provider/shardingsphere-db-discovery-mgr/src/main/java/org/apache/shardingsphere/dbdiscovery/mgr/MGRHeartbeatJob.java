@@ -42,11 +42,9 @@ public final class MGRHeartbeatJob implements SimpleJob {
     
     private final String groupName;
     
-    private final String primaryDataSourceName;
-    
     @Override
     public void execute(final ShardingContext shardingContext) {
-        databaseDiscoveryType.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
+        databaseDiscoveryType.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName);
         databaseDiscoveryType.updateMemberState(schemaName, dataSourceMap, disabledDataSourceNames);
     }
 }

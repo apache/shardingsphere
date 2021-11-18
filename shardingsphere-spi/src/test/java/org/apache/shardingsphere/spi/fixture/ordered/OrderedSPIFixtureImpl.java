@@ -23,7 +23,7 @@ public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCus
     
     @Override
     public int getOrder() {
-        return 0;
+        return 3;
     }
     
     @Override
