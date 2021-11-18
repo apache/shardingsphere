@@ -53,7 +53,7 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
         if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        Optional<Map<String, String>> noteOptional = HintShadowAlgorithmUtil.parseSimpleHint(noteShadowValue.getValue());
+        Optional<Map<String, String>> noteOptional = ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue());
         return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
     }
     
