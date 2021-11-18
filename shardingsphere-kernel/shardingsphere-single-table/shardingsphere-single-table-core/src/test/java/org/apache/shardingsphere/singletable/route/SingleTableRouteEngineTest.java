@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
@@ -49,7 +50,8 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_0"));
         RouteContext routeContext = new RouteContext();
@@ -71,7 +73,8 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteInDifferentDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), 
+                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -94,11 +97,29 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteWithoutSingleTableRule() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), 
+                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
+        RouteMapper tableMapper0 = tableMappers.next();
+        assertThat(tableMapper0.getActualName(), is("t_order"));
+        assertThat(tableMapper0.getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    public void assertRouteWithDefaultSingleTableRule() {
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), mock(DatabaseType.class), 
+                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        RouteContext routeContext = new RouteContext();
+        singleTableRouteEngine.route(routeContext, singleTableRule);
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
         RouteMapper tableMapper0 = tableMappers.next();

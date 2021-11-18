@@ -31,7 +31,8 @@ execute
     | enableInstance
     | disableInstance
     | showInstance
-    | showSinglesTableRules
+    | showSingleTable
+    | showSingleTableRules
     | createDefaultSingleTableRule
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule

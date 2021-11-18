@@ -4,4 +4,4 @@ weight = 1
 chapter = true
 +++
 
-本章节将对 RDL 的语法进行详细说明，并以实际的列子介绍 RDL 的使用。
+RDL (Resource & Rule Definition Language) 为 Apache ShardingSphere 的资源和规则定义语言。

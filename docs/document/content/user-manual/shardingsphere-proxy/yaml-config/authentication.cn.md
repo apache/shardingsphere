@@ -3,19 +3,29 @@ title = "权限"
 weight = 1
 +++
 
-用于执行登录 Sharding Proxy 的权限验证。
-配置用户名、密码、可访问的数据库后，必须使用正确的用户名、密码才可登录。
+用于配置登录计算节点的初始用户，和存储节点数据授权。
+
+## 配置项说明
 
 ```yaml
 rules:
   - !AUTHORITY
     users:
-      - root@localhost:root  # <username>@<hostname>:<password>
-      - sharding@:sharding
+      - # 用于登录计算节点的用户名，授权主机和密码的组合。格式：<username>@<hostname>:<password>，hostname 为 % 或空字符串表示不限制授权主机
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: # 存储节点数据授权的权限提供者类型
 ```
 
-hostname 为 `%` 或空字符串，则代表不限制 host。
+## 配置示例
 
-provider 的 type 必须显式指定，具体实现可以参考 [6.11 Proxy](/cn/dev-manual/proxy)
+```yaml
+rules:
+  - !AUTHORITY
+    users:
+      - root@localhost:root
+      - my_user@pwd
+    provider:
+      type: FOO_AUTHORITY_PROVIDER
+```
+
+权限提供者具体实现可以参考 [权限提供者](/cn/dev-manual/proxy)。

@@ -7,12 +7,12 @@ chapter = true
 
 ## ShadowAlgorithm
 
-| *SPI Name* | *Description* |
-|-----------|-----------|
+| *SPI Name*      | *Description*            |
+| --------------- | ------------------------ |
 | ShadowAlgorithm | shadow routing algorithm |
 
-| *Implementation Class* | *Description* |
-|------------|----------|
+| *Implementation Class*          | *Description*                       |
+| ------------------------------- | ----------------------------------- |
 | ColumnValueMatchShadowAlgorithm | Column value match shadow algorithm |
 | ColumnRegexMatchShadowAlgorithm | Column regex match shadow algorithm |
-| SimpleSQLNoteShadowAlgorithm | Simple SQL note shadow algorithm |
+| SimpleSQLNoteShadowAlgorithm    | Simple SQL note shadow algorithm    |

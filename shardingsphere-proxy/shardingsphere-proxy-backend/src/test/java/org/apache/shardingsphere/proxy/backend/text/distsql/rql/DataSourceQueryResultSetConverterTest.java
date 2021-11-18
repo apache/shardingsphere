@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSetConverter;
 import org.junit.Test;
 
 import java.util.HashMap;

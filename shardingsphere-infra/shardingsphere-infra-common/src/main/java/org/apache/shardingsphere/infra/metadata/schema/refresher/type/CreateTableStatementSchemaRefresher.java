@@ -42,7 +42,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
                         final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(tableName, logicDataSourceNames.iterator().next()));
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);

@@ -23,16 +23,19 @@ showResources
     : SHOW SCHEMA RESOURCES (FROM schemaName)?
     ;
 
-showSinglesTableRules
-    : SHOW SINGLE TABLE (tableRule | RULES) (FROM schemaName)?
+showSingleTableRules
+    : SHOW SINGLE TABLE RULES (FROM schemaName)?
     ;
-
+    
+showSingleTable
+    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;    
+    
 schemaName
     : IDENTIFIER
     ;
 
-tableRule
-    : RULE tableName
+table
+    : TABLE tableName
     ;
     
 tableName

@@ -40,6 +40,7 @@ public final class SpringbootStarterMybatisGenerator extends ExampleGenerateEngi
 
         RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
         RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderItemMapper.xml");
+        RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
     }
 
     public SpringbootStarterMybatisGenerator() {

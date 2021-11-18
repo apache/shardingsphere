@@ -647,7 +647,11 @@
                                     </left>
                                     <operator>+</operator>
                                     <right>
-                                        <expression-projection text="TO_YMINTERVAL('01-00')" start-index="62" stop-index="83"/>
+                                        <function function-name="TO_YMINTERVAL" text="TO_YMINTERVAL('01-00')" start-index="62" stop-index="83">
+                                            <parameter>
+                                                <literal-expression value="01-00" start-index="76" stop-index="82"/>
+                                            </parameter>
+                                        </function>
                                     </right>
                                 </binary-operation-expression>
                             </left>

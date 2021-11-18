@@ -23,6 +23,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -33,16 +34,18 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
                            ">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}"/>
+    <context:component-scan base-package="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}"/>
 <#if framework=="spring-namespace-jpa">
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
@@ -68,39 +71,12 @@
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
-
-    <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
-        <props>
-            <prop key="algorithm-expression">demo_ds_${r'${user_id % 2}'}</prop>
-        </props>
-    </sharding:sharding-algorithm>
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
+<#if feature=="sharding">
+    <#include "shardingApplication.ftl">
+<#elseif feature=="readwrite-splitting">
+    <#include "readwriteSplittingApplication.ftl">
+</#if>
     
-    <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
-    </sharding:key-generate-algorithm>
-    
-    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
-    <sharding:key-generate-strategy id="accountKeyGenerator" column="account_id" algorithm-ref="snowflakeAlgorithm" />
-    <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
-    
-    <sharding:rule id="shardingRule">
-        <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" />
-            <sharding:table-rule logic-table="t_account" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="accountKeyGenerator" />
-        </sharding:table-rules>
-        <sharding:binding-table-rules>
-            <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
-        </sharding:binding-table-rules>
-        <sharding:broadcast-table-rules>
-            <sharding:broadcast-table-rule table="t_address"/>
-        </sharding:broadcast-table-rules>
-    </sharding:rule>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
 <#if framework=="spring-namespace-mybatis">
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
@@ -113,7 +89,7 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.repository"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>

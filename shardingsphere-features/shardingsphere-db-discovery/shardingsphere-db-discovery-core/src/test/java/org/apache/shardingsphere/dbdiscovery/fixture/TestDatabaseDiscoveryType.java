@@ -31,8 +31,7 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap, final Collection<String> disabledDataSourceNames,
-                                        final String groupName, final String primaryDataSourceName) {
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     
     @Override
@@ -40,8 +39,7 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
-                                      final String groupName, final String primaryDataSourceName) {
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     
     @Override

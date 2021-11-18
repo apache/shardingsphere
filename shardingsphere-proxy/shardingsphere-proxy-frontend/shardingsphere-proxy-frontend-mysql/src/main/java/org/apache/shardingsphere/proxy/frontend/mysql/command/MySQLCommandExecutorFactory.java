@@ -80,7 +80,7 @@ public final class MySQLCommandExecutorFactory {
             case COM_STMT_RESET:
                 return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket);
             case COM_STMT_CLOSE:
-                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket);
+                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, backendConnection.getConnectionId());
             default:
                 return new MySQLUnsupportedCommandExecutor(commandPacketType);
         }

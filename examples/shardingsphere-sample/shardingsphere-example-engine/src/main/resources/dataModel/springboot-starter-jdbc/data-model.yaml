@@ -17,10 +17,6 @@
 
 mode: memory
 transaction: local
-feature: sharding
+feature: readwrite-splitting
 framework: springboot-starter-jdbc
 
-host: localhost
-port: 3306
-username: root
-password: 123456
