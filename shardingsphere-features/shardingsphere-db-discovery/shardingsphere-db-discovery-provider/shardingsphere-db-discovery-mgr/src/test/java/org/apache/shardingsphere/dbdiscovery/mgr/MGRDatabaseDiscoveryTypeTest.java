@@ -17,38 +17,50 @@
 
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import javax.sql.DataSource;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.google.common.eventbus.EventBus;
 
 public final class MGRDatabaseDiscoveryTypeTest {
-    
+
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
-    
+
     private static final String MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
-    
+
     private static final String GROUP_NAME = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
-    
+
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
-    
+
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
-    
+
+
     @Test
     public void checkHAConfig() {
         DataSource dataSource = mock(DataSource.class);
@@ -78,7 +90,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             throw new ShardingSphereException(ex);
         }
     }
-    
+
     @Test
     public void updatePrimaryDataSource() {
         List<DataSource> dataSources = new LinkedList<>();
@@ -116,5 +128,68 @@ public final class MGRDatabaseDiscoveryTypeTest {
         mgrHaType.getProps().setProperty("groupName", "group_name");
         mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name", null);
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
+    }
+
+
+    @Test
+    public void updateMemberState() {
+
+        try {
+            Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+            declaredField.setAccessible(true);
+            FieldUtils.writeField(declaredField, mgrHaType, "ds_0");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        EventBus eventBus = mock(EventBus.class);
+        mockStatic(ShardingSphereEventBus.class);
+        when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
+
+        List<DataSource> dataSources = new LinkedList<>();
+        List<Connection> connections = new LinkedList<>();
+        List<Statement> statements = new LinkedList<>();
+        List<ResultSet> resultSets = new LinkedList<>();
+        List<DatabaseMetaData> databaseMetaData = new LinkedList<>();
+        for (int i = 0; i < 3; i++) {
+            dataSources.add(mock(DataSource.class));
+            connections.add(mock(Connection.class));
+            statements.add(mock(Statement.class));
+            resultSets.add(mock(ResultSet.class));
+            databaseMetaData.add(mock(DatabaseMetaData.class));
+        }
+        String sql = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
+        try {
+            for (int i = 0; i < 3; i++) {
+                when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
+                when(connections.get(i).createStatement()).thenReturn(statements.get(i));
+                when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
+                when(resultSets.get(i).next()).thenReturn(true, false);
+                when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
+                when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
+                if (i != 0){
+                    when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
+                }
+                when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
+                when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
+            }
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        List<String> disabledDataSourceNames = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
+            if (disabledDataSourceNames.isEmpty()) {
+                disabledDataSourceNames.add(String.format("ds_1", i));
+            }
+        }
+        mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
+        verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
+
+
+
     }
 }
