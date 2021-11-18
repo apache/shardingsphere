@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.from;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.show.ExpectedShowFilter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show columns statement test case.
+ * Expected from schema segment.
  */
-@Getter
-@Setter
-public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
+public final class ExpectedFromSchema extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedSimpleTable table;
-    
-    @XmlElement
     private ExpectedSchema schema;
-    
-    @XmlElement
-    private ExpectedShowFilter filter;
 }
