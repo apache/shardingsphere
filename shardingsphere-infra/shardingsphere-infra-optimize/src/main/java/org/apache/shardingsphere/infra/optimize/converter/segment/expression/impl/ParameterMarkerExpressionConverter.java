@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 
 import java.util.Optional;
 
+/**
+ * Parameter marker expression converter.
+ */
 public final class ParameterMarkerExpressionConverter implements SQLSegmentConverter<ParameterMarkerExpressionSegment, SqlNode> {
     
     @Override
