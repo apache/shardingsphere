@@ -128,15 +128,12 @@ public final class MGRDatabaseDiscoveryTypeTest {
 
     @Test
     public void updateMemberState() throws IllegalAccessException, NoSuchFieldException {
-
         Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
         declaredField.set(mgrHaType, "ds_0");
-
         EventBus eventBus = mock(EventBus.class);
         mockStatic(ShardingSphereEventBus.class);
         when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
-
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
