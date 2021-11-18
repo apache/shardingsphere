@@ -60,7 +60,6 @@ public final class MGRDatabaseDiscoveryTypeTest {
 
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
 
-
     @Test
     public void checkHAConfig() {
         DataSource dataSource = mock(DataSource.class);
@@ -169,7 +168,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
                 when(resultSets.get(i).next()).thenReturn(true, false);
                 when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
                 when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
-                if (i != 0){
+                if (i != 0) {
                     when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
                 }
                 when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
@@ -188,7 +187,6 @@ public final class MGRDatabaseDiscoveryTypeTest {
         }
         mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
-
 
 
     }
