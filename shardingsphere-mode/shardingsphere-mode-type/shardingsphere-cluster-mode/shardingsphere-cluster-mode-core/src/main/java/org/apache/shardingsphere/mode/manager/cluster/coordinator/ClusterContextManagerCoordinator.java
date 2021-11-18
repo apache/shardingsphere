@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -32,14 +31,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
@@ -55,7 +50,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -65,14 +59,12 @@ import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRule
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -170,19 +162,10 @@ public final class ClusterContextManagerCoordinator {
      * Renew data source configuration.
      *
      * @param event data source changed event.
-     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
-        String schemaName = event.getSchemaName();
-        MetaDataContexts changedMetaDataContext = buildChangedMetaDataContext(contextManager.getMetaDataContexts().getMetaDataMap().get(schemaName), event.getDataSourceConfigurations());
-        contextManager.getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(contextManager.getMetaDataContexts().getMetaDataMap());
-        metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
-        Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, event.getDataSourceConfigurations());
-        contextManager.renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
-        renewTransactionContext(schemaName, contextManager.getMetaDataContexts().getMetaData(schemaName).getResource());
-        closeDataSources(schemaName, pendingClosedDataSources);
+    public synchronized void renew(final DataSourceChangedEvent event) {
+        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -260,28 +243,6 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
-    private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(originalMetaData, newDataSourceConfigs).keySet();
-        Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceConfigs);
-        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(),
-                getNewDataSources(originalMetaData.getResource().getDataSources(), getAddedDataSources(originalMetaData, newDataSourceConfigs), changedDataSources, deletedDataSources));
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getRuleMetaData().getConfigurations());
-        Properties props = contextManager.getMetaDataContexts().getProps().getProps();
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();
-        metaDataPersistService.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getName()));
-        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, props).build(metaDataPersistService);
-    }
-    
-    private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> originalDataSources,
-                                                      final Map<String, DataSource> addedDataSources, final Map<String, DataSource> changedDataSources, final Collection<String> deletedDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(originalDataSources);
-        result.keySet().removeAll(deletedDataSources);
-        result.putAll(changedDataSources);
-        result.putAll(addedDataSources);
-        return result;
-    }
-    
     private Map<String, DataSource> getDeletedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         return originalMetaData.getResource().getDataSources().entrySet().stream().filter(entry -> !newDataSourceConfigs.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
@@ -293,10 +254,6 @@ public final class ClusterContextManagerCoordinator {
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, DataSource> getAddedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !originalMetaData.getResource().getDataSources().containsKey(each)));
-    }
-    
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfiguration(final ShardingSphereMetaData originalMetaData,
                                                                                    final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         return dataSourceConfigurations.entrySet().stream()
@@ -304,25 +261,9 @@ public final class ClusterContextManagerCoordinator {
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        return DataSourceConverter.getDataSourceMap(getChangedDataSourceConfiguration(originalMetaData, newDataSourceConfigs));
-    }
-    
     private boolean isModifiedDataSource(final Map<String, DataSource> originalDataSources, final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration) {
         DataSourceConfiguration dataSourceConfig = DataSourceConverter.getDataSourceConfigurationMap(originalDataSources).get(dataSourceName);
         return null != dataSourceConfig && !dataSourceConfiguration.equals(dataSourceConfig);
-    }
-    
-    private Collection<DataSource> getPendingClosedDataSources(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Collection<DataSource> result = new LinkedList<>();
-        result.addAll(getDeletedDataSources(contextManager.getMetaDataContexts().getMetaData(schemaName), dataSourceConfigurations).values());
-        result.addAll(getChangedDataSources(contextManager.getMetaDataContexts().getMetaData(schemaName), dataSourceConfigurations).values());
-        return result;
-    }
-    
-    private void closeDataSources(final String schemaName, final Collection<DataSource> dataSources) {
-        ShardingSphereResource resource = contextManager.getMetaDataContexts().getMetaData(schemaName).getResource();
-        dataSources.forEach(each -> closeDataSource(resource, each));
     }
     
     private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
@@ -331,13 +272,6 @@ public final class ClusterContextManagerCoordinator {
         } catch (final SQLException ex) {
             log.error("Close data source failed", ex);
         }
-    }
-    
-    private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        closeStaleEngine(schemaName);
-        Map<String, ShardingSphereTransactionManagerEngine> existedEngines = contextManager.getTransactionContexts().getEngines();
-        existedEngines.put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
-        renewContexts(existedEngines);
     }
     
     private void closeStaleEngine(final String schemaName) {
