@@ -167,29 +167,6 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter rule.
-     * 
-     * @param schemaName schema name
-     */
-    public void alterRule(final String schemaName) {
-        try {
-            Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
-            Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
-            Properties props = metaDataContexts.getProps().getProps();
-            Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
-            Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();
-            MetaDataContexts changedMetaDataContext = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), 
-                    schemas, rules, props)
-                    .build(metaDataContexts.getMetaDataPersistService().orElse(null));
-            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName,
-                    changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas().get(schemaName));
-            metaDataContexts.getMetaDataMap().put(schemaName, changedMetaDataContext.getMetaData(schemaName));
-        } catch (final SQLException ex) {
-            log.error("Alter schema:{} rule failed", schemaName, ex);
-        }
-    }
-    
-    /**
      * Alter rule configuration.
      * 
      * @param schemaName schema name
