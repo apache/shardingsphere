@@ -30,12 +30,12 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
      * @param tableName table name
      * @param dataSourceName data source name
      */
-    void addDataNode(String tableName, String dataSourceName);
+    void put(String tableName, String dataSourceName);
     
     /**
-     * Drop data node.
+     * Remove data node.
      *
      * @param tableName table name
      */
-    void dropDataNode(String tableName);
+    void remove(String tableName);
 }
