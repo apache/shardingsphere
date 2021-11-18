@@ -21,16 +21,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.CacheTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TableIndexSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitions;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedTableIndex;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedCacheTableIndex;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,23 +52,23 @@ public final class CacheIndexStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCacheIndexStatement actual, final CacheIndexStatementTestCase expected) {
         if (!expected.getTableIndexes().isEmpty()) {
             int count = 0;
-            for (TableIndexSegment each : actual.getTableIndexes()) {
+            for (CacheTableIndexSegment each : actual.getTableIndexes()) {
                 TableAssert.assertIs(assertContext, each.getTable(), expected.getTableIndexes().get(count).getTable());
                 assertIndexes(assertContext, each, expected.getTableIndexes().get(count));
                 SQLSegmentAssert.assertIs(assertContext, each, expected.getTableIndexes().get(count));
                 count++;
             }
         }
-        if (null != expected.getPartitions()) {
-            assertPartitions(assertContext, actual.getPartitions(), expected.getPartitions());
-            SQLSegmentAssert.assertIs(assertContext, actual.getPartitions(), expected.getPartitions());
+        if (null != expected.getPartitionDefinition()) {
+            assertPartitions(assertContext, actual.getPartitionDefinition(), expected.getPartitionDefinition());
+            SQLSegmentAssert.assertIs(assertContext, actual.getPartitionDefinition(), expected.getPartitionDefinition());
         }
         if (null != expected.getName()) {
             assertThat(assertContext.getText("Cache index statement name assert error: "), actual.getName().getValue(), is(expected.getName()));
         }
     }
     
-    private static void assertIndexes(final SQLCaseAssertContext assertContext, final TableIndexSegment actual, final ExpectedTableIndex expected) {
+    private static void assertIndexes(final SQLCaseAssertContext assertContext, final CacheTableIndexSegment actual, final ExpectedCacheTableIndex expected) {
         int count = 0;
         for (IndexSegment index : actual.getIndexes()) {
             IndexAssert.assertIs(assertContext, index, expected.getIndexNames().get(count));
@@ -76,7 +76,7 @@ public final class CacheIndexStatementAssert {
         }
     }
     
-    private static void assertPartitions(final SQLCaseAssertContext assertContext, final PartitionsSegment actual, final ExpectedPartitions expected) {
+    private static void assertPartitions(final SQLCaseAssertContext assertContext, final PartitionDefinitionSegment actual, final ExpectedPartitionDefinition expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         int count = 0;
         for (PartitionSegment each : actual.getPartitions()) {

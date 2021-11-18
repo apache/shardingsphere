@@ -244,6 +244,12 @@ public enum SQLVisitorRule {
 
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
+    SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),
+    
     SHOW("Show", SQLStatementType.DAL),
 
     SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
@@ -275,6 +281,8 @@ public enum SQLVisitorRule {
     FLUSH("Flush", SQLStatementType.DAL),
 
     RESTART("Restart", SQLStatementType.DAL),
+    
+    SHUTDOWN("Shutdown", SQLStatementType.DAL),
 
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
@@ -295,7 +303,9 @@ public enum SQLVisitorRule {
     RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
 
     CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
-
+    
+    LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

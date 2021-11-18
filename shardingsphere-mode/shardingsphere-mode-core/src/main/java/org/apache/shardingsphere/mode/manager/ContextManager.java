@@ -163,6 +163,53 @@ public final class ContextManager implements AutoCloseable {
         toBeDroppedResourceNames.forEach(metaDataContexts.getMetaData(schemaName).getResource().getDataSources()::remove);
     }
     
+    /**
+     * Alter rule.
+     * 
+     * @param schemaName schema name
+     */
+    public void alterRule(final String schemaName) {
+        try {
+            Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
+            Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
+            Properties props = metaDataContexts.getProps().getProps();
+            Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
+            Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();
+            MetaDataContexts changedMetaDataContext = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), 
+                    schemas, rules, props)
+                    .build(metaDataContexts.getMetaDataPersistService().orElse(null));
+            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName,
+                    changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas().get(schemaName));
+            metaDataContexts.getMetaDataMap().put(schemaName, changedMetaDataContext.getMetaData(schemaName));
+        } catch (final SQLException ex) {
+            log.error("Alter schema:{} rule failed", schemaName, ex);
+        }
+    }
+    
+    /**
+     * Alter rule configuration.
+     * 
+     * @param schemaName schema name
+     * @param ruleConfigs collection of rule configurations
+     */
+    public void alterRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
+        try {
+            MetaDataContexts changedMetaDataContexts = buildChangedMetaDataContext(metaDataContexts.getMetaDataMap().get(schemaName), ruleConfigs);
+            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getMetaData().getSchemas());
+            Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
+            metaDataMap.putAll(changedMetaDataContexts.getMetaDataMap());
+            renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
+        } catch (final SQLException ex) {
+            log.error("Alter schema:{} rule configuration failed", schemaName, ex);
+        }
+    }
+    
+    private MetaDataContexts rebuildMetaDataContexts(final Map<String, ShardingSphereMetaData> schemaMetaData) {
+        return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
+                schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
+                metaDataContexts.getProps(), metaDataContexts.getOptimizerContext());
+    }
+    
     private void refreshMetaDataContext(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) throws SQLException {
         MetaDataContexts changedMetaDataContext = buildChangedMetaDataContext(metaDataContexts.getMetaDataMap().get(schemaName), dataSourceConfigs);
         metaDataContexts.getMetaDataMap().putAll(changedMetaDataContext.getMetaDataMap());
@@ -177,6 +224,16 @@ public final class ContextManager implements AutoCloseable {
         dataSourceMap.putAll(DataSourceConverter.getDataSourceMap(addedDataSourceConfigs));
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(), dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getRuleMetaData().getConfigurations());
+        Properties props = metaDataContexts.getProps().getProps();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();
+        return new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getGlobalRuleMetaData().getConfigurations(), schemas, rules, props)
+                .build(metaDataContexts.getMetaDataPersistService().orElse(null));
+    }
+    
+    private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getResource().getDataSources());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), ruleConfigs);
         Properties props = metaDataContexts.getProps().getProps();
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props);
         Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props).load();

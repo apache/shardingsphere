@@ -46,11 +46,4 @@ public final class MySQLComStmtClosePacketTest {
         MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
         actual.write(payload);
     }
-    
-    @Test
-    public void assertRemoveCachedStatement() {
-        when(payload.readInt4()).thenReturn(1);
-        MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
-        actual.removeCachedStatement();
-    }
 }

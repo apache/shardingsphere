@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -43,4 +45,10 @@ public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "constraint-definition")
     private final List<ExpectedConstraintDefinition> constraintDefinitions = new LinkedList<>();
+    
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>(); 
+    
+    @XmlElement(name = "select")
+    private SelectStatementTestCase createTableAsSelectStatement;
 }

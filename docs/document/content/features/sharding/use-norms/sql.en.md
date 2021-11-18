@@ -51,7 +51,7 @@ For example:
 SELECT * FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
 ```
 
-Stable supported for subquery with [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination).
+Stable supported for subquery with [pagination](/en/features/sharding/usage-standard/pagination).
 
 For example:
 

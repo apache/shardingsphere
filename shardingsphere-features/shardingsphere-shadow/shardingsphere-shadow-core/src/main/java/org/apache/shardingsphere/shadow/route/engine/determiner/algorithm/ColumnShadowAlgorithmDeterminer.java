@@ -39,13 +39,7 @@ public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDet
     
     @Override
     public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule) {
-        Collection<ShadowColumnCondition> shadowColumnConditions = shadowDetermineCondition.getShadowColumnConditions();
-        for (ShadowColumnCondition each : shadowColumnConditions) {
-            if (isShadowColumn(each, shadowRule, shadowDetermineCondition.getTableName(), shadowDetermineCondition.getShadowOperationType())) {
-                return true;
-            }
-        }
-        return false;
+        return isShadowColumn(shadowDetermineCondition.getShadowColumnCondition(), shadowRule, shadowDetermineCondition.getTableName(), shadowDetermineCondition.getShadowOperationType());
     }
     
     private boolean isShadowColumn(final ShadowColumnCondition shadowColumnCondition, final ShadowRule shadowRule, final String tableName, final ShadowOperationType operationType) {

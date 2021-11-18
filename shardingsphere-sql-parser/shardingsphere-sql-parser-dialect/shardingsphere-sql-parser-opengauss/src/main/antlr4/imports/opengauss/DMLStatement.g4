@@ -124,6 +124,7 @@ selectClauseN
     | selectClauseN UNION allOrDistinct? selectClauseN
     | selectClauseN INTERSECT allOrDistinct? selectClauseN
     | selectClauseN EXCEPT allOrDistinct? selectClauseN
+    | selectClauseN MINUS allOrDistinct? selectClauseN
     ;
 
 simpleSelect

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,7 +119,8 @@ public final class SingleTableSchemaBuilderTest {
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(databaseType, Collections.singletonMap("logic_db", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        return new SingleTableRule(new SingleTableRuleConfiguration(), databaseType, Collections.singletonMap("logic_db", dataSource),
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private void assertActualOfSingleTables(final Collection<TableMetaData> actual) {

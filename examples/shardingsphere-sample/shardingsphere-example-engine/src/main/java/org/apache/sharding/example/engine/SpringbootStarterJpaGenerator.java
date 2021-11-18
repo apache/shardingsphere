@@ -36,6 +36,8 @@ public final class SpringbootStarterJpaGenerator extends ExampleGenerateEngine {
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+
+        RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
     }
 
     public SpringbootStarterJpaGenerator() {

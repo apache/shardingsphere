@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -49,14 +50,18 @@ import java.util.stream.Collectors;
 @Getter
 public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
     
+    private String defaultDataSource;
+    
     private final Collection<String> dataSourceNames;
     
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
-    public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
+                           final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -114,6 +119,15 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     /**
+     * Get default data source.
+     *
+     * @return default data source
+     */
+    public Optional<String> getDefaultDataSource() {
+        return Optional.ofNullable(defaultDataSource);
+    }
+    
+    /**
      * Get sharding logic table names.
      *
      * @param logicTableNames logic table names
@@ -136,8 +150,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each 
-            -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule)
+                .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
     }
     
     @Override

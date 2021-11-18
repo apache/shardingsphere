@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,21 +37,22 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLComStmtExecutePacketTest {
     
+    private static final int CONNECTION_ID = 1;
+    
     @Mock
     private MySQLPacketPayload payload;
     
     @Before
-    @After
-    public void reset() {
-        BinaryStatementRegistryUtil.reset();
+    public void setup() {
+        MySQLPreparedStatementRegistry.getInstance().registerConnection(CONNECTION_ID);
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement("SELECT id FROM tbl WHERE id=?", 1);
     }
     
     @Test
     public void assertNewWithNotNullParameters() throws SQLException {
-        MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 0, 1);
-        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, CONNECTION_ID);
         assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
         assertThat(actual.getParameters(), is(Collections.<Object>singletonList(1)));
@@ -61,10 +60,9 @@ public final class MySQLComStmtExecutePacketTest {
     
     @Test
     public void assertNewWithNullParameters() throws SQLException {
-        MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, CONNECTION_ID);
         assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
         assertThat(actual.getParameters(), is(Collections.singletonList(null)));
@@ -72,10 +70,9 @@ public final class MySQLComStmtExecutePacketTest {
     
     @Test
     public void assertWrite() throws SQLException {
-        MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, CONNECTION_ID);
         actual.write(payload);
         verify(payload, times(2)).writeInt4(1);
         verify(payload, times(4)).writeInt1(1);

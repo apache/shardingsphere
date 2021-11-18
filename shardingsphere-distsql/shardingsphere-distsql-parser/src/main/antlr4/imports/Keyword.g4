@@ -31,6 +31,14 @@ ALL
     : A L L
     ;
 
+CREATE
+    : C R E A T E
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
 ALTER
     : A L T E R
     ;
