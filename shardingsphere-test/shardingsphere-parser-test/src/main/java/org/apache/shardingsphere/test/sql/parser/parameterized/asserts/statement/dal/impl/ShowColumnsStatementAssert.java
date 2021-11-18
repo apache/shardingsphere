@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.show.ShowFilterAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 
 /**
@@ -37,5 +40,14 @@ public final class ShowColumnsStatementAssert {
      * @param expected expected show columns statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
+        if (null != actual.getTable()) {
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        }
+        if (actual.getFromSchema().isPresent()) {
+            SchemaAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getSchema());
+        }
+        if (actual.getFilter().isPresent()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        }
     }
 }

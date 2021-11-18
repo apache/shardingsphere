@@ -19,19 +19,44 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+
+import java.util.Optional;
 
 /**
- * From schema segment.
+ * Show filter segment.
  */
 @RequiredArgsConstructor
-@Getter
-public final class FromSchemaSegment implements SQLSegment {
+@Setter
+public final class ShowFilterSegment implements SQLSegment {
     
+    @Getter
     private final int startIndex;
     
+    @Getter
     private final int stopIndex;
     
-    private final SchemaSegment schema;
+    private ShowLikeSegment like;
+    
+    private WhereSegment where;
+    
+    /**
+     * Get like segment.
+     *
+     * @return like segment
+     */
+    public Optional<ShowLikeSegment> getLike() {
+        return Optional.ofNullable(like);
+    }
+    
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
+    }
 }
