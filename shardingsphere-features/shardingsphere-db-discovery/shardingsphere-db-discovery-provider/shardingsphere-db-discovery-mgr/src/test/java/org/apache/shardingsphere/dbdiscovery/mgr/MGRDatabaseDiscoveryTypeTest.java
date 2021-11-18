@@ -168,9 +168,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
                 when(resultSets.get(i).next()).thenReturn(true, false);
                 when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
                 when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
-                if (i != 0) {
-                    when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
-                }
+                when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
                 when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
                 when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
             }
