@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.google.common.eventbus.EventBus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.junit.Test;
+import org.mockito.Mockito;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -33,20 +34,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import com.google.common.eventbus.EventBus;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public final class MGRDatabaseDiscoveryTypeTest {
 
@@ -129,19 +126,12 @@ public final class MGRDatabaseDiscoveryTypeTest {
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
     }
 
-
     @Test
-    public void updateMemberState() {
+    public void updateMemberState() throws IllegalAccessException, NoSuchFieldException {
 
-        try {
-            Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
-            declaredField.setAccessible(true);
-            FieldUtils.writeField(declaredField, mgrHaType, "ds_0");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+        declaredField.setAccessible(true);
+        declaredField.set(mgrHaType, "ds_0");
 
         EventBus eventBus = mock(EventBus.class);
         mockStatic(ShardingSphereEventBus.class);
@@ -185,7 +175,5 @@ public final class MGRDatabaseDiscoveryTypeTest {
         }
         mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
-
-
     }
 }

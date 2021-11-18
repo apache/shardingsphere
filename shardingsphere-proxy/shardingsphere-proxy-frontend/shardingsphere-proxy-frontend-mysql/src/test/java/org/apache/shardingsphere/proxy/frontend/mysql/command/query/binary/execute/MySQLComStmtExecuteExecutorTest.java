@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -88,27 +87,31 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException {
+    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, backendConnection);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
+        Field databaseCommunicationEngineFiled = MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine");
+        databaseCommunicationEngineFiled.setAccessible(true);
+        databaseCommunicationEngineFiled.set(mysqlComStmtExecuteExecutor, this.databaseCommunicationEngine);
+        when(this.databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
     @Test
-    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException {
+    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, backendConnection);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
+        Field databaseCommunicationEngineFiled = MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine");
+        databaseCommunicationEngineFiled.setAccessible(true);
+        databaseCommunicationEngineFiled.set(mysqlComStmtExecuteExecutor, this.databaseCommunicationEngine);
+        when(this.databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
     }

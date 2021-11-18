@@ -32,9 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -62,19 +62,23 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException {
+    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, backendConnection);
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
+        Field textProtocolBackendHandlerFiled = MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler");
+        textProtocolBackendHandlerFiled.setAccessible(true);
+        textProtocolBackendHandlerFiled.set(mysqlComQueryPacketExecutor, this.textProtocolBackendHandler);
+        when(this.textProtocolBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
     @Test
-    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException {
+    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, backendConnection);
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
+        Field textProtocolBackendHandlerFiled = MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler");
+        textProtocolBackendHandlerFiled.setAccessible(true);
+        textProtocolBackendHandlerFiled.set(mysqlComQueryPacketExecutor, this.textProtocolBackendHandler);
+        when(this.textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.getResponseType(), is(ResponseType.UPDATE));
     }

@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -103,21 +102,23 @@ public final class DatabaseCommunicationEngineTest {
     }
     
     @Test
-    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException {
+    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
+        queryHeadersField.setAccessible(true);
+        queryHeadersField.set(engine, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
         Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
-        FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-            
+        mergedResultField.setAccessible(true);
+        mergedResultField.set(engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
+
             private MemoryQueryResultRow memoryQueryResultRow;
-            
+
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
-                                                      final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
                 memoryQueryResultRow = mock(MemoryQueryResultRow.class);
                 return Collections.singletonList(memoryQueryResultRow);
             }

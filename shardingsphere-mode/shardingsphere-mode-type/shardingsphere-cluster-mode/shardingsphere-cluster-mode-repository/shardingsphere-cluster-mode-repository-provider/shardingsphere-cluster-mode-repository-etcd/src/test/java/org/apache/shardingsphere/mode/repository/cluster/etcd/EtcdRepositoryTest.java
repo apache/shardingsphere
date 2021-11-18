@@ -40,9 +40,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -113,12 +113,16 @@ public final class EtcdRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setClient() {
         mockClient();
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("client"), client);
+        Field client = repository.getClass().getDeclaredField("client");
+        client.setAccessible(true);
+        client.set(repository, this.client);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
+        Field etcdProperties = repository.getClass().getDeclaredField("etcdProperties");
+        etcdProperties.setAccessible(true);
+        etcdProperties.set(repository, new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -290,7 +294,7 @@ public final class EtcdRepositoryTest {
     }
     
     @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
-    private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
+    private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) throws IllegalAccessException {
         WatchResponse result = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
         List<WatchEvent> events = new LinkedList<>();
         io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
@@ -298,7 +302,9 @@ public final class EtcdRepositoryTest {
                 .setValue(ByteString.copyFromUtf8("value1")).build();
         KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
-        FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
+        Field field = result.getClass().getDeclaredField("events");
+        field.setAccessible(true);
+        field.set(result, events);
         return result;
     }
 
