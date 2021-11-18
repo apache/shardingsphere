@@ -164,12 +164,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getConfigurations());
     }
     
-    private SQLStatement getSqlStatement (final String sql) {
+    private SQLStatement getSqlStatement(final String sql) {
         if (SQLUtil.skipParse(sql)) {
             return new ParseSkippedStatement(sql, metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType().getName());
         }
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), metaDataContexts.getProps());
+            DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), metaDataContexts.getProps());
         return sqlParserEngine.parse(sql, true);
     }
     
