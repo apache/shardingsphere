@@ -41,7 +41,13 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     
     private static final String PG_DATABASE = "pg_database";
     
-    private static final String PG_NAMESPACE = "pg_namespace";
+    private static final String PG_TRIGGER = "pg_trigger";
+    
+    private static final String PG_INHERITS = "pg_inherits";
+    
+    private static final String PG_CLASS = "pg_class";
+    
+    private static final String PG_PREFIX = "pg_";
     
     @Override
     public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
@@ -55,14 +61,19 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
             if (selectedTableNames.contains(PG_DATABASE)) {
                 return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql));
             }
-            if (selectedTableNames.contains(PG_TABLESPACE)) {
+            if (isQueryPgTable(selectedTableNames)) {
                 return Optional.of(new SelectTableExecutor(sql));
             }
-            if (selectedTableNames.contains(PG_NAMESPACE)) {
+            if (selectedTableNames.stream().anyMatch(each -> each.startsWith(PG_PREFIX))) {
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isQueryPgTable(final Collection<String> selectedTableNames) {
+        boolean isComplexQueryTable = selectedTableNames.contains(PG_CLASS) && selectedTableNames.contains(PG_TRIGGER) && selectedTableNames.contains(PG_INHERITS);
+        return selectedTableNames.contains(PG_TABLESPACE) || isComplexQueryTable;
     }
     
     private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
