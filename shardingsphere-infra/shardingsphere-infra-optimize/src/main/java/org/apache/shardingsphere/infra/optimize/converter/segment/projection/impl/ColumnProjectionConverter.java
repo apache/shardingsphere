@@ -56,7 +56,7 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
                 return Optional.empty();
             }
             ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment.get());
-            if (operands.size() == 2) {
+            if (2 == operands.size()) {
                 SqlIdentifier aliasSqlNode = (SqlIdentifier) operands.get(1);
                 columnProjectionSegment.setAlias(new AliasSegment(getStartIndex(aliasSqlNode), getStopIndex(aliasSqlNode), new IdentifierValue(aliasSqlNode.names.get(0))));
             }
