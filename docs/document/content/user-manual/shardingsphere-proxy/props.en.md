@@ -27,5 +27,5 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | proxy-backend-executor-suitable (?) | String      | Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution if client connections are more than `proxy-frontend-netty-executor-size`, especially executing slow SQL. | OLAP            | false            |
 | sql-federation-enabled (?)          | boolean     | Whether enable sql federation.                                                                                                                                                                                                                                                                          | false           | true             |
 
-Properties can be updated by [DistSQL](/cn/user-manual/shardingsphere-proxy/usage/distsql/).
+Properties can be updated by [DistSQL](/cn/user-manual/shardingsphere-proxy/distsql/usage/).
 Dynamic update can take effect immediately, static update can take effect after restarted.
