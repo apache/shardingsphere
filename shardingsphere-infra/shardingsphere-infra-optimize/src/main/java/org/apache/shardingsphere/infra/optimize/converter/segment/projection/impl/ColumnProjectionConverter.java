@@ -40,18 +40,18 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
     @Override
     public Optional<SqlNode> convertToSQLNode(final ColumnProjectionSegment segment) {
         if (segment.getAlias().isPresent()) {
-            Optional<SqlNode> sqlIdentifier = new ColumnConverter().convertToSQLNode(segment.getColumn());
-            SqlIdentifier sqlIdentifier1 = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(new SqlAsOperator(), new SqlNode[]{sqlIdentifier.get(), sqlIdentifier1}, SqlParserPos.ZERO));
+            Optional<SqlIdentifier> columnSqlIdentifier = new ColumnConverter().convertToSQLNode(segment.getColumn());
+            SqlIdentifier aliasSqlIdentifier = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
+            return Optional.of(new SqlBasicCall(new SqlAsOperator(), new SqlNode[]{columnSqlIdentifier.get(), aliasSqlIdentifier}, SqlParserPos.ZERO));
         }
-        return new ColumnConverter().convertToSQLNode(segment.getColumn());
+        return new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
     }
     
     @Override
     public Optional<ColumnProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlBasicCall) {
             List<SqlNode> operands = ((SqlBasicCall) sqlNode).getOperandList();
-            Optional<ColumnSegment> columnSegment = new ColumnConverter().convertToSQLSegment(operands.get(0));
+            Optional<ColumnSegment> columnSegment = new ColumnConverter().convertToSQLSegment((SqlIdentifier) operands.get(0));
             if (!columnSegment.isPresent()) {
                 return Optional.empty();
             }
@@ -62,6 +62,9 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
             }
             return Optional.of(columnProjectionSegment);
         }
-        return new ColumnConverter().convertToSQLSegment(sqlNode).map(ColumnProjectionSegment::new);
+        if (sqlNode instanceof SqlIdentifier) {
+            return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(ColumnProjectionSegment::new);
+        }
+        return Optional.empty();
     }
 }
