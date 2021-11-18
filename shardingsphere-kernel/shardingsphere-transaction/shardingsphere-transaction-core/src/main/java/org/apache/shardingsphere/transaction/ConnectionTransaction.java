@@ -44,7 +44,7 @@ public final class ConnectionTransaction {
         this(schemaName, rule.getDefaultType(), transactionContexts);
     }
     
-    private ConnectionTransaction(final String schemaName, final TransactionType transactionType, final TransactionContexts transactionContexts) {
+    public ConnectionTransaction(final String schemaName, final TransactionType transactionType, final TransactionContexts transactionContexts) {
         this.transactionType = transactionType;
         transactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
