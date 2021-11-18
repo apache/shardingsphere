@@ -61,7 +61,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment).map(optional -> optional);
+            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment);
         } else if (segment instanceof ExpressionProjectionSegment) {
             return new ExpressionProjectionConverter().convertToSQLNode((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
@@ -82,10 +82,18 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             getProjectionSegment(each).ifPresent(projections::add);
         }
         int startIndex = projections.get(0).getStartIndex();
-        int stopIndex = projections.get(projections.size() - 1).getStopIndex();
+        int stopIndex = getProjectionsSegmentStopIndex(sqlNodeList.get(sqlNodeList.size() - 1), projections.get(projections.size() - 1));
         ProjectionsSegment result = new ProjectionsSegment(startIndex, stopIndex);
         result.getProjections().addAll(projections);
         return Optional.of(result);
+    }
+    
+    private int getProjectionsSegmentStopIndex(SqlNode lastSqlNode, ProjectionSegment projectionSegment) {
+        int stopIndex = projectionSegment.getStopIndex();
+        if (lastSqlNode instanceof SqlBasicCall && SqlKind.AS == ((SqlBasicCall) lastSqlNode).getOperator().getKind()) {
+            stopIndex = getStopIndex(((SqlBasicCall) lastSqlNode).getOperandList().get(1));
+        }
+        return stopIndex;
     }
     
     private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
