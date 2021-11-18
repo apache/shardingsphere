@@ -21,7 +21,7 @@ mvn clean package -Prelease,docker
 ## Configure ShardingSphere-Proxy
 
 Create `server.yaml` and `config-xxx.yaml` to configure sharding rules and server rule in `/${your_work_dir}/conf/`. 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/).
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/).
 Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf).
 
 ## Run Docker
