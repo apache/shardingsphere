@@ -38,7 +38,6 @@ public final class MySQLShowTriggersStatement extends AbstractSQLStatement imple
 
     private ShowLikeSegment like;
 
-
     /**
      * Get from schema segment.
      *
