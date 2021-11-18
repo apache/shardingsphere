@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')};
+package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
-import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.Order;
-import org.apache.shardingsphere.example.${feature}.${framework?replace('-', '.')}.entity.OrderItem;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,11 +29,15 @@ import java.util.List;
 <#list framework?split("-") as framework1>
     <#assign frameworkName=frameworkName + framework1?cap_first>
 </#list>
+<#assign featureName="">
+<#list feature?split("-") as feature1>
+    <#assign featureName=featureName + feature1?cap_first>
+</#list>
 @Service
-public final class ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}ExampleService {
+public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
     
     @Resource
-    private ${mode?cap_first}${transaction?cap_first}${feature?cap_first}${frameworkName}Repository repository;
+    private ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Repository repository;
 
     /**
      * Execute test.

@@ -44,10 +44,10 @@ import java.sql.SQLException;
     <#assign featureName=featureName + feature1?cap_first>
 </#list>
 <#if framework=="springboot-starter-mybatis">
-@MapperScan("org.apache.shardingsphere.example.${feature}.springboot.starter.mybatis.repository")
+@MapperScan("org.apache.shardingsphere.example.${feature?replace('-', '.')}.springboot.starter.mybatis.repository")
 </#if>
 <#if framework=="springboot-starter-jpa">
-@EntityScan(basePackages = "org.apache.shardingsphere.example.${feature}.springboot.starter.jpa.entity")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.${feature?replace('-', '.')}.springboot.starter.jpa.entity")
 </#if>
 <#if framework?contains("springboot")>
 @SpringBootApplication
