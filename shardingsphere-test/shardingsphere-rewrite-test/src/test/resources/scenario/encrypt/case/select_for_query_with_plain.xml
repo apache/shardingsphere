@@ -29,17 +29,17 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand" db-types="MySQL">
         <input sql="SELECT * FROM t_account_bak" />
-        <output sql="SELECT `t_account_bak`.`account_id`, `t_account_bak`.`cipher_certificate_number` AS certificate_number, `t_account_bak`.`plain_password` AS password, `t_account_bak`.`plain_amount` AS amount, `t_account_bak`.`status` FROM t_account_bak" />
+        <output sql="SELECT `t_account_bak`.`account_id`, `t_account_bak`.`cipher_certificate_number` AS `certificate_number`, `t_account_bak`.`plain_password` AS `password`, `t_account_bak`.`plain_amount` AS `amount`, `t_account_bak`.`status` FROM t_account_bak" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status` FROM t_account_bak a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`plain_password` AS `password`, `a`.`plain_amount` AS `amount`, `a`.`status` FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account_bak a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_bak a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`plain_password` AS `password`, `a`.`plain_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account_bak a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_join_with_alias" db-types="MySQL">
