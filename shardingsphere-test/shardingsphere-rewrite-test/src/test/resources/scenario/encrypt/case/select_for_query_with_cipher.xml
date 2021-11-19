@@ -73,6 +73,11 @@
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_unqualified_shorthand_projection_with_join" db-types="MySQL">
+        <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.amount = ? OR b.amount = ?" parameters="1, 2" />
+        <output sql="SELECT `t`.`account_id`, `t`.`cipher_certificate_number` AS certificate_number, `t`.`cipher_password` AS password, `t`.`cipher_amount` AS amount, `t`.`status`, `b`.`account_id`, `b`.`cipher_certificate_number` AS certificate_number, `b`.`cipher_password` AS password, `b`.`cipher_amount` AS amount, `b`.`status` FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.cipher_amount = ? OR b.cipher_amount = ?" parameters="encrypt_1, encrypt_2" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_with_join" db-types="MySQL">
         <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.amount = ? OR t_account_bak.amount = ?" parameters="1, 2" />
