@@ -78,13 +78,14 @@ public final class CommandExecutorTask implements Runnable {
             // TODO optimize SQLStatementSchemaHolder
             SQLStatementSchemaHolder.remove();
             Collection<SQLException> exceptions = closeExecutionResources();
-            if (isNeedFlush) {
-                context.flush();
-            }
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
                 exceptions.addAll(backendConnection.closeConnections(false));
                 backendConnection.getConnectionStatus().switchToReleased();
+            }
+            // TODO Delay the flush due to https://github.com/apache/shardingsphere/issues/13688
+            if (isNeedFlush) {
+                context.flush();
             }
             processClosedExceptions(exceptions);
         }
