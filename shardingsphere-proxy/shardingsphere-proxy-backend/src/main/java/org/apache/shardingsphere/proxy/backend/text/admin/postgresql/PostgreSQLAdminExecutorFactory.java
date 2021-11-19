@@ -24,11 +24,14 @@ import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.Se
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,6 +82,12 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(sqlStatement);
+        List<TableSegment> subQueryTableSegment = extractor.getTableContext().stream().filter(each -> each instanceof SubqueryTableSegment).map(each -> {
+            TableExtractor subExtractor = new TableExtractor();
+            subExtractor.extractTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect());
+            return subExtractor.getTableContext();
+        }).flatMap(Collection::stream).collect(Collectors.toList());
+        extractor.getTableContext().addAll(subQueryTableSegment);
         return extractor.getTableContext().stream().filter(each -> each instanceof SimpleTableSegment)
                 .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
     }
