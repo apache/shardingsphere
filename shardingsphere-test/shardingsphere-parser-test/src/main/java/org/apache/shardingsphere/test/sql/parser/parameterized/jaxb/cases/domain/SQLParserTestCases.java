@@ -54,6 +54,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UseStatementTestCase;
@@ -743,7 +744,10 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
-    
+
+    @XmlElement(name = "show-triggers")
+    private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
+
     /**
      * Get all SQL parser test cases.
      *
@@ -929,6 +933,7 @@ public final class SQLParserTestCases {
         putAll(cacheIndexStatementTestCases, result);
         putAll(loadIndexInfoStatementTestCases, result);
         putAll(createShadowAlgorithmTestCase, result);
+        putAll(showTriggersTestCase, result);
         return result;
     }
     // CHECKSTYLE:ON
