@@ -120,11 +120,12 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
-                Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.getQualifiedName()));
+                ColumnProjection projection = buildColumnProjection(columnSegment);
+                Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
                 if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
                     continue;
                 }
-                Column column = new Column(columnSegment.getIdentifier().getValue(), tableName.get());
+                Column column = new Column(projection.getName(), tableName.get());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
                 if (!shardingConditionValue.isPresent()) {
                     continue;

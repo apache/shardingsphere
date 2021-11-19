@@ -105,9 +105,10 @@ public final class EncryptConditionEngine {
     private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
-            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(each.getQualifiedName()));
+            ColumnProjection projection = buildColumnProjection(each);
+            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
             Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
-                    && encryptRule.findEncryptor(schemaName, tableName.get(), each.getIdentifier().getValue()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
+                    && encryptRule.findEncryptor(schemaName, tableName.get(), projection.getName()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
             encryptCondition.ifPresent(result::add);
         }
         return result;

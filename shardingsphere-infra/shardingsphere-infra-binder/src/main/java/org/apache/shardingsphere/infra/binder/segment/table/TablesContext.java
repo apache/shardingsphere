@@ -99,15 +99,25 @@ public final class TablesContext {
      * @return table name map
      */
     public Map<String, String> findTableName(final Collection<ColumnProjection> columns, final ShardingSphereSchema schema) {
-        if (1 == tableNames.size()) {
-            String tableName = tableNames.iterator().next();
+        if (1 == tables.size()) {
+            String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
             return columns.stream().collect(Collectors.toMap(ColumnProjection::getExpression, each -> tableName, (oldValue, currentValue) -> oldValue));
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
         result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
         Collection<String> columnNames = columns.stream().filter(each -> null == each.getOwner()).map(ColumnProjection::getName).collect(Collectors.toSet());
         result.putAll(findTableNameFromMetaData(columnNames, schema));
+        if (result.size() < columns.size() && !subqueryTables.isEmpty()) {
+            appendRemainingResult(columns, result);
+        }
         return result;
+    }
+    
+    private void appendRemainingResult(final Collection<ColumnProjection> columns, final Map<String, String> result) {
+        Collection<ColumnProjection> remainingColumns = columns.stream().filter(each -> !result.containsKey(each.getExpression())).collect(Collectors.toList());
+        for (ColumnProjection each : remainingColumns) {
+            findTableNameFromSubquery(each.getName(), each.getOwner()).ifPresent(optional -> result.put(each.getExpression(), optional));
+        }
     }
     
     private Map<String, Collection<String>> getOwnerColumnNames(final Collection<ColumnProjection> columns) {
@@ -174,16 +184,6 @@ public final class TablesContext {
             }
         }
         return result;
-    }
-    
-    private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {
-        for (SimpleTableSegment each : tables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.containsColumn(tableName, columnName)) {
-                return Optional.of(tableName);
-            }
-        }
-        return Optional.empty();
     }
     
     /**
