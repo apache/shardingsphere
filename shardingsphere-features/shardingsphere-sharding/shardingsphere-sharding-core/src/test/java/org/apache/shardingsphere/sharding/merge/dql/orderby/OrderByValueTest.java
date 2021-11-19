@@ -78,7 +78,7 @@ public final class OrderByValueTest {
     public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new SQLServerSelectStatement());
     }
-
+    
     private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
@@ -134,7 +134,7 @@ public final class OrderByValueTest {
     public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new SQLServerSelectStatement());
     }
-
+    
     private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
@@ -191,7 +191,7 @@ public final class OrderByValueTest {
     public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new SQLServerSelectStatement());
     }
-
+    
     private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
@@ -222,7 +222,7 @@ public final class OrderByValueTest {
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-
+    
     private QueryResult createQueryResult(final String... values) throws SQLException {
         QueryResult result = mock(QueryResult.class);
         when(result.next()).thenReturn(true, false);
@@ -231,7 +231,7 @@ public final class OrderByValueTest {
         }
         return result;
     }
-
+    
     private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {
         OrderByItem result = new OrderByItem(indexOrderByItemSegment);
         result.setIndex(indexOrderByItemSegment.getColumnIndex());

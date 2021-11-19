@@ -113,12 +113,12 @@ public final class DatabaseCommunicationEngineTest {
         Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
         mergedResultField.setAccessible(true);
         mergedResultField.set(engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-
+            
             private MemoryQueryResultRow memoryQueryResultRow;
-
+            
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
-                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+                                                      final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
                 memoryQueryResultRow = mock(MemoryQueryResultRow.class);
                 return Collections.singletonList(memoryQueryResultRow);
             }
