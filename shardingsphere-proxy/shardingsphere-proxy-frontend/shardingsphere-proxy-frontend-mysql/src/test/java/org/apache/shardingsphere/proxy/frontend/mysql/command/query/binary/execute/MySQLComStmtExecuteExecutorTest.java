@@ -119,14 +119,16 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException {
+    public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("commit");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, backendConnection);
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        Field textProtocolBackendHandlerFiled = MySQLComStmtExecuteExecutor.class.getDeclaredField("textProtocolBackendHandler");
+        textProtocolBackendHandlerFiled.setAccessible(true);
+        textProtocolBackendHandlerFiled.set(mysqlComStmtExecuteExecutor, textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(CommitStatement.class)));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
