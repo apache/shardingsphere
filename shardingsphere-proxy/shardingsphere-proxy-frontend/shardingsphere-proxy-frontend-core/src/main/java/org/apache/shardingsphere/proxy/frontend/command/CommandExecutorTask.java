@@ -83,7 +83,6 @@ public final class CommandExecutorTask implements Runnable {
                 exceptions.addAll(backendConnection.closeConnections(false));
                 backendConnection.getConnectionStatus().switchToReleased();
             }
-            // TODO Delay the flush due to https://github.com/apache/shardingsphere/issues/13688
             if (isNeedFlush) {
                 context.flush();
             }
