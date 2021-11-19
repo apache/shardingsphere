@@ -114,7 +114,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrHaType.getProps().setProperty("groupName", "group_name");
-        mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name", null);
+        mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
     }
 }

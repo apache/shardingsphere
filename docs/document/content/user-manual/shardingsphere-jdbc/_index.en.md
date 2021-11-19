@@ -19,4 +19,4 @@ It should be noted that the superposition between rules are data source and tabl
 If the previous rule is data source oriented aggregation, the next rule needs to use the aggregated logical data source name configured by the previous rule when configuring the data source;
 Similarly, if the previous rule is table oriented aggregation, the next rule needs to use the aggregated logical table name configured by the previous rule when configuring the table.
 
-Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/examples) for more details.
+Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example) for more details.

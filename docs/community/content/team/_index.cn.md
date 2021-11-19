@@ -50,6 +50,7 @@ chapter = true
 | 邱鹿   | Lucas-307   |
 | 钟红胜 | sandynz     |
 | 江龙滔 | RaigorJiang |
+| Thanoshan MV | ThanoshanMV |
 
 ## 贡献者
 

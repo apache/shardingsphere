@@ -31,6 +31,18 @@ dropResource
     : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
+createDefaultSingleTableRule
+    : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
+    ;
+
+alterDefaultSingleTableRule
+    : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
+    ;
+
+dropDefaultSingleTableRule
+    : DROP DEFAULT SINGLE TABLE RULE
+    ;
+
 dataSource
     : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;

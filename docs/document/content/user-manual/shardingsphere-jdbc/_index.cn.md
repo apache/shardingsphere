@@ -18,4 +18,4 @@ ShardingSphere-JDBC 提供了 4 种配置方式，用于不同的使用场景。
 如果前一个规则是面向数据源聚合的，下一个规则在配置数据源时，则需要使用前一个规则配置的聚合后的逻辑数据源名称；
 同理，如果前一个规则是面向表聚合的，下一个规则在配置表时，则需要使用前一个规则配置的聚合后的逻辑表名称。
 
-更多使用细节请参见[使用示例](https://github.com/apache/shardingsphere/tree/master/examples)。
+更多使用细节请参见[使用示例](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example)。

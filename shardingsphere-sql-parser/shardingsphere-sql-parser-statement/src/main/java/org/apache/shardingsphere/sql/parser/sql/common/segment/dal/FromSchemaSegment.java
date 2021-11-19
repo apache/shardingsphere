@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
  * From schema segment.
@@ -31,4 +32,6 @@ public final class FromSchemaSegment implements SQLSegment {
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final SchemaSegment schema;
 }

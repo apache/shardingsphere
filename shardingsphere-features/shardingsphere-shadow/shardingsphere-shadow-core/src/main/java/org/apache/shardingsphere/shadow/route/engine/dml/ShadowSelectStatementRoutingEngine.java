@@ -24,12 +24,12 @@ import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -43,31 +43,6 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     private final SelectStatementContext selectStatementContext;
     
     private final List<Object> parameters;
-    
-    @Override
-    protected Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions() {
-        Collection<ShadowColumnCondition> result = new LinkedList<>();
-        selectStatementContext.getWhere().ifPresent(whereSegment -> parseWhereSegment(whereSegment, result));
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
-    
-    private void parseWhereSegment(final WhereSegment whereSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr()).forEach(each -> parseAndPredicate(each.getPredicates(), shadowColumnConditions));
-    }
-    
-    private void parseAndPredicate(final Collection<ExpressionSegment> predicates, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        predicates.forEach(each -> parseExpressionSegment(each, shadowColumnConditions));
-    }
-    
-    private void parseExpressionSegment(final ExpressionSegment expressionSegment, final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        ShadowExtractor.extractColumn(expressionSegment).ifPresent(columnSegment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                .ifPresent(values -> shadowColumnConditions.add(new ShadowColumnCondition(extractOwnerName(columnSegment), columnSegment.getIdentifier().getValue(), values))));
-    }
-    
-    private String extractOwnerName(final ColumnSegment columnSegment) {
-        Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasNameMappings().keySet().iterator().next();
-    }
     
     @Override
     protected Collection<SimpleTableSegment> getAllTables() {
@@ -84,5 +59,51 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
         Collection<String> result = new LinkedList<>();
         selectStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+    
+    @Override
+    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
+        return new ShadowColumnConditionIterator(parseWhereSegment(), parameters);
+    }
+    
+    private Collection<ExpressionSegment> parseWhereSegment() {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        selectStatementContext.getWhere().ifPresent(whereSegment -> ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr()).forEach(each -> result.addAll(each.getPredicates())));
+        return result;
+    }
+    
+    private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
+        
+        private final Iterator<ExpressionSegment> iterator;
+        
+        private final List<Object> parameters;
+        
+        ShadowColumnConditionIterator(final Collection<ExpressionSegment> predicates, final List<Object> parameters) {
+            this.iterator = predicates.iterator();
+            this.parameters = parameters;
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+        
+        @Override
+        public Optional<ShadowColumnCondition> next() {
+            ExpressionSegment expressionSegment = iterator.next();
+            Optional<ColumnSegment> columnSegment = ShadowExtractor.extractColumn(expressionSegment);
+            if (columnSegment.isPresent()) {
+                Optional<Collection<Comparable<?>>> values = ShadowExtractor.extractValues(expressionSegment, parameters);
+                if (values.isPresent()) {
+                    return Optional.of(new ShadowColumnCondition(extractOwnerName(columnSegment.get()), columnSegment.get().getIdentifier().getValue(), values.get()));
+                }
+            }
+            return Optional.empty();
+        }
+        
+        private String extractOwnerName(final ColumnSegment columnSegment) {
+            Optional<OwnerSegment> owner = columnSegment.getOwner();
+            return owner.isPresent() ? getTableAliasNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasNameMappings().keySet().iterator().next();
+        }
     }
 }

@@ -178,10 +178,9 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
      * @param tableName table name
      * @return shadow data source rules
      */
-    public Optional<Map<String, String>> getRelatedShadowDataSourceMappings(final String tableName) {
-        Map<String, String> result = shadowTableRules.get(tableName).getShadowDataSources().stream().map(shadowDataSourceMappings::get).filter(Objects::nonNull)
+    public Map<String, String> getRelatedShadowDataSourceMappings(final String tableName) {
+        return shadowTableRules.get(tableName).getShadowDataSources().stream().map(shadowDataSourceMappings::get).filter(Objects::nonNull)
                 .collect(Collectors.toMap(ShadowDataSourceRule::getSourceDataSource, ShadowDataSourceRule::getShadowDataSource, (a, b) -> b, LinkedHashMap::new));
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     /**

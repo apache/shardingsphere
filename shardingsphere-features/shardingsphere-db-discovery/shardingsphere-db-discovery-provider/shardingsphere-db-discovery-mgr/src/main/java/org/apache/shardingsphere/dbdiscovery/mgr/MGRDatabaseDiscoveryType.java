@@ -126,23 +126,18 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
-                                        final String groupName, final String primaryDataSourceName) {
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        if (null == primaryDataSourceName || primaryDataSourceName.equals(oldPrimaryDataSource)) {
-            String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
-            if (newPrimaryDataSource.isEmpty()) {
-                return;
-            }
-            if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-                oldPrimaryDataSource = newPrimaryDataSource;
-                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
-            }
-        } else {
-            oldPrimaryDataSource = primaryDataSourceName;
+        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+        if (newPrimaryDataSource.isEmpty()) {
+            return;
+        }
+        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
+            oldPrimaryDataSource = newPrimaryDataSource;
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
         }
     }
     
@@ -270,8 +265,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
-                                      final String groupName, final String primaryDataSourceName) {
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
@@ -281,7 +275,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
         }
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames,
-                groupName, primaryDataSourceName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
+                groupName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }
     

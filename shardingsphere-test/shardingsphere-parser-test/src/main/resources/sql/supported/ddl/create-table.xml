@@ -114,4 +114,7 @@
     <sql-case id="create_table_with_on_other_vendor_data_type" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, num MIDDLEINT(10))" db-types="MySQL" />
     <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL" />
     <sql-case id="create_table_with_storage_parameter" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" db-types="openGauss" />
+    <sql-case id="create_table_as_select" value="CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_explicit_column_names" value="CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_query_hint" value="CREATE TABLE dbo.t_order_new WITH (DISTRIBUTION = ROUND_ROBIN, CLUSTERED COLUMNSTORE INDEX) AS SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id OPTION ( HASH JOIN )" db-types="SQLServer" />
 </sql-cases>
