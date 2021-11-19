@@ -36,7 +36,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -82,7 +84,9 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertFindEncryptorByTableNameAndColumnName() {
-        when(tablesContext.findTableName(columnProjection, schema)).thenReturn(Optional.of("t_order"));
+        Map<String, String> columnTableNames = new HashMap<>();
+        columnTableNames.put(columnProjection.getExpression(), "t_order");
+        when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
         when(encryptRule.findEncryptor(null, "t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
@@ -92,7 +96,7 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertFindEncryptorByColumnName() {
-        when(tablesContext.findTableName(columnProjection, schema)).thenReturn(Optional.empty());
+        when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(Collections.emptyMap());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
         when(encryptRule.findEncryptor(null, "t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
