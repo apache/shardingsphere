@@ -72,7 +72,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getOriginalTables();
+        return tablesContext.getTables();
     }
     
     @Override
