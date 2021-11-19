@@ -56,7 +56,7 @@ public final class OrderByValueTest {
 
     @Test
     public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new MySQLSelectStatement());
+        assertCompareToForAsc(new MySQLSelectStatement());   
     }
 
     @Test
