@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
@@ -98,6 +99,9 @@ public final class ExpressionExtractUtil {
             if (each instanceof BinaryOperationExpression) {
                 result.addAll(getParameterMarkerExpressions(Collections.singletonList(((BinaryOperationExpression) each).getLeft())));
                 result.addAll(getParameterMarkerExpressions(Collections.singletonList(((BinaryOperationExpression) each).getRight())));
+            }
+            if (each instanceof FunctionSegment) {
+                result.addAll(getParameterMarkerExpressions(((FunctionSegment) each).getParameters()));
             }
         }
         return result;
