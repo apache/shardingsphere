@@ -88,7 +88,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         return Optional.of(result);
     }
     
-    private int getProjectionsSegmentStopIndex(SqlNode lastSqlNode, ProjectionSegment projectionSegment) {
+    private int getProjectionsSegmentStopIndex(final SqlNode lastSqlNode, final ProjectionSegment projectionSegment) {
         int stopIndex = projectionSegment.getStopIndex();
         if (lastSqlNode instanceof SqlBasicCall && SqlKind.AS == ((SqlBasicCall) lastSqlNode).getOperator().getKind()) {
             stopIndex = getStopIndex(((SqlBasicCall) lastSqlNode).getOperandList().get(1));
