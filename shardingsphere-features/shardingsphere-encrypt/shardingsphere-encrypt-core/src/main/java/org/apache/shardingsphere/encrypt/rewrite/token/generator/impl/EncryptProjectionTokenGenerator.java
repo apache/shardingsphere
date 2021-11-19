@@ -106,8 +106,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) each;
                 String columnName = columnSegment.getColumn().getIdentifier().getValue();
                 String owner = columnSegment.getColumn().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-                boolean sameTableNameOrAlias = isOwnerSameWithTableNameOrAlias(tableName, owner, tablesContext);
-                if (encryptTable.getLogicColumns().contains(columnName) && sameTableNameOrAlias) {
+                if (encryptTable.getLogicColumns().contains(columnName) && isOwnerSameWithTableNameOrAlias(tableName, owner, tablesContext)) {
                     result.add(generateProjectionSQLTokens(columnSegment, encryptTable, tableName, subqueryType));
                 }
                 Optional<String> subqueryTableName = tablesContext.findTableNameFromSubquery(columnName, owner);
