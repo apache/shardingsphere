@@ -44,7 +44,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
-            validateTableExist(schema, sqlStatementContext.getTablesContext().getUniqueTables().values());
+            validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
     
