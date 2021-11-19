@@ -72,9 +72,9 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     
     private void removeDuplicatedRow() {
         if (isQueryDatabase) {
-            List<Map<String, Object>> beRemovedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(databaseNameAlias), Collectors.toCollection(LinkedList::new)))
+            List<Map<String, Object>> toBeRemovedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(databaseNameAlias), Collectors.toCollection(LinkedList::new)))
                     .values().stream().filter(each -> each.size() > 1).map(LinkedList::getLast).collect(Collectors.toList());
-            beRemovedRow.forEach(each -> getRows().remove(each));
+            toBeRemovedRow.forEach(each -> getRows().remove(each));
         }
     }
     
