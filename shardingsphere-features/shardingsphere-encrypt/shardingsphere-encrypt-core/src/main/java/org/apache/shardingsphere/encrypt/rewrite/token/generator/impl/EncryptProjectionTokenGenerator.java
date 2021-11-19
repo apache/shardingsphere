@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
@@ -75,14 +74,16 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         Preconditions.checkState(sqlStatementContext instanceof SelectStatementContext);
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         for (SelectStatementContext each : getSelectStatementContexts((SelectStatementContext) sqlStatementContext)) {
+            Map<String, String> columnTableNames = getColumnTableNames(each);
             for (ProjectionSegment projection : each.getSqlStatement().getProjections().getProjections()) {
-                result.addAll(generateSQLTokens(each, projection));
+                result.addAll(generateSQLTokens(each, projection, columnTableNames));
             }
         }
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, final ProjectionSegment projection) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, 
+                                                                       final ProjectionSegment projection, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         SubqueryType subqueryType = selectStatementContext.getSubqueryType();
         TablesContext tablesContext = selectStatementContext.getTablesContext();
@@ -90,8 +91,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) projection;
             String columnName = columnSegment.getColumn().getIdentifier().getValue();
             String owner = columnSegment.getColumn().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-            Map<String, String> columnTableNames = tablesContext.findTableName(Collections.singletonList(columnSegment.getColumn()), schema);
-            String tableName = columnTableNames.get(columnSegment.getColumn().getQualifiedName());
+            String tableName = columnTableNames.get(null == owner ? columnName : owner + "." + columnName);
             if (getEncryptRule().findEncryptor(tableName, columnName).isPresent() && isOwnerSameWithTableNameOrAlias(tableName, owner, tablesContext)) {
                 result.add(generateSQLTokens(columnSegment, tableName, subqueryType));
             }
@@ -121,17 +121,31 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                                                            final DatabaseType databaseType, final SubqueryType subqueryType, final TablesContext tablesContext) {
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns().values()) {
-            Optional<String> tableName = tablesContext.findTableName(each, schema);
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName.get(), each.getName());
+            Map<String, String> tableNameForColumnProjection = tablesContext.findTableName(Collections.singletonList(each), schema);
+            String logicTable = tableNameForColumnProjection.get(each.getExpression());
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(logicTable, each.getName());
             if (encryptor.isPresent()) {
                 String owner = null == each.getOwner() ? null : each.getOwner();
-                projections.addAll(generateProjections(tableName.get(), each.getName(), each.getName(), owner, subqueryType));
+                projections.addAll(generateProjections(logicTable, each.getName(), each.getName(), owner, subqueryType));
             } else {
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
             }
         }
         previousSQLTokens.removeIf(each -> each.getStartIndex() == segment.getStartIndex());
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
+    }
+    
+    private Map<String, String> getColumnTableNames(final SelectStatementContext selectStatementContext) {
+        Collection<ColumnProjection> columns = new LinkedList<>();
+        for (Projection projection : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (projection instanceof ColumnProjection) {
+                columns.add((ColumnProjection) projection);
+            }
+            if (projection instanceof ShorthandProjection) {
+                columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
+            }
+        }
+        return selectStatementContext.getTablesContext().findTableName(columns, schema);
     }
     
     private Collection<SelectStatementContext> getSelectStatementContexts(final SelectStatementContext selectStatementContext) {
