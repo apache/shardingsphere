@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.converter.segment.projection;
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
@@ -60,7 +61,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
-            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment).map(optional -> optional);
+            return new ColumnProjectionConverter().convertToSQLNode((ColumnProjectionSegment) segment);
         } else if (segment instanceof ExpressionProjectionSegment) {
             return new ExpressionProjectionConverter().convertToSQLNode((ExpressionProjectionSegment) segment);
         } else if (segment instanceof ShorthandProjectionSegment) {
@@ -81,10 +82,18 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             getProjectionSegment(each).ifPresent(projections::add);
         }
         int startIndex = projections.get(0).getStartIndex();
-        int stopIndex = projections.get(projections.size() - 1).getStopIndex();
+        int stopIndex = getProjectionsSegmentStopIndex(sqlNodeList.get(sqlNodeList.size() - 1), projections.get(projections.size() - 1));
         ProjectionsSegment result = new ProjectionsSegment(startIndex, stopIndex);
         result.getProjections().addAll(projections);
         return Optional.of(result);
+    }
+    
+    private int getProjectionsSegmentStopIndex(final SqlNode lastSqlNode, final ProjectionSegment projectionSegment) {
+        int stopIndex = projectionSegment.getStopIndex();
+        if (lastSqlNode instanceof SqlBasicCall && SqlKind.AS == ((SqlBasicCall) lastSqlNode).getOperator().getKind()) {
+            stopIndex = getStopIndex(((SqlBasicCall) lastSqlNode).getOperandList().get(1));
+        }
+        return stopIndex;
     }
     
     private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
@@ -98,6 +107,9 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
             if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName())) {
                 return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+            }
+            if (null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()) {
+                return new ColumnProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
             }
             return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         } else if (sqlNode instanceof SqlSelect || sqlNode instanceof SqlOrderBy) {
