@@ -186,14 +186,7 @@ public final class TablesContext {
         return result;
     }
     
-    /**
-     * Find table name from subquery.
-     * 
-     * @param columnName column name
-     * @param owner column owner
-     * @return table name
-     */
-    public Optional<String> findTableNameFromSubquery(final String columnName, final String owner) {
+    private Optional<String> findTableNameFromSubquery(final String columnName, final String owner) {
         Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.get(owner);
         if (null != subqueryTableContexts) {
             return subqueryTableContexts.stream().filter(each -> each.getColumnNames().contains(columnName)).map(SubqueryTableContext::getTableName).findFirst();
