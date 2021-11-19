@@ -30,7 +30,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -93,15 +92,6 @@ public final class TablesContextTest {
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
-    }
-    
-    @Test
-    public void assertFindTableNameWhenTableNameOrAliasIgnoreCase() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNameFromSQL("Tbl_1");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("table_1"));
     }
     
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {

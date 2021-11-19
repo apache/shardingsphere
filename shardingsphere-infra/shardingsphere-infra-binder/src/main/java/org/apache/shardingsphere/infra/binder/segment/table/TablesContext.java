@@ -133,22 +133,6 @@ public final class TablesContext {
         return result;
     }
     
-    /**
-     * Find table name from SQL.
-     * 
-     * @param tableNameOrAlias table name or alias
-     * @return table name
-     */
-    public Optional<String> findTableNameFromSQL(final String tableNameOrAlias) {
-        for (SimpleTableSegment each : tables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            if (tableNameOrAlias.equalsIgnoreCase(tableName) || tableNameOrAlias.equalsIgnoreCase(each.getAlias().orElse(null))) {
-                return Optional.of(tableName);
-            }
-        }
-        return Optional.empty();
-    }
-    
     private Map<String, String> findTableNameFromSQL(final Map<String, Collection<String>> ownerColumnNames) {
         if (ownerColumnNames.isEmpty()) {
             return Collections.emptyMap();
