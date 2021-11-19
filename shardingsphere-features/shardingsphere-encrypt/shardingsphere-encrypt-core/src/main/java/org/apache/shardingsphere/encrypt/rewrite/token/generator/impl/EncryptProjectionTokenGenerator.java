@@ -71,7 +71,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             for (String table : each.getTablesContext().getTableNames()) {
                 Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(table);
                 encryptTable.ifPresent(optional -> result.addAll(generateSQLTokens(each, optional, table)));
-            }            
+            }
         }
         return result;
     }
