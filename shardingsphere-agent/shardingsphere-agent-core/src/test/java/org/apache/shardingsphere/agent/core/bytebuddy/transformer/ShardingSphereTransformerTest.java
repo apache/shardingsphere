@@ -38,8 +38,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.FieldSetter;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,9 +89,7 @@ public final class ShardingSphereTransformerTest {
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPointInTwice.getClassNameOfTarget(), interceptorPointInTwice);
-        Field interceptorPointMapFiled = LOADER.getClass().getDeclaredField("interceptorPointMap");
-        interceptorPointMapFiled.setAccessible(true);
-        interceptorPointMapFiled.set(LOADER, interceptorPointMap);
+        FieldSetter.setField(LOADER, LOADER.getClass().getDeclaredField("interceptorPointMap"), interceptorPointMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))

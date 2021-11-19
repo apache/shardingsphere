@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -102,17 +103,15 @@ public final class DatabaseCommunicationEngineTest {
     }
     
     @Test
-    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException {
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
-        queryHeadersField.setAccessible(true);
-        queryHeadersField.set(engine, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
+        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
         Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
-        mergedResultField.setAccessible(true);
-        mergedResultField.set(engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
+        FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
             private MemoryQueryResultRow memoryQueryResultRow;
             

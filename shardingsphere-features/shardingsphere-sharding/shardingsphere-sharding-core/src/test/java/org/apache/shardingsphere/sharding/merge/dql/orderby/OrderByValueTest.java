@@ -39,8 +39,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldSetter;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,31 +55,31 @@ import static org.mockito.Mockito.when;
 public final class OrderByValueTest {
 
     @Test
-    public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new MySQLSelectStatement());   
     }
 
     @Test
-    public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new OracleSelectStatement());
     }
 
     @Test
-    public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new PostgreSQLSelectStatement());
     }
 
     @Test
-    public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQL92SelectStatement());
     }
 
     @Test
-    public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQLServerSelectStatement());
     }
     
-    private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForAsc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -92,18 +92,14 @@ public final class OrderByValueTest {
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive.setAccessible(true);
-        orderValuesCaseSensitive.set(orderByValue1, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive2 = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive2.setAccessible(true);
-        orderValuesCaseSensitive2.set(orderByValue2, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -111,31 +107,31 @@ public final class OrderByValueTest {
     }
 
     @Test
-    public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new MySQLSelectStatement());
     }
 
     @Test
-    public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new OracleSelectStatement());
     }
 
     @Test
-    public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new PostgreSQLSelectStatement());
     }
 
     @Test
-    public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQL92SelectStatement());
     }
 
     @Test
-    public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQLServerSelectStatement());
     }
     
-    private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForDesc(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -149,18 +145,14 @@ public final class OrderByValueTest {
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive.setAccessible(true);
-        orderValuesCaseSensitive.set(orderByValue1, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive2 = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive2.setAccessible(true);
-        orderValuesCaseSensitive2.set(orderByValue2, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -168,31 +160,31 @@ public final class OrderByValueTest {
     }
 
     @Test
-    public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new MySQLSelectStatement());
     }
 
     @Test
-    public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new OracleSelectStatement());
     }
 
     @Test
-    public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new PostgreSQLSelectStatement());
     }
 
     @Test
-    public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQL92SelectStatement());
     }
 
     @Test
-    public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQLServerSelectStatement());
     }
     
-    private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToWhenEqual(final SelectStatement selectStatement) throws SQLException, NoSuchFieldException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -205,18 +197,14 @@ public final class OrderByValueTest {
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive.setAccessible(true);
-        orderValuesCaseSensitive.set(orderByValue1, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("1", "2");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
-        Field orderValuesCaseSensitive2 = OrderByValue.class.getDeclaredField("orderValuesCaseSensitive");
-        orderValuesCaseSensitive2.setAccessible(true);
-        orderValuesCaseSensitive2.set(orderByValue2, Arrays.asList(false, false));
+        FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
         assertFalse(orderByValue1.getQueryResult().next());

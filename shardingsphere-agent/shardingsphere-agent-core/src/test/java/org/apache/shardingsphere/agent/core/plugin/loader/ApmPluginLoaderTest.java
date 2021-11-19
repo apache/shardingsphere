@@ -30,8 +30,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.FieldSetter;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
@@ -70,9 +70,7 @@ public final class ApmPluginLoaderTest {
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
-        Field interceptorPointMapFiled = LOADER.getClass().getDeclaredField("interceptorPointMap");
-        interceptorPointMapFiled.setAccessible(true);
-        interceptorPointMapFiled.set(LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        FieldSetter.setField(LOADER, LOADER.getClass().getDeclaredField("interceptorPointMap"), Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
     }
     
     @Test
