@@ -48,13 +48,13 @@ import java.util.stream.Collectors;
 @ToString
 public final class TablesContext {
     
-    private final Collection<SimpleTableSegment> originalTables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     
-    private final Map<String, SimpleTableSegment> uniqueTables = new HashMap<>();
-    
-    private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
+    private final Collection<String> tableNames = new HashSet<>();
     
     private final Collection<String> schemaNames = new HashSet<>();
+    
+    private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
     public TablesContext(final SimpleTableSegment tableSegment) {
         this(Collections.singletonList(tableSegment));
@@ -71,8 +71,8 @@ public final class TablesContext {
         Collection<SimpleTableSegment> simpleTableSegments = tableSegments.stream().filter(each 
             -> each instanceof SimpleTableSegment).map(each -> (SimpleTableSegment) each).collect(Collectors.toList());
         for (SimpleTableSegment each : simpleTableSegments) {
-            originalTables.add(each);
-            uniqueTables.putIfAbsent(each.getTableName().getIdentifier().getValue(), each);
+            tables.add(each);
+            tableNames.add(each.getTableName().getIdentifier().getValue());
             each.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
         }
         Collection<SubqueryTableSegment> subqueryTableSegments = tableSegments.stream().filter(each
@@ -90,16 +90,7 @@ public final class TablesContext {
      * @return table names
      */
     public Collection<String> getTableNames() {
-        return uniqueTables.keySet();
-    }
-    
-    /**
-     * Get all unique table segments.
-     *
-     * @return all unique table segments
-     */
-    public Collection<SimpleTableSegment> getAllUniqueTables() {
-        return uniqueTables.values();
+        return tableNames;
     }
     
     /**
@@ -110,8 +101,8 @@ public final class TablesContext {
      * @return table name map
      */
     public Map<String, String> findTableName(final Collection<ColumnSegment> columns, final ShardingSphereSchema schema) {
-        if (1 == uniqueTables.size()) {
-            String tableName = uniqueTables.keySet().iterator().next();
+        if (1 == tableNames.size()) {
+            String tableName = tableNames.iterator().next();
             return columns.stream().collect(Collectors.toMap(ColumnSegment::getQualifiedName, each -> tableName, (oldValue, currentValue) -> oldValue));
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
@@ -131,8 +122,8 @@ public final class TablesContext {
      * @return table name
      */
     public Optional<String> findTableName(final ColumnProjection column, final ShardingSphereSchema schema) {
-        if (1 == uniqueTables.size()) {
-            return Optional.of(uniqueTables.keySet().iterator().next());
+        if (1 == tableNames.size()) {
+            return Optional.of(tableNames.iterator().next());
         }
         if (null != column.getOwner()) {
             return findTableNameFromSQL(column.getOwner());
@@ -147,9 +138,10 @@ public final class TablesContext {
      * @return table name
      */
     public Optional<String> findTableNameFromSQL(final String tableNameOrAlias) {
-        for (String each : uniqueTables.keySet()) {
-            if (tableNameOrAlias.equalsIgnoreCase(each) || tableNameOrAlias.equalsIgnoreCase(uniqueTables.get(each).getAlias().orElse(null))) {
-                return Optional.of(each);
+        for (SimpleTableSegment each : tables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (tableNameOrAlias.equalsIgnoreCase(tableName) || tableNameOrAlias.equalsIgnoreCase(each.getAlias().orElse(null))) {
+                return Optional.of(tableName);
             }
         }
         return Optional.empty();
@@ -160,13 +152,14 @@ public final class TablesContext {
             return Collections.emptyMap();
         }
         Map<String, String> result = new HashMap<>();
-        for (String each : uniqueTables.keySet()) {
-            if (ownerColumns.containsKey(each)) {
-                ownerColumns.get(each).stream().map(ColumnSegment::getQualifiedName).forEach(column -> result.put(column, each));
+        for (SimpleTableSegment each : tables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (ownerColumns.containsKey(tableName)) {
+                ownerColumns.get(tableName).stream().map(ColumnSegment::getQualifiedName).forEach(column -> result.put(column, tableName));
             }
-            Optional<String> alias = uniqueTables.get(each).getAlias();
+            Optional<String> alias = each.getAlias();
             if (alias.isPresent() && ownerColumns.containsKey(alias.get())) {
-                ownerColumns.get(alias.get()).stream().map(ColumnSegment::getQualifiedName).forEach(column -> result.put(column, each));
+                ownerColumns.get(alias.get()).stream().map(ColumnSegment::getQualifiedName).forEach(column -> result.put(column, tableName));
             }
         }
         return result;
@@ -177,23 +170,25 @@ public final class TablesContext {
             return Collections.emptyMap();
         }
         Map<String, String> result = new HashMap<>();
-        for (String each : uniqueTables.keySet()) {
-            Collection<String> tableColumnNames = schema.getAllColumnNames(each);
+        for (SimpleTableSegment each : tables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            Collection<String> tableColumnNames = schema.getAllColumnNames(tableName);
             if (tableColumnNames.isEmpty()) {
                 continue;
             }
-            Collection<String> intersectionColumnNames = tableColumnNames.stream().filter(columnNames::contains).collect(Collectors.toList());
-            for (String columnName : intersectionColumnNames) {
-                result.put(columnName, each);
+            Collection<String> intersectColumnNames = tableColumnNames.stream().filter(columnNames::contains).collect(Collectors.toList());
+            for (String columnName : intersectColumnNames) {
+                result.put(columnName, tableName);
             }
         }
         return result;
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {
-        for (String each : uniqueTables.keySet()) {
-            if (schema.containsColumn(each, columnName)) {
-                return Optional.of(each);
+        for (SimpleTableSegment each : tables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (schema.containsColumn(tableName, columnName)) {
+                return Optional.of(tableName);
             }
         }
         return Optional.empty();

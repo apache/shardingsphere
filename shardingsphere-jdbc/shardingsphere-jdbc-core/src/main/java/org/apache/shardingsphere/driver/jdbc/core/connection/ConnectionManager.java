@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Executor
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
@@ -68,9 +70,17 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
-        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
-                .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+        TransactionType type = TransactionTypeHolder.get();
+        if (null == type) {
+            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+            return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
+                    .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+        }
+        ConnectionTransaction result = new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
+        if (null == result) {
+            throw new RuntimeException(String.format("Get connectionTransaction error for transaction type %s", type.name()));
+        }
+        return result;
     }
     
     /**

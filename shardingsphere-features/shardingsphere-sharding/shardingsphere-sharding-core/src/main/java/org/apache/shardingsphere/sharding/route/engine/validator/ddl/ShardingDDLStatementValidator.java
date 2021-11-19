@@ -98,6 +98,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param schema ShardingSphere schema
      * @param index index
+     * @return whether schema contains index or not
      */
     protected boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
         return schema.getAllTableNames().stream().anyMatch(each -> schema.get(each).getIndexes().containsKey(index.getIdentifier().getValue()));

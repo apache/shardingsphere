@@ -55,7 +55,7 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getOriginalTables();
+        return tablesContext.getTables();
     }
     
     @Override

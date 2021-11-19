@@ -38,7 +38,7 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
         TableMetaData tableMetaData = new TableMetaData();
         schemaMetaData.getSchema().put(viewName, tableMetaData);
         if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.addDataNode(viewName, logicDataSourceNames.iterator().next()));
+            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
         }
     }
     

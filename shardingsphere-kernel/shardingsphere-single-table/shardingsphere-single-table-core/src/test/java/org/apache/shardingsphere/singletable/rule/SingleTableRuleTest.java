@@ -30,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -94,9 +94,8 @@ public final class SingleTableRuleTest {
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Map<String, SingleTableDataNode> actual = singleTableRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
-        Iterator<SingleTableDataNode> iterator = actual.values().iterator();
-        assertThat(iterator.next().getTableName(), is("employee"));
-        assertThat(iterator.next().getTableName(), is("student"));
+        assertTrue(actual.containsKey("employee"));
+        assertTrue(actual.containsKey("student"));
     }
     
     @Test
@@ -107,8 +106,7 @@ public final class SingleTableRuleTest {
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Map<String, SingleTableDataNode> actual = singleTableRule.getSingleTableDataNodes();
         assertThat(actual.size(), is(2));
-        Iterator<SingleTableDataNode> iterator = actual.values().iterator();
-        assertThat(iterator.next().getTableName(), is("employee"));
-        assertThat(iterator.next().getTableName(), is("student"));
+        assertTrue(actual.containsKey("employee"));
+        assertTrue(actual.containsKey("student"));
     }
 }

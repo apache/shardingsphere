@@ -72,8 +72,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().addDataNode("t_single", "db");
-            singleTableRule.get().addDataNode("t_single_extend", "db");
+            singleTableRule.get().put("t_single", "db");
+            singleTableRule.get().put("t_single_extend", "db");
         }
     }
     

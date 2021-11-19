@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Single table data node loader.
@@ -51,12 +51,12 @@ public final class SingleTableDataNodeLoader {
      */
     public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
-        Map<String, SingleTableDataNode> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, SingleTableDataNode> result = new ConcurrentHashMap<>();
         boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, SingleTableDataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
-                SingleTableDataNode existDataNode = result.putIfAbsent(each, dataNodeMap.get(each));
+                SingleTableDataNode existDataNode = result.putIfAbsent(each.toLowerCase(), dataNodeMap.get(each));
                 if (checkDuplicateTable) {
                     Preconditions.checkState(null == existDataNode, "Single table conflict, there are multiple tables `%s` existed.", each);
                 }

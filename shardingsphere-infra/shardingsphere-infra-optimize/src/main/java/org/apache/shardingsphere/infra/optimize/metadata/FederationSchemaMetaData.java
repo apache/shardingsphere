@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.optimize.metadata;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Federation schema meta data.
@@ -32,30 +32,31 @@ public final class FederationSchemaMetaData {
     
     private final String name;
     
-    private final Map<String, FederationTableMetaData> tables = new LinkedHashMap<>();
+    private final Map<String, FederationTableMetaData> tables;
     
     public FederationSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
+        this.tables = new ConcurrentHashMap<>(metaData.size(), 1);
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
-            tables.put(entry.getKey(), new FederationTableMetaData(entry.getValue().getName(), entry.getValue()));
+            tables.put(entry.getKey().toLowerCase(), new FederationTableMetaData(entry.getValue().getName(), entry.getValue()));
         }
     }
     
     /**
-     * Update table meta data.
+     * Add table meta data.
      * 
      * @param metaData table meta data to be updated
      */
-    public synchronized void update(final TableMetaData metaData) {
+    public void put(final TableMetaData metaData) {
         tables.put(metaData.getName().toLowerCase(), new FederationTableMetaData(metaData.getName(), metaData));
     }
     
     /**
-     * Remove table.
+     * Remove table meta data.
      * 
      * @param tableName table name to be removed
      */
-    public synchronized void remove(final String tableName) {
+    public void remove(final String tableName) {
         tables.remove(tableName.toLowerCase());
     }
 }

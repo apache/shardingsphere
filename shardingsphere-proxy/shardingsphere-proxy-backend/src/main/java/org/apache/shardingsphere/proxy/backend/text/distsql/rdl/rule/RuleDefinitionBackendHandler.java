@@ -94,7 +94,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
-        ProxyContext.getInstance().getContextManager().alterRule(shardingSphereMetaData.getName());
+        ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
