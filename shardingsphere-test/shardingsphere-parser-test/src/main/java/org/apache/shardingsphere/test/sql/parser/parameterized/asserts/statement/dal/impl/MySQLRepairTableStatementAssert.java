@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.t
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
 
 /**
- * Repair table statement assert.
+ * MySQL repair table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLRepairTableStatementAssert {

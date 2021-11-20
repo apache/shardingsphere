@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 
 /**
- * MySQL show procedure code statement assert.
+ * Show procedure code statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcedureCodeStatementAssert {
