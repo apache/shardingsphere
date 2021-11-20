@@ -40,13 +40,13 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String sql;
     
-    private final List<PostgreSQLColumnType> preparedStatementColumnTypes;
+    private final List<PostgreSQLColumnType> columnTypes;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
-        preparedStatementColumnTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
+        columnTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
     }
     
     private List<PostgreSQLColumnType> getParameterTypes(final PostgreSQLPacketPayload payload) {

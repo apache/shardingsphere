@@ -40,7 +40,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         String schemaName = backendConnection.getSchemaName();
         SQLStatement sqlStatement = parseSql(packet.getSql(), schemaName);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(backendConnection.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.getPreparedStatementColumnTypes());
+        PostgreSQLPreparedStatementRegistry.getInstance().register(backendConnection.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.getColumnTypes());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
