@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
@@ -64,7 +64,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     @Override
     public int handshake(final ChannelHandlerContext context) {
         int result = ConnectionIdGenerator.getInstance().nextId();
-        PostgreSQLBinaryStatementRegistry.getInstance().register(result);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(result);
         return result;
     }
     

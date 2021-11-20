@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 
 import java.sql.Types;
 
@@ -47,6 +47,6 @@ public final class PostgreSQLColumnDescription {
         this.columnName = columnName;
         this.columnIndex = columnIndex;
         this.columnLength = columnLength;
-        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOid(columnTypeName) : PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getValue();
+        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOid(columnTypeName) : PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
     }
 }
