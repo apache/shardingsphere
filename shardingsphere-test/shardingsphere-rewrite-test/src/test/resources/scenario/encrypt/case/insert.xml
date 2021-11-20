@@ -67,11 +67,6 @@
         <output sql="INSERT INTO t_account(account_id, cipher_certificate_number, assisted_query_certificate_number, cipher_password, assisted_query_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?), (2, 'encrypt_222X', 'assisted_query_222X', 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (?, ?, ?, ?, ?, ?, ?), (4, 'encrypt_444X', 'assisted_query_444X', 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" parameters="1, encrypt_111X, assisted_query_111X, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_333X, assisted_query_333X, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="insert_select_encrypt_rewrite" db-types="MySQL">
-        <input sql="INSERT INTO t_account(account_id, certificate_number, password, amount) SELECT account_id, certificate_number, password, amount FROM t_account_bak WHERE certificate_number = ?" parameters="111X"/>
-        <output sql="INSERT INTO t_account(account_id, cipher_certificate_number, assisted_query_certificate_number, cipher_password, assisted_query_password, cipher_amount) SELECT account_id, cipher_certificate_number AS certificate_number, cipher_password AS password, cipher_amount AS amount FROM t_account_bak WHERE assisted_query_certificate_number = ?" parameters="assisted_query_111X" />
-    </rewrite-assertion>
-    
     <rewrite-assertion id="insert_values_without_columns_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account VALUES (1, '111X', 'aaa', 1000, 'OK'), (2, '222X', 'bbb', 2000, 'OK'), (3, '333X', 'ccc', 3000, 'OK'), (4, '444X', 'ddd', 4000, 'OK')" />
         <output sql="INSERT INTO t_account(account_id, cipher_certificate_number, assisted_query_certificate_number, cipher_password, assisted_query_password, cipher_amount, status) VALUES (1, 'encrypt_111X', 'assisted_query_111X', 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (2, 'encrypt_222X', 'assisted_query_222X', 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (3, 'encrypt_333X', 'assisted_query_333X', 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK'), (4, 'encrypt_444X', 'assisted_query_444X', 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />

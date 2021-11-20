@@ -183,7 +183,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getOriginalTables();
+        return tablesContext.getTables();
     }
     
     /**

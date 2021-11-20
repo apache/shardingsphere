@@ -93,6 +93,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     /**
      * Initialize the schema data.
+     *
+     * @param schemaName schema name
      */
     protected abstract void initSchemaData(String schemaName);
     

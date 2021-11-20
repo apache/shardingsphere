@@ -6,7 +6,7 @@ weight = 1
 ## Startup Steps
 
 1. Download the latest version of ShardingSphere-Proxy.
-1. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and readwrite-splitting rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for the configuration method.
+1. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and readwrite-splitting rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for the configuration method.
 1. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start ShardingSphere-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/shardingsphere-proxy-quick-start/).
 
 ## Using database protocol
@@ -47,7 +47,7 @@ When developer need to use user-defined algorithm, should use the way below to c
 1. Implement `ShardingAlgorithm` interface.
 1. Package Java file to jar.
 1. Copy jar to ShardingSphere-Proxy's `ext-lib/` folder.
-1. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
+1. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.
 
 ## Notices
 

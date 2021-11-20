@@ -35,7 +35,11 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     private static final String REL_NAME = "relname";
     
+    private static final String REF_NAME = "refname";
+    
     private static final String TABLE_NAME = "tablename";
+    
+    private static final String NAME = "name";
     
     private String actualTableName = "";
     
@@ -59,7 +63,7 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     @Override
     protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         if (actualTableName.isEmpty()) {
-            actualTableName = aliasMap.getOrDefault(REL_NAME, aliasMap.getOrDefault(TABLE_NAME, ""));
+            actualTableName = aliasMap.getOrDefault(REL_NAME, aliasMap.getOrDefault(TABLE_NAME, aliasMap.getOrDefault(NAME, aliasMap.getOrDefault(REF_NAME, ""))));
         }
     }
     

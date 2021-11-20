@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.projection.Dis
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
@@ -90,8 +92,28 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
             new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
             createLimitSegment(sqlOrderBy, context).ifPresent(result::setLimit);
         }
+        calculateParamCount(result, context);
         result.setParameterCount(context.getParameterCount().get());
         return result;
+    }
+    
+    private void calculateParamCount(final MySQLSelectStatement result, final ConverterContext context) {
+        result.getWhere().ifPresent(whereSegment -> {
+            if (whereSegment.getExpr() instanceof BinaryOperationExpression) {
+                if (((BinaryOperationExpression) whereSegment.getExpr()).getLeft() instanceof ParameterMarkerExpressionSegment 
+                        || ((BinaryOperationExpression) whereSegment.getExpr()).getRight() instanceof ParameterMarkerExpressionSegment) {
+                    context.getParameterCount().incrementAndGet();
+                }
+            }
+        });
+        result.getHaving().ifPresent(havingSegment -> {
+            if (havingSegment.getExpr() instanceof BinaryOperationExpression) {
+                if (((BinaryOperationExpression) havingSegment.getExpr()).getLeft() instanceof ParameterMarkerExpressionSegment
+                        || ((BinaryOperationExpression) havingSegment.getExpr()).getRight() instanceof ParameterMarkerExpressionSegment) {
+                    context.getParameterCount().incrementAndGet();
+                }
+            }
+        });
     }
     
     private Optional<LimitSegment> createLimitSegment(final SqlOrderBy sqlOrderBy, final ConverterContext context) {

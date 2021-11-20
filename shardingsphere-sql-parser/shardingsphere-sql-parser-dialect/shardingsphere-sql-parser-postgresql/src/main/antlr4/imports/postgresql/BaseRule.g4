@@ -421,6 +421,7 @@ unreservedWord
     | ZONE
     | JSON
     | PARAM
+    | TABLE
     ;
 
 typeFuncNameKeyword

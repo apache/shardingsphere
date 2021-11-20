@@ -83,6 +83,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_limit");
         SUPPORTED_SQL_CASE_IDS.add("select_left_outer_join_related_with_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_right_outer_join_related_with_alias");
+        SUPPORTED_SQL_CASE_IDS.add("select_alias_as_keyword");
     }
     
     private final String sqlCaseId;
