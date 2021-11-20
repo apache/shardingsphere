@@ -17,25 +17,34 @@
 
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.test.TestingServer;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
+import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.zookeeper.CreateMode;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
@@ -48,6 +57,25 @@ public final class MGRDatabaseDiscoveryTypeTest {
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
+    
+    private static TestingServer server;
+    
+    private static CuratorFramework client;
+    
+    @BeforeClass
+    public static void before() throws Exception {
+        server = new TestingServer(2181, true);
+        server.start();
+        client = CuratorFrameworkFactory.newClient("127.0.0.1",
+                new ExponentialBackoffRetry(1000, 3));
+        client.start();
+    }
+    
+    @AfterClass
+    public static void after() throws Exception {
+        server.stop();
+        client.close();
+    }
     
     @Test
     public void checkHAConfig() {
@@ -116,5 +144,55 @@ public final class MGRDatabaseDiscoveryTypeTest {
         mgrHaType.getProps().setProperty("groupName", "group_name");
         mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
+    }
+    
+    @Test
+    public void startPeriodicalUpdate() throws NoSuchFieldException, IllegalAccessException {
+        Properties props = mock(Properties.class);
+        when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
+        when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
+        Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("props");
+        propsFiled.setAccessible(true);
+        propsFiled.set(mgrHaType, props);
+        HashMap<String, ScheduleJobBootstrap> hashMap = spy(HashMap.class);
+        Field SCHEDULE_JOB_BOOTSTRAP_MAP_Filed = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
+        SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(SCHEDULE_JOB_BOOTSTRAP_MAP_Filed, SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.getModifiers() & ~Modifier.FINAL);
+        SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.set(mgrHaType, hashMap);
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
+        mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
+        verify(hashMap, times(2)).get("group_name");
+        Assert.assertEquals(hashMap.get("group_name").getClass(), ScheduleJobBootstrap.class);
+        hashMap.get("group_name").shutdown();
+    }
+    
+    @Test
+    public void updateProperties() throws Exception {
+        Properties props = mock(Properties.class);
+        when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
+        when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
+        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "");
+        CoordinatorRegistryCenter coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
+        coordinatorRegistryCenter.init();
+        Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("coordinatorRegistryCenter");
+        propsFiled.setAccessible(true);
+        propsFiled.set(mgrHaType, coordinatorRegistryCenter);
+        ( (CuratorFramework)coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
+        ( (CuratorFramework)coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
+        mgrHaType.updateProperties("group_name", props);
+        Assert.assertNotEquals(coordinatorRegistryCenter.get("/mgr-elasticjob/MGR-group_name/config"),"123");
+        Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" +
+                "disabled: false\n" +
+                "failover: false\n" +
+                "jobName: MGR-group_name\n" +
+                "maxTimeDiffSeconds: -1\n" +
+                "misfire: false\n" +
+                "monitorExecution: false\n" +
+                "overwrite: false\n" +
+                "reconcileIntervalMinutes: 0\n" +
+                "shardingTotalCount: 1\n" +
+                "staticSharding: false\n");
     }
 }
