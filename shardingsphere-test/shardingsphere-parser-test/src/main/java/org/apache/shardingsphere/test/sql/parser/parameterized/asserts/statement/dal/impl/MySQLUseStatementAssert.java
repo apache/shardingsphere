@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Use statement assert.
+ * MySQL use statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLUseStatementAssert {

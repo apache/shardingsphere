@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * MySQL show relay log events statement assert.
+ * Show relay log events statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowRelaylogEventsStatementAssert {

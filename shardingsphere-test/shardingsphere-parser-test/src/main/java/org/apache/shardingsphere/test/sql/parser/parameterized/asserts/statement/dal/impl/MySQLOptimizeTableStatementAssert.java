@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.t
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 
 /**
- * Optimize table statement assert.
+ * MySQL optimize table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLOptimizeTableStatementAssert {
