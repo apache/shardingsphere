@@ -958,6 +958,7 @@ public final class SQLParserTestCases {
         putAll(createDefaultSingleTableRuleStatementTestCases, result);
         putAll(alterDefaultSingleTableRuleStatementTestCases, result);
         putAll(dropDefaultSingleTableRuleStatementTestCases, result);
+        putAll(shutdownStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
