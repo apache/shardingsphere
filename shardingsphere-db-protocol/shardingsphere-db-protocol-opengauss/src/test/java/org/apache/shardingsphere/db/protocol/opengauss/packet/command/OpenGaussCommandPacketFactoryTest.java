@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
-import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.binary.bind.OpenGaussComBatchBindPacket;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
@@ -46,8 +46,8 @@ public final class OpenGaussCommandPacketFactoryTest {
     
     @Test
     public void assertNewOpenGaussComBatchBindPacket() {
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "assertNewOpenGaussComBatchBindPacket", "", mock(SQLStatement.class), Collections.emptyList());
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "assertNewOpenGaussComBatchBindPacket", "", mock(SQLStatement.class), Collections.emptyList());
         when(payload.readStringNul()).thenReturn("assertNewOpenGaussComBatchBindPacket");
         CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload, 1);
         assertThat(actual, instanceOf(OpenGaussComBatchBindPacket.class));
