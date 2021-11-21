@@ -40,11 +40,20 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
@@ -179,20 +188,12 @@ public final class MGRDatabaseDiscoveryTypeTest {
         Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("coordinatorRegistryCenter");
         propsFiled.setAccessible(true);
         propsFiled.set(mgrHaType, coordinatorRegistryCenter);
-        ( (CuratorFramework)coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
-        ( (CuratorFramework)coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
+        ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
+        ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
         mgrHaType.updateProperties("group_name", props);
-        Assert.assertNotEquals(coordinatorRegistryCenter.get("/mgr-elasticjob/MGR-group_name/config"),"123");
-        Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" +
-                "disabled: false\n" +
-                "failover: false\n" +
-                "jobName: MGR-group_name\n" +
-                "maxTimeDiffSeconds: -1\n" +
-                "misfire: false\n" +
-                "monitorExecution: false\n" +
-                "overwrite: false\n" +
-                "reconcileIntervalMinutes: 0\n" +
-                "shardingTotalCount: 1\n" +
-                "staticSharding: false\n");
+        Assert.assertNotEquals(coordinatorRegistryCenter.get("/mgr-elasticjob/MGR-group_name/config"), "123");
+        Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" + "disabled: false\n"
+                + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
+                + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n");
     }
 }
