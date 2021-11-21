@@ -112,7 +112,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
      * @return PostgreSQL error response packet builder
      * @see <a href="https://www.postgresql.org/docs/12/protocol-error-fields.html">52.8. Error and Notice Message Fields</a>
      */
-    public static Builder newBuilder(final PostgreSQLMessageSeverityLevel severity, final PostgreSQLErrorCode postgreSQLErrorCode, final String message) {
+    public static Builder newBuilder(final String severity, final PostgreSQLErrorCode postgreSQLErrorCode, final String message) {
         return newBuilder(severity, postgreSQLErrorCode.getErrorCode(), message);
     }
     
@@ -125,7 +125,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
      * @return PostgreSQL error response packet builder
      * @see <a href="https://www.postgresql.org/docs/12/protocol-error-fields.html">52.8. Error and Notice Message Fields</a>
      */
-    public static Builder newBuilder(final PostgreSQLMessageSeverityLevel severity, final String code, final String message) {
+    public static Builder newBuilder(final String severity, final String code, final String message) {
         return new Builder(severity, code, message);
     }
     
@@ -133,12 +133,12 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
         
         private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
         
-        private Builder(final PostgreSQLMessageSeverityLevel severity, final String code, final String message) {
+        private Builder(final String severity, final String code, final String message) {
             Preconditions.checkArgument(null != severity, "The severity is always present!");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(code), "The SQLSTATE code is always present!");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(message), "The message is always present!");
-            fields.put(FIELD_TYPE_SEVERITY, severity.name());
-            fields.put(FIELD_TYPE_SEVERITY_NON_LOCALIZED, severity.name());
+            fields.put(FIELD_TYPE_SEVERITY, severity);
+            fields.put(FIELD_TYPE_SEVERITY_NON_LOCALIZED, severity);
             fields.put(FIELD_TYPE_CODE, code);
             fields.put(FIELD_TYPE_MESSAGE, message);
         }

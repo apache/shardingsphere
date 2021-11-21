@@ -69,9 +69,9 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
         fillRequiredFieldsIfNecessary();
     }
     
-    public OpenGaussErrorResponsePacket(final PostgreSQLMessageSeverityLevel severityLevel, final String sqlState, final String message) {
+    public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
         fields = new LinkedHashMap<>(4, 1);
-        fields.put(FIELD_TYPE_SEVERITY, severityLevel.name());
+        fields.put(FIELD_TYPE_SEVERITY, severityLevel);
         fields.put(FIELD_TYPE_CODE, sqlState);
         fields.put(FIELD_TYPE_MESSAGE, message);
         fillRequiredFieldsIfNecessary();

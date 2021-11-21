@@ -73,7 +73,7 @@ public final class PostgreSQLErrPacketFactory {
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
                 .detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
                 .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
                 .schemaName(serverErrorMessage.getSchema()).tableName(serverErrorMessage.getTable()).columnName(serverErrorMessage.getColumn()).dataTypeName(serverErrorMessage.getDatatype())
