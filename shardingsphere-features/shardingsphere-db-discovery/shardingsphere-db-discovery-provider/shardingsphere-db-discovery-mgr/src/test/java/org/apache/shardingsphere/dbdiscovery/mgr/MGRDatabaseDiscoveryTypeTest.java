@@ -57,6 +57,10 @@ import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
+    private static TestingServer server;
+    
+    private static CuratorFramework client;
+    
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
     private static final String MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
@@ -66,10 +70,6 @@ public final class MGRDatabaseDiscoveryTypeTest {
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
-    
-    private static TestingServer server;
-    
-    private static CuratorFramework client;
     
     @BeforeClass
     public static void before() throws Exception {
@@ -163,18 +163,18 @@ public final class MGRDatabaseDiscoveryTypeTest {
         Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("props");
         propsFiled.setAccessible(true);
         propsFiled.set(mgrHaType, props);
-        HashMap<String, ScheduleJobBootstrap> hashMap = spy(HashMap.class);
-        Field SCHEDULE_JOB_BOOTSTRAP_MAP_Filed = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
-        SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.setAccessible(true);
+        final Map<String, ScheduleJobBootstrap> scheduleJobHashMap = spy(HashMap.class);
+        Field scheduleJobBootstrapMapFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
+        scheduleJobBootstrapMapFiled.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
-        modifiersField.setInt(SCHEDULE_JOB_BOOTSTRAP_MAP_Filed, SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.getModifiers() & ~Modifier.FINAL);
-        SCHEDULE_JOB_BOOTSTRAP_MAP_Filed.set(mgrHaType, hashMap);
+        modifiersField.setInt(scheduleJobBootstrapMapFiled, scheduleJobBootstrapMapFiled.getModifiers() & ~Modifier.FINAL);
+        scheduleJobBootstrapMapFiled.set(mgrHaType, scheduleJobHashMap);
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
         mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
-        verify(hashMap, times(2)).get("group_name");
-        Assert.assertEquals(hashMap.get("group_name").getClass(), ScheduleJobBootstrap.class);
-        hashMap.get("group_name").shutdown();
+        verify(scheduleJobHashMap, times(2)).get("group_name");
+        Assert.assertEquals(scheduleJobHashMap.get("group_name").getClass(), ScheduleJobBootstrap.class);
+        scheduleJobHashMap.get("group_name").shutdown();
     }
     
     @Test
@@ -191,7 +191,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
         mgrHaType.updateProperties("group_name", props);
-        Assert.assertNotEquals(coordinatorRegistryCenter.get("/mgr-elasticjob/MGR-group_name/config"), "123");
+        Assert.assertNotEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "123");
         Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" + "disabled: false\n"
                 + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
                 + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n");
