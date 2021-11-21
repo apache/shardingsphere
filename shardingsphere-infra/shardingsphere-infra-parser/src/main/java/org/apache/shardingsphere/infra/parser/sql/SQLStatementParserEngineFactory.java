@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,10 +36,10 @@ public final class SQLStatementParserEngineFactory {
      * Get SQL statement parser engine.
      *
      * @param databaseType name of database type
-     * @param sqlCommentParseEnabled sql comment parse enabled
+     * @param props configuration props
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final boolean sqlCommentParseEnabled) {
-        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlCommentParseEnabled)));
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final ConfigurationProperties props) {
+        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, props)));
     }
 }
