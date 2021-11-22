@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public final class PostgreSQLConnectionContextTest {
     @Test
     public void assertCreatePortal() throws SQLException {
         PostgreSQLConnectionContext context = new PostgreSQLConnectionContext();
-        PostgreSQLBinaryStatement statement = mock(PostgreSQLBinaryStatement.class);
+        PostgreSQLPreparedStatement statement = mock(PostgreSQLPreparedStatement.class);
         when(statement.getSql()).thenReturn("");
         when(statement.getSqlStatement()).thenReturn(new EmptyStatement());
         PostgreSQLPortal actual = context.createPortal("P_1", statement, Collections.emptyList(), Collections.emptyList(), mock(BackendConnection.class));

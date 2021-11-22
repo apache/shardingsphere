@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,5 +35,11 @@ public final class SubstitutableColumnNameTokenTest {
     public void assertToString() {
         Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", null));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(mock(RouteUnit.class)), is("id"));
+    }
+    
+    @Test
+    public void assertToStringWithQuote() {
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", "id"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
     }
 }

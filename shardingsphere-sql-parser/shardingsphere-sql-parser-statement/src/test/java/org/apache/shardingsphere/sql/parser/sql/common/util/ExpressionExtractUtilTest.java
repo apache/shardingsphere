@@ -20,13 +20,18 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -97,5 +102,20 @@ public final class ExpressionExtractUtilTest {
         AndPredicate andPredicate2 = iterator.next();
         assertThat(andPredicate1.getPredicates().size(), is(1));
         assertThat(andPredicate2.getPredicates().size(), is(2));
+    }
+    
+    @Test
+    public void assertExtractGetParameterMarkerExpressions() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "IF", "IF(number + 1 <= ?, 1, -1)");
+        BinaryOperationExpression param1 = new BinaryOperationExpression(0, 0,
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("number")), new LiteralExpressionSegment(0, 0, 1), "+", "number + 1"),
+                new ParameterMarkerExpressionSegment(0, 0, 2), "<=", "number + 1 <= ?");
+        CommonExpressionSegment param2 = new CommonExpressionSegment(0, 0, "1");
+        CommonExpressionSegment param3 = new CommonExpressionSegment(0, 0, "-1");
+        functionSegment.getParameters().add(param1);
+        functionSegment.getParameters().add(param2);
+        functionSegment.getParameters().add(param3);
+        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtil.getParameterMarkerExpressions(Collections.singletonList(functionSegment));
+        assertThat(result.size(), is(1));
     }
 }

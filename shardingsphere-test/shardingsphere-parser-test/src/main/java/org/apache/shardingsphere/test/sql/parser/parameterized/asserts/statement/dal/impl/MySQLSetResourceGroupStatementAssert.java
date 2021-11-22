@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Set resource group statement assert.
+ * MySQL set resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLSetResourceGroupStatementAssert {

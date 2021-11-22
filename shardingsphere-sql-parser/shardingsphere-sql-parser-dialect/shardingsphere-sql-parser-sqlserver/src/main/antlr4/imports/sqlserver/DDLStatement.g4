@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement, DCLStatement;
 
 createTable
-    : CREATE TABLE tableName fileTableClause createDefinitionClause
+    : CREATE createTableSpecification TABLE tableName fileTableClause createDefinitionClause
     ;
 
 createIndex
@@ -148,7 +148,7 @@ fileTableClause
     ;
 
 createDefinitionClause
-    : createTableAsSelect? createTableDefinitions partitionScheme fileGroup
+    : createTableAsSelect? createRemoteTableAsSelect? createTableDefinitions partitionScheme fileGroup
     ;
 
 createTableDefinitions
@@ -1077,4 +1077,12 @@ withDistributionOption
 
 optionQueryHintClause
     : (OPTION LP_ queryHint (COMMA_ queryHint)* RP_)?
+    ;
+
+createTableSpecification
+    : REMOTE?
+    ;
+
+createRemoteTableAsSelect
+    : AT LP_ stringLiterals RP_ (WITH LP_ BATCH_SIZE EQ_ INT_NUM_ RP_)? AS select
     ;

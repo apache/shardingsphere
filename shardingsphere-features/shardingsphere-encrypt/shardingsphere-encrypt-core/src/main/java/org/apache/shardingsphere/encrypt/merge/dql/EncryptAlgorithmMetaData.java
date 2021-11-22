@@ -20,12 +20,14 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -58,9 +60,10 @@ public final class EncryptAlgorithmMetaData {
         Projection projection = expandProjections.get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
-            Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schema);
+            Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList((ColumnProjection) projection), schema);
             String schemaName = selectStatementContext.getSchemaName();
-            return tableName.isPresent() ? findEncryptor(schemaName, tableName.get(), columnName) : findEncryptor(schemaName, columnName);
+            return columnTableNames.containsKey(projection.getExpression()) 
+                    ? findEncryptor(schemaName, columnTableNames.get(projection.getExpression()), columnName) : findEncryptor(schemaName, columnName);
         }
         return Optional.empty();
     }

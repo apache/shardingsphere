@@ -118,8 +118,49 @@
 
     <show-databases sql-case-id="show_databases" />
 
+    <show-databases sql-case-id="show_schemas" />
+
     <show-databases sql-case-id="show_databases_with_like">
-        <like pattern="sharding_db" start-index="15" stop-index="32" />
+        <filter start-index="15" stop-index="32">
+            <like pattern="sharding_db" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="32"/>
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_databases_with_where_expr" parameters="'sharding_db'">
+        <filter start-index="15" stop-index="34" literal-stop-index="46">
+            <where start-index="15" stop-index="34" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="21" stop-index="34" literal-stop-index="46">
+                        <left>
+                            <column name="database" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="30" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="sharding_db" start-index="34" stop-index="46" />
+                            <parameter-marker-expression value="0" start-index="34" stop-index="34" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_databases_with_where_expr_no_parameter">
+        <filter start-index="15" stop-index="34" literal-stop-index="46">
+            <where start-index="15" stop-index="34" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="21" stop-index="34" literal-stop-index="46">
+                        <left>
+                            <column name="database" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="30" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="sharding_db" start-index="34" stop-index="46" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
     </show-databases>
 
     <show-function-status sql-case-id="show_function_status" />

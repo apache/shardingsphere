@@ -164,7 +164,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("pwd"));
+                assertThat(metaData.getColumnLabel(2), is("PWD"));
             }
         }
     }
@@ -218,7 +218,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("pwd"));
+                assertThat(metaData.getColumnLabel(2), is("PWD"));
             }
         }
     }
@@ -231,8 +231,8 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("plain_pwd"));
-                assertThat(metaData.getColumnLabel(3), is("plain_pwd2"));
+                assertThat(metaData.getColumnLabel(2), is("PLAIN_PWD"));
+                assertThat(metaData.getColumnLabel(3), is("PLAIN_PWD2"));
             }
         }
     }
