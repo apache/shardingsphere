@@ -27,5 +27,5 @@ ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间`和 `Spr
 该对象实现自 JDBC 的标准 DataSource 接口，可用于原生 JDBC 开发，或使用 JPA, Hibernate, MyBatis 等 ORM 类库。
 
 ```java
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, properties);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
 ```
