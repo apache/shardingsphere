@@ -125,7 +125,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
     }
-
+    
     @Test
     public void updateMemberState() throws IllegalAccessException, NoSuchFieldException {
         Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
