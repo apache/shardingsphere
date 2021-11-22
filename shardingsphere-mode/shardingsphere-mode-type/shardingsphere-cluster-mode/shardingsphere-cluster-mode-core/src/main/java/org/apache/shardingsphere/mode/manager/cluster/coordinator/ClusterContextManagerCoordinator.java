@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
@@ -46,7 +45,6 @@ import java.util.Optional;
 /**
  * Cluster context manager coordinator.
  */
-@Slf4j
 public final class ClusterContextManagerCoordinator {
     
     private final MetaDataPersistService metaDataPersistService;
