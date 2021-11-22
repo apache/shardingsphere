@@ -11,10 +11,10 @@ Attributes:
 
 | *Name*                     | *DataType*                                          | *Description*                                     | *Default Value* |
 | -------------------------- | --------------------------------------------------- | ------------------------------------------------- | --------------- |
-| enable                     | boolean                                             | Shadow database switch                            | false           |
+| enable                     | boolean                                             | Shadow DB switch                            | false           |
 | dataSources                | Map\<String, ShadowDataSourceConfiguration\>        | Shadow data source mapping name and configuration |                 |
 | tables                     | Map\<String, ShadowTableConfiguration\>             | Shadow table name and configuration               |                 |
-| defaultShadowAlgorithmName | String                                              | default shadow algorithm name                     |                 |
+| defaultShadowAlgorithmName | String                                              | Default shadow algorithm name                     |                 |
 | shadowAlgorithms           | Map\<String, ShardingSphereAlgorithmConfiguration\> | Shadow algorithm name and configuration           |                 |
 
 ## Shadow Data Source Configuration
@@ -36,7 +36,7 @@ Attributes:
 
 | *Name*               | *DataType*           | *Description*                                  |
 | -------------------- | -------------------- | ---------------------------------------------- |
-| dataSourceNames      | Collection\<String\> | Shadow table location shadow data source names |
+| dataSourceNames      | Collection\<String\> | Shadow table location shadow data source mapping names |
 | shadowAlgorithmNames | Collection\<String\> | Shadow table location shadow algorithm names   |
 
 ## Shadow Algorithm Configuration
