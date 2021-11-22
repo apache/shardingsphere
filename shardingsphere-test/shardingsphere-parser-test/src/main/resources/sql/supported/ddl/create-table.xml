@@ -117,4 +117,5 @@
     <sql-case id="create_table_as_select" value="CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
     <sql-case id="create_table_as_select_with_explicit_column_names" value="CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
     <sql-case id="create_table_as_select_with_query_hint" value="CREATE TABLE dbo.t_order_new WITH (DISTRIBUTION = ROUND_ROBIN, CLUSTERED COLUMNSTORE INDEX) AS SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id OPTION ( HASH JOIN )" db-types="SQLServer" />
+    <sql-case id="create_remote_table_as_select" value="CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
 </sql-cases>

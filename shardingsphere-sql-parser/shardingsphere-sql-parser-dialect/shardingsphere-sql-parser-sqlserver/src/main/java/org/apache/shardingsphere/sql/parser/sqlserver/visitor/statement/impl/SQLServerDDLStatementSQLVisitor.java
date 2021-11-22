@@ -144,6 +144,8 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
                 }
             }
             result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createDefinitionClause().createTableAsSelect().select()));
+        } else if (null != ctx.createDefinitionClause().createRemoteTableAsSelect()) {
+            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createDefinitionClause().createRemoteTableAsSelect().select()));
         } else {
             CollectionValue<CreateDefinitionSegment> createDefinitions = 
                     (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
