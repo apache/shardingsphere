@@ -191,7 +191,6 @@ public final class MGRDatabaseDiscoveryTypeTest {
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
         mgrHaType.updateProperties("group_name", props);
-        Assert.assertNotEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "123");
         Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" + "disabled: false\n"
                 + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
                 + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n");
