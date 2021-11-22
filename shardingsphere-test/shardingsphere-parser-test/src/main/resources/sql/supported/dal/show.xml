@@ -38,7 +38,10 @@
     <sql-case id="show_tables" value="SHOW FULL TABLES FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_tables_with_filter" value="SHOW FULL TABLES FROM `sharding_db` LIKE 't_order'" db-types="MySQL" />
     <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL" />
+    <sql-case id="show_schemas" value="SHOW SCHEMAS" db-types="MySQL" />
     <sql-case id="show_databases_with_like" value="SHOW DATABASES LIKE 'sharding_db'" db-types="MySQL" />
+    <sql-case id="show_databases_with_where_expr" value="SHOW DATABASES where `database` = ?" db-types="MySQL" />
+    <sql-case id="show_databases_with_where_expr_no_parameter" value="SHOW DATABASES where `database` = 'sharding_db'" db-types="MySQL" />
     <sql-case id="show_function_status" value="SHOW FUNCTION STATUS" db-types="MySQL" />
     <sql-case id="show_procedure_status" value="SHOW PROCEDURE STATUS" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.junit.Before;
@@ -93,8 +94,10 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithPrefixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema%");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockBackendConnection());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -109,8 +112,10 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithSuffixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockBackendConnection());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -125,8 +130,10 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithPreciseLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_9");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockBackendConnection());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -141,8 +148,10 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithLikeMatchNone() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_not_exist");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockBackendConnection());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
