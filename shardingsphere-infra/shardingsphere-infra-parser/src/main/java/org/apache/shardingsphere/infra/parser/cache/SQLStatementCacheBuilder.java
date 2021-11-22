@@ -21,7 +21,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -33,13 +34,16 @@ public final class SQLStatementCacheBuilder {
     /**
      * Build SQL statement cache.
      *
-     * @param option cache option
+     * @param props configuration props
      * @param databaseType database type
-     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType, final boolean sqlCommentParseEnabled) {
-        return CacheBuilder.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize())
-                .concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, sqlCommentParseEnabled));
+    public static LoadingCache<String, SQLStatement> build(final ConfigurationProperties props, final String databaseType) {
+        int initialCapacity = props.getValue(ConfigurationPropertyKey.SQL_CACHE_INITIAL_CAPACITY);
+        long maximumSize = props.getValue(ConfigurationPropertyKey.SQL_CACHE_MAXIMUM_SIZE);
+        int concurrencyLevel = props.getValue(ConfigurationPropertyKey.SQL_CACHE_CONCURRENCY_LEVEL);
+        boolean sqlCommentParseEnabled = props.getValue(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED);
+        return CacheBuilder.newBuilder().softValues().initialCapacity(initialCapacity).maximumSize(maximumSize)
+                .concurrencyLevel(concurrencyLevel).build(new SQLStatementCacheLoader(databaseType, sqlCommentParseEnabled));
     }
 }
