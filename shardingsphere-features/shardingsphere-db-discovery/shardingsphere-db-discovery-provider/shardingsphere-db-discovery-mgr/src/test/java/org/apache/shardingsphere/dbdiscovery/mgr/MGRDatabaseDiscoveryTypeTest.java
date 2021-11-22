@@ -27,8 +27,8 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.zookeeper.CreateMode;
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -173,7 +173,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
         mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
         verify(scheduleJobHashMap, times(2)).get("group_name");
-        Assert.assertEquals(scheduleJobHashMap.get("group_name").getClass(), ScheduleJobBootstrap.class);
+        assertThat(scheduleJobHashMap.get("group_name").getClass(), Matchers.equalTo(ScheduleJobBootstrap.class));
         scheduleJobHashMap.get("group_name").shutdown();
     }
     
@@ -191,8 +191,8 @@ public final class MGRDatabaseDiscoveryTypeTest {
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
         mgrHaType.updateProperties("group_name", props);
-        Assert.assertEquals(coordinatorRegistryCenter.get("/MGR-group_name/config"), "cron: 0/5 * * * * ?\n" + "disabled: false\n"
+        assertThat(coordinatorRegistryCenter.get("/MGR-group_name/config"), is("cron: 0/5 * * * * ?\n" + "disabled: false\n"
                 + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
-                + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n");
+                + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n"));
     }
 }
