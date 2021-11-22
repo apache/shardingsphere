@@ -707,7 +707,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-single-table")
     private final List<ShowSingleTableStatementTestCase> showSingleTableStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-single-table-rules")
     private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesStatementTestCases = new LinkedList<>();
     
