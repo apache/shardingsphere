@@ -12,7 +12,7 @@ weight = 5
 | *名称* | *类型*  | *说明* |
 | ----- | ------ | ------ |
 | id    | 属性    | Spring Bean Id |
-| enable | 属性   | Shadow库开关。 可选值：true/false，默认为false |
+| enable | 属性   | 影子库开关。 可选值：true/false，默认为false |
 | data-source(?)  | 标签  | 影子数据源配置 |
 | default-shadow-algorithm-name(?)  | 标签  | 默认影子算法配置 |
 | shadow-table(?) | 标签  | 影子表配置 |

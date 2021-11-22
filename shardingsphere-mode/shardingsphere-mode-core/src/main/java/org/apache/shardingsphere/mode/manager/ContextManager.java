@@ -136,7 +136,7 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.getOptimizerContext().getPlannerContexts().remove(schemaName);
             ShardingSphereMetaData removeMetaData = metaDataContexts.getMetaDataMap().remove(schemaName);
             closeDataSources(removeMetaData);
-            closeTransactionEngine(schemaName);
+            removeAndCloseTransactionEngine(schemaName);
         }
     }
     
@@ -367,8 +367,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        closeTransactionEngine(schemaName);
-        transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
+        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
+        closeTransactionEngine(changedStaleEngine);
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
@@ -412,8 +412,12 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private void closeTransactionEngine(final String schemaName) {
+    private void removeAndCloseTransactionEngine(final String schemaName) {
         ShardingSphereTransactionManagerEngine staleEngine = transactionContexts.getEngines().remove(schemaName);
+        closeTransactionEngine(staleEngine);
+    }
+    
+    private void closeTransactionEngine(final ShardingSphereTransactionManagerEngine staleEngine) {
         if (null != staleEngine) {
             try {
                 staleEngine.close();

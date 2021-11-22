@@ -1750,3 +1750,7 @@ EXPLAIN
 WITH_RECOMMENDATIONS
     : W I T H UL_ R E C O M M E N D A T I O N S
     ;
+
+BATCH_SIZE
+    : B A T C H UL_ S I Z E
+    ;
