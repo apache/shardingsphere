@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  * Show triggers statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShowTriggersStatementAssert {
+public final class ShowTriggersStatementAssert {
 
     /**
      * Assert show triggers statement is correct with expected parser result.
