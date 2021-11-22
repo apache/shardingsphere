@@ -701,7 +701,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "uninstall-component")
     private final List<UninstallComponentStatementTestCase> uninstallComponentStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
     
