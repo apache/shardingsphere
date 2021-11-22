@@ -1664,4 +1664,40 @@
             </projections>
         </select>
     </create-table>
+
+    <create-table sql-case-id="create_remote_table_as_select">
+        <table name="t_order_new" start-index="20" stop-index="30" />
+        <select>
+            <from>
+                <join-table>
+                    <left>
+                        <simple-table name="t_order_item" alias="i" start-index="119" stop-index="132" />
+                    </left>
+                    <right>
+                        <simple-table name="t_order" alias="o" start-index="139" stop-index="147" />
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="152" stop-index="174">
+                            <left>
+                                <column name="order_id" start-index="152" stop-index="161">
+                                    <owner name="i" start-index="152" stop-index="152" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="165" stop-index="174">
+                                    <owner name="o" start-index="165" stop-index="165" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+            <projections start-index="110" stop-index="112">
+                <shorthand-projection start-index="110" stop-index="112">
+                    <owner name="i" start-index="110" stop-index="110" />
+                </shorthand-projection>
+            </projections>
+        </select>
+    </create-table>
 </sql-parser-test-cases>

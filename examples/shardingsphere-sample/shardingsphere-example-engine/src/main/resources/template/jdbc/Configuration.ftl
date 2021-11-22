@@ -32,6 +32,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 </#if>
+<#if feature=="encrypt">
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+</#if>
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -60,7 +66,9 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
 <#if feature=="readwrite-splitting">
     <#include "readwritesplittingConfiguration.ftl">
 </#if>
-    
+<#if feature=="encrypt">
+    <#include "encryptConfiguration.ftl">
+</#if>
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

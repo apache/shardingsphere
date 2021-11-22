@@ -36,7 +36,7 @@ weight = 5
 
 | *名称*                | *数据类型*            | *说明*                   |
 | -------------------- | -------------------- | ----------------------- |
-| dataSourceNames      | Collection\<String\> | 影子表关联影子数据源名称列表 |
+| dataSourceNames      | Collection\<String\> | 影子表关联影子数据源映射名称列表 |
 | shadowAlgorithmNames | Collection\<String\> | 影子表关联影子算法名称列表   |
 
 ## 影子算法配置

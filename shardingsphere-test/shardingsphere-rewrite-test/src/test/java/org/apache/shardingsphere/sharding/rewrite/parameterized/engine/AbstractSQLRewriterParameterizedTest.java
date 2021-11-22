@@ -88,9 +88,9 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new ConfigurationProperties(new Properties())));
         mockRules(rules);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, false);
-        ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, props);
+        ShardingSphereSchema schema = mockSchema();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);

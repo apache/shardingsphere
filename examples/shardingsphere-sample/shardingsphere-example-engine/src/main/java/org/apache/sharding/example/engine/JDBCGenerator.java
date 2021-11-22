@@ -36,6 +36,9 @@ public final class JDBCGenerator extends ExampleGenerateEngine {
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        UN_NAME_TEMPLATE_MAP.put("entity/User", "entity/User.java");
+        
+        RESOURCE_TEMPLATE_MAP.put("log/logback", "logback.xml");
     }
 
     public JDBCGenerator() {

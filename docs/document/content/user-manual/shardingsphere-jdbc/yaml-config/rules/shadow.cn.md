@@ -8,7 +8,7 @@ weight = 5
 ```yaml
 rules:
 - !SHADOW
-  enable: # Shadow功能开关。 可选值：true/false，默认为false
+  enable: # 影子库开关。 可选值：true/false，默认为false
   dataSources:
     shadowDataSource:
       sourceDataSourceName: # 生产数据源名称
