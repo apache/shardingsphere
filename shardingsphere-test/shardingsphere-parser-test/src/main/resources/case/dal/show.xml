@@ -165,6 +165,49 @@
 
     <show-function-status sql-case-id="show_function_status" />
     <show-procedure-status sql-case-id="show_procedure_status" />
+    <show-procedure-status sql-case-id="show_procedure_status_with_like">
+        <filter start-index="22" stop-index="38">
+            <like pattern="procedure%" start-index="22" stop-index="38" start-delimiter="'" end-delimiter="'" />
+        </filter>
+    </show-procedure-status>
+
+    <show-procedure-status sql-case-id="show_procedure_status_with_where_expr" parameters="'procedure1'">
+        <filter start-index="22" stop-index="35" literal-stop-index="46">
+            <where start-index="22" stop-index="35" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="28" stop-index="35" literal-stop-index="46">
+                        <left>
+                            <column name="name" start-index="28" stop-index="31" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="procedure1" start-index="35" stop-index="46" />
+                            <parameter-marker-expression value="0" start-index="35" stop-index="35" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-procedure-status>
+
+    <show-procedure-status sql-case-id="show_procedure_status_with_where_expr_no_parameter">
+        <filter start-index="22" stop-index="42" literal-stop-index="46">
+            <where start-index="22" stop-index="42" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="28" stop-index="42" literal-stop-index="46">
+                        <left>
+                            <column name="name" start-index="28" stop-index="31" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="procedure1" start-index="35" stop-index="46" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-procedure-status>
+
     <show-replicas sql-case-id="show_replicas" />
     <show-procedure-code sql-case-id="show_procedure_code_func">
         <function function-name="TEST_FUNC" start-index="20" stop-index="28" text="TEST_FUNC" />
