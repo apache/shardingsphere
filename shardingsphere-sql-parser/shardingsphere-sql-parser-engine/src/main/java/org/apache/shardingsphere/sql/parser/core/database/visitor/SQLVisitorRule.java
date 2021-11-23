@@ -255,6 +255,8 @@ public enum SQLVisitorRule {
     SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
 
     SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
+    
+    SHOW_OPEN_TABLES("ShowOpenTables", SQLStatementType.DAL),
 
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
