@@ -250,6 +250,8 @@ public enum SQLVisitorRule {
     
     SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),
     
+    SHOW_STATUS("ShowStatus", SQLStatementType.DAL),
+    
     SHOW("Show", SQLStatementType.DAL),
 
     SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
