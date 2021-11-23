@@ -256,6 +256,8 @@ public enum SQLVisitorRule {
 
     SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
 
+    SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
+
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),

@@ -60,4 +60,5 @@
     <sql-case id="show_replica_status_with_channel" value="SHOW REPLICA STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_status" value="SHOW SLAVE STATUS" db-types="MySQL" />
     <sql-case id="show_slave_status_with_channel" value="SHOW SLAVE STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
+    <sql-case id="show_triggers_with_filter" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'acc%'" db-types="MySQL"/>
 </sql-cases>

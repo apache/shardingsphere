@@ -269,4 +269,8 @@
     <show-replica-status sql-case-id="show_replica_status_with_channel" channel="TEST_CHANNEL"/>
     <show-slave-status sql-case-id="show_slave_status" />
     <show-slave-status sql-case-id="show_slave_status_with_channel" channel="TEST_CHANNEL" />
+    <show-triggers sql-case-id="show_triggers_with_filter">
+        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="14" stop-index="31" />
+        <like pattern="acc%" start-index="33" stop-index="43"/>
+    </show-triggers>
 </sql-parser-test-cases>
