@@ -60,5 +60,10 @@
     <sql-case id="show_replica_status_with_channel" value="SHOW REPLICA STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_status" value="SHOW SLAVE STATUS" db-types="MySQL" />
     <sql-case id="show_slave_status_with_channel" value="SHOW SLAVE STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
+    <sql-case id="show_open_tables_from_schema" value="SHOW OPEN TABLES FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_open_tables_in_schema" value="SHOW OPEN TABLES IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_open_tables_with_like_pattern" value="SHOW OPEN TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
+    <sql-case id="show_open_tables_with_where_expr" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
+    <sql-case id="show_open_tables_with_where_expr_no_parameter" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
     <sql-case id="show_triggers_with_filter" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'acc%'" db-types="MySQL"/>
 </sql-cases>
