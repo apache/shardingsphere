@@ -23,6 +23,8 @@ execute
     : (createShardingTableRule
     | createDefaultShardingStrategy
     | createShardingBindingTableRules
+    | showShardingTablesCount
+
     | createShardingBroadcastTableRules
     | alterShardingTableRule
     | alterShardingBindingTableRules

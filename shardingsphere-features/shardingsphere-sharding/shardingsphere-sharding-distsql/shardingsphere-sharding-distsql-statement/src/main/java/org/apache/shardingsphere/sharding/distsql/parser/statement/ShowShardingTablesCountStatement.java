@@ -15,38 +15,19 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
-    ;
-
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingAlgorithms
-    : SHOW SHARDING ALGORITHMS (FROM schemaName)?
-    ;
-
-showShardingTablesCount
-    : SHOW SHARDING TABLES COUNT (FROM schemaName)?
-    ;
+/**
+ * Show sharding tables count statement.
+ */
+@Getter
+public final class ShowShardingTablesCountStatement extends ShowRulesStatement {
     
-tableRule
-    : RULE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    public ShowShardingTablesCountStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}

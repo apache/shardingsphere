@@ -78,4 +78,8 @@
     <show-single-table-rules sql-case-id="show-single-table-rules">
         <schema name="single_table_db" start-index="29" stop-index="43"/>
     </show-single-table-rules>
+
+    <show-sharding-tables-count sql-case-id="show-sharding-tables-count">
+        <schema name="sharding_db" start-index="32" stop-index="42"/>
+    </show-sharding-tables-count>
 </sql-parser-test-cases>

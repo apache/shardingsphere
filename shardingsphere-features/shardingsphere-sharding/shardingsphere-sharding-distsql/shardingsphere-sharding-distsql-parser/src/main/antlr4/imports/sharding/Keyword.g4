@@ -167,3 +167,12 @@ TABLE_STRATEGY
     : T A B L E UL_ S T R A T E G Y
     ;
 
+COUNT
+    : C O U N T
+    ;
+
+
+TABLES
+    : T A B L E S
+    ;
+

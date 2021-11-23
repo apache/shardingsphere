@@ -185,6 +185,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTablesCountStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
@@ -763,11 +764,14 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-default-single-table")
     private final List<DropDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-tables-count")
+    private final List<ShowShardingTablesCountStatementTestCase> showShardingTablesCountTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
      *
-     * @return all SQL parser test cases
+     * @return all SQL parser test cases`
      */
     // CHECKSTYLE:OFF
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
@@ -954,6 +958,7 @@ public final class SQLParserTestCases {
         putAll(alterDefaultSingleTableRuleStatementTestCases, result);
         putAll(dropDefaultSingleTableRuleStatementTestCases, result);
         putAll(shutdownStatementTestCases, result);
+        putAll(showShardingTablesCountTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

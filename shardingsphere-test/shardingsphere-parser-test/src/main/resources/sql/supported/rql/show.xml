@@ -32,4 +32,5 @@
     <distsql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" />
     <distsql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" />
     <distsql-case id="show-single-table-rules" value="SHOW SINGLE TABLE RULES FROM single_table_db" />
+    <distsql-case id="show-sharding-tables-count" value="SHOW SHARDING TABLES COUNT FROM sharding_db" />
 </sql-cases>
