@@ -87,7 +87,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     @After
     @SneakyThrows
-    public void clear(){
+    public void clear() {
         server.stop();
         client.close();
     }
