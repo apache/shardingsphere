@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-db-discovery-provider</artifactId>
-        <version>${project.version}</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-db-discovery-og</artifactId>
     <name>${project.artifactId}</name>

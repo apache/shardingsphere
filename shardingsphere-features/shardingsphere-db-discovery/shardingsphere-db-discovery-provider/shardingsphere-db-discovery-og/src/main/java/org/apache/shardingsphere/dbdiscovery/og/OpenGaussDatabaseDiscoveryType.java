@@ -40,8 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -152,7 +150,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             }
         }
     }
-
 
     @Override
     public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap,

@@ -21,17 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * MGR heartbeat job.
