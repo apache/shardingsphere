@@ -338,4 +338,51 @@
         <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="14" stop-index="31" />
         <like pattern="acc%" start-index="33" stop-index="43"/>
     </show-triggers>
+
+    <show-status sql-case-id="show_global_status"/>
+
+    <show-status sql-case-id="show_session_status"/>
+
+    <show-status sql-case-id="show_status_with_like_pattern">
+        <filter start-index="19" stop-index="29">
+            <like pattern="Key%" start-index="19" stop-index="29" start-delimiter="'" end-delimiter="'" />
+        </filter>
+    </show-status>
+
+    <show-status sql-case-id="show_status_with_where_expr" parameters="'open_tables'">
+        <filter start-index="19" stop-index="41" literal-start-index="19" literal-stop-index="53">
+            <where start-index="19" stop-index="41" literal-start-index="19" literal-stop-index="53">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="41" literal-start-index="25" literal-stop-index="53">
+                        <left>
+                            <column name="variable_name" start-index="25" stop-index="37" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="open_tables" start-index="41" stop-index="53" />
+                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-status>
+
+    <show-status sql-case-id="show_status_with_where_expr_no_parameter">
+        <filter start-index="19" stop-index="53">
+            <where start-index="19" stop-index="53">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="53">
+                        <left>
+                            <column name="variable_name" start-index="25" stop-index="37" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="open_tables" start-index="41" stop-index="53" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-status>
 </sql-parser-test-cases>

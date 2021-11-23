@@ -53,6 +53,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveHostsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
@@ -772,6 +773,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-open-tables")
     private final List<ShowOpenTablesStatementTestCase> showOpenTablesStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-status")
+    private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -964,6 +968,7 @@ public final class SQLParserTestCases {
         putAll(dropDefaultSingleTableRuleStatementTestCases, result);
         putAll(shutdownStatementTestCases, result);
         putAll(showOpenTablesStatementTestCases, result);
+        putAll(showStatusStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
