@@ -17,12 +17,12 @@
 
 grammar DALStatement;
 
-import SQLServerKeyword, DMLStatement;
+import SQLServerKeyword, DMLStatement, DDLStatement;
 
 explain
     : EXPLAIN WITH_RECOMMENDATIONS? explainableStatement
     ;
 
 explainableStatement
-    : select | insert | update | delete
+    : select | insert | update | delete | createTableAsSelectClause
     ;

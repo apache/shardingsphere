@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -69,9 +68,9 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
         fillRequiredFieldsIfNecessary();
     }
     
-    public OpenGaussErrorResponsePacket(final PostgreSQLMessageSeverityLevel severityLevel, final String sqlState, final String message) {
+    public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
         fields = new LinkedHashMap<>(4, 1);
-        fields.put(FIELD_TYPE_SEVERITY, severityLevel.name());
+        fields.put(FIELD_TYPE_SEVERITY, severityLevel);
         fields.put(FIELD_TYPE_CODE, sqlState);
         fields.put(FIELD_TYPE_MESSAGE, message);
         fillRequiredFieldsIfNecessary();

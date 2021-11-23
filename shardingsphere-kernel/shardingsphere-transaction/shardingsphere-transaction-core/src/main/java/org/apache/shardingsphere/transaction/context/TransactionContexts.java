@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Transaction contexts.
@@ -34,7 +34,7 @@ public final class TransactionContexts implements AutoCloseable {
     private final Map<String, ShardingSphereTransactionManagerEngine> engines;
     
     public TransactionContexts() {
-        this(new HashMap<>());
+        this(new ConcurrentHashMap<>());
     }
     
     @Override

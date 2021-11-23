@@ -175,7 +175,17 @@ Answer：
 DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 ```
 
-## 19. [Other] How to debug when SQL can not be executed rightly in ShardingSphere?
+## 19. [DistSQL] How to solve ` Failed to get driver instance for jdbcURL=xxx.` exception when adding a data source using DistSQL?
+
+Answer：
+
+ShardingSphere Proxy do not have jdbc driver during deployment. Some example of this include `mysql-connector`. To use it otherwise following syntax can be used:
+
+```
+ADD RESOURCE dataSourceName [..., dataSourceName]
+```
+
+## 20. [Other] How to debug when SQL can not be executed rightly in ShardingSphere?
 
 Answer:
 
@@ -183,7 +193,7 @@ Answer:
 
 A Tip: Property `sql.show` has changed to `sql-show` in version 5.x.
 
-## 20. [Other] Why do some compiling errors appear? Why did not the IDEA index the generated codes?
+## 21. [Other] Why do some compiling errors appear? Why did not the IDEA index the generated codes?
 
 Answer:
 
@@ -198,7 +208,7 @@ The codes under the package `org.apache.shardingsphere.sql.parser.autogen` are g
 The generated codes such as `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` may be too large to be indexed by the IDEA.
 You may configure the IDEA's property `idea.max.intellisense.filesize=10000`.
 
-## 21. [Other] In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
+## 22. [Other] In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
 
 Answer:
 
@@ -216,7 +226,7 @@ The right SQL should be written as:
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-## 22. [Other] Why does Oracle database throw “Order by value must implements Comparable” exception when using Timestamp Order By?
+## 23. [Other] Why does Oracle database throw “Order by value must implements Comparable” exception when using Timestamp Order By?
 
 Answer:
 
@@ -269,7 +279,7 @@ After using resultSet.getObject(int index), for TimeStamp oracle, the system wil
     }
 ```
 
-## 23. [Other] In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
+## 24. [Other] In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
 
 Answer:
 
@@ -293,13 +303,13 @@ Reference material:
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 24. [Other] How to solve `Type is required` error?
+## 25. [Other] How to solve `Type is required` error?
 
 Answer:
 
 In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
-## 25. [Other] How to speed up the metadata loading when service starts up?
+## 26. [Other] How to speed up the metadata loading when service starts up?
 
 Answer:
 
@@ -308,7 +318,7 @@ Answer:
 - `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3 & Version < 5.0.0).
 - `max-connections-size-per-query`(Default value is 1) higher referring to connection pool you adopt(Version >= 5.0.0).
 
-## 26. [Other] The ANTLR plugin generates codes in the same level directory as src, which is easy to commit by mistake. How to avoid it?
+## 27. [Other] The ANTLR plugin generates codes in the same level directory as src, which is easy to commit by mistake. How to avoid it?
 
 Answer:
 
@@ -316,7 +326,7 @@ Goto [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](j
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
 
-## 27. [Other] Why is the database sharding result not correct when using `Proxool`?
+## 28. [Other] Why is the database sharding result not correct when using `Proxool`?
 
 Answer:
 

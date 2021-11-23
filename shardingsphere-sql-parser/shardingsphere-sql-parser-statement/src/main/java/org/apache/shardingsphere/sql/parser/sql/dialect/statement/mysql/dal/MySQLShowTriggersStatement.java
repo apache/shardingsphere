@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -27,20 +28,31 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import java.util.Optional;
 
 /**
- * MySQL show function status statement.
+ * MySQL show triggers status statement.
  */
 @Setter
 @ToString
-public final class MySQLShowFunctionStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-    
-    private ShowFilterSegment filter;
-    
+public final class MySQLShowTriggersStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+
+    private FromSchemaSegment fromSchema;
+
+    private ShowLikeSegment like;
+
     /**
-     * Get filter segment.
+     * Get from schema segment.
      *
-     * @return filter segment
+     * @return from schema segment
      */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
+    public Optional<FromSchemaSegment> getFromSchema() {
+        return Optional.ofNullable(fromSchema);
+    }
+
+    /**
+     * Get like segment.
+     *
+     * @return like segment
+     */
+    public Optional<ShowLikeSegment> getLike() {
+        return Optional.ofNullable(like);
     }
 }

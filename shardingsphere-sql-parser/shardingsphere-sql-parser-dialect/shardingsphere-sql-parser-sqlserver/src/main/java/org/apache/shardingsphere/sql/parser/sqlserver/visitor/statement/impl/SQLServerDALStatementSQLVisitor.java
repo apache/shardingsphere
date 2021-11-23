@@ -53,8 +53,10 @@ public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQL
             return visit(ctx.insert());
         } else if (null != ctx.update()) {
             return visit(ctx.update());
-        } else {
+        } else if (null != ctx.delete()) {
             return visit(ctx.delete());
+        } else {
+            return visit(ctx.createTableAsSelectClause());
         }
     }
 }

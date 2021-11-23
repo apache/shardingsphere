@@ -19,25 +19,31 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowFunctionStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowOpenTablesStatementTestCase;
 
 /**
- * Show function status statement assert.
+ * Show open tables statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowFunctionStatusStatementAssert {
+public final class ShowOpenTablesStatementAssert {
     
     /**
-     * Assert show function status statement is correct with expected parser result.
+     * Assert show open tables statement is correct with expected show procedure code statement test case.
      *
      * @param assertContext assert context
-     * @param actual actual show function status statement
-     * @param expected expected show function status statement test case
+     * @param actual actual show open tables statement
+     * @param expected expected show open tables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowFunctionStatusStatement actual, final ShowFunctionStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowOpenTablesStatement actual, final ShowOpenTablesStatementTestCase expected) {
+        if (actual.getFromSchema().isPresent()) {
+            SchemaAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());
+        }
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
         }

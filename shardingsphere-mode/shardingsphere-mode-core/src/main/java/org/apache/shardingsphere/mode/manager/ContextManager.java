@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
@@ -136,7 +138,7 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.getOptimizerContext().getPlannerContexts().remove(schemaName);
             ShardingSphereMetaData removeMetaData = metaDataContexts.getMetaDataMap().remove(schemaName);
             closeDataSources(removeMetaData);
-            closeTransactionEngine(schemaName);
+            removeAndCloseTransactionEngine(schemaName);
         }
     }
     
@@ -250,6 +252,49 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterProps(final Properties props) {
         renewMetaDataContexts(rebuildMetaDataContexts(new ConfigurationProperties(props)));
+    }
+    
+    /**
+     * Reload meta data.
+     *
+     * @param schemaName schema name
+     */
+    public void reloadMetaData(final String schemaName) {
+        try {
+            ShardingSphereSchema schema = loadActualSchema(schemaName);
+            alterSchema(schemaName, schema);
+            metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, schema));
+        } catch (final SQLException ex) {
+            log.error("Reload schema:{} meta data failed", schemaName, ex);
+        }
+    }
+    
+    /**
+     * Reload table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableName logic table name                  
+     */
+    public void reloadMetaData(final String schemaName, final String tableName) {
+        try {
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                    metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), metaDataContexts.getMetaData(schemaName).getResource().getDataSources(),
+                    metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), metaDataContexts.getProps());
+            TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                    .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
+            metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
+            metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
+        } catch (final SQLException ex) {
+            log.error("Reload table:{} meta data of schema:{} failed", tableName, schemaName, ex);
+        }
+    }
+    
+    private ShardingSphereSchema loadActualSchema(final String schemaName) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getProps().getProps());
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, metaDataContexts.getProps().getProps()).load();
+        return schemas.get(schemaName);
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
@@ -367,8 +412,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        closeTransactionEngine(schemaName);
-        transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
+        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
+        closeTransactionEngine(changedStaleEngine);
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
@@ -412,8 +457,12 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private void closeTransactionEngine(final String schemaName) {
+    private void removeAndCloseTransactionEngine(final String schemaName) {
         ShardingSphereTransactionManagerEngine staleEngine = transactionContexts.getEngines().remove(schemaName);
+        closeTransactionEngine(staleEngine);
+    }
+    
+    private void closeTransactionEngine(final ShardingSphereTransactionManagerEngine staleEngine) {
         if (null != staleEngine) {
             try {
                 staleEngine.close();
