@@ -59,7 +59,7 @@ Sharding-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻
 
 ![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
-Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
+Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合于当前业务的最佳系统架构。
 
 ![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
