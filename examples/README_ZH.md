@@ -237,3 +237,5 @@ shardingsphere-example
 | APM 监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
 | proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
 | [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境         |
+| [shardingSphere-proxy-rds-mysql](https://github.com/alibabacloud-howto/opensource_with_apsaradb/tree/main/apache-shardingsphere-mysql) | 演示如何在阿里云ECS上部署使用ShardingSphere-Proxy为RDS MySQL搭建分库、分表 |
+| [shardingSphere-proxy-rds-postgresql](https://github.com/alibabacloud-howto/opensource_with_apsaradb/tree/main/apache-shardingsphere-postgresql) | 演示如何在阿里云ECS上部署使用ShardingSphere-Proxy为RDS PostgreSQL搭建分库、分表 |

@@ -237,3 +237,5 @@ shardingsphere-example
 | APM(Pending)                                                                                            | show how to use APM in ShardingSphere                                                   |
 | proxy(Pending)                                                                                          | show how to use ShardingSphere-Proxy                                                    |
 | [docker](./docker/docker-compose.md)                                                                    | show how to use docker to setup the environment for ShardingSphere                      |
+| [shardingSphere-proxy-rds-mysql](https://github.com/alibabacloud-howto/opensource_with_apsaradb/tree/main/apache-shardingsphere-mysql) | show how to deploy and use ShardingSphere-Proxy on ECS to build sharding service for RDS for MySQL on Alibaba Cloud |
+| [shardingSphere-proxy-rds-postgresql](https://github.com/alibabacloud-howto/opensource_with_apsaradb/tree/main/apache-shardingsphere-postgresql) | show how to deploy and use ShardingSphere-Proxy on ECS to build sharding service for RDS for PostgreSQL on Alibaba Cloud |
