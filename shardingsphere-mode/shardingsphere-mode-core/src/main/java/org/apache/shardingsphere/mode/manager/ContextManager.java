@@ -252,6 +252,29 @@ public final class ContextManager implements AutoCloseable {
         renewMetaDataContexts(rebuildMetaDataContexts(new ConfigurationProperties(props)));
     }
     
+    /**
+     * Reload meta data.
+     *
+     * @param schemaName schema name
+     */
+    public void reloadMetaData(final String schemaName) {
+        try {
+            ShardingSphereSchema schema = loadActualSchema(schemaName);
+            alterSchema(schemaName, schema);
+            metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, schema));
+        } catch (final SQLException ex) {
+            log.error("Reload schema:{} meta data failed", schemaName, ex);
+        }
+    }
+    
+    private ShardingSphereSchema loadActualSchema(final String schemaName) throws SQLException {
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, metaDataContexts.getProps().getProps());
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, metaDataContexts.getProps().getProps()).load();
+        return schemas.get(schemaName);
+    }
+    
     private Collection<DataSource> getPendingClosedDataSources(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Collection<DataSource> result = new LinkedList<>();
         result.addAll(getDeletedDataSources(metaDataContexts.getMetaData(schemaName), dataSourceConfigurations).values());
