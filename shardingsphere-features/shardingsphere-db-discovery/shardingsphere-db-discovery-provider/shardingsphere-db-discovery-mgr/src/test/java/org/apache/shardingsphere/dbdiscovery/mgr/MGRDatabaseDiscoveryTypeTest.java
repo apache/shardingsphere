@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -81,14 +80,14 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     @Before
     public void setUp() throws Exception {
-        server = new TestingServer(2181, true);
-        server.start();
-        client = CuratorFrameworkFactory.newClient("127.0.0.1", new ExponentialBackoffRetry(1000, 3));
+        server = new TestingServer(true);
+        client = CuratorFrameworkFactory.builder().connectString("127.0.0.1").sessionTimeoutMs(5000).retryPolicy(new ExponentialBackoffRetry(1000, 3)).build();
         client.start();
     }
     
     @After
-    public void clear() throws IOException {
+    @SneakyThrows
+    public void clear(){
         server.stop();
         client.close();
     }
