@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    ) SEMI?
-    ;
+import java.util.Optional;
+
+/**
+ * Refresh table metadata statement.
+ */
+@Setter
+@Getter
+public final class RefreshTableMetadataStatement extends CommonDistSQLStatement {
+    
+    private Optional<String> tableName;
+    
+    private Optional<String> resourceName;
+}
