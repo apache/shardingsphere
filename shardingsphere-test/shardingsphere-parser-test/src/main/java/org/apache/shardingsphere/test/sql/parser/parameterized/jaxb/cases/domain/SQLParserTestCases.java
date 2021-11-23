@@ -55,6 +55,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShutdownStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallPluginStatementTestCase;
@@ -434,7 +435,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
-    
+
+    @XmlElement(name = "show-triggers")
+    private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
+
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
     
@@ -698,7 +702,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "uninstall-component")
     private final List<UninstallComponentStatementTestCase> uninstallComponentStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
     
@@ -755,7 +759,7 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "shutdown")
     private final List<ShutdownStatementTestCase> shutdownStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "create-default-single-table")
     private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
@@ -843,6 +847,7 @@ public final class SQLParserTestCases {
         putAll(createDatabaseTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
+        putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);

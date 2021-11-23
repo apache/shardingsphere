@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateServiceContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionsContext;
@@ -134,32 +135,31 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        SQLServerCreateTableStatement result;
+        if (null != ctx.createTableClause()) {
+            result = (SQLServerCreateTableStatement) visit(ctx.createTableClause());
+        } else {
+            result = (SQLServerCreateTableStatement) visit(ctx.createTableAsSelectClause());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        if (null != ctx.createDefinitionClause().createTableAsSelect()) {
-            if (null != ctx.createDefinitionClause().createTableAsSelect().columnNames()) {
-                CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createDefinitionClause().createTableAsSelect().columnNames());
-                for (ColumnSegment each : columnSegments.getValue()) {
-                    result.getColumns().add(each);
-                }
-            }
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createDefinitionClause().createTableAsSelect().select()));
-        } else if (null != ctx.createDefinitionClause().createRemoteTableAsSelect()) {
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createDefinitionClause().createRemoteTableAsSelect().select()));
-        } else {
-            CollectionValue<CreateDefinitionSegment> createDefinitions = 
-                    (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
-            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
-                if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
-                }
+        CollectionValue<CreateDefinitionSegment> createDefinitions =
+                (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
+        for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+            if (each instanceof ColumnDefinitionSegment) {
+                result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+            } else if (each instanceof ConstraintDefinitionSegment) {
+                result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
             }
         }
         return result;
     }
-
+    
     private ASTNode generateCreateDefinitionSegment(final CreateTableDefinitionsContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         for (CreateTableDefinitionContext each : ctx.createTableDefinition()) {

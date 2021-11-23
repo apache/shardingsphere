@@ -258,6 +258,8 @@ public enum SQLVisitorRule {
     
     SHOW_OPEN_TABLES("ShowOpenTables", SQLStatementType.DAL),
 
+    SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
+
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),

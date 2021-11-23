@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
@@ -162,6 +163,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
@@ -1172,5 +1174,24 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.aggregationClause());
+    }
+    
+    @Override
+    public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
+        SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
+        if (null != ctx.createTableAsSelect()) {
+            result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
+            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createTableAsSelect().select()));
+            if (null != ctx.createTableAsSelect().columnNames()) {
+                CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
+                for (ColumnSegment each : columnSegments.getValue()) {
+                    result.getColumns().add(each);
+                }
+            }
+        } else {
+            result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
+            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+        }
+        return result;
     }
 }
