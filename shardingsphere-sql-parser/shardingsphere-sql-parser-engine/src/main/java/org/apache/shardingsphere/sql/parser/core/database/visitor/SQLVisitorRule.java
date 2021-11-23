@@ -310,6 +310,8 @@ public enum SQLVisitorRule {
     
     LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
     
+    CHECK_TABLE("CheckTable", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
