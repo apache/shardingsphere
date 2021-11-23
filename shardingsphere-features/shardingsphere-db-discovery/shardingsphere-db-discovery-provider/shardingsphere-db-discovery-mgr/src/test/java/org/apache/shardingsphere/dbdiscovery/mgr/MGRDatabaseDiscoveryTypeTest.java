@@ -63,7 +63,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore
 public final class MGRDatabaseDiscoveryTypeTest {
     
     private static TestingServer server;
@@ -214,6 +213,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
+    @Ignore
     public void assertUpdateProperties() throws Exception {
         Properties props = mock(Properties.class);
         when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
