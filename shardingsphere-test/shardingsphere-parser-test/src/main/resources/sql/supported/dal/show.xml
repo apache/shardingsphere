@@ -43,6 +43,9 @@
     <sql-case id="show_databases_with_where_expr" value="SHOW DATABASES where `database` = ?" db-types="MySQL" />
     <sql-case id="show_databases_with_where_expr_no_parameter" value="SHOW DATABASES where `database` = 'sharding_db'" db-types="MySQL" />
     <sql-case id="show_function_status" value="SHOW FUNCTION STATUS" db-types="MySQL" />
+    <sql-case id="show_function_status_with_like" value="SHOW FUNCTION STATUS like 'function%'" db-types="MySQL" />
+    <sql-case id="show_function_status_with_where_expr" value="SHOW FUNCTION STATUS where name = ?" db-types="MySQL" />
+    <sql-case id="show_function_status_with_where_expr_no_parameter" value="SHOW FUNCTION STATUS where name = 'function1'" db-types="MySQL" />
     <sql-case id="show_procedure_status" value="SHOW PROCEDURE STATUS" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_like" value="SHOW PROCEDURE STATUS like 'procedure%'" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_where_expr" value="SHOW PROCEDURE STATUS where name = ?" db-types="MySQL" />
