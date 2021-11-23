@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
 import com.google.common.eventbus.EventBus;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -38,6 +39,7 @@ import org.mockito.Mockito;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -201,12 +203,9 @@ public final class MGRDatabaseDiscoveryTypeTest {
         propsFiled.setAccessible(true);
         propsFiled.set(mgrHaType, props);
         final Map<String, ScheduleJobBootstrap> scheduleJobHashMap = spy(HashMap.class);
-        Field scheduleJobBootstrapMapFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
-        scheduleJobBootstrapMapFiled.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(scheduleJobBootstrapMapFiled, scheduleJobBootstrapMapFiled.getModifiers() & ~Modifier.FINAL);
-        scheduleJobBootstrapMapFiled.set(mgrHaType, scheduleJobHashMap);
+        Field field = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
+        makeAccessible(field);
+        field.set(mgrHaType, scheduleJobHashMap);
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
         mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
         verify(scheduleJobHashMap, times(2)).get("group_name");
@@ -231,5 +230,26 @@ public final class MGRDatabaseDiscoveryTypeTest {
         assertThat(coordinatorRegistryCenter.get("/MGR-group_name/config"), is("cron: 0/5 * * * * ?\n" + "disabled: false\n"
                 + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
                 + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n"));
+    }
+    
+    @SneakyThrows
+    private void makeAccessible(final Field field) {
+        field.setAccessible(true);
+        Field modifiersField = getModifiersField();
+        modifiersField.setAccessible(true);
+        modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
+    }
+    
+    @SneakyThrows
+    private Field getModifiersField() {
+        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+        getDeclaredFields0.setAccessible(true);
+        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
+        for (Field each : fields) {
+            if ("modifiers".equals(each.getName())) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 }
