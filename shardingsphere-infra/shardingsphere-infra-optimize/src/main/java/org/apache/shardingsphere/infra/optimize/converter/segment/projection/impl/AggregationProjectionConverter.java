@@ -106,7 +106,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     }
     
     /**
-     * is sqlBasicCall as operator aggregation type.
+     * Is sqlBasicCall as operator aggregation type.
      * @param sqlBasicCall sqlBasicCall 
      * @return as operator aggregation type or not
      */

@@ -85,6 +85,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_right_outer_join_related_with_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_alias_as_keyword");
         SUPPORTED_SQL_CASE_IDS.add("select_avg");
+        SUPPORTED_SQL_CASE_IDS.add("select_between_with_single_table");
     }
     
     private final String sqlCaseId;
