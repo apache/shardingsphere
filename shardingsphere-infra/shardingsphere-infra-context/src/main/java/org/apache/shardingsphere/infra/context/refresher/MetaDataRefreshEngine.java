@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.federation.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-optimize</artifactId>
+            <artifactId>shardingsphere-infra-federation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
