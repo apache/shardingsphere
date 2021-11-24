@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-db-discovery</artifactId>
+        <artifactId>shardingsphere-db-discovery-provider</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-db-discovery-core</artifactId>
+    <artifactId>shardingsphere-db-discovery-opengauss</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -35,31 +35,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-distsql-handler</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-lifecycle</artifactId>
+            <version>${elasticjob.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-distsql-parser</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-core</artifactId>
+            <version>${elasticjob.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP-java7</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-mgr</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-opengauss</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
