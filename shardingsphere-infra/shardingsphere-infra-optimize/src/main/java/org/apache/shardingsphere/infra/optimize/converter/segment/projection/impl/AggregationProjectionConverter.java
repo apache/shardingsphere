@@ -57,6 +57,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         register(SqlStdOperatorTable.SUM);
         register(SqlStdOperatorTable.COUNT);
         register(SqlStdOperatorTable.AVG);
+        register(SqlStdOperatorTable.BIT_XOR);
     }
     
     private static void register(final SqlAggFunction sqlAggFunction) {
