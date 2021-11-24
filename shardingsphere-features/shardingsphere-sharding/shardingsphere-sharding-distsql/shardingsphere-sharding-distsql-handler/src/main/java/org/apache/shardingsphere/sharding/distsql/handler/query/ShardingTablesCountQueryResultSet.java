@@ -17,37 +17,69 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTablesCountStatement;
+import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Result set for show sharding table count.
  */
 public final class ShardingTablesCountQueryResultSet implements DistSQLResultSet {
     
+    private static final String TABLE = "table";
+    
     private static final String COUNT = "count";
     
-    private Iterator<Integer> data = Collections.emptyIterator();
+    private Iterator<Entry<String, Integer>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<Integer> count = metaData.getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each)
-                .map(each -> each.getTables().size() + each.getAutoTables().size()).reduce(Integer::sum);
-        count.ifPresent(op -> data = Collections.singletonList(op).iterator());
+        metaData.getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ShardingRuleConfiguration)
+                .map(each -> (ShardingRuleConfiguration) each).forEach(each -> data = getDataSourceCountData(each).entrySet().iterator());
+    }
+    
+    private Map<String, Integer> getDataSourceCountData(final ShardingRuleConfiguration config) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        Map<String, Integer> tableCount = config.getTables().stream()
+                .collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, this::getCount, Integer::sum, LinkedHashMap::new));
+        Map<String, Integer> autoTableCount = config.getAutoTables().stream()
+                .collect(Collectors.toMap(ShardingAutoTableRuleConfiguration::getLogicTable, this::getCount, Integer::sum, LinkedHashMap::new));
+        result.putAll(tableCount);
+        result.putAll(autoTableCount);
+        return result;
+    }
+    
+    private Integer getCount(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
+        List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources())
+                .splitAndEvaluate();
+        return actualDataSources.size();
+    }
+    
+    private Integer getCount(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
+        List<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes())
+                .splitAndEvaluate();
+        return (int) actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).count();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singletonList(COUNT);
+        return Arrays.asList(TABLE, COUNT);
     }
     
     @Override
@@ -57,7 +89,8 @@ public final class ShardingTablesCountQueryResultSet implements DistSQLResultSet
     
     @Override
     public Collection<Object> getRowData() {
-        return Collections.singletonList(data.next());
+        Entry<String, Integer> entry = data.next();
+        return Arrays.asList(entry.getKey(), entry.getValue());
     }
     
     @Override

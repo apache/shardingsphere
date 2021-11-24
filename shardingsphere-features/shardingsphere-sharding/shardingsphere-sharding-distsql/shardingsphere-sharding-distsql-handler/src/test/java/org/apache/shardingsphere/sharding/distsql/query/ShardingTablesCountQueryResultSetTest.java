@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -47,8 +48,13 @@ public final class ShardingTablesCountQueryResultSetTest {
         DistSQLResultSet resultSet = new ShardingTablesCountQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(2));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("t_order"));
+        assertThat(actual.get(1), is(4));
+        resultSet.next();
+        actual = new ArrayList<>(resultSet.getRowData());
+        assertThat(actual.get(0), is("t_product"));
+        assertThat(actual.get(1), is(2));
     }
     
     @Test
@@ -58,15 +64,13 @@ public final class ShardingTablesCountQueryResultSetTest {
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(emptyRuleConfiguration));
         DistSQLResultSet resultSet = new ShardingTablesCountQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingTableRulesStatement.class));
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(0));
+        assertFalse(resultSet.next());
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order", ""));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_product", ""));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_product", "ds_${0..1}.t_order_${0..1}"));
         return Collections.singleton(result);
     }
 }
