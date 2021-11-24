@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIn
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheTableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChannelOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneInstanceContext;
@@ -126,6 +127,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.String
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -914,6 +916,13 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
         MySQLSetResourceGroupStatement result = new MySQLSetResourceGroupStatement();
         result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCheckTable(final CheckTableContext ctx) {
+        MySQLCheckTableStatement result = new MySQLCheckTableStatement();
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
 }
