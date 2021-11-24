@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-og</artifactId>
+            <artifactId>shardingsphere-db-discovery-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

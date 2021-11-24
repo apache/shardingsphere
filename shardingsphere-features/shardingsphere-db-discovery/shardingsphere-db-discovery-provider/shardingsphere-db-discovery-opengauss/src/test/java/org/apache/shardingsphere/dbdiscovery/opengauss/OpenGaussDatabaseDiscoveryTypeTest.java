@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.og;
+package org.apache.shardingsphere.dbdiscovery.opengauss;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;

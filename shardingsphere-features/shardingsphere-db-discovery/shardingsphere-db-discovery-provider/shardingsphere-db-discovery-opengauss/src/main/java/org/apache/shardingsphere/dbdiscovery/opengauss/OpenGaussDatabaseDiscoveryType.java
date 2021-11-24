@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.og;
+package org.apache.shardingsphere.dbdiscovery.opengauss;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -97,7 +97,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             ShardingSphereEventBus.getInstance()
                     .post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
         }
-
     }
 
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
@@ -156,7 +155,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             final Collection<String> disabledDataSourceNames, final String groupName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"),
-                    "og-elasticjob");
+                    "opengauss-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
             coordinatorRegistryCenter.init();
         }
@@ -165,7 +164,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         }
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter,
                 new OpenGaussHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames, groupName),
-                JobConfiguration.newBuilder("OG-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
+                JobConfiguration.newBuilder("opengauss-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }
 
@@ -177,7 +176,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     @Override
     public void updateProperties(final String groupName, final Properties props) {
         new JobConfigurationAPIImpl(coordinatorRegistryCenter)
-                .updateJobConfiguration(createJobConfiguration("OG-" + groupName, props.getProperty("keepAliveCron")));
+                .updateJobConfiguration(createJobConfiguration("opengauss-" + groupName, props.getProperty("keepAliveCron")));
     }
 
     private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
@@ -190,6 +189,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
 
     @Override
     public String getType() {
-        return "OpenGauss";
+        return "opengauss";
     }
 }
