@@ -47,7 +47,7 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
     
     @Override
     public Optional<FunctionSegment> convertToSQLSegment(final SqlBasicCall sqlNode) {
-        if (sqlNode == null) {
+        if (null == sqlNode) {
             return Optional.empty();
         }
         return Optional.of(new FunctionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), sqlNode.getOperator().getName(), sqlNode.toString()));
