@@ -64,4 +64,21 @@
     <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_language" value="DROP LANGUAGE alt_lang2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_schema" value="DROP SCHEMA alt_nsp1 CASCADE" db-types="PostgreSQL" />
+    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
+    <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
+    <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
+    <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
+    <sql-case id="create_rule" value="create rule def_view_test_ins as on insert to def_view_test do instead insert into def_test select new.*" db-types="PostgreSQL" />
+    <sql-case id="drop_rule" value="drop rule def_view_test_ins on def_view_test" db-types="PostgreSQL" />
+    <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
+    <sql-case id="create_domain" value="create domain mytype as text" db-types="PostgreSQL" />
+    <sql-case id="drop_domain" value="drop domain mytype cascade" db-types="PostgreSQL" />
+    <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
+    <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
+    <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="drop_type" value="drop type lockmodes" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
+    <sql-case id="alter_view_set" value="alter view my_locks set (autovacuum_enabled = false)" db-types="PostgreSQL" />
+    <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
 </sql-cases>
