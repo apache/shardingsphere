@@ -21,4 +21,4 @@ In the overload traffic scenario, circuit breaker and request limiting for a nod
 
 ## Goal
 
-The goal of Apache ShardingSphere management module is to realize the integrated management ability from database to computing node, and provide control ability for components in case of failure.
+**The goal of Apache ShardingSphere management module is to realize the integrated management ability from database to computing node, and provide control ability for components in case of failure.**

@@ -21,5 +21,5 @@ chapter = true
 
 ## 目标
 
-Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解决方案。
-将压测数据自动路由至用户指定的数据库，是 Apache ShardingSphere 影子库模块的主要设计目标。
+**Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解决方案。
+将压测数据自动路由至用户指定的数据库，是 Apache ShardingSphere 影子库模块的主要设计目标。**

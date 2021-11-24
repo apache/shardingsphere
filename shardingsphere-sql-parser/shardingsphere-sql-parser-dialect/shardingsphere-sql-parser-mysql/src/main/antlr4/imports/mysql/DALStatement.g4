@@ -301,11 +301,11 @@ histogram
     ;
 
 checkTable
-    : CHECK tableOrTables tableList checkTableOption?
+    : CHECK TABLE tableList checkTableOption?
     ;
 
 checkTableOption
-    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGE
+    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGED
     ;
 
 checksumTable
