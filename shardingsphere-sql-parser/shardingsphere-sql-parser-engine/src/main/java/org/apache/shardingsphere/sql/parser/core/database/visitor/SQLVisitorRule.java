@@ -250,6 +250,8 @@ public enum SQLVisitorRule {
     
     SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),
     
+    SHOW_STATUS("ShowStatus", SQLStatementType.DAL),
+    
     SHOW("Show", SQLStatementType.DAL),
 
     SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
@@ -309,6 +311,8 @@ public enum SQLVisitorRule {
     CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
     
     LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
+    
+    CHECK_TABLE("CheckTable", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

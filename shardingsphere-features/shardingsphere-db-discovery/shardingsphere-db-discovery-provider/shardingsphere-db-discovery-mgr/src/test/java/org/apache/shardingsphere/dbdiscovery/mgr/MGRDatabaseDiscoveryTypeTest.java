@@ -18,26 +18,24 @@
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
 import com.google.common.eventbus.EventBus;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.zookeeper.CreateMode;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -77,53 +75,30 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
     
-    @BeforeClass
-    public static void before() throws Exception {
-        server = new TestingServer(2181, true);
-        server.start();
-        client = CuratorFrameworkFactory.newClient("127.0.0.1",
-                new ExponentialBackoffRetry(1000, 3));
-        client.start();
-    }
-    
-    @AfterClass
-    public static void after() throws Exception {
-        server.stop();
-        client.close();
-    }
-    
     @Test
-    public void checkHAConfig() {
+    public void assertCheckHAConfig() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
-        try {
-            when(dataSource.getConnection()).thenReturn(connection);
-            when(connection.createStatement()).thenReturn(statement);
-            when(statement.executeQuery(PLUGIN_STATUS)).thenReturn(resultSet);
-            when(statement.executeQuery(MEMBER_COUNT)).thenReturn(resultSet);
-            when(statement.executeQuery(GROUP_NAME)).thenReturn(resultSet);
-            when(statement.executeQuery(SINGLE_PRIMARY)).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
-            when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
-            when(resultSet.getInt(1)).thenReturn(3);
-            when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(PLUGIN_STATUS)).thenReturn(resultSet);
+        when(statement.executeQuery(MEMBER_COUNT)).thenReturn(resultSet);
+        when(statement.executeQuery(GROUP_NAME)).thenReturn(resultSet);
+        when(statement.executeQuery(SINGLE_PRIMARY)).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
+        when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
+        when(resultSet.getInt(1)).thenReturn(3);
+        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(dataSourceMap.get(null)).thenReturn(dataSource);
-        try {
-            mgrHaType.getProps().setProperty("groupName", "group_name");
-            mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        mgrHaType.getProps().setProperty("groupName", "group_name");
+        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
     @Test
-    public void updatePrimaryDataSource() {
+    public void assertUpdatePrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -138,19 +113,15 @@ public final class MGRDatabaseDiscoveryTypeTest {
         }
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                 + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-        try {
-            for (int i = 0; i < 3; i++) {
-                when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
-                when(connections.get(i).createStatement()).thenReturn(statements.get(i));
-                when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
-                when(resultSets.get(i).next()).thenReturn(true, false);
-                when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
-                when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
-                when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
-                when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+        for (int i = 0; i < 3; i++) {
+            when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
+            when(connections.get(i).createStatement()).thenReturn(statements.get(i));
+            when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
+            when(resultSets.get(i).next()).thenReturn(true, false);
+            when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
+            when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
+            when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
+            when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         for (int i = 0; i < 3; i++) {
@@ -162,7 +133,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void updateMemberState() throws IllegalAccessException, NoSuchFieldException {
+    public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
         Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
         declaredField.set(mgrHaType, "ds_0");
@@ -182,20 +153,16 @@ public final class MGRDatabaseDiscoveryTypeTest {
             databaseMetaData.add(mock(DatabaseMetaData.class));
         }
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
-        try {
-            for (int i = 0; i < 3; i++) {
-                when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
-                when(connections.get(i).createStatement()).thenReturn(statements.get(i));
-                when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
-                when(resultSets.get(i).next()).thenReturn(true, false);
-                when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
-                when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
-                when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
-                when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
-                when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+        for (int i = 0; i < 3; i++) {
+            when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
+            when(connections.get(i).createStatement()).thenReturn(statements.get(i));
+            when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
+            when(resultSets.get(i).next()).thenReturn(true, false);
+            when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
+            when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
+            when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
+            when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
+            when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         List<String> disabledDataSourceNames = new ArrayList<>();
@@ -210,7 +177,8 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void startPeriodicalUpdate() throws NoSuchFieldException, IllegalAccessException {
+    @Ignore
+    public void assertStartPeriodicalUpdate() throws NoSuchFieldException, IllegalAccessException {
         Properties props = mock(Properties.class);
         when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
         when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
@@ -218,12 +186,9 @@ public final class MGRDatabaseDiscoveryTypeTest {
         propsFiled.setAccessible(true);
         propsFiled.set(mgrHaType, props);
         final Map<String, ScheduleJobBootstrap> scheduleJobHashMap = spy(HashMap.class);
-        Field scheduleJobBootstrapMapFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
-        scheduleJobBootstrapMapFiled.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(scheduleJobBootstrapMapFiled, scheduleJobBootstrapMapFiled.getModifiers() & ~Modifier.FINAL);
-        scheduleJobBootstrapMapFiled.set(mgrHaType, scheduleJobHashMap);
+        Field field = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
+        makeAccessible(field);
+        field.set(mgrHaType, scheduleJobHashMap);
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
         mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
         verify(scheduleJobHashMap, times(2)).get("group_name");
@@ -232,21 +197,40 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void updateProperties() throws Exception {
+    @Ignore
+    public void assertUpdateProperties() throws Exception {
         Properties props = mock(Properties.class);
         when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
         when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
         ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "");
         CoordinatorRegistryCenter coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
         coordinatorRegistryCenter.init();
-        Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("coordinatorRegistryCenter");
-        propsFiled.setAccessible(true);
-        propsFiled.set(mgrHaType, coordinatorRegistryCenter);
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
         ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
         mgrHaType.updateProperties("group_name", props);
         assertThat(coordinatorRegistryCenter.get("/MGR-group_name/config"), is("cron: 0/5 * * * * ?\n" + "disabled: false\n"
                 + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
                 + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n"));
+    }
+    
+    @SneakyThrows
+    private void makeAccessible(final Field field) {
+        field.setAccessible(true);
+        Field modifiersField = getModifiersField();
+        modifiersField.setAccessible(true);
+        modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
+    }
+    
+    @SneakyThrows
+    private Field getModifiersField() {
+        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+        getDeclaredFields0.setAccessible(true);
+        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
+        for (Field each : fields) {
+            if ("modifiers".equals(each.getName())) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 }

@@ -29,6 +29,6 @@ This requires business applications to perform data classification based on the 
 
 ## Goal
 
-Apache ShardingSphere focuses on data solutions in pressure testing on production environment.
+**Apache ShardingSphere focuses on data solutions in pressure testing on production environment.
 
-The main goal of the Apache ShardingSphere shadow Database module is routing pressure testing data to user defined database automatically.
+The main goal of the Apache ShardingSphere shadow Database module is routing pressure testing data to user defined database automatically.**

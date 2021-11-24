@@ -312,7 +312,7 @@ regularFunctionName
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse?
+    : CASE simpleExpr? caseWhen+ caseElse? END
     ;
 
 caseWhen
