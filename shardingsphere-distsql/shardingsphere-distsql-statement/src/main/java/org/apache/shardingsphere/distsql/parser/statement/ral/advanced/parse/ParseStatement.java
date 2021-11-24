@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-grammar AdvancedDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse;
 
-import Symbol, AdvancedStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
 
-execute
-    : (previewSQL 
-    | parseSQL
-    ) SEMI?
-    ;
+/**
+ * Parse statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ParseStatement extends AdvancedDistSQLStatement {
+    
+    private final String sql;
+}

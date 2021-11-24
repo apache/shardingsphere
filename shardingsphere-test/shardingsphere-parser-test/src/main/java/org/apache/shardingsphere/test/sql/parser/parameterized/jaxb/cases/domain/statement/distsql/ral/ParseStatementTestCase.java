@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-grammar AdvancedDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import Symbol, AdvancedStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (previewSQL 
-    | parseSQL
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Parse statement test case.
+ */
+@Getter
+@Setter
+public final class ParseStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "sql")
+    private String sql;
+}
