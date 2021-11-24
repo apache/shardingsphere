@@ -189,6 +189,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
 
     @Override
     public String getType() {
-        return "opengauss";
+        return "openGauss";
     }
 }
