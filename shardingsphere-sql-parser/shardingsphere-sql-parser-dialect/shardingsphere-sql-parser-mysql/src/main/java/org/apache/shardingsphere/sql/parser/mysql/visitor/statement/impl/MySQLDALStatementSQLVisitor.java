@@ -225,7 +225,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
-        return new MySQLShowStatusStatement();
+        MySQLShowStatusStatement result = new MySQLShowStatusStatement();
+        if (null != ctx.showFilter()) {
+            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
+        }
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
     }
     
     @Override
