@@ -59,12 +59,12 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.DIVIDE);
     }
     
-    private static void registerAlias() {
-        REGISTRY.put("!=", SqlStdOperatorTable.NOT_EQUALS);
-    }
-    
     private static void register(final SqlBinaryOperator sqlBinaryOperator) {
         REGISTRY.put(sqlBinaryOperator.getName(), sqlBinaryOperator);
+    }
+    
+    private static void registerAlias() {
+        REGISTRY.put("!=", SqlStdOperatorTable.NOT_EQUALS);
     }
     
     @Override
