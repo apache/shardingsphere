@@ -15,8 +15,4 @@
 # limitations under the License.
 #
 
-mode: memory
-transaction: local
-feature: encrypt
-framework: spring-namespace-jdbc
-
+org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.TestQueryAssistedShardingEncryptAlgorithm
