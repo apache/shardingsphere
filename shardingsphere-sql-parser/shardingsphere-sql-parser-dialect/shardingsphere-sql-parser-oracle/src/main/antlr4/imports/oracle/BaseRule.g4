@@ -415,13 +415,13 @@ simpleExpr
     : functionCall
     | parameterMarker
     | literals
-    | columnName
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
+    | columnName
     | privateExprOfDb
     ;
 
@@ -471,7 +471,7 @@ regularFunctionName
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse?
+    : CASE simpleExpr? caseWhen+ caseElse? END
     ;
 
 caseWhen

@@ -521,4 +521,10 @@
         <input sql="select * from t_account where amount=? and account_id=?" parameters="1,2"/>
         <output sql="select * from t_account_0 where amount=? and account_id=?" parameters="1,2"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_case_when_then_in_group_by_item_and_order_by_item" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Oracle">
+        <input sql="SELECT account_id FROM t_account GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+        <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+        <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+    </rewrite-assertion>
 </rewrite-assertions>
