@@ -87,6 +87,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_avg");
         SUPPORTED_SQL_CASE_IDS.add("select_between_with_single_table");
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_single_count_group_by");
+        SUPPORTED_SQL_CASE_IDS.add("select_bit_xor");
     }
     
     private final String sqlCaseId;
