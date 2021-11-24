@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Function converter.
  */
-public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlBasicCall> {
+public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlBasicCall> {
     
     @Override
     public Optional<SqlBasicCall> convertToSQLNode(final FunctionSegment segment) {
