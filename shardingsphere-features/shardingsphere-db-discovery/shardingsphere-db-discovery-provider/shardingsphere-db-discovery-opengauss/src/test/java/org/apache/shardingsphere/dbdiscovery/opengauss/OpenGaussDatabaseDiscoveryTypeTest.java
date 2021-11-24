@@ -42,11 +42,11 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
     private static final String DB_ROLE = "select local_role,db_state from pg_stat_get_stream_replications()";
     
     private static final String STANDBYS = "select client_addr,sync_state from pg_stat_replication";
-
+    
     private final OpenGaussDatabaseDiscoveryType ogHaType = new OpenGaussDatabaseDiscoveryType();
     
     @Test
-    public void checkHAConfig() {
+    public void assertCheckHAConfig() {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -74,7 +74,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void updatePrimaryDataSource() {
+    public void assertUpdatePrimaryDataSource() {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();

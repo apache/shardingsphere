@@ -49,19 +49,19 @@ import java.util.Properties;
  */
 @Slf4j
 public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryType {
-
+    
     private static final String DB_ROLE = "select local_role,db_state from pg_stat_get_stream_replications()";
-
+    
     private static CoordinatorRegistryCenter coordinatorRegistryCenter;
-
+    
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
-
+    
     private String oldPrimaryDataSource;
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String schemaName,
             final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -70,7 +70,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             checkRolePrimary(statement);
         }
     }
-
+    
     private void checkRolePrimary(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
             while (resultSet.next()) {
@@ -80,7 +80,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             }
         }
     }
-
+    
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap,
             final Collection<String> disabledDataSourceNames, final String groupName) {
@@ -98,7 +98,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
                     .post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
         }
     }
-
+    
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -117,7 +117,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         }
         return result;
     }
-
+    
     @Override
     public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap,
             final Collection<String> disabledDataSourceNames) {
@@ -127,7 +127,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         }
         determineDisabledDataSource(schemaName, activeDataSourceMap);
     }
-
+    
     private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             boolean disable = true;
@@ -142,14 +142,10 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find data source urls", ex);
             }
-            if (disable) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-            } else {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
-            }
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), disable));
         }
     }
-
+    
     @Override
     public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap,
             final Collection<String> disabledDataSourceNames, final String groupName) {
@@ -167,18 +163,18 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
                 JobConfiguration.newBuilder("opengauss-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }
-
+    
     @Override
     public String getPrimaryDataSource() {
         return oldPrimaryDataSource;
     }
-
+    
     @Override
     public void updateProperties(final String groupName, final Properties props) {
         new JobConfigurationAPIImpl(coordinatorRegistryCenter)
                 .updateJobConfiguration(createJobConfiguration("opengauss-" + groupName, props.getProperty("keepAliveCron")));
     }
-
+    
     private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
         JobConfigurationPOJO result = new JobConfigurationPOJO();
         result.setJobName(jobName);
@@ -186,7 +182,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         result.setShardingTotalCount(1);
         return result;
     }
-
+    
     @Override
     public String getType() {
         return "openGauss";
