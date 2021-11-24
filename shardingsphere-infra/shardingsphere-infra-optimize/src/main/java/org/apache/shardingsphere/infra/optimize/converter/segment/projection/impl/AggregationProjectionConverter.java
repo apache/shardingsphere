@@ -141,7 +141,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     /**
      * Judge whether sqlBasicCall is as operator aggregation type or not.
      * @param sqlBasicCall sqlBasicCall 
-     * @return whether sqlBasicCall is as operator aggregation type or not.
+     * @return whether sqlBasicCall is as operator aggregation type or not
      */
     public static boolean isAsOperatorAggregationType(final SqlBasicCall sqlBasicCall) {
         return null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()
