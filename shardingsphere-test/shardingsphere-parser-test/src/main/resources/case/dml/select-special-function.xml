@@ -64,7 +64,14 @@
         <projections start-index="7" stop-index="36">
             <expression-projection text="POSITION('bar' IN 'foobarbar')" start-index="7" stop-index="36">
                 <expr>
-                    <function function-name="POSITION" start-index="7" stop-index="36" text="POSITION('bar' IN 'foobarbar')" />
+                    <function function-name="POSITION" start-index="7" stop-index="36" text="POSITION('bar' IN 'foobarbar')" >
+                        <parameter>
+                            <literal-expression value="bar" start-index="16" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="25" stop-index="35" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

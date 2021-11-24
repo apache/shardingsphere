@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Function converter.
@@ -46,11 +47,18 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
     }
     
     @Override
-    public Optional<FunctionSegment> convertToSQLSegment(final SqlBasicCall sqlNode) {
-        if (null == sqlNode) {
+    public Optional<FunctionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
+        if (null == sqlBasicCall) {
             return Optional.empty();
         }
-        return Optional.of(new FunctionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), sqlNode.getOperator().getName(), sqlNode.toString()));
+        FunctionSegment functionSegment = new FunctionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), sqlBasicCall.getOperator().getName(), sqlBasicCall.toString());
+        functionSegment.getParameters().addAll(getParameters(sqlBasicCall));
+        return Optional.of(functionSegment);
+    }
+    
+    private List<ExpressionSegment> getParameters(final SqlBasicCall sqlBasicCall) {
+        return sqlBasicCall.getOperandList().stream()
+                .map(operand -> new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", ""))).collect(Collectors.toList());
     }
     
     private SqlNode[] getPositionSqlNodes(final Collection<ExpressionSegment> expressionSegments) {
