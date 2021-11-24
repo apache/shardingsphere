@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * openGauss heartbeat job.
+ * OpenGauss heartbeat job.
  */
 @RequiredArgsConstructor
 public final class OpenGaussHeartbeatJob implements SimpleJob {
