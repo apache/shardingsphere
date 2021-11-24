@@ -229,8 +229,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
-        return orderByItemSegment instanceof ColumnOrderByItemSegment
-                ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
+        if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+            return SQLUtil.getExactlyValue(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue());
+        }
+        return SQLUtil.getExactlyValue(((ExpressionOrderByItemSegment) orderByItemSegment).getExpression());
     }
     
     /**
