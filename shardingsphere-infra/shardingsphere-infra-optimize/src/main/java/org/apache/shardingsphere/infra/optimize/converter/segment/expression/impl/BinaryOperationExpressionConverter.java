@@ -40,6 +40,11 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     private static final Map<String, SqlBinaryOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
+        register();
+        registerAlias();
+    }
+    
+    private static void register() {
         register(SqlStdOperatorTable.EQUALS);
         register(SqlStdOperatorTable.NOT_EQUALS);
         register(SqlStdOperatorTable.GREATER_THAN);
@@ -56,6 +61,10 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     private static void register(final SqlBinaryOperator sqlBinaryOperator) {
         REGISTRY.put(sqlBinaryOperator.getName(), sqlBinaryOperator);
+    }
+    
+    private static void registerAlias() {
+        REGISTRY.put("!=", SqlStdOperatorTable.NOT_EQUALS);
     }
     
     @Override

@@ -105,7 +105,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
             SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
-            if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName())) {
+            if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName()) || AggregationProjectionConverter.isAsOperatorAggregationType(sqlBasicCall)) {
                 return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
             }
             if (null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()) {

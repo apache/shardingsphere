@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.converter.context.ConverterContext;
+import org.apache.shardingsphere.infra.optimize.converter.context.ConverterContextHolder;
 import org.apache.shardingsphere.infra.optimize.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.groupby.HavingConverter;
@@ -32,8 +33,6 @@ import org.apache.shardingsphere.infra.optimize.converter.segment.projection.Dis
 import org.apache.shardingsphere.infra.optimize.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.optimize.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
@@ -76,44 +75,29 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     
     @Override
     public SelectStatement convertToSQLStatement(final SqlNode sqlNode) {
-        SqlSelect sqlSelect = sqlNode instanceof SqlOrderBy ? (SqlSelect) ((SqlOrderBy) sqlNode).query : (SqlSelect) sqlNode;
-        ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
-        projections.setDistinctRow(sqlSelect.isDistinct());
-        // TODO create select statement for different dialect 
         MySQLSelectStatement result = new MySQLSelectStatement();
-        result.setProjections(projections);
-        new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);
-        new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);
-        new GroupByConverter().convertToSQLSegment(sqlSelect.getGroup()).ifPresent(result::setGroupBy);
-        new HavingConverter().convertToSQLSegment(sqlSelect.getHaving()).ifPresent(result::setHaving);
-        ConverterContext context = new ConverterContext();
-        if (sqlNode instanceof SqlOrderBy) {
-            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
-            new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
-            createLimitSegment(sqlOrderBy, context).ifPresent(result::setLimit);
+        try {
+            SqlSelect sqlSelect = sqlNode instanceof SqlOrderBy ? (SqlSelect) ((SqlOrderBy) sqlNode).query : (SqlSelect) sqlNode;
+            ConverterContext context = new ConverterContext();
+            ConverterContextHolder.set(context);
+            ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
+            projections.setDistinctRow(sqlSelect.isDistinct());
+            // TODO create select statement for different dialect 
+            result.setProjections(projections);
+            new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);
+            new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);
+            new GroupByConverter().convertToSQLSegment(sqlSelect.getGroup()).ifPresent(result::setGroupBy);
+            new HavingConverter().convertToSQLSegment(sqlSelect.getHaving()).ifPresent(result::setHaving);
+            if (sqlNode instanceof SqlOrderBy) {
+                SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+                new OrderByConverter().convertToSQLSegment(sqlOrderBy.orderList).ifPresent(result::setOrderBy);
+                createLimitSegment(sqlOrderBy, context).ifPresent(result::setLimit);
+            }
+            result.setParameterCount(context.getParameterCount().get());
+        } finally {
+            ConverterContextHolder.remove();
         }
-        calculateParamCount(result, context);
-        result.setParameterCount(context.getParameterCount().get());
         return result;
-    }
-    
-    private void calculateParamCount(final MySQLSelectStatement result, final ConverterContext context) {
-        result.getWhere().ifPresent(whereSegment -> {
-            if (whereSegment.getExpr() instanceof BinaryOperationExpression) {
-                if (((BinaryOperationExpression) whereSegment.getExpr()).getLeft() instanceof ParameterMarkerExpressionSegment 
-                        || ((BinaryOperationExpression) whereSegment.getExpr()).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    context.getParameterCount().incrementAndGet();
-                }
-            }
-        });
-        result.getHaving().ifPresent(havingSegment -> {
-            if (havingSegment.getExpr() instanceof BinaryOperationExpression) {
-                if (((BinaryOperationExpression) havingSegment.getExpr()).getLeft() instanceof ParameterMarkerExpressionSegment
-                        || ((BinaryOperationExpression) havingSegment.getExpr()).getRight() instanceof ParameterMarkerExpressionSegment) {
-                    context.getParameterCount().incrementAndGet();
-                }
-            }
-        });
     }
     
     private Optional<LimitSegment> createLimitSegment(final SqlOrderBy sqlOrderBy, final ConverterContext context) {

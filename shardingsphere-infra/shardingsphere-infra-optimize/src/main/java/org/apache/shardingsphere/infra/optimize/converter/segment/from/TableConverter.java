@@ -41,6 +41,9 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final TableSegment segment) {
+        if (null == segment) {
+            return Optional.empty();
+        }
         if (segment instanceof SimpleTableSegment) {
             return new SimpleTableConverter().convertToSQLNode((SimpleTableSegment) segment);
         } else if (segment instanceof JoinTableSegment) {
@@ -53,6 +56,9 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
     
     @Override
     public Optional<TableSegment> convertToSQLSegment(final SqlNode sqlNode) {
+        if (null == sqlNode) {
+            return Optional.empty();
+        }
         if (sqlNode instanceof SqlIdentifier) {
             return new SimpleTableConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         } else if (sqlNode instanceof SqlJoin) {
