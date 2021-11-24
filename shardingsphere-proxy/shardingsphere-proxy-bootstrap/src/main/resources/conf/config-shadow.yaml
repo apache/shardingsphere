@@ -71,7 +71,7 @@
 #      shadowAlgorithmNames:
 #        - user-id-insert-match-algorithm
 #        - user-id-select-match-algorithm
-#        - simple-note-algorithm
+#        - simple-hint-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
 #      type: REGEX_MATCH
@@ -152,7 +152,7 @@
 #      shadowAlgorithmNames:
 #        - user-id-insert-match-algorithm
 #        - user-id-select-match-algorithm
-#        - simple-note-algorithm
+#        - simple-hint-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
 #      type: REGEX_MATCH
