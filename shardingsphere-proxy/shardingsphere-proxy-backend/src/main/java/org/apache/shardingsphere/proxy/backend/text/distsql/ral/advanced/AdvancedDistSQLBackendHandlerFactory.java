@@ -37,10 +37,10 @@ public final class AdvancedDistSQLBackendHandlerFactory {
     
     /**
      * Create new instance of advanced dist sql backend handler.
-     * 
+     *
+     * @param databaseType database type
      * @param sqlStatement advanced dist sql statement
      * @param backendConnection backend connection
-     * @param databaseType database type
      * @return advanced dist sql backend handler
      * @throws SQLException SQL exception
      */

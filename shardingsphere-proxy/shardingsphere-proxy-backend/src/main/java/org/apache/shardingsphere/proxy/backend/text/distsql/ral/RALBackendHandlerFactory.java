@@ -43,9 +43,9 @@ public final class RALBackendHandlerFactory {
     /**
      * Create new instance of RAL backend handler.
      *
+     * @param databaseType database type
      * @param sqlStatement RAL statement
      * @param backendConnection backend connection
-     * @param databaseType database type
      * @return RAL backend handler
      * @throws SQLException SQL exception
      */
