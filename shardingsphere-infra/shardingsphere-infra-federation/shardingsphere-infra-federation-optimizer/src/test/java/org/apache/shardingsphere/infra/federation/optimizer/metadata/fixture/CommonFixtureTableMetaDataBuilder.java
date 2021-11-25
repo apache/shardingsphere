@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.metadata.loader;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;

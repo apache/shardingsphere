@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.original;
+package org.apache.shardingsphere.infra.federation.executor.original;
 
 import java.util.ArrayList;
 import java.util.List;

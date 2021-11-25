@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.original.table;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
-/**
- * Filterable table scan context.
- */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanContext {
+public final class CommonFixtureRule implements TableContainedRule {
     
-    private final DataContext root;
+    @Override
+    public Collection<String> getTables() {
+        return Collections.singletonList("t_order_new");
+    }
     
-    private final List<RexNode> filters;
-    
-    private final int[] projects;
+    @Override
+    public String getType() {
+        return CommonFixtureRule.class.getSimpleName();
+    }
 }

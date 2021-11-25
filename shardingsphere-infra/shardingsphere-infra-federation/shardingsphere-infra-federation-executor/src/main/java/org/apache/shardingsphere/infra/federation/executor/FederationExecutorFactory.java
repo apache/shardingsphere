@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate;
+package org.apache.shardingsphere.infra.federation.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.original.OriginalFilterableExecutor;
+import org.apache.shardingsphere.infra.federation.executor.original.OriginalFilterableExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 
 /**

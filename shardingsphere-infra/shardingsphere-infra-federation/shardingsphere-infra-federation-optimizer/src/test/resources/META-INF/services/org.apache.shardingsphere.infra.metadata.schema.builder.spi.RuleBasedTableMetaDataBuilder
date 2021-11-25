@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.federation.optimizer.metadata.loader.CommonFixtureTableMetaDataBuilder
+org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture.CommonFixtureTableMetaDataBuilder
