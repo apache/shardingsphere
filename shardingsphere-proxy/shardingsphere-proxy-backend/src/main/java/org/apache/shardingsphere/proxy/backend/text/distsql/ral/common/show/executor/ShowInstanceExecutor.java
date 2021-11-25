@@ -43,7 +43,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "@";
     
-    private static final String ID = "id";
+    private static final String ID = "instance_id";
     
     private static final String STATUS = "status";
     
