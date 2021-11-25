@@ -17,10 +17,21 @@
   -->
 
 <sql-cases>
+    <distsql-case id="add-sharding-hint-database-value" value="ADD SHARDING HINT DATABASE_VALUE T_ORDER=1" />
+    <distsql-case id="add-sharding-hint-table-value" value="ADD SHARDING HINT TABLE_VALUE T_ORDER=1" />
+    <distsql-case id="clear-readwrite-splitting-hint-source" value="CLEAR READWRITE_SPLITTING HINT" />
+    <distsql-case id="clear-sharding-hint" value="CLEAR SHARDING HINT" />
+    <distsql-case id="clear-hint" value="CLEAR HINT" />
+    <distsql-case id="set-variable" value="SET VARIABLE TRANSACTION_TYPE=LOCAL" />
+    <distsql-case id="set-readwrite-splitting-hint-source" value="SET READWRITE_SPLITTING HINT SOURCE=WRITE" />
+    <distsql-case id="set-sharding-hint-database-value" value="SET SHARDING HINT DATABASE_VALUE=1" />
     <distsql-case id="show-variable" value="SHOW VARIABLE CACHED_CONNECTIONS" />
     <distsql-case id="show-all-variables" value="SHOW ALL VARIABLES" />
     <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
     <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
     <distsql-case id="show-instance" value="SHOW INSTANCE LIST" />
     <distsql-case id="show-readwrite-splitting-read-resources" value="show readwrite_splitting read resources" />
+    <distsql-case id="refresh-table-metadata" value="refresh table metadata" />
+    <distsql-case id="refresh-table-metadata-with-table-name" value="refresh table metadata t_order" />
+    <distsql-case id="refresh-table-metadata-with-resource" value="refresh table metadata t_order from resource ds_0" />
 </sql-cases>

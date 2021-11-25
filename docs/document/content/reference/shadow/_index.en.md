@@ -248,4 +248,35 @@ props:
   sql-comment-parse-enabled: true
 ```
 
-**Note**: The default shadow algorithm only supports note shadow algorithm.
+**Note**:
+The default shadow algorithm only supports note shadow algorithm.
+When using HINT, ensure that the configuration items of `props` in the configuration file are less than or equal to those in the SQL comment, and that the configuration items in the configuration file are the same as those in the SQL comment. The fewer the configuration items in the configuration file, the looser the matching conditions are
+
+```yaml
+simple-note-algorithm:
+  type: SIMPLE_HINT
+  props:
+    shadow: true
+    user_id: 2
+```
+For example, the 'props' item have `2` configure, the following syntax can be used in SQL:
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/、
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
+```
+
+```yaml
+simple-note-algorithm: 
+  type: SIMPLE_HINT
+  props:
+    shadow: false
+```
+For example, the 'props' item have `1` configure, the following syntax can be used in SQL:
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/、
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
+```

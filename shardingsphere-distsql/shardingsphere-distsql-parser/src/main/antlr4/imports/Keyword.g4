@@ -162,3 +162,11 @@ RULES
 RULE
     : R U L E
     ;
+    
+REFRESH
+    : R E F R E S H
+    ;
+    
+METADATA
+    : M E T A D A T A
+    ;

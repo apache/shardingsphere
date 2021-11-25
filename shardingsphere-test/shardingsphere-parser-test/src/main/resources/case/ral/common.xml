@@ -17,7 +17,21 @@
   -->
 
 <sql-parser-test-cases>
+    <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value" />
+    <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value" />
     <set-variable sql-case-id="set-variable" />
     <set-readwrite-splitting-hint-source sql-case-id="set-readwrite-splitting-hint-source" />
     <set-sharding-hint-database-value sql-case-id="set-sharding-hint-database-value" />
+    <clear-readwrite-splitting-hint-source sql-case-id="clear-readwrite-splitting-hint-source" />
+    <clear-sharding-hint sql-case-id="clear-sharding-hint" />
+    <clear-hint sql-case-id="clear-hint" />
+    <show-variable sql-case-id="show-variable" />
+    <show-all-variables sql-case-id="show-all-variables" />
+    <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
+    <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
+    <show-instance sql-case-id="show-instance" />
+    <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" resource-name="ds_0"/>
 </sql-parser-test-cases>

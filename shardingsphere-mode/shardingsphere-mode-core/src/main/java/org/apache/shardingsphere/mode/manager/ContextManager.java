@@ -289,6 +289,28 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
+    /**
+     * Reload single data source table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableName logic table name
+     * @param dataSourceName data source name                 
+     */
+    public void reloadMetaData(final String schemaName, final String tableName, final String dataSourceName) {
+        try {
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                    metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), Collections.singletonMap(dataSourceName, 
+                    metaDataContexts.getMetaData(schemaName).getResource().getDataSources().get(dataSourceName)),
+                    metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), metaDataContexts.getProps());
+            TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                    .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
+            metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
+            metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
+        } catch (final SQLException ex) {
+            log.error("Reload table:{} meta data of schema:{} with data source:{} failed", tableName, schemaName, dataSourceName, ex);
+        }
+    }
+    
     private ShardingSphereSchema loadActualSchema(final String schemaName) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaName, metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations());
