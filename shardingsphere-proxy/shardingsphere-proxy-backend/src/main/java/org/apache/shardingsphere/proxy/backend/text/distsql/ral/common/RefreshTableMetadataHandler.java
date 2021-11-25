@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import java.sql.SQLException;
 
 /**
- * Refresh table metadata handler handler.
+ * Refresh table metadata handler.
  */
 @Getter
 public final class RefreshTableMetadataHandler extends SchemaRequiredBackendHandler<RefreshTableMetadataStatement> {
