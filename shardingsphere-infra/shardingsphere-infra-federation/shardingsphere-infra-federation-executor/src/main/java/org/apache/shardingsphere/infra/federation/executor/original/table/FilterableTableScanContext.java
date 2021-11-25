@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.original.table;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

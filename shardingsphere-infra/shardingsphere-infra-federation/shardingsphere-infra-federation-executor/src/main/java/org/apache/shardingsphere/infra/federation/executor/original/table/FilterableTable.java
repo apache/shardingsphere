@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.original.table;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
@@ -29,8 +29,8 @@ import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.original.FederationTableStatistic;
-import org.apache.shardingsphere.infra.executor.sql.federate.original.row.FilterableRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.original.FederationTableStatistic;
+import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 
 import java.util.Collection;

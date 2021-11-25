@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.original.sql;
+package org.apache.shardingsphere.infra.federation.executor.original.sql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTableScanContext;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
