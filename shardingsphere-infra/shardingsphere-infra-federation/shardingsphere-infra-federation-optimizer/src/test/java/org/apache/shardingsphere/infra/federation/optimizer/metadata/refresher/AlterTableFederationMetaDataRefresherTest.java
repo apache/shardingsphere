@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.AlterTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;

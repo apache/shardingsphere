@@ -23,6 +23,10 @@ previewSQL
     : PREVIEW sql
     ;
 
+parseSQL
+    : PARSE sql
+    ;
+
 sql
     : SQLString
     ;
