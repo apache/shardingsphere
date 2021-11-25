@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.distsql.parser.core.advanced;
 
 import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.ParseSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.PreviewSQLContext;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -31,5 +33,10 @@ public final class AdvancedDistSQLStatementVisitor extends AdvancedDistSQLStatem
     @Override
     public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {
         return new PreviewStatement(ctx.sql().getText().trim());
+    }
+    
+    @Override
+    public ASTNode visitParseSQL(final ParseSQLContext ctx) {
+        return new ParseStatement(ctx.sql().getText().trim());
     }
 }
