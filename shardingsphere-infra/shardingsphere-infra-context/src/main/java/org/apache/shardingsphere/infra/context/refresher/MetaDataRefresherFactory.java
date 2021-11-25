@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateView
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.federation.metadata.refresher.type.AlterTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.metadata.refresher.type.CreateTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.metadata.refresher.type.DropTableFederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.AlterTableFederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.CreateTableFederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.DropTableFederationMetaDataRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;

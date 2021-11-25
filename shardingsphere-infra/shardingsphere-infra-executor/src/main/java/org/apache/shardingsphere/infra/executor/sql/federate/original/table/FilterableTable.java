@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.original.table;
 
-import java.util.Collection;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -33,7 +31,10 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.FederationTableStatistic;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.row.FilterableRowEnumerator;
-import org.apache.shardingsphere.infra.federation.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Filterable table.

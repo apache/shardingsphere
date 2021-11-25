@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.context.refresher;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
@@ -29,8 +31,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.federation.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.federation.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
