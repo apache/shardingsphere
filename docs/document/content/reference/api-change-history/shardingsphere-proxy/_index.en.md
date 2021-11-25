@@ -42,7 +42,7 @@ rules:
 
 If the hostname is % or empty, it means no restrict to the user’s host.
 
-The type of the provider must be explicitly specified. Refer to [5.11 Proxy](https://shardingsphere.apache.org/document/current/en/dev-manual/proxy/) for more implementations.
+The type of the provider must be explicitly specified. Refer to [5.11 Proxy](https://shardingsphere.apache.org/document/5.0.0-beta/en/dev-manual/proxy/) for more implementations.
 
 #### Proxy Properties
 
