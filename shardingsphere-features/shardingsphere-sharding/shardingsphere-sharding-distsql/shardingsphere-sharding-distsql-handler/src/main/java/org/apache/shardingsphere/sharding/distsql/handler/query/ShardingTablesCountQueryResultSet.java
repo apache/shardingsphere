@@ -51,10 +51,10 @@ public final class ShardingTablesCountQueryResultSet implements DistSQLResultSet
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         metaData.getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ShardingRuleConfiguration)
-                .map(each -> (ShardingRuleConfiguration) each).forEach(each -> data = getDataSourceCountData(each).entrySet().iterator());
+                .map(each -> (ShardingRuleConfiguration) each).forEach(each -> data = getDataSourceCount(each).entrySet().iterator());
     }
     
-    private Map<String, Integer> getDataSourceCountData(final ShardingRuleConfiguration config) {
+    private Map<String, Integer> getDataSourceCount(final ShardingRuleConfiguration config) {
         Map<String, Integer> result = new LinkedHashMap<>();
         Map<String, Integer> tableCount = config.getTables().stream()
                 .collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, this::getCount, Integer::sum, LinkedHashMap::new));
