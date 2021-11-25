@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
@@ -64,10 +64,9 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         boolean isNeedFlush = false;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
-            ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
-            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
-                connectionStatus.waitUntilConnectionRelease();
-                connectionStatus.switchToUsing();
+            if (!backendConnection.isAutoCommit() && !backendConnection.getTransactionStatus().isInTransaction()) {
+                BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
+                transactionManager.begin();
             }
             isNeedFlush = executeCommand(context, payload, backendConnection);
             // CHECKSTYLE:OFF
