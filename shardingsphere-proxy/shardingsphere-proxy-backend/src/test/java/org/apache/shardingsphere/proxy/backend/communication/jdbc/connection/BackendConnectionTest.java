@@ -213,14 +213,14 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() {
+    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

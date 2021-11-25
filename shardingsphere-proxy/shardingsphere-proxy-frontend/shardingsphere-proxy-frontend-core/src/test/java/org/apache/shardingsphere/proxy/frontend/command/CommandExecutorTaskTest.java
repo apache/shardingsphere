@@ -108,9 +108,6 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(queryCommandExecutor).close();
         verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
@@ -128,9 +125,6 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
@@ -152,9 +146,6 @@ public final class CommandExecutorTaskTest {
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(commandExecutor).close();
@@ -165,7 +156,7 @@ public final class CommandExecutorTaskTest {
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
-        doThrow(mockException).when(connectionStatus).switchToUsing();
+        doThrow(mockException).when(backendConnection).isAutoCommit();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException, backendConnection)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(backendConnection)).thenReturn(Optional.of(databasePacket));
