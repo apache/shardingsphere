@@ -17,6 +17,6 @@
 
 mode: memory
 transaction: local
-feature: readwrite-splitting
+feature: encrypt
 framework: spring-namespace-jpa
 

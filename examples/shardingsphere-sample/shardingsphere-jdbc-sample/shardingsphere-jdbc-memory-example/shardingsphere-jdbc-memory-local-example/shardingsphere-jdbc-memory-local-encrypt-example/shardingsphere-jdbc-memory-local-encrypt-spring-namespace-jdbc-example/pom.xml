@@ -20,18 +20,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
+        <artifactId>shardingsphere-jdbc-memory-local-encrypt-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <artifactId>shardingsphere-jdbc-memory-local-encrypt-example</artifactId>
+    <artifactId>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jdbc-example</artifactId>
     <name>${project.artifactId}</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.1.5.RELEASE</version>
+        </dependency>
+    </dependencies>
     
-    <modules>
-        <module>shardingsphere-jdbc-memory-local-encrypt-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jpa-example</module>
-    </modules>
 </project>

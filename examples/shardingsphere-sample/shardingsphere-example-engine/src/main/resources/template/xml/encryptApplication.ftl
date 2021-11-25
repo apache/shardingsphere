@@ -14,8 +14,20 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<#if feature=="encrypt">
-    <#include "encryptRepository.ftl">
-<#else>
-    <#include "otherRepository.ftl">
-</#if>
+    
+    <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
+        <props>
+            <prop key="aes-key-value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+    
+    <encrypt:rule id="encryptRule">
+        <encrypt:table name="t_user">
+            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+        </encrypt:table>
+    </encrypt:rule>
+    
+    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0" rule-refs="encryptRule" />
+
