@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.federate.original.sql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.table.FilterableTableScanContext;
-import org.apache.shardingsphere.infra.federation.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
