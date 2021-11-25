@@ -93,6 +93,7 @@ public final class CommandExecutorTaskTest {
     @Before
     public void setup() {
         when(backendConnection.closeDatabaseCommunicationEngines(anyBoolean())).thenReturn(Collections.emptyList());
+        when(backendConnection.isAutoCommit()).thenReturn(true);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     

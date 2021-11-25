@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistS
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.SetDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionAutoCommitHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -135,38 +136,28 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
         String sql = "SET AUTOCOMMIT=0";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithSetAutoCommitToOnForInTransaction() throws SQLException {
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(true);
+    public void assertNewInstanceWithSetAutoCommitToOn() throws SQLException {
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithSetAutoCommitToOnForNotInTransaction() throws SQLException {
-        String sql = "SET AUTOCOMMIT=1";
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(false);
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
     }
     
     @Test
