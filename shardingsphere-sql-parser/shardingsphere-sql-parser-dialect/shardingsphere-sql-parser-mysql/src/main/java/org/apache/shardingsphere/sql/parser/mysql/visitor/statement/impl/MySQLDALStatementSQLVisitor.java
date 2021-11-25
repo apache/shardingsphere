@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
@@ -158,6 +159,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowErrorsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
@@ -545,6 +547,19 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement();
+        if (null != ctx.showFilter()) {
+            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
+        }
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowEvents(final MySQLStatementParser.ShowEventsContext ctx) {
+        MySQLShowEventsStatement result = new MySQLShowEventsStatement();
+        if (null != ctx.fromSchema()) {
+            result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
+        }
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
