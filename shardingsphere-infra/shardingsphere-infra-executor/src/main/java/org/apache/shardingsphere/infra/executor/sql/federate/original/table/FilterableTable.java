@@ -33,7 +33,7 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.FederationTableStatistic;
 import org.apache.shardingsphere.infra.executor.sql.federate.original.row.FilterableRowEnumerator;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.federation.metadata.FederationTableMetaData;
 
 /**
  * Filterable table.

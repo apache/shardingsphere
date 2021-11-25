@@ -527,9 +527,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
             return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
         }
         if (expr instanceof ExpressionSegment) {
-            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection, (ExpressionSegment) expr);
+            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), 
+                    ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, (ExpressionSegment) expr);
         }
-        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection);
+        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection);
     }
     
     private OrderDirection generateOrderDirection(final AscDescContext ctx) {
@@ -859,9 +860,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
                         Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC);
             }
-            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.start.getStopIndex(), ctx.getText(), OrderDirection.ASC);
+            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC);
         }
-        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.start.getStopIndex(), ctx.getText(), OrderDirection.ASC);
+        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC);
     }
     
     @Override
