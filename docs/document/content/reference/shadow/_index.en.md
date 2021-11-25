@@ -254,23 +254,29 @@ When using HINT, ensure that the configuration items of `props` in the configura
 
 ```yaml
 simple-note-algorithm:
-      type: SIMPLE_HINT
-      props:
-        shadow: true
-        user_id: 2
+  type: SIMPLE_HINT
+  props:
+    shadow: true
+    user_id: 2
 ```
 For example, the 'props' item have `2` configure, the following syntax can be used in SQL:
 ```sql
-/*shadow:true,user_id:2*/、/*shadow:true,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/、
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
 ```
 
 ```yaml
-simple-note-algorithm:
-      type: SIMPLE_HINT
-      props:
-        shadow: false
+simple-note-algorithm: 
+  type: SIMPLE_HINT
+  props:
+    shadow: false
 ```
 For example, the 'props' item have `1` configure, the following syntax can be used in SQL:
 ```sql
-/*shadow:false*/、/*shadow:false,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/、
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
 ```
