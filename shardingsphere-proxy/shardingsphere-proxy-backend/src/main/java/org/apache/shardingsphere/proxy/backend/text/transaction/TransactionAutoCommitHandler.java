@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoComm
 import java.sql.SQLException;
 
 /**
- * Do transaction operation.
+ * Set autocommit handler.
  */
 public final class TransactionAutoCommitHandler implements TextProtocolBackendHandler {
 
