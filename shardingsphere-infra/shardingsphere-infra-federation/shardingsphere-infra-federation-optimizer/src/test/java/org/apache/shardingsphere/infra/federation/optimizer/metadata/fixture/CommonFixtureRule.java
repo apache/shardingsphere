@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.metadata.rule;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
