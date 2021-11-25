@@ -47,6 +47,10 @@ clearHint
     : CLEAR HINT
     ;
 
+refreshTableMetadata
+    : REFRESH TABLE METADATA refreshScope?
+    ;
+
 variableName
     : IDENTIFIER
     ;
@@ -61,4 +65,15 @@ ip
 
 port
     : INT
+    ;
+refreshScope
+    : tableName | tableName FROM RESOURCE resourceName
+    ;
+
+resourceName
+    : IDENTIFIER | STRING
+    ;
+
+tableName
+    : IDENTIFIER
     ;
