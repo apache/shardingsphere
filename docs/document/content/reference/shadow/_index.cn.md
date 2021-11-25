@@ -235,28 +235,33 @@ props:
 
 ```yaml
 simple-note-algorithm:
-      type: SIMPLE_HINT
-      props:
-        shadow: true
-        user_id: 2
+  type: SIMPLE_HINT
+  props:
+    shadow: true
+    user_id: 2
 ```
 
 如当前 `props` 项中配置了 `2` 条配置，在 SQL 中可以匹配的写法有如下：
 
 ```sql
-/*shadow:true,user_id:2*/、/*shadow:true,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
 ```
 
 ```yaml
 simple-note-algorithm:
-      type: SIMPLE_HINT
-      props:
-        shadow: false
+  type: SIMPLE_HINT
+  props:
+    shadow: false
 ```
 
 如当前 props 项中配置了 1 条配置，在sql中可以匹配的写法有如下：
 
 ```sql
-/*shadow:false*/、/*shadow:false,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/
 ```
-
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
+```
