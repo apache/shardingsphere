@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.readwritesplitting.constant;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.from.ExpectedFromSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.show.ExpectedShowFilter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * show triggers statement test case.
+ * Readwrite-splitting rule constants.
  */
-@Getter
-@Setter
-public final class ShowTriggersStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement(name = "from")
-    private ExpectedFromSchema fromSchema;
-
-    @XmlElement
-    private ExpectedShowFilter filter;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReadwriteSplittingRuleConstants {
+    
+    public static final String AUTO_AWARE_DATA_SOURCE_KEY = "auto_aware_data_source_key";
+    
+    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
+    
+    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
 }
