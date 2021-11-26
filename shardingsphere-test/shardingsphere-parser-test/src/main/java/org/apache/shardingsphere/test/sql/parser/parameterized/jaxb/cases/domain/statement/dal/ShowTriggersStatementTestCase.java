@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.like.ExpectedLikeClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.from.ExpectedFromSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.show.ExpectedShowFilter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,9 +32,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ShowTriggersStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement
-    private ExpectedSchema schema;
+    @XmlElement(name = "from")
+    private ExpectedFromSchema fromSchema;
 
     @XmlElement
-    private ExpectedLikeClause like;
+    private ExpectedShowFilter filter;
 }

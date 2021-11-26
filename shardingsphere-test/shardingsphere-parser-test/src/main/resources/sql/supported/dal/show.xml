@@ -64,7 +64,13 @@
     <sql-case id="show_open_tables_with_like_pattern" value="SHOW OPEN TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
     <sql-case id="show_open_tables_with_where_expr" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
     <sql-case id="show_open_tables_with_where_expr_no_parameter" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
-    <sql-case id="show_triggers_with_filter" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'acc%'" db-types="MySQL"/>
+    <sql-case id="show_triggers" value="SHOW TRIGGERS" db-types="MySQL"/>
+    <sql-case id="show_triggers_from_schema" value="SHOW TRIGGERS FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_triggers_in_schema" value="SHOW TRIGGERS IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_triggers_no_schema" value="SHOW TRIGGERS LIKE 'sys%'" db-types="MySQL" />
+    <sql-case id="show_triggers_with_like_pattern" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'sys%'" db-types="MySQL" />
+    <sql-case id="show_triggers_with_where_expr" value="SHOW TRIGGERS FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
+    <sql-case id="show_triggers_with_where_expr_no_parameter" value="SHOW TRIGGERS FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
     <sql-case id="show_table_status" value="SHOW TABLE STATUS" db-types="MySQL" />
     <sql-case id="show_table_status_from_schema" value="SHOW TABLE STATUS FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_table_status_in_schema" value="SHOW TABLE STATUS IN `sharding_db`" db-types="MySQL" />
