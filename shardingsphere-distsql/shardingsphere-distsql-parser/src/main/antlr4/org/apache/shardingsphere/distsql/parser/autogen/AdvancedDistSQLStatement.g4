@@ -20,5 +20,7 @@ grammar AdvancedDistSQLStatement;
 import Symbol, AdvancedStatement;
 
 execute
-    : previewSQL SEMI?
+    : (previewSQL 
+    | parseSQL
+    ) SEMI?
     ;

@@ -17,7 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="show_table_status" value="SHOW TABLE STATUS" db-types="MySQL" />
     <sql-case id="show_index_with_index_with_table" value="SHOW INDEX FROM t_order" db-types="MySQL" />
     <sql-case id="show_index_with_indexes_with_table_and_database" value="SHOW INDEXES FROM t_order FROM sharding_db" db-types="MySQL" />
     <sql-case id="show_index_with_keys_with_database_and_table" value="SHOW KEYS FROM sharding_db.t_order" db-types="MySQL" />
@@ -66,6 +65,12 @@
     <sql-case id="show_open_tables_with_where_expr" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
     <sql-case id="show_open_tables_with_where_expr_no_parameter" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
     <sql-case id="show_triggers_with_filter" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'acc%'" db-types="MySQL"/>
+    <sql-case id="show_table_status" value="SHOW TABLE STATUS" db-types="MySQL" />
+    <sql-case id="show_table_status_from_schema" value="SHOW TABLE STATUS FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_table_status_in_schema" value="SHOW TABLE STATUS IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_table_status_with_like_pattern" value="SHOW TABLE STATUS FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
+    <sql-case id="show_table_status_with_where_expr" value="SHOW TABLE STATUS FROM `sharding_db` WHERE `name` = ?" db-types="MySQL" />
+    <sql-case id="show_table_status_with_where_expr_no_parameter" value="SHOW TABLE STATUS FROM `sharding_db` WHERE `name` = 't_order'" db-types="MySQL" />
     <sql-case id="show_global_status" value="SHOW GLOBAL STATUS" db-types="MySQL" />
     <sql-case id="show_session_status" value="SHOW SESSION STATUS" db-types="MySQL" />
     <sql-case id="show_status_with_like_pattern" value="SHOW GLOBAL STATUS LIKE 'Key%'" db-types="MySQL" />

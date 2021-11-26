@@ -44,7 +44,7 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.readwrite-splitting.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.readwrite.splitting.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
