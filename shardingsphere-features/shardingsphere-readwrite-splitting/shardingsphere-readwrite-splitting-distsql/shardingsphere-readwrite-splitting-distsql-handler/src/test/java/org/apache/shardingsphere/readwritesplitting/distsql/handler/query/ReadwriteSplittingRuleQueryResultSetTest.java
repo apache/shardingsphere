@@ -96,7 +96,6 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     public void assertGetRowDataWithAutoAwareDataSource() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ExportableRule exportableRule = mock(ExportableRule.class);
-        
         when(metaData.getRuleMetaData().getRules()).thenReturn(Arrays.asList(exportableRule));
         when(exportableRule.export()).thenReturn(createAutoAwareDataSources());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfigurationWithAutoAwareDataSource()));
