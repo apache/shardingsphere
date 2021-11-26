@@ -155,7 +155,7 @@ public final class ShardingConditions {
      */
     public boolean isSameShardingCondition() {
         Collection<String> hintStrategyTables = findHintStrategyTables(sqlStatementContext);
-        return 1 == hintStrategyTables.size() || subqueryContainsShardingCondition && conditions.size() == 1;
+        return 1 == hintStrategyTables.size() || subqueryContainsShardingCondition && 1 == conditions.size();
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {
