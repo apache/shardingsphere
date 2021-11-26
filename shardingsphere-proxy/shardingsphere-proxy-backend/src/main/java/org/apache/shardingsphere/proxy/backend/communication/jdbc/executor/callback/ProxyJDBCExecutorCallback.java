@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -94,10 +95,18 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
             case Types.SMALLINT:
             case Types.INTEGER:
             case Types.BIGINT:
-                return resultSet.getLong(1);
+                return parseLongIfInRange(resultSet);
             default:
                 return 0L;
         }
+    }
+    
+    private long parseLongIfInRange(final ResultSet resultSet) throws SQLException {
+        Object generatedKey = resultSet.getObject(1);
+        if (generatedKey instanceof BigInteger) {
+            return ((BigInteger) generatedKey).longValue();
+        }
+        return Long.parseLong(generatedKey.toString());
     }
     
     @Override
