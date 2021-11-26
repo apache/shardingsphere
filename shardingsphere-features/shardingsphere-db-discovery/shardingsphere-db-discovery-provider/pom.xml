@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-db-discovery-mgr</module>
+        <module>shardingsphere-db-discovery-opengauss</module>
     </modules>
 </project>

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -213,14 +213,14 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() {
+    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

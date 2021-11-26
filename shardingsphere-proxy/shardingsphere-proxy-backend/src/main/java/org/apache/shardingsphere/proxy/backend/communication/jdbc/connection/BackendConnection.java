@@ -28,9 +28,9 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
@@ -93,6 +93,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
     private final AttributeMap attributeMap;
+
+    private boolean autoCommit = true;
     
     public BackendConnection(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);

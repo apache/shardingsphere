@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -286,6 +286,28 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of schema:{} failed", tableName, schemaName, ex);
+        }
+    }
+    
+    /**
+     * Reload single data source table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableName logic table name
+     * @param dataSourceName data source name                 
+     */
+    public void reloadMetaData(final String schemaName, final String tableName, final String dataSourceName) {
+        try {
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                    metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), Collections.singletonMap(dataSourceName, 
+                    metaDataContexts.getMetaData(schemaName).getResource().getDataSources().get(dataSourceName)),
+                    metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), metaDataContexts.getProps());
+            TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
+                    .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
+            metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
+            metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
+        } catch (final SQLException ex) {
+            log.error("Reload table:{} meta data of schema:{} with data source:{} failed", tableName, schemaName, dataSourceName, ex);
         }
     }
     

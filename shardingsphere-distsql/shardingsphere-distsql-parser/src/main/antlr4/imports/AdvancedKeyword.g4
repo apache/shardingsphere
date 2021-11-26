@@ -27,6 +27,10 @@ PREVIEW
     : P R E V I E W
     ;
 
+PARSE
+    : P A R S E
+    ;
+
 SQLString
     : WS.*
     ;
