@@ -48,14 +48,12 @@ public final class BackendTransactionManager implements TransactionManager {
     }
     
     @Override
-    public void begin() throws SQLException {
+    public void begin() {
         if (!connection.getTransactionStatus().isInTransaction()) {
             connection.getTransactionStatus().setInTransaction(true);
             TransactionHolder.setInTransaction();
             connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
-        } else {
-            commit();
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.begin();

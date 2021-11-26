@@ -93,8 +93,6 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
     private final AttributeMap attributeMap;
-
-    private boolean autoCommit = true;
     
     public BackendConnection(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);
