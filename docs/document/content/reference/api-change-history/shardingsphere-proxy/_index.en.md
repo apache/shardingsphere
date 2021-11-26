@@ -4,6 +4,62 @@ weight = 1
 chapter = true
 +++
 
+## 5.0.0-beta
+
+### Data Source Configuration Item Explanation
+
+```yaml
+schemaName: # Logic schema name.
+
+dataSources: # Data sources configuration, multiple <data-source-name> available.
+  <data-source-name>: # Different from ShardingSphere-JDBC configuration, it does not need to be configured with database connection pool.
+    url: # Database URL.
+    username: # Database username.
+    password: # Database password.
+    connectionTimeoutMilliseconds: # Connection timeout milliseconds.
+    idleTimeoutMilliseconds: # Idle timeout milliseconds.
+    maxLifetimeMilliseconds: # Maximum life milliseconds.
+    maxPoolSize: 50 # Maximum connection count in the pool.
+    minPoolSize: 1  # Minimum connection count in the pool.        
+
+rules: # Keep consist with ShardingSphere-JDBC configuration.
+# ...
+```
+
+#### Authentication
+
+It is used to verify the authentication to log in ShardingSphere-Proxy, which must use correct user name and password after the configuration of them.
+
+```yaml
+rules:
+  - !AUTHORITY
+    users:
+      - root@localhost:root # <username>@<hostname>:<password>
+      - sharding@:sharding
+    provider:
+      type: NATIVE # Must be explicitly specified.
+ ```
+
+If the hostname is % or empty, it means no restrict to the user’s host.
+
+The type of the provider must be explicitly specified. Refer to [5.11 Proxy](https://shardingsphere.apache.org/document/5.0.0-beta/en/dev-manual/proxy/) for more implementations.
+
+#### Proxy Properties
+
+```yaml
+props:
+  sql-show: # Whether show SQL or not in log. Print SQL details can help developers debug easier. The log details include: logic SQL, actual SQL and SQL parse result.Enable this property will log into log topic ShardingSphere-SQL, log level is INFO.
+  sql-simple: # Whether show SQL details in simple style.
+  executor-size: # The max thread size of worker group to execute SQL. One ShardingSphereDataSource will use a independent thread pool, it does not share thread pool even different data source in same JVM.
+  max-connections-size-per-query: # Max opened connection size for each query.
+  check-table-metadata-enabled: # Whether validate table meta data consistency when application startup or updated.
+  proxy-frontend-flush-threshold: # Flush threshold for every records from databases for ShardingSphere-Proxy.
+  proxy-transaction-type: # Default transaction type of ShardingSphere-Proxy. Include: LOCAL, XA and BASE.
+  proxy-opentracing-enabled: # Whether enable opentracing for ShardingSphere-Proxy.
+  proxy-hint-enabled: # Whether enable hint for ShardingSphere-Proxy. Using Hint will switch proxy thread mode from IO multiplexing to per connection per thread, which will reduce system throughput.
+  xa-transaction-manager-type: # XA Transaction manager type. Include: Atomikos, Narayana and Bitronix.
+```
+
 ## 5.0.0-alpha
 
 ### Data Source Configuration Item Explanation
