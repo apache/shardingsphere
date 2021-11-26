@@ -316,7 +316,7 @@
             </expr>
         </where>
         <group-by>
-            <expression-item expression="date_format(creation_date,'%y-%m-%d')" start-index="140" stop-index="177" literal-start-index="146" literal-stop-index="183" />
+            <expression-item expression="date_format(creation_date, '%y-%m-%d')" start-index="140" stop-index="177" literal-start-index="146" literal-stop-index="183" />
         </group-by>
     </select>
 
@@ -594,6 +594,21 @@
         </having>
         <order-by>
             <column-item name="department_id" start-index="230" stop-index="242" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_case_when_then_in_group_by_item_and_order_by_item">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <group-by>
+            <expression-item expression="CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END" start-index="38" stop-index="138" />
+        </group-by>
+        <order-by>
+            <expression-item expression="CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END" start-index="149" stop-index="249" />
         </order-by>
     </select>
 </sql-parser-test-cases>

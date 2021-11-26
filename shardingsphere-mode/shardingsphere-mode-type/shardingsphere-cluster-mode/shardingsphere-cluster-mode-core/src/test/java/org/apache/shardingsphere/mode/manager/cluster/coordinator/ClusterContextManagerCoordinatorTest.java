@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -163,7 +163,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertRuleConfigurationsChanged() throws SQLException {
+    public void assertRuleConfigurationsChanged() {
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), is(metaData));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
         coordinator.renew(event);
@@ -177,7 +177,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertDataSourceChanged() throws SQLException {
+    public void assertDataSourceChanged() {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));

@@ -20,7 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement, DCLStatement;
 
 createTable
-    : CREATE createTableSpecification TABLE tableName fileTableClause createDefinitionClause
+    : createTableClause | createTableAsSelectClause
+    ;
+
+createTableClause
+    : CREATE TABLE tableName fileTableClause createDefinitionClause
     ;
 
 createIndex
@@ -148,11 +152,11 @@ fileTableClause
     ;
 
 createDefinitionClause
-    : createTableAsSelect? createRemoteTableAsSelect? createTableDefinitions partitionScheme fileGroup
+    : createTableDefinitions partitionScheme fileGroup
     ;
 
 createTableDefinitions
-    : (LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_)?
+    : LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_
     ;
 
 createTableDefinition
@@ -1067,8 +1071,16 @@ schemaElement
     : createTable | createView | grant | revoke | deny
     ;
 
+createTableAsSelectClause
+    : createTableAsSelect | createRemoteTableAsSelect
+    ;
+
 createTableAsSelect
-    : columnNames? withDistributionOption AS select optionQueryHintClause
+    : CREATE TABLE tableName columnNames? withDistributionOption AS select optionQueryHintClause
+    ;
+
+createRemoteTableAsSelect
+    : CREATE REMOTE TABLE tableName AT LP_ stringLiterals RP_ (WITH LP_ BATCH_SIZE EQ_ INT_NUM_ RP_)? AS select
     ;
 
 withDistributionOption
@@ -1077,12 +1089,4 @@ withDistributionOption
 
 optionQueryHintClause
     : (OPTION LP_ queryHint (COMMA_ queryHint)* RP_)?
-    ;
-
-createTableSpecification
-    : REMOTE?
-    ;
-
-createRemoteTableAsSelect
-    : AT LP_ stringLiterals RP_ (WITH LP_ BATCH_SIZE EQ_ INT_NUM_ RP_)? AS select
     ;

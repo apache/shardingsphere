@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.collect.Maps;
-import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -37,7 +36,6 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
-    @Getter
     private final Boolean queryWithCipherColumn;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
@@ -159,5 +157,14 @@ public final class EncryptTable {
      */
     public Map<String, String> getLogicAndCipherColumns() {
         return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
+    }
+    
+    /**
+     * Get query with cipher column.
+     * 
+     * @return query with cipher column
+     */
+    public Optional<Boolean> getQueryWithCipherColumn() {
+        return Optional.ofNullable(queryWithCipherColumn);
     }
 }

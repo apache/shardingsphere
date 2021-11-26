@@ -36,8 +36,6 @@ public final class EncryptMergedResult implements MergedResult {
     
     private final MergedResult mergedResult;
     
-    private final boolean queryWithCipherColumn;
-    
     @Override
     public boolean next() throws SQLException {
         return mergedResult.next();
@@ -46,7 +44,7 @@ public final class EncryptMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (!queryWithCipherColumn) {
+        if (!metaData.isQueryWithCipherColumn(columnIndex)) {
             return mergedResult.getValue(columnIndex, type);
         }
         Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(columnIndex);

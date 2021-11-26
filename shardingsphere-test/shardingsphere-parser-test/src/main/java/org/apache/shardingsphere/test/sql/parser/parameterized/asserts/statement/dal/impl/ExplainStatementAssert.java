@@ -53,6 +53,9 @@ public final class ExplainStatementAssert {
         } else if (null != expected.getDeleteClause()) {
             assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getDeleteClause());
+        } else if (null != expected.getCreateTableAsSelectClause()) {
+            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getCreateTableAsSelectClause());
         } else {
             assertFalse(assertContext.getText("Actual statement should not exist."), actual.getStatement().isPresent());
         }

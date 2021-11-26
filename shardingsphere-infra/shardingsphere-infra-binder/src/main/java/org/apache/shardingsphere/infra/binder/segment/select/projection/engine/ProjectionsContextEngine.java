@@ -141,10 +141,10 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameAlias(final Projection projection, final String text) {
-        return projection.getAlias().isPresent() && SQLUtil.getExactlyValue(text).equalsIgnoreCase(projection.getAlias().get());
+        return projection.getAlias().isPresent() && SQLUtil.getExactlyValue(text).equalsIgnoreCase(SQLUtil.getExactlyValue(projection.getAlias().get()));
     }
     
     private boolean isSameQualifiedName(final Projection projection, final String text) {
-        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(projection.getExpression());
+        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(SQLUtil.getExactlyValue(projection.getExpression()));
     }
 }

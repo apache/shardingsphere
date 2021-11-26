@@ -229,4 +229,39 @@ props:
   sql-comment-parse-enabled: true
 ```
 
-**注意**：默认影子算法仅支持HINT影子算法。
+**注意**
+默认影子算法仅支持HINT影子算法。
+使用HINT，必须确保配置文件中 `props` 的配置项小于等于 SQL 注释中的配置项，且配置文件的具体配置要和 SQL 注释中写的配置一样，配置文件中配置项越少，匹配条件越宽松
+
+```yaml
+simple-note-algorithm:
+  type: SIMPLE_HINT
+  props:
+    shadow: true
+    user_id: 2
+```
+
+如当前 `props` 项中配置了 `2` 条配置，在 SQL 中可以匹配的写法有如下：
+
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
+```
+
+```yaml
+simple-note-algorithm:
+  type: SIMPLE_HINT
+  props:
+    shadow: false
+```
+
+如当前 props 项中配置了 1 条配置，在sql中可以匹配的写法有如下：
+
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/
+```
+```sql
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
+```

@@ -57,7 +57,7 @@ provider:
 
 ### /props
 
-属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/)。
+属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/props/)。
 
 ```yaml
 kernel-executor-size: 20

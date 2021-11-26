@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -34,25 +33,14 @@ import java.util.Optional;
 @ToString
 public final class MySQLShowProcedureStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private ShowLikeSegment like;
-    
-    private WhereSegment where;
+    private ShowFilterSegment filter;
     
     /**
-     * Get like segment.
+     * Get filter segment.
      *
-     * @return like segment
+     * @return filter segment
      */
-    public Optional<ShowLikeSegment> getLike() {
-        return Optional.ofNullable(like);
-    }
-    
-    /**
-     * Get where segment.
-     *
-     * @return where segment
-     */
-    public Optional<WhereSegment> getWhere() {
-        return Optional.ofNullable(where);
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
     }
 }
