@@ -334,3 +334,28 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concep
 更多关于 alias 使用方法请参考 [Proxool官网](http://proxool.sourceforge.net/configure.html)。
 
 PS：sourceforge 网站需要翻墙访问。
+
+## 29. [其他] Spring boot 2环境下，ShardingSphere 的 *Properties* 属性设置可能不生效？
+
+回答：
+
+需要特别注意，Spring boot 2环境下 *Properties* 属性名称约束为仅允许小写字母、数字和短横线，即`[a-z][0-9]`和`-`。
+
+原因如下:
+
+Spring boot2 环境下，ShardingSphere 通过 Binder 来绑定 Properties 实例，*Properties* 属性名称不规范会抛出 `InvalidConfigurationPropertyNameException` 异常， 而 ShardingSphere 对于异常进行了统一处理。
+
+关键代码：`org.apache.shardingsphere.spring.boot.util.PropertyUtil#containPropertyPrefix(Environment, String)` 方法:
+
+```java
+    public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
+        try {
+            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
+            return !props.isEmpty();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return false;
+        }
+    }
+```
