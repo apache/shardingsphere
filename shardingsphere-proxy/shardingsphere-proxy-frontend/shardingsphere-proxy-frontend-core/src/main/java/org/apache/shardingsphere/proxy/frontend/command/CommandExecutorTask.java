@@ -94,7 +94,7 @@ public final class CommandExecutorTask implements Runnable {
             processClosedExceptions(exceptions);
         }
     }
-
+    
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         CommandExecuteEngine commandExecuteEngine = databaseProtocolFrontendEngine.getCommandExecuteEngine();
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
