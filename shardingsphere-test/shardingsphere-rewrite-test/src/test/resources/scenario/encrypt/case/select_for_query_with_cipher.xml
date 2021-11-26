@@ -128,4 +128,14 @@
         <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE u.certificate_number IN (SELECT certificate_number FROM t_account WHERE password=?) AND u.password=?" parameters="1, 2" />
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE u.assisted_query_certificate_number IN (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_plain_with_table_level_query_with_cipher_column_for_parameters" db-types="MySQL">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = ? AND a.plain_password = ? AND a.plain_amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_plain_with_table_level_query_with_cipher_column_for_literals" db-types="MySQL">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = '1000' AND a.status = 'OK'" />
+        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = 1 AND a.plain_password = 'aaa' AND a.plain_amount = '1000' AND a.status = 'OK'" />
+    </rewrite-assertion>
 </rewrite-assertions>
