@@ -55,7 +55,9 @@ public final class BackendTransactionManager implements TransactionManager {
             connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
         } else {
-            commit();
+            if (ProxyContext.getInstance().getMetaData()) {
+
+            }
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
             localTransactionManager.begin();
