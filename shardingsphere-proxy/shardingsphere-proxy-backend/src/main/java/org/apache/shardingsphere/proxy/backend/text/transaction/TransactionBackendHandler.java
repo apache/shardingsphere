@@ -58,9 +58,8 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             case BEGIN:
                 if (tclStatement instanceof MySQLBeginTransactionStatement && backendConnection.getTransactionStatus().isInTransaction()) {
                     backendTransactionManager.commit();
-                } else {
-                    backendTransactionManager.begin();
                 }
+                backendTransactionManager.begin();
                 break;
             case SAVEPOINT:
                 backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
