@@ -129,7 +129,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
@@ -604,6 +606,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "parse-sql")
+    private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
+    
     @XmlElement(name = "show-variable")
     private final List<ShowVariableStatementTestCase> showVariableStatementTestCase = new LinkedList<>();
     
@@ -781,6 +786,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-status")
     private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "refresh-table-metadata")
+    private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsStatementTestCases = new LinkedList<>();
     
@@ -918,6 +926,7 @@ public final class SQLParserTestCases {
         putAll(showAllVariablesStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
+        putAll(parseStatementAsserts, result);
         putAll(setReadwriteSplittingHintStatementTestCase, result);
         putAll(setShardingHintDatabaseValueStatementTestCase, result);
         putAll(addShardingHintDatabaseValueStatementTestCase, result);
@@ -978,6 +987,7 @@ public final class SQLParserTestCases {
         putAll(showOpenTablesStatementTestCases, result);
         putAll(showStatusStatementTestCases, result);
         putAll(checkTableTestCases, result);
+        putAll(refreshTableMetadataStatementTestCases, result);
         putAll(showEventsStatementTestCases, result);
         return result;
     }

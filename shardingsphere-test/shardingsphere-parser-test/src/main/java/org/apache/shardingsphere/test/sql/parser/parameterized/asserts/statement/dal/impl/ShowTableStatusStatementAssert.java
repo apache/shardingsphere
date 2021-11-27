@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 
 /**
@@ -37,5 +40,12 @@ public final class ShowTableStatusStatementAssert {
      * @param expected expected show table status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
+        if (actual.getFromSchema().isPresent()) {
+            SchemaAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());
+        }
+        if (actual.getFilter().isPresent()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        }
     }
 }

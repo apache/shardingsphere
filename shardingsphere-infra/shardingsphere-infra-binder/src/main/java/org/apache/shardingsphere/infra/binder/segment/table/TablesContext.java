@@ -78,7 +78,7 @@ public final class TablesContext {
         for (SubqueryTableSegment each : subqueryTableSegments) {
             SelectStatementContext subqueryContext = subqueryContexts.get(each.getSubquery().getStartIndex());
             Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, each.getAlias().orElse(null));
-            subqueryTables.putAll(subqueryTableContexts.stream().collect(Collectors.groupingBy(SubqueryTableContext::getAlias)));
+            subqueryTables.putAll(subqueryTableContexts.stream().filter(subQuery -> null != subQuery.getAlias()).collect(Collectors.groupingBy(SubqueryTableContext::getAlias)));
         }
     }
     

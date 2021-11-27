@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -33,26 +33,26 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class MySQLShowTriggersStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private FromSchemaSegment fromSchema;
-
-    private ShowLikeSegment like;
-
+    
+    private ShowFilterSegment filter;
+    
     /**
-     * Get from schema segment.
+     * Get from schema.
      *
-     * @return from schema segment
+     * @return from schema
      */
     public Optional<FromSchemaSegment> getFromSchema() {
         return Optional.ofNullable(fromSchema);
     }
-
+    
     /**
-     * Get like segment.
+     * Get filter segment.
      *
-     * @return like segment
+     * @return filter segment
      */
-    public Optional<ShowLikeSegment> getLike() {
-        return Optional.ofNullable(like);
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
     }
 }

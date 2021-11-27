@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheTableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChannelOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneInstanceContext;
@@ -591,10 +591,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
         }
         if (null != ctx.showFilter()) {
-            if (null != ctx.showFilter().showLike()) {
-                result.setLike((ShowLikeSegment) visit(ctx.showFilter().showLike()));
-            }
+            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
 
@@ -609,6 +608,10 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.fromSchema()) {
             result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
         }
+        if (null != ctx.showFilter()) {
+            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
+        }
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     

@@ -22,8 +22,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationU
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -152,14 +154,8 @@ public final class ShardingConditions {
      * @return whether all sharding conditions are same or not
      */
     public boolean isSameShardingCondition() {
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<TableRule> tableRule = rule.findTableRule(each);
-            if (tableRule.isPresent() && isRoutingByHint(rule, tableRule.get())
-                    && !HintManager.getDatabaseShardingValues(each).isEmpty() && !HintManager.getTableShardingValues(each).isEmpty()) {
-                return false;
-            }
-        }
-        return subqueryContainsShardingCondition && conditions.size() == 1;
+        Collection<String> hintStrategyTables = findHintStrategyTables(sqlStatementContext);
+        return 1 == hintStrategyTables.size() || subqueryContainsShardingCondition && 1 == conditions.size();
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {
@@ -181,14 +177,28 @@ public final class ShardingConditions {
                 && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
     }
     
+    private Collection<String> findHintStrategyTables(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<String> result = new HashSet<>();
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            Optional<TableRule> tableRule = rule.findTableRule(each);
+            if (!tableRule.isPresent()) {
+                continue;
+            }
+            ShardingStrategyConfiguration databaseHintStrategy = rule.getDatabaseShardingStrategyConfiguration(tableRule.get());
+            ShardingStrategyConfiguration tableHintStrategy = rule.getTableShardingStrategyConfiguration(tableRule.get());
+            boolean isDatabaseTableHintStrategy = databaseHintStrategy instanceof HintShardingStrategyConfiguration && tableHintStrategy instanceof HintShardingStrategyConfiguration;
+            boolean isDatabaseHintStrategy = databaseHintStrategy instanceof HintShardingStrategyConfiguration && tableHintStrategy instanceof NoneShardingStrategyConfiguration;
+            boolean isTableHintStrategy = databaseHintStrategy instanceof NoneShardingStrategyConfiguration && tableHintStrategy instanceof HintShardingStrategyConfiguration;
+            if (isDatabaseTableHintStrategy || isDatabaseHintStrategy || isTableHintStrategy) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
     private boolean isBindingTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
-    }
-    
-    private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
-        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
-                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
