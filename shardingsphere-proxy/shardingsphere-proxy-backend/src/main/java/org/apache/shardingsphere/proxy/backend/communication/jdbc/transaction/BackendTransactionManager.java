@@ -48,7 +48,7 @@ public final class BackendTransactionManager implements TransactionManager {
     }
     
     @Override
-    public void begin() {
+    public void begin() throws SQLException {
         if (!connection.getTransactionStatus().isInTransaction()) {
             connection.getTransactionStatus().setInTransaction(true);
             TransactionHolder.setInTransaction();
