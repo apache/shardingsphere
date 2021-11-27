@@ -20,19 +20,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
+        <artifactId>shardingsphere-jdbc-memory-local-encrypt-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <artifactId>shardingsphere-jdbc-memory-local-encrypt-example</artifactId>
+    <artifactId>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-jdbc-memory-local-encrypt-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jpa-example</module>
-        <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-mybatis-example</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+    </dependencies>
 </project>
