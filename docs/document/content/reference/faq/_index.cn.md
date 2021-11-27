@@ -335,15 +335,15 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concep
 
 PS：sourceforge 网站需要翻墙访问。
 
-## 29. [其他] Spring boot 2环境下，ShardingSphere 的 *Properties* 属性设置可能不生效？
+## 29. [其他] 使用 Spring Boot 2.x 集成 ShardingSphere 时，配置文件中的属性设置不生效？
 
 回答：
 
-需要特别注意，Spring boot 2环境下 *Properties* 属性名称约束为仅允许小写字母、数字和短横线，即`[a-z][0-9]`和`-`。
+需要特别注意，Spring Boot 2.x 环境下 配置文件的属性名称约束为仅允许小写字母、数字和短横线，即`[a-z][0-9]`和`-`。
 
 原因如下:
 
-Spring boot2 环境下，ShardingSphere 通过 Binder 来绑定 Properties 实例，*Properties* 属性名称不规范会抛出 `InvalidConfigurationPropertyNameException` 异常， 而 ShardingSphere 对于异常进行了统一处理。
+Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会抛出 `InvalidConfigurationPropertyNameException` 异常。
 
 关键代码：`org.apache.shardingsphere.spring.boot.util.PropertyUtil#containPropertyPrefix(Environment, String)` 方法:
 

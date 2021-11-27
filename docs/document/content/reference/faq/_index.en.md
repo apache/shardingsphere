@@ -342,15 +342,15 @@ The followings are core codes from ProxoolDataSource getConnection method in `Pr
 
 For more alias usages, please refer to [Proxool](http://proxool.sourceforge.net/configure.html) official website.
 
-## 29. [Other] The `Properties` settings for ShardingSphere may not take effect in the Spring boot 2 environment?
+## 29. [Other] The property settings in the configuration file do not take effect when integrating ShardingSphere with Spring Boot 2.x ?
 
 Answer:
 
-Note that the `Properties` property name in the Spring boot 2 environment is constrained to allow only lowercase letters, numbers and short transverse lines, ` [a-z] [0-9] ` and ` - `.
+Note that the property name in the Spring Boot 2.x environment is constrained to allow only lowercase letters, numbers and short transverse lines, ` [a-z] [0-9] ` and ` - `.
 
 Reasons:
 
-In the Spring boot2 environment ShardingSphere binds the Properties instance via Binder, the unsatisfied `Properties` property name may throws the `InvalidConfigurationPropertyNameException` exception, but ShardingSphere handles the exception uniformly.
+In the Spring Boot 2.x environment ShardingSphere binds the Properties instance via Binder, the unsatisfied property name (camelcase or underscore etc) may throws the `InvalidConfigurationPropertyNameException` exception.
 
 `org.apache.shardingsphere.spring.boot.util.PropertyUtil#containPropertyPrefix(Environment, String)`
 
