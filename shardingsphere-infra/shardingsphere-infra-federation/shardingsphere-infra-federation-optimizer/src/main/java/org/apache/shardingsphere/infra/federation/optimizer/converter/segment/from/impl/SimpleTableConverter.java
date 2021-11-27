@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,7 +40,12 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
     @Override
     public Optional<SqlNode> convertToSQLNode(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
-        SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
+        List<String> names = new ArrayList<>();
+        if (segment.getOwner().isPresent()) {
+            names.add(segment.getOwner().get().getIdentifier().getValue());
+        }
+        names.add(tableName.getIdentifier().getValue());
+        SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
             SqlNode aliasSQLNode = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSQLNode, aliasSQLNode}, SqlParserPos.ZERO));
