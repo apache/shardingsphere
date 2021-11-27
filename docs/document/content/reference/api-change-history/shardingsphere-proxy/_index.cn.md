@@ -4,6 +4,62 @@ weight = 1
 chapter = true
 +++
 
+## 5.0.0-beta
+
+### 数据源配置项说明
+
+```yaml
+schemaName: # 逻辑数据源名称
+
+dataSources: # 数据源配置，可配置多个 <data-source-name>
+  <data-source-name>: # 与 ShardingSphere-JDBC 配置不同，无需配置数据库连接池
+    url: #数据库 URL 连接
+    username: # 数据库用户名
+    password: # 数据库密码
+    connectionTimeoutMilliseconds: # 连接超时毫秒数
+    idleTimeoutMilliseconds: # 空闲连接回收超时毫秒数
+    maxLifetimeMilliseconds: # 连接最大存活时间毫秒数
+    maxPoolSize: 50 # 最大连接数
+    minPoolSize: 1  # 最小连接数     
+
+rules: # 与 ShardingSphere-JDBC 配置一致
+  # ...
+```
+
+### 权限配置
+
+用于执行登录 Sharding Proxy 的权限验证。 配置用户名、密码、可访问的数据库后，必须使用正确的用户名、密码才可登录。
+
+```yaml
+rules:
+  - !AUTHORITY
+    users:
+      - root@localhost:root  # <username>@<hostname>:<password>，hostname 为 % 或空字符串，则代表不限制 host。
+      - sharding@:sharding
+    provider:
+      type: NATIVE  # 必须显式指定
+```
+
+hostname 为 % 或空字符串，则代表不限制 host。
+
+provider 的 type 必须显式指定，具体实现可以参考 [5.11 Proxy](https://shardingsphere.apache.org/document/5.0.0-beta/cn/dev-manual/proxy/)
+
+### Proxy 属性
+
+```yaml
+props:
+  sql-show: # 是否在日志中打印 SQL。打印 SQL 可以帮助开发者快速定位系统问题。日志内容包含：逻辑 SQL，真实 SQL 和 SQL 解析结果。如果开启配置，日志将使用 Topic ShardingSphere-SQL，日志级别是 INFO。
+  sql-simple: # 是否在日志中打印简单风格的 SQL。
+  executor-size: # 用于设置任务处理线程池的大小。每个 ShardingSphereDataSource 使用一个独立的线程池，同一个 JVM 的不同数据源不共享线程池。
+  max-connections-size-per-query: # 一次查询请求在每个数据库实例中所能使用的最大连接数。
+  check-table-metadata-enabled: # 是否在程序启动和更新时检查分片元数据的结构一致性。
+  proxy-frontend-flush-threshold: # 在 ShardingSphere-Proxy 中设置传输数据条数的 IO 刷新阈值。
+  proxy-transaction-type: # ShardingSphere-Proxy 中使用的默认事务类型。包括：LOCAL、XA 和 BASE。
+  proxy-opentracing-enabled: # 是否允许在 ShardingSphere-Proxy 中使用 OpenTracing。
+  proxy-hint-enabled: # 是否允许在 ShardingSphere-Proxy 中使用 Hint。使用 Hint 会将 Proxy 的线程处理模型由 IO 多路复用变更为每个请求一个独立的线程，会降低 Proxy 的吞吐量。
+  xa-transaction-manager-type: # XA 事务管理器类型。列如：Atomikos，Narayana，Bitronix。
+```
+
 ## 5.0.0-alpha
 
 ### 数据源配置项说明

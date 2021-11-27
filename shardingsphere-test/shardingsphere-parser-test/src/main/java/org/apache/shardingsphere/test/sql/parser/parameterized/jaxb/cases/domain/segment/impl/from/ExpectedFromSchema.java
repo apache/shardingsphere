@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.from;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
 
 /**
  * Expected from schema segment.
  */
+@Getter
 public final class ExpectedFromSchema extends AbstractExpectedSQLSegment {
     
     private ExpectedSchema schema;

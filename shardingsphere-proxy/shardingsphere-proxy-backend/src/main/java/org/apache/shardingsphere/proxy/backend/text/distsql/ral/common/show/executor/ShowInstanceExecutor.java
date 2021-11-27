@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Show instance executor.
@@ -42,9 +43,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "@";
     
-    private static final String IP = "ip";
-    
-    private static final String PORT = "port";
+    private static final String ID = "instance_id";
     
     private static final String STATUS = "status";
     
@@ -55,8 +54,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
-                new QueryHeader("", "", IP, IP, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", PORT, PORT, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
         );
     }
@@ -93,8 +91,6 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private List<Object> buildRow(final String instanceId, final String status) {
-        LinkedList<Object> result = Arrays.stream(instanceId.split(DELIMITER)).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
-        result.add(status);
-        return result;
+        return Stream.of(instanceId, status).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
     }
 }

@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.show.ExpectedShowFilter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show databases statement test case.
  */
+@Getter
 public final class ShowDatabasesStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedShowFilter filter;
 }

@@ -230,8 +230,8 @@ showStatus
     : SHOW (GLOBAL | SESSION)? STATUS showFilter?
     ;
 
-showTrriggers
-    : SHOW TRIGGER fromSchema? showFilter?
+showTriggers
+    : SHOW TRIGGERS fromSchema? showFilter?
     ;
 
 showVariables
@@ -301,11 +301,11 @@ histogram
     ;
 
 checkTable
-    : CHECK tableOrTables tableList checkTableOption?
+    : CHECK TABLE tableList checkTableOption?
     ;
 
 checkTableOption
-    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGE
+    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGED
     ;
 
 checksumTable
@@ -456,7 +456,7 @@ show
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus
-    | showTrriggers
+    | showTriggers
     | showWarnings
     | showVariables
     | showReplicas

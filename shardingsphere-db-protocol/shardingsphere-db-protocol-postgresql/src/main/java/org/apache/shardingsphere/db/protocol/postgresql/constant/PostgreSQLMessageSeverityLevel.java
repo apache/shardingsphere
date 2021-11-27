@@ -22,29 +22,29 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
  *
  * @see <a href="https://www.postgresql.org/docs/12/runtime-config-logging.html#RUNTIME-CONFIG-SEVERITY-LEVELS">Table 19.2. Message Severity Levels</a>
  */
-public enum PostgreSQLMessageSeverityLevel {
+public final class PostgreSQLMessageSeverityLevel {
     
-    DEBUG1,
-    
-    DEBUG2,
-    
-    DEBUG3,
-    
-    DEBUG4,
-    
-    DEBUG5,
-    
-    INFO,
-    
-    NOTICE,
-    
-    WARNING,
-    
-    ERROR,
-    
-    LOG,
-    
-    FATAL,
-    
-    PANIC
+    public static final String DEBUG1 = "DEBUG1";
+
+    public static final String DEBUG2 = "DEBUG2";
+
+    public static final String DEBUG3 = "DEBUG3";
+
+    public static final String DEBUG4 = "DEBUG4";
+
+    public static final String DEBUG5 = "DEBUG5";
+
+    public static final String INFO = "INFO";
+
+    public static final String NOTICE = "NOTICE";
+
+    public static final String WARNING = "WARNING";
+
+    public static final String ERROR = "ERROR";
+
+    public static final String LOG = "LOG";
+
+    public static final String FATAL = "FATAL";
+
+    public static final String PANIC = "PANIC";
 }

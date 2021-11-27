@@ -59,6 +59,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | show variable cached_connections                    | 查询当前连接中缓存的物理数据库连接个数                            | show variable cached_connections                 |
 | show variable agent_plugins_enabled                 | 查询 agent 插件的启用状态                                     | show variable agent_plugins_enabled              |
 | preview SQL                                         | 预览实际 SQL                                                | preview select * from t_order                    |
+| parse SQL                                           | 解析实际 SQL                                                | parse select * from t_order                      |
+| refresh table metadata [table]                      | 刷新所有表或者指定表的元数据                                    | refresh table metadata                          |
 
 ## 注意事项
 

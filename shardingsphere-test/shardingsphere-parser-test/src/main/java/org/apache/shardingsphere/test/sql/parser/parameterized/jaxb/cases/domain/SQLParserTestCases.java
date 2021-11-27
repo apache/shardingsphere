@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.BinlogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CheckTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowDatabasesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowFunctionStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowOpenTablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureCodeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelaylogEventsStatementTestCase;
@@ -52,8 +54,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveHostsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShutdownStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallPluginStatementTestCase;
@@ -124,7 +128,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
@@ -433,7 +439,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
-    
+
+    @XmlElement(name = "show-triggers")
+    private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
+
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
     
@@ -596,6 +605,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "parse-sql")
+    private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
+    
     @XmlElement(name = "show-variable")
     private final List<ShowVariableStatementTestCase> showVariableStatementTestCase = new LinkedList<>();
     
@@ -697,7 +709,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "uninstall-component")
     private final List<UninstallComponentStatementTestCase> uninstallComponentStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
     
@@ -754,7 +766,7 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "shutdown")
     private final List<ShutdownStatementTestCase> shutdownStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "create-default-single-table")
     private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
@@ -763,6 +775,18 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-default-single-table")
     private final List<DropDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-open-tables")
+    private final List<ShowOpenTablesStatementTestCase> showOpenTablesStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "check-table")
+    private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-status")
+    private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "refresh-table-metadata")
+    private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -839,6 +863,7 @@ public final class SQLParserTestCases {
         putAll(createDatabaseTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
+        putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
@@ -897,6 +922,7 @@ public final class SQLParserTestCases {
         putAll(showAllVariablesStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
         putAll(previewStatementTestCase, result);
+        putAll(parseStatementAsserts, result);
         putAll(setReadwriteSplittingHintStatementTestCase, result);
         putAll(setShardingHintDatabaseValueStatementTestCase, result);
         putAll(addShardingHintDatabaseValueStatementTestCase, result);
@@ -954,6 +980,10 @@ public final class SQLParserTestCases {
         putAll(alterDefaultSingleTableRuleStatementTestCases, result);
         putAll(dropDefaultSingleTableRuleStatementTestCases, result);
         putAll(shutdownStatementTestCases, result);
+        putAll(showOpenTablesStatementTestCases, result);
+        putAll(showStatusStatementTestCases, result);
+        putAll(checkTableTestCases, result);
+        putAll(refreshTableMetadataStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

@@ -36,5 +36,6 @@ execute
     | createDefaultSingleTableRule
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule
+    | refreshTableMetadata
     ) SEMI?
     ;
