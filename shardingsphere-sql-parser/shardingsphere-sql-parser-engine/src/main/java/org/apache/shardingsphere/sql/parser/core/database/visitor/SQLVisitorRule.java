@@ -316,6 +316,8 @@ public enum SQLVisitorRule {
     
     CHECK_TABLE("CheckTable", SQLStatementType.DAL),
     
+    DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
