@@ -234,6 +234,8 @@ public enum SQLVisitorRule {
     
     SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
     
+    SHOW_COLLATION("ShowCollation", SQLStatementType.DAL),
+    
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
     SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),
@@ -243,7 +245,7 @@ public enum SQLVisitorRule {
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
-
+    
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
