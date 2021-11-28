@@ -38,6 +38,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTriggerStatementTestCase;
@@ -792,6 +793,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-collation")
+    private final List<ShowCollationStatementTestCase> showCollationStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -989,6 +993,7 @@ public final class SQLParserTestCases {
         putAll(checkTableTestCases, result);
         putAll(refreshTableMetadataStatementTestCases, result);
         putAll(showEventsStatementTestCases, result);
+        putAll(showCollationStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
