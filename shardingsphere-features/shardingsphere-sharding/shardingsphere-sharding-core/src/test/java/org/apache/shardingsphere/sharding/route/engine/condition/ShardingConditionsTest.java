@@ -14,21 +14,21 @@ public class ShardingConditionsTest extends TestCase {
     private final ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
 
     /**
-     * Tests isAlwaysFalse()
+     * Tests isAlwaysFalse().
      */
     public void testIsAlwaysFalse() {
         Assert.assertEquals(shardingConditions.isAlwaysFalse(), false);
     }
 
     /**
-     * Tests isNeedMerge()
+     * Tests isNeedMerge().
      */
     public void testIsNeedMerge() {
         Assert.assertEquals(shardingConditions.isNeedMerge(), false);
     }
 
     /**
-     * Tests isSameShardingCondition
+     * Tests isSameShardingCondition().
      */
     public void testIsSameShardingCondition() {
         Assert.assertEquals(shardingConditions, shardingConditions);
