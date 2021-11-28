@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CheckTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
@@ -365,6 +366,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-resource-group")
     private final List<CreateResourceGroupStatementTestCase> createResourceGroupStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-resource-group")
+    private final List<DropResourceGroupStatementTestCase> dropResourceGroupStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "binlog")
     private final List<BinlogStatementTestCase> binlogStatementTestCases = new LinkedList<>();
@@ -958,6 +962,7 @@ public final class SQLParserTestCases {
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
         putAll(createResourceGroupStatementTestCases, result);
+        putAll(dropResourceGroupStatementTestCases, result);
         putAll(binlogStatementTestCases, result);
         putAll(uninstallPluginStatementTestCases, result);
         putAll(showSingleTableStatementTestCases, result);

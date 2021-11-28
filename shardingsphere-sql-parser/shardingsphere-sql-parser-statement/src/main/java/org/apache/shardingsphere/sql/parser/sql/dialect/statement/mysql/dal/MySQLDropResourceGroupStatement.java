@@ -20,21 +20,17 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
- * MySQL checksum table statement.
+ * MySQL drop resource group statement.
  */
-@ToString
-@Setter
 @Getter
-public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@Setter
+@ToString
+public final class MySQLDropResourceGroupStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private String groupName;
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallPluginStatement;
@@ -75,6 +76,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.LoadIndexInfoStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLBinlogStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLCreateResourceGroupStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLDropResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLOptimizeTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLRepairTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.MySQLResetPersistStatementAssert;
@@ -113,6 +115,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CheckTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
@@ -252,6 +255,8 @@ public final class DALStatementAssert {
             CheckTableStatementAssert.assertIs(assertContext, (MySQLCheckTableStatement) actual, (CheckTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowEventsStatement) {
             ShowEventsStatementAssert.assertIs(assertContext, (MySQLShowEventsStatement) actual, (ShowEventsStatementTestCase) expected);
+        } else if (actual instanceof MySQLDropResourceGroupStatement) {
+            MySQLDropResourceGroupStatementAssert.assertIs(assertContext, (MySQLDropResourceGroupStatement) actual, (DropResourceGroupStatementTestCase) expected);
         }
     }
 }
