@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 /**
@@ -40,8 +41,9 @@ public final class Bootstrap {
      * @param args startup arguments
      * @throws IOException IO exception
      * @throws SQLException SQL exception
+     * @throws URISyntaxException URI syntax exception
      */
-    public static void main(final String[] args) throws IOException, SQLException {
+    public static void main(final String[] args) throws IOException, SQLException, URISyntaxException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         new BootstrapInitializer().init(yamlConfig, bootstrapArgs.getPort());

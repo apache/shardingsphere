@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public final class ProxyConfigurationLoaderTest {
     
     @Test
-    public void assertLoad() throws IOException {
+    public void assertLoad() throws IOException, URISyntaxException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
         // TODO assert mode

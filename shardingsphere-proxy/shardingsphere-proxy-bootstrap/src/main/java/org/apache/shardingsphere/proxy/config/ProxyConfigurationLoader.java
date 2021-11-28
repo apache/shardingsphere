@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,8 +54,9 @@ public final class ProxyConfigurationLoader {
      * @param path configuration path of ShardingSphere-Proxy
      * @return configuration of ShardingSphere-Proxy
      * @throws IOException IO exception
+     * @throws URISyntaxException URI syntax exception
      */
-    public static YamlProxyConfiguration load(final String path) throws IOException {
+    public static YamlProxyConfiguration load(final String path) throws IOException, URISyntaxException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigs = loadRuleConfigurations(configPath);
@@ -62,9 +64,9 @@ public final class ProxyConfigurationLoader {
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private static File getResourceFile(final String path) {
+    private static File getResourceFile(final String path) throws URISyntaxException {
         URL url = ProxyConfigurationLoader.class.getResource(path);
-        return null == url ? new File(path) : new File(url.getFile());
+        return null == url ? new File(path) : new File(url.toURI().getPath());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
