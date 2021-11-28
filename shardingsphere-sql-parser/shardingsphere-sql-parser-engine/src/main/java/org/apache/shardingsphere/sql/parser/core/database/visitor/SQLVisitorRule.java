@@ -232,6 +232,8 @@ public enum SQLVisitorRule {
     
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
     
+    SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
+    
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
     SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),
