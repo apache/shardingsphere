@@ -11,19 +11,25 @@ import static org.mockito.Mockito.mock;
 
 public class ShardingConditionsTest extends TestCase {
 
-    ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
+    private final ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
 
+    /**
+     * Tests isAlwaysFalse()
+     */
     public void testIsAlwaysFalse() {
         Assert.assertEquals(shardingConditions.isAlwaysFalse(), false);
     }
 
-    public void testMerge() {
-    }
-
+    /**
+     * Tests isNeedMerge()
+     */
     public void testIsNeedMerge() {
         Assert.assertEquals(shardingConditions.isNeedMerge(), false);
     }
 
+    /**
+     * Tests isSameShardingCondition
+     */
     public void testIsSameShardingCondition() {
         Assert.assertEquals(shardingConditions, shardingConditions);
     }
