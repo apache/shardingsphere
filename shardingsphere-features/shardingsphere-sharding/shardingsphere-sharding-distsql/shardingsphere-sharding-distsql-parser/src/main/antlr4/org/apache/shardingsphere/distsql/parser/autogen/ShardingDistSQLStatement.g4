@@ -24,7 +24,6 @@ execute
     | createDefaultShardingStrategy
     | createShardingBindingTableRules
     | showShardingTablesCount
-
     | createShardingBroadcastTableRules
     | alterShardingTableRule
     | alterShardingBindingTableRules
