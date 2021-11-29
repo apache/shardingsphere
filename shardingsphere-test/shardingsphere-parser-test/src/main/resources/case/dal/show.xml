@@ -106,15 +106,6 @@
     <show sql-case-id="show_server_version" />
     <show sql-case-id="show_transaction_isolation_level" />
 
-    <show-tables sql-case-id="show_tables">
-        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
-    </show-tables>
-
-    <show-tables sql-case-id="show_tables_with_filter">
-        <schema start-delimiter="`" end-delimiter="`" start-index="17" stop-index="34" />
-        <like pattern="t_order" start-index="36" stop-index="49" />
-    </show-tables>
-
     <show-databases sql-case-id="show_databases" />
 
     <show-databases sql-case-id="show_schemas" />
@@ -593,4 +584,73 @@
             </where>
         </filter>
     </show-events>
+
+    <show-tables sql-case-id="show_tables" />
+
+    <show-tables sql-case-id="show_extended_full_tables" />
+
+    <show-tables sql-case-id="show_tables_from_schema">
+        <from start-index="12" stop-index="29">
+            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29"/>
+        </from>
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_in_schema">
+        <from start-index="12" stop-index="27">
+            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27"/>
+        </from>
+    </show-tables>
+
+
+    <show-tables sql-case-id="show_tables_with_like_pattern">
+        <from start-index="12" stop-index="29">
+            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29"/>
+        </from>
+        <filter start-index="31" stop-index="46">
+            <like pattern="t_order_%" start-delimiter="'" end-delimiter="'" start-index="31" stop-index="46"/>
+        </filter>
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_with_where_expr" parameters="'BASE TABLE'">
+        <from start-index="26" stop-index="43">
+            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43"/>
+        </from>
+        <filter start-index="45" stop-index="66" literal-start-index="45" literal-stop-index="77">
+            <where start-index="45" stop-index="66" literal-start-index="45" literal-stop-index="77">
+                <expr>
+                    <binary-operation-expression start-index="51" stop-index="66" literal-start-index="51" literal-stop-index="77">
+                        <left>
+                            <column name="table_type" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="62" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="BASE TABLE" start-index="66" stop-index="77" />
+                            <parameter-marker-expression value="0" start-index="66" stop-index="66" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_with_where_expr_no_parameter">
+        <from start-index="26" stop-index="43">
+            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43"/>
+        </from>
+        <filter start-index="45" stop-index="77">
+            <where start-index="45" stop-index="77">
+                <expr>
+                    <binary-operation-expression start-index="51" stop-index="77">
+                        <left>
+                            <column name="table_type" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="62" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="BASE TABLE" start-index="66" stop-index="77" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-tables>
 </sql-parser-test-cases>
