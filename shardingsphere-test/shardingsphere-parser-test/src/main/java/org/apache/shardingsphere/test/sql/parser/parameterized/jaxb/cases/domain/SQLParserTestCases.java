@@ -59,6 +59,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowVariablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShutdownStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.UninstallPluginStatementTestCase;
@@ -792,6 +793,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-variables")
+    private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -989,6 +993,7 @@ public final class SQLParserTestCases {
         putAll(checkTableTestCases, result);
         putAll(refreshTableMetadataStatementTestCases, result);
         putAll(showEventsStatementTestCases, result);
+        putAll(showVariablesStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
