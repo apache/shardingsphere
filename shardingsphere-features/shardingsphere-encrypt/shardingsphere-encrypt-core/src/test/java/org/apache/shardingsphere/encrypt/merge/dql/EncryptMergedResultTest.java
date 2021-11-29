@@ -48,20 +48,22 @@ public final class EncryptMergedResultTest {
     
     @Test
     public void assertNext() throws SQLException {
-        assertFalse(new EncryptMergedResult(metaData, mergedResult, true).next());
+        assertFalse(new EncryptMergedResult(metaData, mergedResult).next());
     }
     
     @Test
     public void assertGetValueWithQueryWithPlainColumn() throws SQLException {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        assertThat(new EncryptMergedResult(metaData, mergedResult, false).getValue(1, String.class), is("VALUE"));
+        when(metaData.isQueryWithCipherColumn(1)).thenReturn(false);
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMismatchedEncryptor() throws SQLException {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
         when(metaData.findEncryptor(1)).thenReturn(Optional.empty());
-        assertThat(new EncryptMergedResult(metaData, mergedResult, true).getValue(1, String.class), is("VALUE"));
+        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
     @Test
@@ -70,32 +72,34 @@ public final class EncryptMergedResultTest {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt("VALUE")).thenReturn("ORIGINAL_VALUE");
         when(metaData.findEncryptor(1)).thenReturn(Optional.of(encryptAlgorithm));
-        assertThat(new EncryptMergedResult(metaData, mergedResult, true).getValue(1, String.class), is("ORIGINAL_VALUE"));
+        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("ORIGINAL_VALUE"));
     }
     
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNullCiphertext() throws SQLException {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(metaData.findEncryptor(1)).thenReturn(Optional.of(encryptAlgorithm));
-        assertNull(new EncryptMergedResult(metaData, mergedResult, true).getValue(1, String.class));
+        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        assertNull(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class));
     }
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat(new EncryptMergedResult(metaData, mergedResult, true).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
-        assertThat(new EncryptMergedResult(metaData, mergedResult, true).getInputStream(1, "asc"), is(inputStream));
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getInputStream(1, "asc"), is(inputStream));
     }
     
     @Test
     public void assertWasNull() throws SQLException {
-        assertFalse(new EncryptMergedResult(metaData, mergedResult, true).wasNull());
+        assertFalse(new EncryptMergedResult(metaData, mergedResult).wasNull());
     }
 }

@@ -22,10 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTriggersStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Show triggers statement assert.
@@ -41,25 +40,12 @@ public final class ShowTriggersStatementAssert {
      * @param expected expected show tables statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
-        assertSchema(assertContext, actual, expected);
-        assertLike(assertContext, actual, expected);
-    }
-
-    private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getFromSchema().isPresent());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
-        } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getFromSchema().isPresent());
+        if (actual.getFromSchema().isPresent()) {
+            SchemaAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());
         }
-    }
-
-    private static void assertLike(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
-        if (null != expected.getLike()) {
-            assertTrue(assertContext.getText("Actual like should exist."), actual.getLike().isPresent());
-            SQLSegmentAssert.assertIs(assertContext, actual.getLike().get(), expected.getLike());
-        } else {
-            assertFalse(assertContext.getText("Actual like should not exist."), actual.getLike().isPresent());
+        if (actual.getFilter().isPresent()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
         }
     }
 }

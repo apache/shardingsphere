@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -50,11 +49,9 @@ import java.util.stream.Collectors;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware {
     
     private ShardingSphereSchema schema;
-    
-    private boolean queryWithCipherColumn;
     
     @SuppressWarnings("rawtypes")
     @Override
@@ -82,14 +79,15 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment column : ColumnExtractor.extract(each)) {
-                Optional<EncryptTable> encryptTable = findEncryptTable(columnTableNames, buildColumnProjection(column));
+                Optional<String> tableName = findTableName(columnTableNames, buildColumnProjection(column));
+                Optional<EncryptTable> encryptTable = tableName.flatMap(optional -> getEncryptRule().findEncryptTable(optional));
                 if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                     continue;
                 }
                 int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
                 int stopIndex = column.getStopIndex();
-                EncryptTable table = encryptTable.get();
-                if (Boolean.FALSE.equals(table.getQueryWithCipherColumn()) || !queryWithCipherColumn) {
+                boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName.orElse(""));
+                if (!queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                     if (plainColumn.isPresent()) {
                         result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
@@ -129,8 +127,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private Optional<EncryptTable> findEncryptTable(final Map<String, String> columnTableNames, final ColumnProjection column) {
-        return Optional.ofNullable(columnTableNames.get(column.getExpression())).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
+    private Optional<String> findTableName(final Map<String, String> columnTableNames, final ColumnProjection column) {
+        return Optional.ofNullable(columnTableNames.get(column.getExpression()));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

@@ -19,9 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -51,10 +49,7 @@ import java.util.Optional;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator 
-        implements CollectionSQLTokenGenerator<SQLStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware, SchemaMetaDataAware {
-    
-    private boolean queryWithCipherColumn;
+public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, PreviousSQLTokensAware, SchemaMetaDataAware {
     
     private List<SQLToken> previousSQLTokens;
     
@@ -161,8 +156,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private ColumnProjection generatePredicateSubqueryProjection(final String tableName, final ColumnProjection column) {
-        Boolean queryWithCipherColumn = getEncryptRule().findEncryptTable(tableName).map(EncryptTable::getQueryWithCipherColumn).orElse(null);
-        if (Boolean.FALSE.equals(queryWithCipherColumn) || !this.queryWithCipherColumn) {
+        boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName);
+        if (!queryWithCipherColumn) {
             Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column.getName());
             if (plainColumn.isPresent()) {
                 return new ColumnProjection(column.getOwner(), plainColumn.get(), null);
@@ -194,7 +189,11 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, logicEncryptColumnName);
-        return plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName);
+        boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName);
+        if (!queryWithCipherColumn) {
+            return plainColumn.orElseGet(() -> getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName));
+        }
+        return getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName);
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {

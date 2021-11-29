@@ -41,8 +41,8 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     public ResultDecorator newInstance(final DatabaseType databaseType, final ShardingSphereSchema schema,
                                        final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(schema, 
-                    encryptRule, (SelectStatementContext) sqlStatementContext), encryptRule.isQueryWithCipherColumn(sqlStatementContext));
+            EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(schema, encryptRule, (SelectStatementContext) sqlStatementContext);
+            return new EncryptDQLResultDecorator(metaData);
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();
