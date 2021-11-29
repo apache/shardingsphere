@@ -26,7 +26,7 @@ shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
    
 shardingAutoTableRule:
-    tableName(resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)?)
+    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)?)
     
 shardingTableRule:
     tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?)

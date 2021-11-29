@@ -1,6 +1,6 @@
 +++
 title = "Readwrite-Splitting"
-weight = 2
+weight = 3
 +++
 
 ## Syntax
