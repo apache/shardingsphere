@@ -60,7 +60,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | show variable agent_plugins_enabled                                         | 查询 agent 插件的启用状态                                       | show variable agent_plugins_enabled              |
 | preview SQL                                                                 | 预览实际 SQL                                                  | preview select * from t_order                    |
 | parse SQL                                                                   | 解析实际 SQL                                                  | parse select * from t_order                      |
-| refresh table metadata [tableName / tableName from resource resourceName]   | 刷新所有表或者指定表的元数据                                     | refresh table metadata                          |
+| refresh table metadata                                                      | 刷新所有表的元数据                                              | refresh table metadata                          |
+| refresh table metadata [tableName / tableName from resource resourceName]   | 刷新指定表的元数据                                              | refresh table metadata t_order from resource ds_1 |
 
 ## 注意事项
 

@@ -57,7 +57,8 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | show variable agent_plugins_enabled                                         | Query whether the agent plugin are enabled                                         | show variable agent_plugins_enabled       |
 | preview SQL                                                                 | Preview the actual SQLs                                                            | preview select * from t_order             |
 | parse SQL                                                                   | Parse the actual SQLs                                                              | parse select * from t_order               |
-| refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of all tables or a table                                      | refresh table metadata                    |
+| refresh table metadata                                                      | Refresh the metadata of all tables                                                 | refresh table metadata                    |
+| refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1                   |
 
 ## Notice
 
