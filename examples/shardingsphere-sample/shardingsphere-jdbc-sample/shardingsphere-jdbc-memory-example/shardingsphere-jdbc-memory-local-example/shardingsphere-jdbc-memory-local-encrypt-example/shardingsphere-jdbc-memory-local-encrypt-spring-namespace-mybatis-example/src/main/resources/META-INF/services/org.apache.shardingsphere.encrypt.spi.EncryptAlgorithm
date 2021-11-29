@@ -15,8 +15,4 @@
 # limitations under the License.
 #
 
-mode: memory
-transaction: local
-feature: encrypt
-framework: spring-namespace-mybatis
-
+org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.TestQueryAssistedShardingEncryptAlgorithm
