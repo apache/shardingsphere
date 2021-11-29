@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.group.ExpectedGroup;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL checksum table statement.
+ * Drop resource group test case.
  */
-@ToString
-@Setter
 @Getter
-public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@Setter
+public final class DropResourceGroupStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    @XmlElement
+    private ExpectedGroup group;
 }

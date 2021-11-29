@@ -15,26 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Properties;
 
-/**
- * MySQL checksum table statement.
- */
-@ToString
-@Setter
-@Getter
-public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
+
+    @Getter
+    @Setter
+    private Properties props;
+
+    @Override
+    public void init() {
+    }
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    @Override
+    public String encrypt(final Object plainValue) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue) {
+        return "assistedEncryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "assistedTest";
+    }
 }

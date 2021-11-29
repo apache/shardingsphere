@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * MySQL show replica status statement assert.
+ * Show replica status statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowReplicaStatusStatementAssert {
@@ -36,8 +36,8 @@ public final class ShowReplicaStatusStatementAssert {
      * Assert show replica status statement is correct with expected show replica status statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual show replica status statement
-     * @param expected      expected show replica status statement test case
+     * @param actual actual show replica status statement
+     * @param expected expected show replica status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowReplicaStatusStatement actual, final ShowReplicaStatusStatementTestCase expected) {
         if (null != expected.getChannel()) {
