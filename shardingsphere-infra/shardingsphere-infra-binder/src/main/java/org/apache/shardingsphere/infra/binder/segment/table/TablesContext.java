@@ -29,10 +29,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -66,15 +69,23 @@ public final class TablesContext {
         if (tableSegments.isEmpty()) {
             return;
         }
-        Collection<SimpleTableSegment> simpleTableSegments = tableSegments.stream().filter(each 
-            -> each instanceof SimpleTableSegment).map(each -> (SimpleTableSegment) each).collect(Collectors.toList());
+        Collection<SimpleTableSegment> simpleTableSegments = new ArrayList<>();
+        for (TableSegment each : tableSegments) {
+            if (each instanceof SimpleTableSegment) {
+                simpleTableSegments.add((SimpleTableSegment) each);
+            }
+        }
         for (SimpleTableSegment each : simpleTableSegments) {
             tables.add(each);
             tableNames.add(each.getTableName().getIdentifier().getValue());
             each.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
         }
-        Collection<SubqueryTableSegment> subqueryTableSegments = tableSegments.stream().filter(each
-            -> each instanceof SubqueryTableSegment).map(each -> (SubqueryTableSegment) each).collect(Collectors.toList());
+        Collection<SubqueryTableSegment> subqueryTableSegments = new LinkedList<>();
+        for (TableSegment each : tableSegments) {
+            if (each instanceof SubqueryTableSegment) {
+                subqueryTableSegments.add((SubqueryTableSegment) each);
+            }
+        }
         for (SubqueryTableSegment each : subqueryTableSegments) {
             SelectStatementContext subqueryContext = subqueryContexts.get(each.getSubquery().getStartIndex());
             Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, each.getAlias().orElse(null));
@@ -101,11 +112,20 @@ public final class TablesContext {
     public Map<String, String> findTableName(final Collection<ColumnProjection> columns, final ShardingSphereSchema schema) {
         if (1 == tables.size()) {
             String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
-            return columns.stream().collect(Collectors.toMap(ColumnProjection::getExpression, each -> tableName, (oldValue, currentValue) -> oldValue));
+            Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
+            for (ColumnProjection each : columns) {
+                result.putIfAbsent(each.getExpression(), tableName);
+            }
+            return result;
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
         result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
-        Collection<String> columnNames = columns.stream().filter(each -> null == each.getOwner()).map(ColumnProjection::getName).collect(Collectors.toSet());
+        Collection<String> columnNames = new LinkedHashSet<>();
+        for (ColumnProjection each : columns) {
+            if (null == each.getOwner()) {
+                columnNames.add(each.getName());
+            }
+        }
         result.putAll(findTableNameFromMetaData(columnNames, schema));
         if (result.size() < columns.size() && !subqueryTables.isEmpty()) {
             appendRemainingResult(columns, result);
@@ -185,6 +205,9 @@ public final class TablesContext {
      */
     public Optional<String> getSchemaName() {
         Preconditions.checkState(schemaNames.size() <= 1, "Can not support multiple different schema.");
-        return schemaNames.stream().findFirst();
+        for (String each : schemaNames) {
+            return Optional.of(each);
+        }
+        return Optional.empty();
     }
 }

@@ -24,10 +24,10 @@ import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationExcepti
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere service loader.
@@ -77,7 +77,14 @@ public final class ShardingSphereServiceLoader {
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        return SERVICES.containsKey(service) ? SERVICES.get(service).stream().map(each -> (T) newServiceInstance(each.getClass())).collect(Collectors.toList()) : Collections.emptyList();
+        if (!SERVICES.containsKey(service)) {
+            return Collections.emptyList();
+        }
+        List<T> result = new LinkedList<>();
+        for (Object each : SERVICES.get(service)) {
+            result.add((T) newServiceInstance(each.getClass()));
+        }
+        return result;
     }
     
     private static Object newServiceInstance(final Class<?> clazz) {
