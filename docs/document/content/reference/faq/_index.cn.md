@@ -343,19 +343,38 @@ PS：sourceforge 网站需要翻墙访问。
 
 原因如下:
 
-Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会抛出 `InvalidConfigurationPropertyNameException` 异常。
+Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效从而校验属性值时抛出 `NullPointerException` 异常。参考以下错误示例：
 
-关键代码：`org.apache.shardingsphere.spring.boot.util.PropertyUtil#containPropertyPrefix(Environment, String)` 方法:
-
-```java
-    public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
-        try {
-            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
-            return !props.isEmpty();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return false;
-        }
-    }
+下划线示例1：database_inline
 ```
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
+```
+```
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'database_inline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	... 
+Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
+	at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
+	... 
+```
+驼峰示例2：databaseInline
+```
+spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
+```
+```
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'databaseInline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	... 
+Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
+	at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
+	... 
+```
+可从异常栈中分析得到 `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置不存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下 `v2(environment, prefix, Map.class)` 使用了 Binder 在属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效。
