@@ -318,6 +318,8 @@ public enum SQLVisitorRule {
     
     DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
     
+    ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
