@@ -17,36 +17,30 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
-import junit.framework.TestCase;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 
-public class ShardingConditionsTest extends TestCase {
+public class ShardingConditionsTest {
 
     private final ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
 
-    /**
-     * Tests isAlwaysFalse().
-     */
+    @Test
     public void testIsAlwaysFalse() {
-        Assert.assertEquals(shardingConditions.isAlwaysFalse(), false);
+        Assert.assertFalse(shardingConditions.isAlwaysFalse());
     }
 
-    /**
-     * Tests isNeedMerge().
-     */
+    @Test
     public void testIsNeedMerge() {
         Assert.assertEquals(shardingConditions.isNeedMerge(), false);
     }
 
-    /**
-     * Tests isSameShardingCondition().
-     */
+    @Test
     public void testIsSameShardingCondition() {
         Assert.assertEquals(shardingConditions, shardingConditions);
     }
