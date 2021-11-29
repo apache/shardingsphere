@@ -39,7 +39,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | Statement                                                     | Function                           | Example                                    |
 |:------------------------------------------------------------- |:---------------------------------- |:------------------------------------------ |
 | [enable / disable] readwrite_splitting read xxx [from schema] | Enable or disable read data source | enable readwrite_splitting read resource_0 |
-| [enable / disable] instance IP=xxx, PORT=xxx                  | Enable or disable proxy instance   | disable instance IP=127.0.0.1, PORT=3307   |
+| [enable / disable] instance [IP=xxx, PORT=xxx / instanceId]   | Enable or disable proxy instance   | disable instance 127.0.0.1@3307            |
 | show instance list                                            | Query proxy instance information   | show instance list                         |
 | show readwrite_splitting read resources [from schema]         | Query all read resources status    | show readwrite_splitting read resources    |
 
