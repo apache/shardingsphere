@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -41,6 +42,8 @@ public final class HintManager implements AutoCloseable {
     private boolean databaseShardingOnly;
     
     private boolean writeRouteOnly;
+    
+    private String datasourceName;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -184,6 +187,24 @@ public final class HintManager implements AutoCloseable {
      */
     public static boolean isInstantiated() {
         return null != HINT_MANAGER_HOLDER.get();
+    }
+    
+    /**
+     * Set datasource name.
+     *
+     * @param dataSourceName datasource name
+     */
+    public void setDatasourceName(final String dataSourceName) {
+        this.datasourceName = dataSourceName;
+    }
+    
+    /**
+     * Get datasource name.
+     *
+     * @return datasource name
+     */
+    public static Optional<String> getDatasourceName() {
+        return null != HINT_MANAGER_HOLDER.get() ? Optional.ofNullable(HINT_MANAGER_HOLDER.get().datasourceName) : Optional.empty();
     }
     
     @Override

@@ -19,9 +19,14 @@ package org.apache.shardingsphere.infra.route.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -30,6 +35,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * SQL route engine.
@@ -49,8 +56,24 @@ public final class SQLRouteEngine {
      * @return route context
      */
     public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
+        Optional<RouteContext> routeContext = routeByHint(logicSQL.getSqlStatementContext());
+        if (routeContext.isPresent()) {
+            return routeContext.get();
+        }
         SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
         return executor.route(logicSQL, metaData);
+    }
+    
+    private Optional<RouteContext> routeByHint(final SQLStatementContext<?> sqlStatementContext) {
+        RouteContext result = new RouteContext();
+        if (HintManager.isInstantiated() && HintManager.getDatasourceName().isPresent()) {
+            result.getRouteUnits().addAll(Collections.singletonList(new RouteUnit(new RouteMapper(HintManager.getDatasourceName().get(), HintManager.getDatasourceName().get()),
+                    Collections.emptyList())));
+        } else {
+            ((CommonSQLStatementContext<?>) sqlStatementContext).extractHintDataSourceName().ifPresent(datasourceName ->
+                    result.getRouteUnits().addAll(Collections.singletonList(new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.emptyList()))));
+        }
+        return result.getRouteUnits().size() > 0 ? Optional.of(result) : Optional.empty();
     }
     
     // TODO use dynamic config to judge UnconfiguredSchema
