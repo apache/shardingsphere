@@ -19,29 +19,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DropResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Show slave status statement assert.
+ * MySQL drop resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowSlaveStatusStatementAssert {
-
+public final class MySQLDropResourceGroupStatementAssert {
+    
     /**
-     * Assert show slave status statement is correct with expected show slave status statement test case.
+     * Assert create resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show slave status statement
-     * @param expected expected show slave status statement test case
+     * @param actual actual create resource group statement
+     * @param expected expected create resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveStatusStatement actual, final ShowSlaveStatusStatementTestCase expected) {
-        if (null != expected.getChannel()) {
-            assertThat(assertContext.getText("Actual show slave status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
+        assertNotNull("expected drop resource group should be not null", expected.getGroup());
+        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

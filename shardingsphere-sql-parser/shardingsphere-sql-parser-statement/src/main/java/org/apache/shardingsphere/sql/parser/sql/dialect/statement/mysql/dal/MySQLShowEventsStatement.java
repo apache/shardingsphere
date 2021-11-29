@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import java.util.Optional;
 
 /**
- * MySQL show triggers status statement.
+ * MySQL show events statement.
  */
 @Setter
 @ToString
-public final class MySQLShowTriggersStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;
     

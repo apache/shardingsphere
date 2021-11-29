@@ -19,27 +19,27 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTriggersStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowTriggersStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowEventsStatementTestCase;
 
 /**
- * Show triggers statement assert.
+ * Show events statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowTriggersStatementAssert {
-
+public final class ShowEventsStatementAssert {
+    
     /**
-     * Assert show triggers statement is correct with expected parser result.
+     * Assert show events statement is correct with expected show procedure code statement test case.
      *
      * @param assertContext assert context
-     * @param actual actual show triggers statement
-     * @param expected expected show tables statement test case
+     * @param actual actual show events statement
+     * @param expected expected show events statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
         if (actual.getFromSchema().isPresent()) {
             SchemaAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());

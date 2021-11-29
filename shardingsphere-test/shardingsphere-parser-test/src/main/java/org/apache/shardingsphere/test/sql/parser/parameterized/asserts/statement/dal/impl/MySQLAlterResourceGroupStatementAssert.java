@@ -19,29 +19,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowSlaveStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.AlterResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Show slave status statement assert.
+ * MySQL alter resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowSlaveStatusStatementAssert {
-
+public final class MySQLAlterResourceGroupStatementAssert {
+    
     /**
-     * Assert show slave status statement is correct with expected show slave status statement test case.
+     * Assert alter resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show slave status statement
-     * @param expected expected show slave status statement test case
+     * @param actual actual alter resource group statement
+     * @param expected expected alter resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveStatusStatement actual, final ShowSlaveStatusStatementTestCase expected) {
-        if (null != expected.getChannel()) {
-            assertThat(assertContext.getText("Actual show slave status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLAlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
+        assertNotNull("expected alter resource group should be not null", expected.getGroup());
+        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

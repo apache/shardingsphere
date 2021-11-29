@@ -316,6 +316,21 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
+    public void assertNewInstanceForSubqueryWithSameConditions() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        tableNames.add("t_order");
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
+        when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
+        when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
+        when(shardingConditions.isNeedMerge()).thenReturn(true);
+        when(shardingConditions.isSameShardingCondition()).thenReturn(true);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
+        assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
+    }
+    
+    @Test
     public void assertNewInstanceForCreateResourceGroup() {
         MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);

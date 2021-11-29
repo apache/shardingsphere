@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSave
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -41,10 +42,13 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private final TransactionOperationType operationType;
     
     private final BackendTransactionManager backendTransactionManager;
+
+    private final BackendConnection backendConnection;
     
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
+        this.backendConnection = backendConnection;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
@@ -52,6 +56,9 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
+                if (tclStatement instanceof MySQLBeginTransactionStatement && backendConnection.getTransactionStatus().isInTransaction()) {
+                    backendTransactionManager.commit();
+                }
                 backendTransactionManager.begin();
                 break;
             case SAVEPOINT:
