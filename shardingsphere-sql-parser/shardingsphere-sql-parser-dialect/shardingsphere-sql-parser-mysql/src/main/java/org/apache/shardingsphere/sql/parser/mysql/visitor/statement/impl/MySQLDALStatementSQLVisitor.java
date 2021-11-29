@@ -578,13 +578,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
         }
         if (null != ctx.showFilter()) {
-            if (null != ctx.showFilter().showLike()) {
-                result.setLike((ShowLikeSegment) visit(ctx.showFilter().showLike()));
-            }
-            if (null != ctx.showFilter().showWhereClause()) {
-                result.setWhere((WhereSegment) visit(ctx.showFilter().showWhereClause()));
-            }
+            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
 
