@@ -352,7 +352,7 @@ Reasons:
 
 In the Spring Boot 2.x environment, ShardingSphere binds the properties through Binder, and the unsatisfied property name (such as camel case or underscore.) can throw a `NullPointerException` exception when the property setting does not work to check the property value. Refer to the following error examples:
 
-underscore case: database_inline
+Underscore case: database_inline
 ```
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
@@ -368,7 +368,7 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
 	... 
 ```
-camel case：databaseInline
+Camel case：databaseInline
 ```
 spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
