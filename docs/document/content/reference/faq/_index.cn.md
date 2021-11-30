@@ -339,13 +339,13 @@ PS：sourceforge 网站需要翻墙访问。
 
 回答：
 
-需要特别注意，Spring Boot 2.x 环境下 配置文件的属性名称约束为仅允许小写字母、数字和短横线，即`[a-z][0-9]`和`-`。
+需要特别注意，Spring Boot 2.x 环境下配置文件的属性名称约束为仅允许小写字母、数字和短横线，即`[a-z][0-9]`和`-`。
 
 原因如下:
 
 Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效从而校验属性值时抛出 `NullPointerException` 异常。参考以下错误示例：
 
-下划线示例1：database_inline
+下划线示例：database_inline
 ```
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
@@ -361,7 +361,7 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
 	... 
 ```
-驼峰示例2：databaseInline
+驼峰示例：databaseInline
 ```
 spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
@@ -377,4 +377,4 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
 	... 
 ```
-可从异常栈中分析得到 `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置不存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下 `v2(environment, prefix, Map.class)` 使用了 Binder 在属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效。
+从异常堆栈中分析可知： `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置是否存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下使用了 Binder，不规范的属性名称（如：驼峰或下划线等）会导致属性设置不生效。
