@@ -203,7 +203,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkStrategy(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
-        Set<String> algorithms = currentRuleConfig.getShardingAlgorithms().keySet();
+        Set<String> algorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
         LinkedList<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> !ShardingStrategyType.contain(each.getType()) || !algorithms.contains(each.getShardingAlgorithmName()))
                 .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
