@@ -62,7 +62,7 @@ public final class SQLHintExtractor {
         startIndex = startIndex + SQL_HINT_TOKEN.length();
         int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
         String[] hintValue = comment.substring(startIndex, endIndex).trim().split(SQL_HINT_SPLIT);
-        if (hintValue.length == 2 && SQL_HINT_DATASOURCE_NAME_KEY.equalsIgnoreCase(hintValue[0].trim()) && hintValue[1].trim().length() > 0) {
+        if (2 == hintValue.length && SQL_HINT_DATASOURCE_NAME_KEY.equalsIgnoreCase(hintValue[0].trim()) && hintValue[1].trim().length() > 0) {
             return Optional.of(hintValue[1].trim());
         }
         return Optional.empty();

@@ -58,34 +58,34 @@ public class PartialSQLRouteExecutorTest {
     @Before
     public void setup() {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds-0", null);
-        dataSourceMap.put("ds-1", null);
+        dataSourceMap.put("ds_0", null);
+        dataSourceMap.put("ds_1", null);
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(dataSourceMap);
     }
     
     @Test
     public void assertRouteBySQLCommentHint() {
-        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds-1"));
+        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds_1"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         RouteContext routeContext = partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
         assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds-1"));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
     }
     
     @Test
     public void assertRouteByHintManagerHint() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setDatasourceName("ds-1");
+            hintManager.setDatasourceName("ds_1");
             LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
             RouteContext routeContext = partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
             assertThat(routeContext.getRouteUnits().size(), is(1));
-            assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds-1"));
+            assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
         }
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertRouteBySQLCommentHintWithException() {
-        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds-3"));
+        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds_3"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
     }

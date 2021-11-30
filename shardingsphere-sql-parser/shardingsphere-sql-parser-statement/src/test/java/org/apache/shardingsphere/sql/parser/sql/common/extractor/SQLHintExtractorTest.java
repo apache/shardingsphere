@@ -36,10 +36,10 @@ public class SQLHintExtractorTest {
     @Test
     public void assertFindHintDatasourceNameExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* shardingsphere hint: datasourceName=ds-1 */", 0, 0)));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* shardingsphere hint: datasourceName=ds_1 */", 0, 0)));
         Optional<String> datasourceName = SQLHintExtractor.findHintDatasourceName(statement);
         assertTrue(datasourceName.isPresent());
-        assertThat(datasourceName.get(), is("ds-1"));
+        assertThat(datasourceName.get(), is("ds_1"));
     }
     
     @Test
