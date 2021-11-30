@@ -1974,4 +1974,21 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_regular_function_utc_timestamp">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="TIMEDIFF(NOW(), UTC_TIMESTAMP())" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="TIMEDIFF" text="TIMEDIFF(NOW(), UTC_TIMESTAMP())" start-index="7" stop-index="38">
+                        <parameter>
+                            <function function-name="NOW" text="NOW()" start-index="16" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="UTC_TIMESTAMP" text="UTC_TIMESTAMP()" start-index="23" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

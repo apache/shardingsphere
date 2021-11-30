@@ -32,11 +32,11 @@ showAllVariables
     ;
 
 enableInstance
-    :ENABLE INSTANCE IP EQ ip COMMA PORT EQ port
+    :ENABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 disableInstance
-    :DISABLE INSTANCE IP EQ ip COMMA PORT EQ port
+    :DISABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 showInstance
@@ -59,6 +59,14 @@ variableValue
     : IDENTIFIER | STRING | (MINUS)? INT 
     ;
 
+instanceDefination
+    : IP EQ ip COMMA PORT EQ port
+    ;
+    
+instanceId
+    : ip AT port
+    ;
+    
 ip
     : IDENTIFIER | NUMBER+
     ;
@@ -66,6 +74,7 @@ ip
 port
     : INT
     ;
+    
 refreshScope
     : tableName | tableName FROM RESOURCE resourceName
     ;

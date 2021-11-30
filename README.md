@@ -46,7 +46,7 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ## Community & Support:
 
-:link: [Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
+:link: [Mailing List](https://shardingsphere.apache.org/community/en/contribute/subscribe/). Best for: Apache community updates, releases, changes.
 
 :link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
 

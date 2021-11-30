@@ -28,6 +28,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -35,6 +37,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -88,7 +91,9 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     }
     
     private Collection<List<Object>> buildResourceRows(final ShardingSphereMetaData metaData, final String status) {
-        Set<String> allResources = metaData.getResource().getDataSources().keySet();
+        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
+        Set<String> allResources = ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream)
+                .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
         return allResources.stream().map(each -> buildRow(each, status)).collect(Collectors.toCollection(LinkedList::new));
     }
     

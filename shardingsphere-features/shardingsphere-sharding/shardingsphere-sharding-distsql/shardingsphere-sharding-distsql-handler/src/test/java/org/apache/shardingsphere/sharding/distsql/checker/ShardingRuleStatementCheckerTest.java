@@ -157,6 +157,14 @@ public final class ShardingRuleStatementCheckerTest {
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckTableWithInvalidAlgorithmNameWhenCurrentRuleConfigIsNull() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid"));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, null);
+    }
+    
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");

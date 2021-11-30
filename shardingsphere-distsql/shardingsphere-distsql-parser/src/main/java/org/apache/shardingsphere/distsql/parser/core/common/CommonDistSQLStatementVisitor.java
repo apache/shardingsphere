@@ -29,6 +29,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.EnableInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
@@ -42,10 +44,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
@@ -107,18 +109,31 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
-        return new SetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
-    }
-    
-    @Override
     public ASTNode visitShowInstance(final ShowInstanceContext ctx) {
         return new ShowInstanceStatement();
     }
     
     @Override
+    public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
+        return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
+    }
+    
+    @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
-        return new SetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), new IdentifierValue(ctx.ip().getText()).getValue(), ctx.port().getText());
+        return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
+    }
+    
+    private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceDefinationContext instanceDefinationContext, final InstanceIdContext instanceIdContext) {
+        String ip;
+        String port;
+        if (null != instanceDefinationContext) {
+            ip = getIdentifierValue(instanceDefinationContext.ip());
+            port = getIdentifierValue(instanceDefinationContext.port());
+        } else {
+            ip = getIdentifierValue(instanceIdContext.ip());
+            port = getIdentifierValue(instanceIdContext.port());
+        }
+        return new SetInstanceStatusStatement(status, ip, port);
     }
     
     @Override
