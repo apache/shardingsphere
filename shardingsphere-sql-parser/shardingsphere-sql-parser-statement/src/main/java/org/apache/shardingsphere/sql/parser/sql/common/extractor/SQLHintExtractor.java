@@ -59,6 +59,7 @@ public final class SQLHintExtractor {
         if (startPos < 0) {
             return Optional.empty();
         }
+        startPos = startPos + SQL_HINT_TOKEN.length();
         int endPos = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
         String hint = comment.substring(startPos, endPos).trim();
         String[] hintValue = hint.split(SQL_HINT_SPLIT);

@@ -40,7 +40,7 @@ import java.util.Optional;
  * @param <T> type of SQL statement
  */
 @Getter
-public class CommonSQLStatementContext<T extends AbstractSQLStatement> implements SQLStatementContext<T> {
+public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
     private final T sqlStatement;
     
@@ -82,6 +82,6 @@ public class CommonSQLStatementContext<T extends AbstractSQLStatement> implement
      * @return datasource name
      */
     public Optional<String> extractHintDataSourceName() {
-        return SQLHintExtractor.extractHintDataSourceName(sqlStatement);
+        return SQLHintExtractor.extractHintDataSourceName((AbstractSQLStatement) sqlStatement);
     }
 }

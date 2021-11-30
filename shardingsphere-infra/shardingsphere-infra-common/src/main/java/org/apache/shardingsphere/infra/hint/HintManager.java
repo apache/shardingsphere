@@ -192,10 +192,10 @@ public final class HintManager implements AutoCloseable {
     /**
      * Set datasource name.
      *
-     * @param dataSourceName datasource name
+     * @param datasourceName datasource name
      */
-    public void setDatasourceName(final String dataSourceName) {
-        this.datasourceName = dataSourceName;
+    public void setDatasourceName(final String datasourceName) {
+        this.datasourceName = datasourceName;
     }
     
     /**
