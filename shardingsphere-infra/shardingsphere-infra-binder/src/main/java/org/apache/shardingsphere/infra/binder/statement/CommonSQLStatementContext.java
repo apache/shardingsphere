@@ -81,7 +81,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
      *
      * @return datasource name
      */
-    public Optional<String> extractHintDataSourceName() {
-        return SQLHintExtractor.extractHintDataSourceName((AbstractSQLStatement) sqlStatement);
+    public Optional<String> findDatasourceName() {
+        return SQLHintExtractor.findHintDatasourceName((AbstractSQLStatement) sqlStatement);
     }
 }

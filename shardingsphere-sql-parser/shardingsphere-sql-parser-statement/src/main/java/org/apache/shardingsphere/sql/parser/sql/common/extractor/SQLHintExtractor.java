@@ -39,14 +39,14 @@ public final class SQLHintExtractor {
     private static final String SQL_HINT_DATASOURCE_NAME_KEY = "datasourcename";
     
     /**
-     * Extract hint datasource name.
+     * Find hint datasource name.
      *
      * @param statement statement
      * @return datasource name
      */
-    public static Optional<String> extractHintDataSourceName(final AbstractSQLStatement statement) {
+    public static Optional<String> findHintDatasourceName(final AbstractSQLStatement statement) {
         for (CommentSegment each : statement.getCommentSegments()) {
-            Optional<String> result = extractDataSourceNameFromComment(each.getText());
+            Optional<String> result = findDatasourceNameFromComment(each.getText());
             if (result.isPresent()) {
                 return result;
             }
@@ -54,18 +54,17 @@ public final class SQLHintExtractor {
         return Optional.empty();
     }
     
-    private static Optional<String> extractDataSourceNameFromComment(final String comment) {
-        int startPos = comment.toLowerCase().indexOf(SQL_HINT_TOKEN);
-        if (startPos < 0) {
+    private static Optional<String> findDatasourceNameFromComment(final String comment) {
+        int startIndex = comment.toLowerCase().indexOf(SQL_HINT_TOKEN);
+        if (startIndex < 0) {
             return Optional.empty();
         }
-        startPos = startPos + SQL_HINT_TOKEN.length();
-        int endPos = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
-        String hint = comment.substring(startPos, endPos).trim();
-        String[] hintValue = hint.split(SQL_HINT_SPLIT);
-        if (hintValue.length < 2 || !SQL_HINT_DATASOURCE_NAME_KEY.equalsIgnoreCase(hintValue[0].trim()) || hintValue[1].trim().length() == 0) {
-            return Optional.empty();
+        startIndex = startIndex + SQL_HINT_TOKEN.length();
+        int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
+        String[] hintValue = comment.substring(startIndex, endIndex).trim().split(SQL_HINT_SPLIT);
+        if (hintValue.length == 2 && SQL_HINT_DATASOURCE_NAME_KEY.equalsIgnoreCase(hintValue[0].trim()) && hintValue[1].trim().length() > 0) {
+            return Optional.of(hintValue[1].trim());
         }
-        return Optional.of(hintValue[1].trim());
+        return Optional.empty();
     }
 }
