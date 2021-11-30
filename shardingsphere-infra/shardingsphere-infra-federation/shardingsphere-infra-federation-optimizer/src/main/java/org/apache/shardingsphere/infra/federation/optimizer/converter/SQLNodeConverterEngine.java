@@ -19,10 +19,14 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -54,6 +58,14 @@ public final class SQLNodeConverterEngine {
     public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
             return new SelectStatementConverter().convertToSQLStatement(sqlNode);
+        }
+        if (sqlNode instanceof SqlBasicCall && null != ((SqlBasicCall) sqlNode).getOperator() && SqlKind.UNION == ((SqlBasicCall) sqlNode).getOperator().getKind()) {
+            SqlNode leftSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(0);
+            SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
+            SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
+            SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
+            leftSelectStatement.getUnionSegments().add(new UnionSegment(UnionType.UNION_DISTINCT, rightSelectStatement, rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1));
+            return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }
