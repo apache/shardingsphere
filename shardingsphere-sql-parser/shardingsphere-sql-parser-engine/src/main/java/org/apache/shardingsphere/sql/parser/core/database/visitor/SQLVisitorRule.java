@@ -318,6 +318,8 @@ public enum SQLVisitorRule {
     
     CHECK_TABLE("CheckTable", SQLStatementType.DAL),
     
+    CHECKSUM_TABLE("ChecksumTable", SQLStatementType.DAL),
+    
     DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),

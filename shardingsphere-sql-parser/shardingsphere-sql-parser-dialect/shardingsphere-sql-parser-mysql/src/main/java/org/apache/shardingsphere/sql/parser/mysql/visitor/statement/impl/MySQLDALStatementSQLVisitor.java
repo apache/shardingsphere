@@ -413,7 +413,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
-        return new MySQLChecksumTableStatement();
+        MySQLChecksumTableStatement result = new MySQLChecksumTableStatement();
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return result;
     }
     
     @Override
