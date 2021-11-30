@@ -56,7 +56,9 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
         LinkedList<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
-        checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        if (currentRuleConfig != null) {
+            checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        }
     }
     
     private static void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
