@@ -1,6 +1,6 @@
 +++
 title = "数据库发现"
-weight = 3
+weight = 4
 +++
 
 ## 语法说明

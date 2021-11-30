@@ -232,6 +232,8 @@ public enum SQLVisitorRule {
     
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
     
+    SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
+    
     SHOW_CHARACTER_SET("ShowCharacterSet", SQLStatementType.DAL),
     
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
@@ -315,6 +317,10 @@ public enum SQLVisitorRule {
     LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
     
     CHECK_TABLE("CheckTable", SQLStatementType.DAL),
+    
+    DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
+    
+    ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

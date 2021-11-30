@@ -1,6 +1,6 @@
 +++
 title = "DB Discovery"
-weight = 3
+weight = 4
 +++
 
 ## Syntax
