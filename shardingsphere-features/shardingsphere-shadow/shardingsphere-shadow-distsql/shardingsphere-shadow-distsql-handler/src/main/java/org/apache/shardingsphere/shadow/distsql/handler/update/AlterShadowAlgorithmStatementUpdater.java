@@ -42,7 +42,6 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
     
     @Override
     public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowAlgorithmStatement sqlStatement) {
-        // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
         return result;
