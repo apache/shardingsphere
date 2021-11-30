@@ -33,14 +33,21 @@ public final class SpringNamespaceMybatisGenerator extends ExampleGenerateEngine
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
         RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
         
-        UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
-        UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
-        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-        UN_NAME_TEMPLATE_MAP.put("mybatis/OrderRepository", "repository/OrderRepository.java");
+        // UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
+        // UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        UN_NAME_TEMPLATE_MAP.put("entity/User", "entity/User.java");
+        // UN_NAME_TEMPLATE_MAP.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+        // UN_NAME_TEMPLATE_MAP.put("mybatis/OrderRepository", "repository/OrderRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/UserRepository", "repository/UserRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
 
-        RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-        RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+        // RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+        // RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+        RESOURCE_TEMPLATE_MAP.put("mappers/UserMapper", "mappers/UserMapper.xml");
         RESOURCE_TEMPLATE_MAP.put("xml/application", "application.xml");
+        RESOURCE_TEMPLATE_MAP.put("log/logback", "logback.xml");
+        RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+
     }
 
     public SpringNamespaceMybatisGenerator() {

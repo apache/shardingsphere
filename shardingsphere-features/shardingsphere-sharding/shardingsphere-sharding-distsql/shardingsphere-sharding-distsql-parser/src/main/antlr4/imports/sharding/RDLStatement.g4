@@ -76,7 +76,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)? RP
     ;
 
 shardingTableRule
