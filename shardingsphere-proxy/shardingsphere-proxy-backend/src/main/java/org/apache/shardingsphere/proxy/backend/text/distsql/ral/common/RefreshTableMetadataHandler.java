@@ -42,7 +42,7 @@ public final class RefreshTableMetadataHandler extends SchemaRequiredBackendHand
     protected ResponseHeader execute(final String schemaName, final RefreshTableMetadataStatement sqlStatement) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         if (sqlStatement.getResourceName().isPresent()) {
-            // TODO  From the specified resource
+            contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return new UpdateResponseHeader(sqlStatement);
         }
         if (sqlStatement.getTableName().isPresent()) {
