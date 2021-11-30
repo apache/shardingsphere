@@ -63,9 +63,9 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         RouteContext result = new RouteContext();
-        Optional<String> datasourceName = findDatasourceByHint(logicSQL.getSqlStatementContext(), metaData.getResource().getDataSources());
-        if (datasourceName.isPresent()) {
-            result.getRouteUnits().add(new RouteUnit(new RouteMapper(datasourceName.get(), datasourceName.get()), Collections.emptyList()));
+        Optional<String> dataSourceName = findDataSourceByHint(logicSQL.getSqlStatementContext(), metaData.getResource().getDataSources());
+        if (dataSourceName.isPresent()) {
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
         }
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
@@ -82,12 +82,12 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         return result;
     }
     
-    private Optional<String> findDatasourceByHint(final SQLStatementContext<?> sqlStatementContext, final Map<String, DataSource> dataSources) {
+    private Optional<String> findDataSourceByHint(final SQLStatementContext<?> sqlStatementContext, final Map<String, DataSource> dataSources) {
         Optional<String> result;
-        if (HintManager.isInstantiated() && HintManager.getDatasourceName().isPresent()) {
-            result = HintManager.getDatasourceName();
+        if (HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent()) {
+            result = HintManager.getDataSourceName();
         } else {
-            result = ((CommonSQLStatementContext<?>) sqlStatementContext).findHintDatasourceName();
+            result = ((CommonSQLStatementContext<?>) sqlStatementContext).findHintDataSourceName();
         }
         if (result.isPresent() && !dataSources.containsKey(result.get())) {
             throw new ShardingSphereException("Hint datasource: %s is not exist!", result.get());

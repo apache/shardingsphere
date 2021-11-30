@@ -22,6 +22,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +44,8 @@ public final class HintManager implements AutoCloseable {
     
     private boolean writeRouteOnly;
     
-    private String datasourceName;
+    @Setter
+    private String dataSourceName;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -190,21 +192,12 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Set datasource name.
+     * Get data source name.
      *
-     * @param datasourceName datasource name
+     * @return dataSource name
      */
-    public void setDatasourceName(final String datasourceName) {
-        this.datasourceName = datasourceName;
-    }
-    
-    /**
-     * Get datasource name.
-     *
-     * @return datasource name
-     */
-    public static Optional<String> getDatasourceName() {
-        return null != HINT_MANAGER_HOLDER.get() ? Optional.ofNullable(HINT_MANAGER_HOLDER.get().datasourceName) : Optional.empty();
+    public static Optional<String> getDataSourceName() {
+        return Optional.ofNullable(HINT_MANAGER_HOLDER.get()).map(hintManager -> hintManager.dataSourceName);
     }
     
     @Override

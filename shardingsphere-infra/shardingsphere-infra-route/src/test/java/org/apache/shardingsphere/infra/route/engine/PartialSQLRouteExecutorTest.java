@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PartialSQLRouteExecutorTest {
+public final class PartialSQLRouteExecutorTest {
     
     private final PartialSQLRouteExecutor partialSQLRouteExecutor = new PartialSQLRouteExecutor(Collections.emptyList(), new ConfigurationProperties(new Properties()));
     
@@ -65,7 +65,7 @@ public class PartialSQLRouteExecutorTest {
     
     @Test
     public void assertRouteBySQLCommentHint() {
-        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds_1"));
+        when(commonSQLStatementContext.findHintDataSourceName()).thenReturn(Optional.of("ds_1"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         RouteContext routeContext = partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -75,7 +75,7 @@ public class PartialSQLRouteExecutorTest {
     @Test
     public void assertRouteByHintManagerHint() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setDatasourceName("ds_1");
+            hintManager.setDataSourceName("ds_1");
             LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
             RouteContext routeContext = partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
             assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -85,7 +85,7 @@ public class PartialSQLRouteExecutorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertRouteBySQLCommentHintWithException() {
-        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds_3"));
+        when(commonSQLStatementContext.findHintDataSourceName()).thenReturn(Optional.of("ds_3"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
     }
@@ -93,7 +93,7 @@ public class PartialSQLRouteExecutorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByHintManagerHintWithException() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setDatasourceName("ds-3");
+            hintManager.setDataSourceName("ds-3");
             LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
             partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
         }

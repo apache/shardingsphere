@@ -31,29 +31,29 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SQLHintExtractorTest {
+public final class SQLHintExtractorTest {
     
     @Test
-    public void assertFindHintDatasourceNameExist() {
+    public void assertFindHintDataSourceNameExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* shardingsphere hint: datasourceName=ds_1 */", 0, 0)));
-        Optional<String> datasourceName = SQLHintExtractor.findHintDatasourceName(statement);
-        assertTrue(datasourceName.isPresent());
-        assertThat(datasourceName.get(), is("ds_1"));
+        Optional<String> dataSourceName = SQLHintExtractor.findHintDataSourceName(statement);
+        assertTrue(dataSourceName.isPresent());
+        assertThat(dataSourceName.get(), is("ds_1"));
     }
     
     @Test
-    public void assertFindHintDatasourceNameNotExist() {
+    public void assertFindHintDataSourceNameNotExist() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* no hint */", 0, 0)));
-        Optional<String> datasourceName = SQLHintExtractor.findHintDatasourceName(statement);
-        assertFalse(datasourceName.isPresent());
+        Optional<String> dataSourceName = SQLHintExtractor.findHintDataSourceName(statement);
+        assertFalse(dataSourceName.isPresent());
     }
     
     @Test
-    public void assertFindHintDatasourceNameNotExistWithoutComment() {
+    public void assertFindHintDataSourceNameNotExistWithoutComment() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        Optional<String> datasourceName = SQLHintExtractor.findHintDatasourceName(statement);
-        assertFalse(datasourceName.isPresent());
+        Optional<String> dataSourceName = SQLHintExtractor.findHintDataSourceName(statement);
+        assertFalse(dataSourceName.isPresent());
     }
 }

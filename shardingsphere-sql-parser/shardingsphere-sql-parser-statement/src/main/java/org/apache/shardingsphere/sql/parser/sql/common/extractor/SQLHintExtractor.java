@@ -39,14 +39,14 @@ public final class SQLHintExtractor {
     private static final String SQL_HINT_DATASOURCE_NAME_KEY = "datasourcename";
     
     /**
-     * Find hint datasource name.
+     * Find hint data source name.
      *
      * @param statement statement
-     * @return datasource name
+     * @return data source name
      */
-    public static Optional<String> findHintDatasourceName(final AbstractSQLStatement statement) {
+    public static Optional<String> findHintDataSourceName(final AbstractSQLStatement statement) {
         for (CommentSegment each : statement.getCommentSegments()) {
-            Optional<String> result = findDatasourceNameFromComment(each.getText());
+            Optional<String> result = findDataSourceNameFromComment(each.getText());
             if (result.isPresent()) {
                 return result;
             }
@@ -54,7 +54,7 @@ public final class SQLHintExtractor {
         return Optional.empty();
     }
     
-    private static Optional<String> findDatasourceNameFromComment(final String comment) {
+    private static Optional<String> findDataSourceNameFromComment(final String comment) {
         int startIndex = comment.toLowerCase().indexOf(SQL_HINT_TOKEN);
         if (startIndex < 0) {
             return Optional.empty();
