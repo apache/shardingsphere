@@ -653,4 +653,49 @@
             </where>
         </filter>
     </show-tables>
+
+    <show-character-set sql-case-id="show_character_set" />
+
+    <show-character-set sql-case-id="show_character_set_with_like_pattern">
+        <filter start-index="19" stop-index="31">
+            <like pattern="latin%" start-delimiter="'" end-delimiter="'" start-index="19" stop-index="31"/>
+        </filter>
+    </show-character-set>
+
+    <show-character-set sql-case-id="show_character_set_with_where_expr" parameters="'latin1'">
+        <filter start-index="19" stop-index="37" literal-start-index="19" literal-stop-index="44">
+            <where start-index="19" stop-index="37" literal-start-index="19" literal-stop-index="44">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="37" literal-start-index="25" literal-stop-index="44">
+                        <left>
+                            <column name="Charset" start-delimiter="`" end-delimiter="`" start-index="25" stop-index="33" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="latin1" start-index="37" stop-index="44" />
+                            <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-character-set>
+
+    <show-character-set sql-case-id="show_character_set_with_where_expr_no_parameter">
+        <filter start-index="19" stop-index="44">
+            <where start-index="19" stop-index="44">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="44">
+                        <left>
+                            <column name="Charset" start-delimiter="`" end-delimiter="`" start-index="25" stop-index="33" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="latin1" start-index="37" stop-index="44" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-character-set>
 </sql-parser-test-cases>
