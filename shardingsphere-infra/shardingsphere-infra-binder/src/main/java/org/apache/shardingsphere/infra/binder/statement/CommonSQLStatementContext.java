@@ -77,11 +77,11 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     }
     
     /**
-     * Extract hint datasource name.
+     * Find hint datasource name.
      *
      * @return datasource name
      */
-    public Optional<String> findDatasourceName() {
+    public Optional<String> findHintDatasourceName() {
         return SQLHintExtractor.findHintDatasourceName((AbstractSQLStatement) sqlStatement);
     }
 }

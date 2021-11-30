@@ -65,7 +65,7 @@ public class PartialSQLRouteExecutorTest {
     
     @Test
     public void assertRouteBySQLCommentHint() {
-        when(commonSQLStatementContext.findDatasourceName()).thenReturn(Optional.of("ds-1"));
+        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds-1"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         RouteContext routeContext = partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -85,7 +85,7 @@ public class PartialSQLRouteExecutorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertRouteBySQLCommentHintWithException() {
-        when(commonSQLStatementContext.findDatasourceName()).thenReturn(Optional.of("ds-3"));
+        when(commonSQLStatementContext.findHintDatasourceName()).thenReturn(Optional.of("ds-3"));
         LogicSQL logicSQL = new LogicSQL(commonSQLStatementContext, "", Collections.emptyList());
         partialSQLRouteExecutor.route(logicSQL, shardingSphereMetaData);
     }

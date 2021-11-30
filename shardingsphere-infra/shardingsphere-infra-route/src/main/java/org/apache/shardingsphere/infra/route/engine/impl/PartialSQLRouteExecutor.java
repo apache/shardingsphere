@@ -87,7 +87,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         if (HintManager.isInstantiated() && HintManager.getDatasourceName().isPresent()) {
             result = HintManager.getDatasourceName();
         } else {
-            result = ((CommonSQLStatementContext<?>) sqlStatementContext).findDatasourceName();
+            result = ((CommonSQLStatementContext<?>) sqlStatementContext).findHintDatasourceName();
         }
         if (result.isPresent() && !dataSources.containsKey(result.get())) {
             throw new ShardingSphereException("Hint datasource: %s is not exist!", result.get());
