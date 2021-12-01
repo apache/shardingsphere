@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveHostsStatementTestCase;
 
 /**
- * MySQL show slave host statement assert.
+ * Show slave host statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowSlaveHostsStatementAssert {
@@ -33,8 +33,8 @@ public final class ShowSlaveHostsStatementAssert {
      * Assert show slave host statement is correct with expected show slave host statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual show slave host statement
-     * @param expected      expected show slave host statement test case
+     * @param actual actual show slave host statement
+     * @param expected expected show slave host statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveHostsStatement actual, final ShowSlaveHostsStatementTestCase expected) {
     }

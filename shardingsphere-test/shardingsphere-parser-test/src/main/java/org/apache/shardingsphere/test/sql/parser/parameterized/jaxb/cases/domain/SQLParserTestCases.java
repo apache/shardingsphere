@@ -21,11 +21,14 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.AlterResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.BinlogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CheckTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.InstallComponentStatementTestCase;
@@ -38,6 +41,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCharacterSetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
@@ -192,6 +196,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
@@ -364,8 +369,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-create-trigger")
     private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-resource-group")
+    private final List<AlterResourceGroupStatementTestCase> alterResourceGroupStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-resource-group")
     private final List<CreateResourceGroupStatementTestCase> createResourceGroupStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-resource-group")
+    private final List<DropResourceGroupStatementTestCase> dropResourceGroupStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "binlog")
     private final List<BinlogStatementTestCase> binlogStatementTestCases = new LinkedList<>();
@@ -721,6 +732,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-single-table-rules")
     private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-sharding-table-nodes")
+    private final List<ShowShardingTableNodesStatementTestCase> showShardingTableNodesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "set-resource-group")
     private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
     
@@ -784,6 +798,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "check-table")
     private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "checksum-table")
+    private final List<ChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-status")
     private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
     
@@ -792,6 +809,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-character-set")
+    private final List<ShowCharacterSetStatementTestCase> showCharacterSetStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-collation")
     private final List<ShowCollationStatementTestCase> showCollationStatementTestCases = new LinkedList<>();
@@ -961,11 +981,14 @@ public final class SQLParserTestCases {
         putAll(cloneStatementTestCases, result);
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
+        putAll(alterResourceGroupStatementTestCases, result);
         putAll(createResourceGroupStatementTestCases, result);
+        putAll(dropResourceGroupStatementTestCases, result);
         putAll(binlogStatementTestCases, result);
         putAll(uninstallPluginStatementTestCases, result);
         putAll(showSingleTableStatementTestCases, result);
         putAll(showSingleTableRulesStatementTestCases, result);
+        putAll(showShardingTableNodesStatementTestCases, result);
         putAll(setResourceGroupStatementTestCases, result);
         putAll(optimizeTableStatementTestCases, result);
         putAll(repairTableStatementTestCases, result);
@@ -991,8 +1014,10 @@ public final class SQLParserTestCases {
         putAll(showOpenTablesStatementTestCases, result);
         putAll(showStatusStatementTestCases, result);
         putAll(checkTableTestCases, result);
+        putAll(checksumTableTestCases, result);
         putAll(refreshTableMetadataStatementTestCases, result);
         putAll(showEventsStatementTestCases, result);
+        putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         return result;
     }
