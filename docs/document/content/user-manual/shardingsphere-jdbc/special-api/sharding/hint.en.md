@@ -159,6 +159,7 @@ try (HintManager hintManager = HintManager.getInstance();
 #### Use special SQL comments
 
 ##### Terms of Use
+- Open parse comment config first.
 - The comment format only supports `/* */`
 - The beginning needs to contains `ShardingSphere hint:`
 - The data source name must be `DataSourceName`

@@ -159,6 +159,7 @@ try (HintManager hintManager = HintManager.getInstance();
 #### 使用 SQL 注释的方式
 
 ##### 使用规范
+- 需要开启解析注释的配置
 - 注释格式只支持 `/* */`
 - 注释开头需要包含 `ShardingSphere hint:`
 - 数据源名称必须为 `DataSourceName`
