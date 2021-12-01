@@ -21,6 +21,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -71,27 +72,29 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
-        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
-            result.addAll(createShardingConditions(sqlStatementContext, each.getExpr(), parameters));
+        Collection<AndPredicate> predicates = getAndPredicates(sqlStatementContext);
+        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, predicates);
+        for (AndPredicate each : predicates) {
+            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), parameters, columnTableNames);
+            if (shardingConditionValues.isEmpty()) {
+                continue;
+            }
+            ShardingCondition shardingCondition = createShardingCondition(shardingConditionValues);
+            // TODO remove startIndex when federation has perfect support for subquery
+            shardingCondition.setStartIndex(each.getStartIndex());
+            result.add(shardingCondition);
         }
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expression, final List<Object> parameters) {
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
-        Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
-        Collection<ShardingCondition> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), parameters, columnTableNames);
-            if (shardingConditionValues.isEmpty()) {
-                return Collections.emptyList();
-            }
-            ShardingCondition shardingCondition = createShardingCondition(shardingConditionValues);
-            // TODO remove startIndex when federation has perfect support for subquery
-            shardingCondition.setStartIndex(expression.getStartIndex());
-            result.add(shardingCondition);
+    private Collection<AndPredicate> getAndPredicates(final SQLStatementContext<?> sqlStatementContext) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return ((SelectStatementContext) sqlStatementContext).getPredicates();
         }
-        return result;
+        if (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            return ExpressionExtractUtil.getAndPredicates(((WhereAvailable) sqlStatementContext).getWhere().get().getExpr());
+        }
+        return Collections.emptyList();
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
