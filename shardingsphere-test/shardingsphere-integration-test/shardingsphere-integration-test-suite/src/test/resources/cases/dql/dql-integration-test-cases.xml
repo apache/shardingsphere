@@ -103,11 +103,11 @@
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </test-case>
 
-    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </test-case>
 
-    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.order_id in (?,?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id in (?,?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int,1001:int" expected-data-file="select_in_with_force_index_join.xml" />
     </test-case>
 
