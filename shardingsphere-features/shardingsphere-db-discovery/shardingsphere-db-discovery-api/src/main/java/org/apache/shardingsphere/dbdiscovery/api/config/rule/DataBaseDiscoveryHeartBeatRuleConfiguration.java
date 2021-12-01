@@ -20,20 +20,14 @@ package org.apache.shardingsphere.dbdiscovery.api.config.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Database discovery data source rule configuration.
+ * Database discovery heartbeat rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryDataSourceRuleConfiguration {
+public final class DataBaseDiscoveryHeartBeatRuleConfiguration {
     
-    private final String name;
-    
-    private final List<String> dataSourceNames;
-    
-    private final String discoveryTypeName;
-    
-    private final String discoveryHeartbeatName;
+    private final Properties props;
 }
