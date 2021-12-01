@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,7 +84,7 @@ public final class ShardingSphereServiceLoader {
         if (services.isEmpty()) {
             return Collections.emptyList();
         }
-        List<T> result = new ArrayList<>(services.size());
+        Collection<T> result = new ArrayList<>(services.size());
         for (Object each : services) {
             result.add((T) newServiceInstance(each.getClass()));
         }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -86,13 +85,13 @@ public final class TablesContext {
             SubqueryTableSegment subqueryTableSegment = (SubqueryTableSegment) each;
             SelectStatementContext subqueryContext = subqueryContexts.get(subqueryTableSegment.getSubquery().getStartIndex());
             Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, each.getAlias().orElse(null));
-            Map<String, List<SubqueryTableContext>> map = new HashMap<>();
+            Map<String, List<SubqueryTableContext>> result = new HashMap<>();
             for (SubqueryTableContext subQuery : subqueryTableContexts) {
                 if (null != subQuery.getAlias()) {
-                    map.computeIfAbsent(subQuery.getAlias(), k -> new ArrayList<>()).add(subQuery);
+                    result.computeIfAbsent(subQuery.getAlias(), unused -> new LinkedList<>()).add(subQuery);
                 }
             }
-            subqueryTables.putAll(map);
+            subqueryTables.putAll(result);
         }
     }
     
