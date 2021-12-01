@@ -49,17 +49,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,8 +84,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
-    private final Collection<AndPredicate> predicates;
-    
     private final String schemaName;
     
     @Setter
@@ -104,24 +99,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
-        predicates = createPredicates(sqlStatement);
         schemaName = defaultSchemaName;
-    }
-    
-    private Collection<AndPredicate> createPredicates(final SelectStatement selectStatement) {
-        Collection<AndPredicate> result = new LinkedList<>();
-        for (WhereSegment each : getWhereSegments(selectStatement)) {
-            result.addAll(ExpressionExtractUtil.getAndPredicates(each.getExpr()));
-        }
-        return result;
-    }
-    
-    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        getWhere().ifPresent(result::add);
-        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
-        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
-        return result;
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final String defaultSchemaName) {
