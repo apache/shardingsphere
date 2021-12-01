@@ -366,7 +366,14 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return isShardingColumn(getDatabaseShardingStrategyConfiguration(tableRule), columnName) || isShardingColumn(getTableShardingStrategyConfiguration(tableRule), columnName);
     }
     
-    private boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
+    /**
+     * Judge whether given logic table column is sharding column or not.
+     * 
+     * @param shardingStrategyConfig sharding strategy config
+     * @param columnName column name
+     * @return whether given logic table column is sharding column or not
+     */
+    public boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
             String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
                     ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
