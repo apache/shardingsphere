@@ -6,12 +6,14 @@ weight = 1
 ## Introduction
 
 Apache ShardingSphere uses ThreadLocal to manage sharding key value or hint route. 
-Users can add sharding values to HintManager, and those values only take effect within the current thread. 
+Users can add sharding values to HintManager, and those values only take effect within the current thread.  
+Apache ShardingSphere is able to add special comments in SQL to hint route too.
 
 Usage of hint:
 
 * Sharding columns are not in SQL and table definition, but in external business logic.
 * Some operations forced to do in the primary database.
+* Some operations forced to do in any database chosen by yourself.
 
 ## Usage
 
@@ -124,4 +126,46 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
+```
+
+### Route to any database with Hint
+
+#### Use manual programming
+
+##### Get HintManager
+
+Be the dame as sharding based on hint.
+
+##### Configure any Database Route
+
+- Use `hintManager.setDataSourceName` to configure any database route.
+
+##### Codes:
+
+```java
+String sql = "SELECT * FROM t_order";
+try (HintManager hintManager = HintManager.getInstance();
+     Connection conn = dataSource.getConnection();
+     PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    hintManager.setDataSourceName("ds_0");
+    try (ResultSet rs = preparedStatement.executeQuery()) {
+        while (rs.next()) {
+            // ...
+        }
+    }
+}
+```
+
+#### Use special SQL comments
+
+##### Terms of Use
+- The comment format only supports `/* */`
+- The beginning needs to contains `ShardingSphere hint:`
+- The data source name must be `DataSourceName`
+- Only support one data source name.
+
+##### Codes:
+```sql
+/* ShardingSphere hint: DataSourceName=ds_0 */
+SELECT * FROM t_order;
 ```
