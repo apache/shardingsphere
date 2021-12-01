@@ -698,12 +698,7 @@
             </where>
         </filter>
     </show-character-set>
-
-
-
-
-
-
+    
     <show-collation sql-case-id="show_collation" />
 
     <show-collation sql-case-id="show_collation_with_like_pattern">
