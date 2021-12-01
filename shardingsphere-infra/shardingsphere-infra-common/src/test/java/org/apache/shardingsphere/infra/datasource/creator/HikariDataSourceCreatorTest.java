@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.datasource.creator;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.creator.DataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.creator.impl.DefaultDataSourceCreator;
 import org.apache.shardingsphere.infra.config.datasource.creator.impl.HikariDataSourceCreator;
 import org.junit.Test;
 
@@ -29,9 +30,21 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class HikariDataSourceCreatorTest {
+    
+    @Test
+    public void assertCreateDataSourceConfigurationWithoutDriverClassName() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        DataSourceConfiguration dataSourceConfiguration = new DefaultDataSourceCreator().createDataSourceConfiguration(dataSource);
+        Map<String, Object> props = dataSourceConfiguration.getProps();
+        assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
+    }
     
     @Test
     public void assertCreateDataSourceConfiguration() {
