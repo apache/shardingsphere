@@ -13,7 +13,7 @@ Usage of hint:
 
 * Sharding columns are not in SQL and table definition, but in external business logic.
 * Some operations forced to do in the primary database.
-* Some operations forced to do in any database chosen by yourself.
+* Some operations forced to do in the database chosen by yourself.
 
 ## Usage
 
