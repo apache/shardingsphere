@@ -59,8 +59,9 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, final RouteContext routeContext) {
         Collection<String> result;
         if (sqlStatementContext instanceof TableAvailable) {
-            result = new HashSet<>();
-            for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getAllTables()) {
+            Collection<SimpleTableSegment> allTables = ((TableAvailable) sqlStatementContext).getAllTables();
+            result = new HashSet<>(allTables.size(), 1);
+            for (SimpleTableSegment each : allTables) {
                 String value = each.getTableName().getIdentifier().getValue();
                 result.add(value);
             }

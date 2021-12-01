@@ -145,7 +145,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>(routeUnits.size());
         for (RouteUnit each : routeUnits) {
             String logicName = each.getDataSourceMapper().getLogicName();
             result.add(logicName);

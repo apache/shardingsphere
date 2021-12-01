@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -80,8 +81,12 @@ public final class ShardingSphereServiceLoader {
         if (!SERVICES.containsKey(service)) {
             return Collections.emptyList();
         }
-        List<T> result = new LinkedList<>();
-        for (Object each : SERVICES.get(service)) {
+        Collection<Object> services = SERVICES.get(service);
+        if (services.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<T> result = new ArrayList<>(services.size());
+        for (Object each : services) {
             result.add((T) newServiceInstance(each.getClass()));
         }
         return result;

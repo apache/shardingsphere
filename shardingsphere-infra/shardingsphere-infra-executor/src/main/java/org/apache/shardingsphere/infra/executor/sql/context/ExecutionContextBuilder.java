@@ -75,7 +75,7 @@ public final class ExecutionContextBuilder {
         if (null == tableMappers) {
             return Collections.emptyList();
         }
-        List<RouteMapper> result = new ArrayList<>();
+        List<RouteMapper> result = new ArrayList<>(tableMappers.size());
         for (RouteMapper each : tableMappers) {
             result.add(new RouteMapper(each.getLogicName(), each.getActualName()));
         }

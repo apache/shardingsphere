@@ -94,7 +94,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnProjection> result = new ArrayList<>();
+        Collection<ColumnProjection> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             for (ExpressionSegment expressionSegment : each.getPredicates()) {
                 for (ColumnSegment columnSegment : ColumnExtractor.extract(expressionSegment)) {

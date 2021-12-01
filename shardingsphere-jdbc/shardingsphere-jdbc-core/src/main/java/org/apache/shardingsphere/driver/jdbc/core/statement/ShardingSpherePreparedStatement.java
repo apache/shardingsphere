@@ -197,9 +197,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (executionContext.getRouteContext().isFederated()) {
             return Collections.singletonList(executor.getFederationExecutor().getResultSet());
         }
-        List<ResultSet> result = new ArrayList<>();
-        for (PreparedStatement statement : statements) {
-            ResultSet resultSet = getResultSet(statement);
+        List<ResultSet> result = new ArrayList<>(statements.size());
+        for (PreparedStatement each : statements) {
+            ResultSet resultSet = getResultSet(each);
             result.add(resultSet);
         }
         return result;
@@ -473,9 +473,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connection.getConnectionManager(), statementOption, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules());
-        List<ExecutionUnit> executionUnits = new ArrayList<>();
-        for (BatchExecutionUnit batchExecutionUnit : batchPreparedStatementExecutor.getBatchExecutionUnits()) {
-            ExecutionUnit executionUnit = batchExecutionUnit.getExecutionUnit();
+        List<ExecutionUnit> executionUnits = new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits().size());
+        for (BatchExecutionUnit each : batchPreparedStatementExecutor.getBatchExecutionUnits()) {
+            ExecutionUnit executionUnit = each.getExecutionUnit();
             executionUnits.add(executionUnit);
         }
         batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits));
