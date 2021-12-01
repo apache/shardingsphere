@@ -442,7 +442,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return sharding logic table names
      */
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
-        LinkedList<String> result = new LinkedList<>();
+        Collection<String> result = new LinkedList<>();
         for (String each : logicTableNames) {
             if (isShardingTable(each)) {
                 result.add(each);
