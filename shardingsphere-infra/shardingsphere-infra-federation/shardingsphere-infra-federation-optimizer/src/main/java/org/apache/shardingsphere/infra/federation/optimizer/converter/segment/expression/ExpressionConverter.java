@@ -27,6 +27,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlBetweenOperator;
 import org.apache.calcite.sql.fun.SqlInOperator;
+import org.apache.calcite.sql.fun.SqlLikeOperator;
 import org.apache.calcite.sql.fun.SqlPositionFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -132,7 +133,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (operator.getName().equals(SqlStdOperatorTable.EXISTS.getName())) {
             return new ExistsSubqueryExpressionConverter(not).convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
-        if (operator instanceof SqlBinaryOperator) {
+        if (operator instanceof SqlBinaryOperator || operator instanceof SqlLikeOperator) {
             return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
         if (operator instanceof SqlPositionFunction) {

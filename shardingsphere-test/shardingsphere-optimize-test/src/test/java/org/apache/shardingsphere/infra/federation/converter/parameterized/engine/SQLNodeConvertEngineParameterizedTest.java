@@ -91,6 +91,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_position");
         SUPPORTED_SQL_CASE_IDS.add("select_constant_without_table");
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_union");
     }
     
     private final String sqlCaseId;
