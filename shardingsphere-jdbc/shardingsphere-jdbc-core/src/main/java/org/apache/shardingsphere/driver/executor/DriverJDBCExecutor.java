@@ -35,9 +35,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Driver JDBC executor.
@@ -145,6 +145,11 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        metadataRefreshEngine.refresh(sqlStatement, routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        List<String> result = new ArrayList<>(routeUnits.size());
+        for (RouteUnit each : routeUnits) {
+            String logicName = each.getDataSourceMapper().getLogicName();
+            result.add(logicName);
+        }
+        metadataRefreshEngine.refresh(sqlStatement, result);
     }
 }

@@ -273,7 +273,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return binding table rule
      */
     public Optional<BindingTableRule> findBindingTableRule(final String logicTableName) {
-        return bindingTableRules.stream().filter(each -> each.hasLogicTable(logicTableName)).findFirst();
+        for (BindingTableRule each : bindingTableRules) {
+            if (each.hasLogicTable(logicTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     /**
@@ -293,7 +298,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return whether logic table is all sharding table or not
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isShardingTable);
+        if (logicTableNames.isEmpty()) {
+            return false;
+        }
+        for (String each : logicTableNames) {
+            if (!isShardingTable(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -429,7 +442,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return sharding logic table names
      */
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            if (isShardingTable(each)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**

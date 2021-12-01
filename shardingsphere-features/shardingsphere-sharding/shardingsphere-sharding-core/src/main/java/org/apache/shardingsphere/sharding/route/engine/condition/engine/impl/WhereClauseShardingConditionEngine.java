@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding condition engine for where clause.
@@ -95,9 +94,16 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnProjection> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .flatMap(each -> ColumnExtractor.extract(each).stream().map(this::buildColumnProjection)).collect(Collectors.toList());
-        return sqlStatementContext.getTablesContext().findTableName(columns, schema);
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (AndPredicate each : andPredicates) {
+            for (ExpressionSegment expressionSegment : each.getPredicates()) {
+                for (ColumnSegment columnSegment : ColumnExtractor.extract(expressionSegment)) {
+                    ColumnProjection columnProjection = buildColumnProjection(columnSegment);
+                    result.add(columnProjection);
+                }
+            }
+        }
+        return sqlStatementContext.getTablesContext().findTableName(result, schema);
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {

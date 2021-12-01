@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
@@ -203,8 +204,12 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
-        return shardingConditions.getConditions().stream().flatMap(each -> each.getValues().stream())
-                .map(ShardingConditionValue::getTableName).findFirst().orElseGet(() -> tableNames.iterator().next());
+        for (ShardingCondition each : shardingConditions.getConditions()) {
+            for (ShardingConditionValue shardingConditionValue : each.getValues()) {
+                return shardingConditionValue.getTableName();
+            }
+        }
+        return tableNames.iterator().next();
     }
     
     private static boolean isShardingStandardQuery(final Collection<String> tableNames, final ShardingRule shardingRule) {
