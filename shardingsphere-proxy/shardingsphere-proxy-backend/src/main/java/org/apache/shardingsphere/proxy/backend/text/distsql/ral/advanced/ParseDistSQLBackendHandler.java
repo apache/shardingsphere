@@ -22,9 +22,9 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Parse dist sql backend handler.
@@ -60,10 +61,10 @@ public final class ParseDistSQLBackendHandler implements TextProtocolBackendHand
     
     @Override
     public ResponseHeader execute() {
-        ConfigurationProperties props = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
+        Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement;
         try {
-            sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName(), props).parse(previewStatement.getSql(), false);
+            sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName(), sqlParserRule.orElse(null)).parse(previewStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have an error in your SQL syntax that you are parsed");
         }
