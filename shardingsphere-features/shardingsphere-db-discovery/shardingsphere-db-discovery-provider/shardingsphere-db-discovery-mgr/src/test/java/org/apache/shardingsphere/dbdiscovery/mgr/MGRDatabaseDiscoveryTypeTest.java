@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.mgr;
 import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
@@ -42,7 +41,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,10 +59,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
-    
-    private static TestingServer server;
-    
-    private static CuratorFramework client;
     
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
@@ -165,12 +160,9 @@ public final class MGRDatabaseDiscoveryTypeTest {
             when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
-        List<String> disabledDataSourceNames = new ArrayList<>();
+        List<String> disabledDataSourceNames = Arrays.asList("ds_1");
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
-            if (disabledDataSourceNames.isEmpty()) {
-                disabledDataSourceNames.add(String.format("ds_1", i));
-            }
         }
         mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
