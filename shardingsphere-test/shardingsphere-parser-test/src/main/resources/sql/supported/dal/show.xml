@@ -98,4 +98,8 @@
     <sql-case id="show_character_set_with_like_pattern" value="SHOW CHARACTER SET LIKE 'latin%'" db-types="MySQL" />
     <sql-case id="show_character_set_with_where_expr" value="SHOW CHARACTER SET WHERE `Charset` = ?" db-types="MySQL" />
     <sql-case id="show_character_set_with_where_expr_no_parameter" value="SHOW CHARACTER SET WHERE `Charset` = 'latin1'" db-types="MySQL" />
+    <sql-case id="show_collation" value="SHOW COLLATION" db-types="MySQL" />
+    <sql-case id="show_collation_with_like_pattern" value="SHOW COLLATION LIKE 'latin%'" db-types="MySQL" />
+    <sql-case id="show_collation_with_where_expr" value="SHOW COLLATION WHERE Charset = ?" db-types="MySQL" />
+    <sql-case id="show_collation_with_where_expr_no_parameter" value="SHOW COLLATION WHERE Charset = 'latin1'" db-types="MySQL" />
 </sql-cases>
