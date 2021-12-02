@@ -15,20 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor;
+package org.apache.shardingsphere.schedule.core.executor;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Scaling executor.
+ * Abstract lifecycle executor.
  */
-public interface ScalingExecutor extends Runnable {
+@Getter
+@Setter
+public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
-    /**
-     * Start run execute.
-     */
-    void start();
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private volatile boolean running;
     
-    /**
-     * Stop running execute.
-     */
-    void stop();
+    @Override
+    public void start() {
+        running = true;
+    }
+    
+    @Override
+    public void stop() {
+        running = false;
+    }
+    
+    @Override
+    public final void run() {
+        start();
+    }
 }

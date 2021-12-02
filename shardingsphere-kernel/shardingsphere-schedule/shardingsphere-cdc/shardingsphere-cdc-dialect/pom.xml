@@ -19,20 +19,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>shardingsphere-cdc</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-cdc-dialect</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-single-table</module>
-        <module>shardingsphere-authority</module>
-        <module>shardingsphere-transaction</module>
-        <module>shardingsphere-schedule</module>
+        <module>shardingsphere-cdc-mysql</module>
+        <module>shardingsphere-cdc-postgresql</module>
+        <module>shardingsphere-cdc-opengauss</module>
     </modules>
 </project>

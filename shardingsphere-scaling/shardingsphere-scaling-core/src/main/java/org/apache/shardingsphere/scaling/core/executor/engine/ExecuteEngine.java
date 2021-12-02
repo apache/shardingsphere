@@ -25,7 +25,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -64,38 +64,38 @@ public final class ExecuteEngine {
     }
     
     /**
-     * Submit a {@code ScalingExecutor} without callback to execute.
+     * Submit a {@code LifecycleExecutor} without callback to execute.
      *
-     * @param scalingExecutor scaling executor
+     * @param lifecycleExecutor lifecycle executor
      * @return execute future
      */
-    public Future<?> submit(final ScalingExecutor scalingExecutor) {
-        return executorService.submit(scalingExecutor);
+    public Future<?> submit(final LifecycleExecutor lifecycleExecutor) {
+        return executorService.submit(lifecycleExecutor);
     }
     
     /**
-     * Submit a {@code ScalingExecutor} with callback {@code ExecuteCallback} to execute.
+     * Submit a {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param scalingExecutor scaling executor
+     * @param lifecycleExecutor lifecycle executor
      * @param executeCallback execute callback
      * @return execute future
      */
-    public Future<?> submit(final ScalingExecutor scalingExecutor, final ExecuteCallback executeCallback) {
-        ListenableFuture<?> result = executorService.submit(scalingExecutor);
+    public Future<?> submit(final LifecycleExecutor lifecycleExecutor, final ExecuteCallback executeCallback) {
+        ListenableFuture<?> result = executorService.submit(lifecycleExecutor);
         Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback), executorService);
         return result;
     }
     
     /**
-     * Submit a collection of {@code ScalingExecutor} with callback {@code ExecuteCallback} to execute.
+     * Submit a collection of {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param scalingExecutors scaling executor
+     * @param lifecycleExecutors lifecycle executor
      * @param executeCallback execute callback
      * @return execute future of all
      */
-    public Future<?> submitAll(final Collection<? extends ScalingExecutor> scalingExecutors, final ExecuteCallback executeCallback) {
-        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(scalingExecutors.size());
-        for (ScalingExecutor each : scalingExecutors) {
+    public Future<?> submitAll(final Collection<? extends LifecycleExecutor> lifecycleExecutors, final ExecuteCallback executeCallback) {
+        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(lifecycleExecutors.size());
+        for (LifecycleExecutor each : lifecycleExecutors) {
             ListenableFuture<?> listenableFuture = executorService.submit(each);
             listenableFutures.add(listenableFuture);
         }
