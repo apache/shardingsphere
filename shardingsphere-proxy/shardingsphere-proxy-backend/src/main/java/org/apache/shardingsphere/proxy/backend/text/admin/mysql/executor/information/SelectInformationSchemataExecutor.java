@@ -76,7 +76,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         if (isQueryDatabase) {
             List<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
                     .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
-            reservedRow.forEach(each -> getRows().removeIf(row -> !row.equals(each)));
+            reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
         }
     }
     
