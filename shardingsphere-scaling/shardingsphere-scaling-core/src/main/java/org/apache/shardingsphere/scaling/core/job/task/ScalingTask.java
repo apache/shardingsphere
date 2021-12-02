@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
  * Scaling task interface.
  */
-public interface ScalingTask extends ScalingExecutor {
+public interface ScalingTask extends LifecycleExecutor {
     
     /**
      * Get task id.

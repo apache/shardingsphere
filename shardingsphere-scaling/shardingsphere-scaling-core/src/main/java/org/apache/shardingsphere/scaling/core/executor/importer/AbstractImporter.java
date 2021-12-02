@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import javax.sql.DataSource;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Abstract importer.
  */
 @Slf4j
-public abstract class AbstractImporter extends AbstractScalingExecutor implements Importer {
+public abstract class AbstractImporter extends AbstractLifecycleExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     

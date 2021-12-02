@@ -341,3 +341,47 @@ The followings are core codes from ProxoolDataSource getConnection method in `Pr
 ```
 
 For more alias usages, please refer to [Proxool](http://proxool.sourceforge.net/configure.html) official website.
+
+## 29. [Other] The property settings in the configuration file do not take effect when integrating ShardingSphere with Spring Boot 2.x ?
+
+Answer:
+
+Note that the property name in the Spring Boot 2.x environment is constrained to allow only lowercase letters, numbers and short transverse lines, `[a-z][0-9]` and `-`.
+
+Reasons:
+
+In the Spring Boot 2.x environment, ShardingSphere binds the properties through Binder, and the unsatisfied property name (such as camel case or underscore.) can throw a `NullPointerException` exception when the property setting does not work to check the property value. Refer to the following error examples:
+
+Underscore case: database_inline
+```
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
+```
+```
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'database_inline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	... 
+Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
+	at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
+	... 
+```
+Camel case：databaseInline
+```
+spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
+```
+```
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'databaseInline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	... 
+Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
+	at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
+	at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
+	at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
+	... 
+```
+From the exception stack, the `AbstractAlgorithmProvidedBeanRegistry.registerBean` method calls `PropertyUtil.containPropertyPrefix (environment, prefix)` , and `PropertyUtil.containPropertyPrefix (environment, prefix)` determines that the configuration of the specified prefix does not exist, while the method uses Binder in an unsatisfied property name (such as camelcase or underscore) causing property settings does not to take effect.

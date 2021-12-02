@@ -42,5 +42,6 @@ execute
     | clearShardingHint
     | createShardingAlgorithm
     | alterShardingAlgorithm
+    | showShardingTableNodes
     ) SEMI?
     ;

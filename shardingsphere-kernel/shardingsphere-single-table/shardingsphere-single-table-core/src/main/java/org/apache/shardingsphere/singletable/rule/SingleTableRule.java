@@ -135,7 +135,13 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @return sharding logic table names
      */
     public Collection<String> getSingleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> singleTableDataNodes.containsKey(each.toLowerCase())).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            if (singleTableDataNodes.containsKey(each.toLowerCase())) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     @Override

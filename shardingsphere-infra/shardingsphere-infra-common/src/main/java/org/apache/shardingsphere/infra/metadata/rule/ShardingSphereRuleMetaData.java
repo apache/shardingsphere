@@ -49,6 +49,17 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
+     * Find rule configuration by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule configuration
+     * @return found rule configurations
+     */
+    public <T extends RuleConfiguration> Collection<T> findRuleConfiguration(final Class<T> clazz) {
+        return configurations.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
+    }
+    
+    /**
      * Find single rule by class.
      *
      * @param clazz target class

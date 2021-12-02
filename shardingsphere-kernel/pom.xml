@@ -33,6 +33,7 @@
         <module>shardingsphere-single-table</module>
         <module>shardingsphere-authority</module>
         <module>shardingsphere-transaction</module>
+        <module>shardingsphere-schedule</module>
         <module>shardingsphere-parser</module>
     </modules>
 </project>

@@ -29,28 +29,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultDataSourceCreatorTest {
+    
     @Test
-    public void assertCreateDataSourceConfiguration() {
+    public void assertDataSourceConfigurationEquals() {
         DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
         DataSourceConfiguration generateDataSourceConfiguration = defaultDataSourceCreator.createDataSourceConfiguration(createDataSource());
-
         DataSourceConfiguration targetDataSourceConfiguration = createDataSourceConfiguration();
         assertThat(generateDataSourceConfiguration, is(targetDataSourceConfiguration));
     }
-
+    
     @Test
     public void assertCreateDataSource() {
         DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
         DataSource generateDataSource = defaultDataSourceCreator.createDataSource(createDataSourceConfiguration());
         assertThat(generateDataSource, instanceOf(HikariDataSource.class));
-
         HikariDataSource targetDataSource = (HikariDataSource) generateDataSource;
         assertThat(targetDataSource.getUsername(), is("root"));
         assertThat(targetDataSource.getPassword(), is("root"));
         assertThat(targetDataSource.getDriverClassName(), is("org.h2.Driver"));
         assertThat(targetDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
-
+    
     private DataSource createDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
@@ -59,7 +58,7 @@ public final class DefaultDataSourceCreatorTest {
         dataSource.setPassword("root");
         return dataSource;
     }
-
+    
     private DataSourceConfiguration createDataSourceConfiguration() {
         DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfiguration.getProps().put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");

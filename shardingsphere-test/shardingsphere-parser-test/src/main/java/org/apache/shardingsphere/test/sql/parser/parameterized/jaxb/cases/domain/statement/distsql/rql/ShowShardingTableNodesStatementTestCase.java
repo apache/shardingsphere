@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Scaling executor.
+ * Show sharding table nodes statement test case.
  */
-public interface ScalingExecutor extends Runnable {
+@Getter
+@Setter
+public final class ShowShardingTableNodesStatementTestCase extends SQLParserTestCase {
     
-    /**
-     * Start run execute.
-     */
-    void start();
+    @XmlAttribute(name = "table")
+    private String table;
     
-    /**
-     * Stop running execute.
-     */
-    void stop();
+    @XmlElement
+    private ExpectedSchema schema;
 }
