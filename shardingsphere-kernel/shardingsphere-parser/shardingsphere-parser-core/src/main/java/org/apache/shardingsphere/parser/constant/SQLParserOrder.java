@@ -25,5 +25,5 @@ public final class SQLParserOrder {
     /**
      * SQL parser order.
      */
-    public static final int ORDER = 10;
+    public static final int ORDER = 700;
 }

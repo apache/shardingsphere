@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -64,6 +66,8 @@ import static org.mockito.Mockito.when;
 public final class SelectDatabaseExecutorTest {
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
+
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
@@ -115,7 +119,7 @@ public final class SelectDatabaseExecutorTest {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner," 
                 + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -149,7 +153,7 @@ public final class SelectDatabaseExecutorTest {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, " 
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -168,7 +172,7 @@ public final class SelectDatabaseExecutorTest {
     @Test
     public void assertSelectSchemataWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -190,7 +194,7 @@ public final class SelectDatabaseExecutorTest {
     @Test
     public void assertSelectSchemataInNoSchemaExecute() throws SQLException {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));

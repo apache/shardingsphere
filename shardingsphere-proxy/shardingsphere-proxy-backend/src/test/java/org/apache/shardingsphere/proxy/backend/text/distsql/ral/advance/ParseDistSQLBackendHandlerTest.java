@@ -19,9 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advance;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -29,13 +30,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ParseDistSQLBackendHandlerTest {
+
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
     public void assertGetRowData() {
@@ -43,7 +45,7 @@ public final class ParseDistSQLBackendHandlerTest {
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler(new MySQLDatabaseType(), parseStatement, mock(BackendConnection.class));
         parseDistSQLBackendHandler.execute();
-        SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getFirst(), is(new Gson().toJson(statement)));
     }
     
