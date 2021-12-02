@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-cdc</module>
+        <module>shardingsphere-schedule-core</module>
     </modules>
 </project>
