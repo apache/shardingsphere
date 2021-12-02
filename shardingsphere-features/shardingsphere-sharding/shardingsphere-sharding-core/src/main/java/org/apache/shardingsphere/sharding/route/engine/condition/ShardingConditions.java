@@ -138,12 +138,16 @@ public final class ShardingConditions {
         Collection<SelectStatement> result = new LinkedList<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
             result.add(((SelectStatementContext) sqlStatementContext).getSqlStatement());
-            result.addAll(((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values().stream().map(SelectStatementContext::getSqlStatement).collect(Collectors.toList()));
+            for (SelectStatementContext each : ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values()) {
+                result.add(each.getSqlStatement());
+            }
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             SelectStatementContext selectStatementContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext();
             result.add(selectStatementContext.getSqlStatement());
-            result.addAll(selectStatementContext.getSubqueryContexts().values().stream().map(SelectStatementContext::getSqlStatement).collect(Collectors.toList()));
+            for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+                result.add(each.getSqlStatement());
+            }
         }
         return result;
     }

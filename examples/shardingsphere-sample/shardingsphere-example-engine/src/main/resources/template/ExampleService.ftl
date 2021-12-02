@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
+<#if feature=="encrypt">
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.User;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.UserRepository;
+<#else>
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderRepository;
+</#if>
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,12 +43,17 @@ import java.util.List;
 </#list>
 @Service
 public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
-    
+
+<#if feature=="encrypt">
+    @Resource
+    private UserRepository userRepository;
+<#else>
     @Resource
     private OrderRepository orderRepository;
     
     @Resource
     private OrderItemRepository orderItemRepository;
+</#if>
 
     /**
      * Execute test.
@@ -58,80 +68,9 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
             this.cleanEnvironment();
         }
     }
-    
-    /**
-     * Initialize the database test environment.
-     * @throws SQLException
-     */
-    private void initEnvironment() {
-        orderRepository.createTableIfNotExists();
-        orderItemRepository.createTableIfNotExists();
-        orderRepository.truncateTable();
-        orderItemRepository.truncateTable();
-    }
-    
-    private void processSuccess() {
-        System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> orderIds = insertData();
-        printData(); 
-        deleteData(orderIds);
-        printData();
-        System.out.println("-------------- Process Success Finish --------------");
-    }
-
-    private List<Long> insertData() {
-        System.out.println("---------------------------- Insert Data ----------------------------");
-        List<Long> result = new ArrayList<>(10);
-        for (int i = 1; i <= 10; i++) {
-            Order order = insertOrder(i);
-            insertOrderItem(i, order);
-            result.add(order.getOrderId());
-        }
-        return result;
-    }
-    
-    private Order insertOrder(final int i) {
-        Order order = new Order();
-        order.setUserId(i);
-        order.setAddressId(i);
-        order.setStatus("INSERT_TEST");
-        orderRepository.insert(order);
-        return order;
-    }
-
-    private void insertOrderItem(final int i, final Order order) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrderId(order.getOrderId());
-        orderItem.setUserId(i);
-        orderItem.setStatus("INSERT_TEST");
-        orderItemRepository.insert(orderItem);
-    }
-
-    private void deleteData(final List<Long> orderIds) {
-        System.out.println("---------------------------- Delete Data ----------------------------");
-        for (Long each : orderIds) {
-            orderRepository.delete(each);
-            orderItemRepository.delete(each);
-        }
-    }
-    
-    private void printData() {
-        System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : orderRepository.selectAll()) {
-            System.out.println(each);
-        }
-        System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (Object each : orderItemRepository.selectAll()) {
-            System.out.println(each);
-        }
-    }
-    
-    /**
-     * Restore the environment.
-     * @throws SQLException
-     */
-    private void cleanEnvironment() {
-        orderRepository.dropTable();
-        orderItemRepository.dropTable();
-    }
+<#if feature=="encrypt">
+    <#include "encryptExampleService.ftl">
+<#else>
+    <#include "otherExampleService.ftl">
+</#if>
 }

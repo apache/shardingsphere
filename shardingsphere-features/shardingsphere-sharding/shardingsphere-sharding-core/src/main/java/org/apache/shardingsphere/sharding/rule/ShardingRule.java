@@ -273,7 +273,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return binding table rule
      */
     public Optional<BindingTableRule> findBindingTableRule(final String logicTableName) {
-        return bindingTableRules.stream().filter(each -> each.hasLogicTable(logicTableName)).findFirst();
+        for (BindingTableRule each : bindingTableRules) {
+            if (each.hasLogicTable(logicTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     /**
@@ -293,7 +298,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return whether logic table is all sharding table or not
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isShardingTable);
+        if (logicTableNames.isEmpty()) {
+            return false;
+        }
+        for (String each : logicTableNames) {
+            if (!isShardingTable(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -353,7 +366,14 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return isShardingColumn(getDatabaseShardingStrategyConfiguration(tableRule), columnName) || isShardingColumn(getTableShardingStrategyConfiguration(tableRule), columnName);
     }
     
-    private boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
+    /**
+     * Judge whether given logic table column is sharding column or not.
+     * 
+     * @param shardingStrategyConfig sharding strategy config
+     * @param columnName column name
+     * @return whether given logic table column is sharding column or not
+     */
+    public boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
             String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
                     ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
@@ -429,7 +449,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return sharding logic table names
      */
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            if (isShardingTable(each)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**
