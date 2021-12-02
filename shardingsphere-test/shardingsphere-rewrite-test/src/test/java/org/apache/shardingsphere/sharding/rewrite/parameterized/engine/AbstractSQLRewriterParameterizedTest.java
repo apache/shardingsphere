@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +55,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -67,6 +67,8 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
+    
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
     public final void assertRewrite() throws IOException {
@@ -90,8 +92,9 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new ConfigurationProperties(new Properties())));
         mockRules(rules);
+        rules.add(sqlParserRule);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, getSQLParserRule(rules));
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, sqlParserRule);
         ShardingSphereSchema schema = mockSchema();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
@@ -105,12 +108,6 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
-    }
-    
-    private SQLParserRule getSQLParserRule(final Collection<ShardingSphereRule> rules) {
-        Optional<SQLParserRule> sqlParserRule = rules.stream().filter(each -> each instanceof SQLParserRule)
-                .map(each -> (SQLParserRule) each).findFirst();
-        return sqlParserRule.orElse(null);
     }
     
     protected abstract YamlRootConfiguration createRootConfiguration() throws IOException;
