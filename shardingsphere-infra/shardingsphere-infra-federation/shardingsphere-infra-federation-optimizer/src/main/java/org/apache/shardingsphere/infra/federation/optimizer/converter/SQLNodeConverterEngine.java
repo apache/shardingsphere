@@ -88,13 +88,14 @@ public final class SQLNodeConverterEngine {
             SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
-            leftSelectStatement.getUnionSegments().add(new UnionSegment(UnionType.UNION_DISTINCT, rightSelectStatement, rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1));
+            leftSelectStatement.getUnionSegments().add(new UnionSegment(UnionType.UNION_DISTINCT, rightSelectStatement, rightSqlNode.getParserPosition().getColumnNum() - 7, 
+                    rightSqlNode.getParserPosition().getEndColumnNum() - 1));
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }
     
-    private static SqlOperator convertUnionOperator(final UnionType unionType){
+    private static SqlOperator convertUnionOperator(final UnionType unionType) {
         Preconditions.checkState(REGISTRY.containsKey(unionType), "Unsupported unionType: `%s`", unionType);
         return REGISTRY.get(unionType);
     }
