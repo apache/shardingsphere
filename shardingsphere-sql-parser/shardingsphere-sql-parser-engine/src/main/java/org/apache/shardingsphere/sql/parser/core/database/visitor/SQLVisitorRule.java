@@ -238,6 +238,8 @@ public enum SQLVisitorRule {
     
     SHOW_COLLATION("ShowCollation", SQLStatementType.DAL),
     
+    SHOW_VARIABLES("ShowVariables", SQLStatementType.DAL),
+    
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
     SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),

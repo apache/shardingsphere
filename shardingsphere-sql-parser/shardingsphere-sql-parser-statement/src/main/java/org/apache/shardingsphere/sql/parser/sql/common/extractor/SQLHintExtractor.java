@@ -32,7 +32,7 @@ public final class SQLHintExtractor {
     
     private static final String SQL_COMMENT_SUFFIX = "*/";
     
-    private static final String SQL_HINT_TOKEN = "shardingsphere hint:";
+    private static final String SQL_HINT_TOKEN = "sql hint:";
     
     private static final String SQL_HINT_SPLIT = "=";
     

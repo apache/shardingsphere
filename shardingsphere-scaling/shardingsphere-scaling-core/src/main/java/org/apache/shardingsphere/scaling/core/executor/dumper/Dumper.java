@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.scaling.core.executor.dumper;
 
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 /**
  * Dumper interface.
  */
-public interface Dumper extends ScalingExecutor {
+public interface Dumper extends LifecycleExecutor {
     
     /**
      * Set channel.
