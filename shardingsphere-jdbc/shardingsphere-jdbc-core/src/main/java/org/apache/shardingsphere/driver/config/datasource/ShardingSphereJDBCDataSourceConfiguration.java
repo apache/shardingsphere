@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
@@ -96,6 +97,15 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements TypedDat
         rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
+    }
+    
+    @Override
+    public void appendJDBCParameters(final Map<String, String> parameters) {
+        rootConfig.getDataSources()
+                .forEach((key, value) -> {
+                    String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
+                    value.replace(jdbcUrlKey, new JdbcUri(value.get(jdbcUrlKey).toString()).appendParameters(parameters));
+                });
     }
     
     @Override

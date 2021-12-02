@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.datasource.typed;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -26,6 +27,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class StandardJDBCDataSourceConfigurationTest {
     
@@ -45,5 +49,12 @@ public final class StandardJDBCDataSourceConfigurationTest {
     private static String readFileAndIgnoreComments(final String fileName) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
                 .stream().filter(each -> !Strings.isNullOrEmpty(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    }
+    
+    @Test
+    public void assertAppendJDBCParameters() {
+        StandardJDBCDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false", null, null);
+        dataSourceConfig.appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        assertThat(dataSourceConfig.getHikariConfig().getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
 }

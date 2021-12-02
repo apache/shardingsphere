@@ -22,7 +22,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;

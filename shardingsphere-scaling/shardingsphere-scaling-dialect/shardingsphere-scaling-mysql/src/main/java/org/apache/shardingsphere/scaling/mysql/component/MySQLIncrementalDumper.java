@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataS
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;

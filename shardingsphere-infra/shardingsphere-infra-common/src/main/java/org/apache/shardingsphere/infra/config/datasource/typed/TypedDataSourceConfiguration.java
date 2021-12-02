@@ -22,6 +22,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Typed data source configuration, SPI interface.
@@ -34,6 +35,13 @@ public interface TypedDataSourceConfiguration extends TypedSPI {
      * @param parameter data source configuration
      */
     void init(String parameter);
+    
+    /**
+     * Append JDBC parameters.
+     *
+     * @param parameters JDBC parameters
+     */
+    void appendJDBCParameters(Map<String, String> parameters);
     
     /**
      * Get database type.

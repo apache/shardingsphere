@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -35,10 +37,8 @@ import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
-import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.job.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.scaling.core.executor.job.ScalingJobExecutor;
-import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
@@ -148,7 +148,7 @@ public final class ScalingWorker {
         Map<String, String> parameters = ImmutableMap.of("useSSL", "false");
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
             jdbcUrl = (String) entry.getValue().get("jdbcUrl");
-            entry.getValue().put("jdbcUrl", JDBCUtil.appendJDBCParameter(jdbcUrl, parameters));
+            entry.getValue().put("jdbcUrl", new JdbcUri(jdbcUrl).appendParameters(parameters));
         }
     }
 }

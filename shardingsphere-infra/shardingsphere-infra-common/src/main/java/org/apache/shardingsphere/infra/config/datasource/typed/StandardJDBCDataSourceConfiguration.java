@@ -22,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -81,6 +82,11 @@ public final class StandardJDBCDataSourceConfiguration implements TypedDataSourc
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(yamlConfig), HikariConfig.class);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
+    }
+    
+    @Override
+    public void appendJDBCParameters(final Map<String, String> parameters) {
+        hikariConfig.setJdbcUrl(new JdbcUri(hikariConfig.getJdbcUrl()).appendParameters(parameters));
     }
     
     private <T> T unmarshalSkipMissingProperties(final String yamlContent, final Class<T> classType) {

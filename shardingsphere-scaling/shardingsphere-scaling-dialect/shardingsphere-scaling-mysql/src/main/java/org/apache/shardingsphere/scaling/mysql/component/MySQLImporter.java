@@ -22,7 +22,6 @@ import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManage
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.importer.AbstractImporter;
-import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +33,7 @@ public final class MySQLImporter extends AbstractImporter {
     
     public MySQLImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         super(importerConfig, dataSourceManager);
-        JDBCUtil.appendJDBCParameter(importerConfig.getDataSourceConfig(), ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        importerConfig.getDataSourceConfig().appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
     }
     
     @Override
