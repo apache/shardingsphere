@@ -26,10 +26,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Properties;
 
