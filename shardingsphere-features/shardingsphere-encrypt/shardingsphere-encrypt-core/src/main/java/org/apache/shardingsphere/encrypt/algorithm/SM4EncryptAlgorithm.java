@@ -54,12 +54,6 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final String ECB_PKCS5PADDING = "SM4/ECB/PKCS5Padding";
     
-    private static final String ECB_PKCS7PADDING = "SM4/ECB/PKCS7Padding";
-    
-    private static final String CBC_PKCS5PADDING = "SM4/CBC/PKCS5Padding";
-    
-    private static final String CBC_PKCS7PADDING = "SM4/CBC/PKCS7Padding";
-    
     @Setter
     private Properties props;
     
@@ -113,12 +107,6 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private String checkAndGetKey() throws ShardingSphereException {
         String result = null == props.getProperty(SM4_KEY) ? null : String.valueOf(props.getProperty(SM4_KEY));
-        /* Or you can look up Key by located schema/owner/table/column parameters.
-         * String schema = String.valueOf(props.get("schema"));
-         * String owner = String.valueOf(props.get("owner"));
-         * String table = String.valueOf(props.get("table"));
-         * String column = String.valueOf(props.get("column"));
-         */
         Preconditions.checkState(KEY_LENGTH != result.length(), "Key length must be " + KEY_LENGTH + " bytes long.");
         return result;
     }

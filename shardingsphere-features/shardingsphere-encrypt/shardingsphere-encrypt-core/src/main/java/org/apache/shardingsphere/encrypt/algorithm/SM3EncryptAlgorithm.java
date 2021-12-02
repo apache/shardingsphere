@@ -51,12 +51,6 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
             return null;
         }
         String salt = null == props.getProperty(SM3_SALT) ? "" : String.valueOf(props.getProperty(SM3_SALT));
-        /* Or you can look up Salt by located schema/owner/table/column parameters.
-         * String schema = String.valueOf(props.get("schema"));
-         * String owner = String.valueOf(props.get("owner"));
-         * String table = String.valueOf(props.get("table"));
-         * String column = String.valueOf(props.get("column"));
-         */
         Preconditions.checkState(0 == salt.length() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
         return Hex.encodeHexString(digest(StringUtils.getBytesUtf8(String.valueOf(plainValue)), 0 == salt.length() ? new byte[0] : StringUtils.getBytesUtf8(salt)));
     }
