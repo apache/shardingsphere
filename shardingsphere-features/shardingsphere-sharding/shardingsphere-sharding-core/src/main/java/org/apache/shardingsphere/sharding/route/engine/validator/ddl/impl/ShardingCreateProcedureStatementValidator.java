@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -51,7 +52,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, 
-                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, final List<Object> parameters, 
+                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }
