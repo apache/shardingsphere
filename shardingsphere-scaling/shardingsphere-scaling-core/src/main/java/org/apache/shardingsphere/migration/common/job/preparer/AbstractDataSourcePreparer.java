@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer;
+package org.apache.shardingsphere.migration.common.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -27,6 +27,9 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
+import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
