@@ -118,10 +118,4 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         }
         return result;
     }
-    
-    private String generateKey() throws Exception {
-        KeyGenerator kg = KeyGenerator.getInstance(SM4, org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
-        kg.init(128, new SecureRandom());
-        return Hex.encodeHexString(kg.generateKey().getEncoded());
-    }
 }
