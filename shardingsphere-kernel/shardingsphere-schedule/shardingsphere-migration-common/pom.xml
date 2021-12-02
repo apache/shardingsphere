@@ -20,18 +20,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-schedule</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-schedule</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-migration-common</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-cdc</module>
-        <module>shardingsphere-schedule-core</module>
-        <module>shardingsphere-migration-common</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cdc-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
