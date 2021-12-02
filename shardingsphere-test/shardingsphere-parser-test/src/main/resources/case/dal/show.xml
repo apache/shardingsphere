@@ -698,4 +698,49 @@
             </where>
         </filter>
     </show-character-set>
+    
+    <show-collation sql-case-id="show_collation" />
+
+    <show-collation sql-case-id="show_collation_with_like_pattern">
+        <filter start-index="15" stop-index="27">
+            <like pattern="latin%" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="27"/>
+        </filter>
+    </show-collation>
+
+    <show-collation sql-case-id="show_collation_with_where_expr" parameters="'latin1'">
+        <filter start-index="15" stop-index="31" literal-start-index="15" literal-stop-index="38">
+            <where start-index="15" stop-index="31" literal-start-index="15" literal-stop-index="38">
+                <expr>
+                    <binary-operation-expression start-index="21" stop-index="31" literal-start-index="21" literal-stop-index="38">
+                        <left>
+                            <column name="Charset" start-index="21" stop-index="27" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="latin1" start-index="31" stop-index="38" />
+                            <parameter-marker-expression value="0" start-index="31" stop-index="31" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-collation>
+
+    <show-collation sql-case-id="show_collation_with_where_expr_no_parameter">
+        <filter start-index="15" stop-index="38">
+            <where start-index="15" stop-index="38">
+                <expr>
+                    <binary-operation-expression start-index="21" stop-index="38">
+                        <left>
+                            <column name="Charset" start-index="21" stop-index="27" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="latin1" start-index="31" stop-index="38" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-collation>
 </sql-parser-test-cases>
