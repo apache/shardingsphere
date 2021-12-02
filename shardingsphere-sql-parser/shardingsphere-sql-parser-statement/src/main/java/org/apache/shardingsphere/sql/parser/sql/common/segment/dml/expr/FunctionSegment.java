@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
@@ -39,7 +40,7 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     
     private final String functionName;
     
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    private final Collection<SQLSegment> parameters = new LinkedList<>();
     
     private final String text;
     
