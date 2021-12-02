@@ -27,9 +27,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -80,20 +77,13 @@ public final class StandardJDBCDataSourceConfiguration implements TypedDataSourc
         }
         dataSourceConfig = new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
-        hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(yamlConfig), HikariConfig.class);
+        hikariConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), HikariConfig.class, true);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
     }
     
     @Override
     public void appendJDBCParameters(final Map<String, String> parameters) {
         hikariConfig.setJdbcUrl(new JdbcUri(hikariConfig.getJdbcUrl()).appendParameters(parameters));
-    }
-    
-    private <T> T unmarshalSkipMissingProperties(final String yamlContent, final Class<T> classType) {
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        Yaml yaml = new Yaml(new Constructor(classType), representer);
-        return yaml.loadAs(yamlContent, classType);
     }
     
     private static String wrapParameter(final String jdbcUrl, final String username, final String password) {

@@ -78,7 +78,7 @@ public final class ScalingJobExecutor extends AbstractLifecycleExecutor {
         try {
             if (CONFIG_PATTERN.matcher(event.getKey()).matches()) {
                 log.info("{} job config: {}", event.getType(), event.getKey());
-                return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class));
+                return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true));
             }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
