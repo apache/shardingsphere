@@ -44,25 +44,25 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 #
-rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PRIVILEGES_PERMITTED
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Atomikos
-  - !SQL_PARSER
-    sqlStatementCache:
-      initialCapacity: 2000
-      maximumSize: 65535
-      concurrencyLevel: 4
-    parserTreeCache:
-      initialCapacity: 128
-      maximumSize: 1024
-      concurrencyLevel: 4
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: ALL_PRIVILEGES_PERMITTED
+#  - !TRANSACTION
+#    defaultType: XA
+#    providerType: Atomikos
+#  - !SQL_PARSER
+#    sqlStatementCache:
+#      initialCapacity: 2000
+#      maximumSize: 65535
+#      concurrencyLevel: 4
+#    parserTreeCache:
+#      initialCapacity: 128
+#      maximumSize: 1024
+#      concurrencyLevel: 4
 
 #props:
 #  max-connections-size-per-query: 1
