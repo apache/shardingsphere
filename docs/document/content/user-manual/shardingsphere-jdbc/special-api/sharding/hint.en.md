@@ -128,17 +128,17 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-### Route to any database with Hint
+### Route to the specified database with Hint
 
 #### Use manual programming
 
 ##### Get HintManager
 
-Be the dame as sharding based on hint.
+Be the same as sharding based on hint.
 
-##### Configure any Database Route
+##### Configure Database Route
 
-- Use `hintManager.setDataSourceName` to configure any database route.
+- Use `hintManager.setDataSourceName` to configure database route.
 
 ##### Codes:
 
@@ -159,14 +159,14 @@ try (HintManager hintManager = HintManager.getInstance();
 #### Use special SQL comments
 
 ##### Terms of Use
-- Open parse comment config first.
+- Open parse comment config first `sql-comment-parse-enabled`
 - The comment format only supports `/* */`
-- The beginning needs to contains `ShardingSphere hint:`
-- The data source name must be `DataSourceName`
+- The beginning needs to contains `sql hint:`
+- The data source name must be `datasourcename`
 - Only support one data source name.
 
 ##### Codes:
 ```sql
-/* ShardingSphere hint: DataSourceName=ds_0 */
+/* sql hint: datasourcename=ds_0 */
 SELECT * FROM t_order;
 ```

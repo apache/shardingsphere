@@ -128,7 +128,7 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-### 使用 Hint 路由至任意指定数据库
+### 使用 Hint 路由至指定数据库
 
 #### 使用手动编程的方式
 
@@ -136,7 +136,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 与基于 Hint 的数据分片相同。
 
-##### 设置路由至任意指定数据库
+##### 设置路由至指定数据库
 
 - 使用 `hintManager.setDataSourceName` 设置数据库名称。
 
@@ -159,14 +159,14 @@ try (HintManager hintManager = HintManager.getInstance();
 #### 使用 SQL 注释的方式
 
 ##### 使用规范
-- 需要开启解析注释的配置
+- 需要开启解析注释的配置 `sql-comment-parse-enabled`
 - 注释格式只支持 `/* */`
-- 注释开头需要包含 `ShardingSphere hint:`
-- 数据源名称必须为 `DataSourceName`
+- 注释开头需要包含 `sql hint:`
+- 数据源名称必须为 `datasourcename`
 - 只能指定路由至一个数据源
 
 ##### 完整示例
 ```sql
-/* ShardingSphere hint: DataSourceName=ds_0 */
+/* sql hint: datasourcename=ds_0 */
 SELECT * FROM t_order;
 ```
