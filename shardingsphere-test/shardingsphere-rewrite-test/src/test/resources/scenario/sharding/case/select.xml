@@ -504,7 +504,6 @@
 
     <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1"/>
-        <output sql="SELECT * FROM (SELECT id, content FROM t_user_0 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_0 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
         <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
     </rewrite-assertion>
     
