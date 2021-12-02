@@ -76,7 +76,7 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     String getPrimaryDataSource();
     
     /**
-     * update properties.
+     * Update properties.
      *
      * @param groupName group name
      * @param props properties
