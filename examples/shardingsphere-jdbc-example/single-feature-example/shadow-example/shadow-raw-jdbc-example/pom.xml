@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-core</artifactId>
+            <artifactId>shardingsphere-parser-core</artifactId>
         </dependency>
     </dependencies>
 </project>
