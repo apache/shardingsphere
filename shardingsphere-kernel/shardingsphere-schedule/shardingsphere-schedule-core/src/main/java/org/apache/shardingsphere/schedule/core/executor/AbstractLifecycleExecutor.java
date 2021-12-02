@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor;
+package org.apache.shardingsphere.schedule.core.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Abstract scaling executor.
+ * Abstract lifecycle executor.
  */
 @Getter
 @Setter
-public abstract class AbstractScalingExecutor implements ScalingExecutor {
+public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * Scaling job executor.
  */
 @Slf4j
-public final class ScalingJobExecutor extends AbstractScalingExecutor {
+public final class ScalingJobExecutor extends AbstractLifecycleExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingConstant.SCALING_ROOT + "/(\\d+)/config");
     

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor;
+package org.apache.shardingsphere.schedule.core.executor;
 
 /**
- * Scaling executor.
+ * lifecycle executor.
  */
-public interface ScalingExecutor extends Runnable {
+public interface LifecycleExecutor extends Runnable {
     
     /**
      * Start run execute.

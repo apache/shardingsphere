@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
  * MySQL incremental dumper.
  */
 @Slf4j
-public final class MySQLIncrementalDumper extends AbstractScalingExecutor implements IncrementalDumper {
+public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
     
