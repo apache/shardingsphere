@@ -48,10 +48,13 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     private final DatabaseType databaseType;
     
+    private final SQLHintExtractor sqlHintExtractor;
+    
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
         databaseType = getDatabaseType(sqlStatement);
+        sqlHintExtractor = new SQLHintExtractor((AbstractSQLStatement) sqlStatement);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
@@ -82,6 +85,15 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
      * @return dataSource name
      */
     public Optional<String> findHintDataSourceName() {
-        return SQLHintExtractor.findHintDataSourceName((AbstractSQLStatement) sqlStatement);
+        return sqlHintExtractor.findHintDataSourceName();
+    }
+    
+    /**
+     * Is hint write route only.
+     *
+     * @return boolean
+     */
+    public boolean isHintWriteRouteOnly() {
+        return sqlHintExtractor.isHintWriteRouteOnly();
     }
 }
