@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.schedule.core.executor;
 
 /**
- * lifecycle executor.
+ * Lifecycle executor.
  */
 public interface LifecycleExecutor extends Runnable {
     
