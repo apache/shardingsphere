@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.yaml;
+package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Sharding rule configuration swapper.
+ * Sharding rule configuration converter.
  */
-public final class ShardingRuleConfigurationSwapper {
+public final class ShardingRuleConfigurationConverter {
     
     /**
-     * Find and convert sharding rule configuration from YAML .
+     * Find and convert sharding rule configuration from YAML.
      *
      * @param yamlRuleConfigs YAML rule configurations
      * @return sharding rule configuration
+     * @throws IllegalStateException if there is no available sharding rule
      */
     public static ShardingRuleConfiguration findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule to load for governance.");
+        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule.");
         return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig.get());
     }
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrappe
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
@@ -77,7 +77,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     protected Collection<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         return getLogicTableNames(ruleConfig);
     }
     
@@ -98,7 +98,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
      */
     protected Map<DataSource, Map<String, String>> getDataSourceTableNamesMap(final ScalingDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());
         ShardingRule shardingRule = new ShardingRule(ruleConfig, source.getRootConfig().getDataSources().keySet());
         Collection<String> logicTableNames = getLogicTableNames(ruleConfig);

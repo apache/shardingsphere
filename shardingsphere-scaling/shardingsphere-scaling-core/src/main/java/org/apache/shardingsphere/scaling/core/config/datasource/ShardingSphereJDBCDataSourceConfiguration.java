@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.apache.shardingsphere.scaling.core.config.yaml.YamlParameterConfiguration;
 import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
@@ -79,6 +79,6 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     @Override
     public DataSource toDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
-                rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
+                rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
     }
 }
