@@ -159,14 +159,12 @@ try (HintManager hintManager = HintManager.getInstance();
 #### 使用 SQL 注释的方式
 
 ##### 使用规范
-- 需要开启解析注释的配置 `sql-comment-parse-enabled`
-- 注释格式只支持 `/* */`
-- 注释开头需要包含 `sql hint:`
-- 数据源名称必须为 `datasourcename`
-- 只能指定路由至一个数据源
+
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sql-comment-parse-enabled` 为 `true`，目前只支持路由至一个数据源。
+注释格式暂时只支持`/* */`，内容需要以`sql hint:`开始，属性名为 `dataSourceName`。
 
 ##### 完整示例
 ```sql
-/* sql hint: datasourcename=ds_0 */
+/* sql hint: dataSourceName=ds_0 */
 SELECT * FROM t_order;
 ```

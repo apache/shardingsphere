@@ -159,14 +159,12 @@ try (HintManager hintManager = HintManager.getInstance();
 #### Use special SQL comments
 
 ##### Terms of Use
-- Open parse comment config first `sql-comment-parse-enabled`
-- The comment format only supports `/* */`
-- The beginning needs to contains `sql hint:`
-- The data source name must be `datasourcename`
-- Only support one data source name.
+
+To use SQL Hint function, users need to set `sql-comment-parse-enabled` to `true`. Currently, only support routing to one data source.
+The comment format only supports `/* */` for now. The content needs to start with `sql hint:`, and the attribute name needs to be `dataSourceName`.
 
 ##### Codes:
 ```sql
-/* sql hint: datasourcename=ds_0 */
+/* sql hint: dataSourceName=ds_0 */
 SELECT * FROM t_order;
 ```
