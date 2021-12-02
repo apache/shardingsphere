@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
@@ -52,7 +52,7 @@ import java.sql.SQLException;
  * OpenGauss WAL dumper.
  */
 @Slf4j
-public final class OpenGaussWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
+public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
 
     private final WalPosition walPosition;
 

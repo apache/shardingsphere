@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
@@ -46,7 +46,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @ToString(exclude = {"dataSourceManager", "dumper"})
-public final class InventoryTask extends AbstractScalingExecutor implements ScalingTask {
+public final class InventoryTask extends AbstractLifecycleExecutor implements ScalingTask {
     
     @Getter
     private final String taskId;
