@@ -15,16 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.typed;
 
-import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
+import com.google.common.base.Strings;
+import lombok.SneakyThrows;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 public final class StandardJDBCDataSourceConfigurationTest {
     
     @Test
     public void assertConstructionByParameter() {
-        String parameter = ResourceUtil.readFileAndIgnoreComments("config_standard_jdbc_target.yaml");
+        String parameter = readFileAndIgnoreComments("config_standard_jdbc_target.yaml");
         new StandardJDBCDataSourceConfiguration(parameter);
+    }
+    
+    /**
+     * Ignore comments to read configuration from YAML.
+     *
+     * @param fileName YAML file name.
+     * @return YAML configuration.
+     */
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private static String readFileAndIgnoreComments(final String fileName) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
+                .stream().filter(each -> !Strings.isNullOrEmpty(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

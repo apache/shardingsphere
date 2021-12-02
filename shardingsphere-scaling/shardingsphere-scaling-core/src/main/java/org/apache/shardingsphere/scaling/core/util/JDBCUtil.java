@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.util;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,14 +36,14 @@ public final class JDBCUtil {
     /**
      * Append jdbc parameter.
      *
-     * @param scalingDataSourceConfiguration data source configuration
+     * @param dataSourceConfig data source configuration
      * @param parameters parameters
      */
-    public static void appendJDBCParameter(final ScalingDataSourceConfiguration scalingDataSourceConfiguration, final Map<String, String> parameters) {
-        if (scalingDataSourceConfiguration instanceof StandardJDBCDataSourceConfiguration) {
-            append((StandardJDBCDataSourceConfiguration) scalingDataSourceConfiguration, parameters);
-        } else if (scalingDataSourceConfiguration instanceof ShardingSphereJDBCDataSourceConfiguration) {
-            append((ShardingSphereJDBCDataSourceConfiguration) scalingDataSourceConfiguration, parameters);
+    public static void appendJDBCParameter(final TypedDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
+        if (dataSourceConfig instanceof StandardJDBCDataSourceConfiguration) {
+            append((StandardJDBCDataSourceConfiguration) dataSourceConfig, parameters);
+        } else if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
+            append((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig, parameters);
         }
     }
     
@@ -92,18 +91,6 @@ public final class JDBCUtil {
             result.append("&");
         }
         result.deleteCharAt(result.length() - 1);
-        return result.toString();
-    }
-    
-    /**
-     * Get jdbc url from parameters, the key can be url or jdbcUrl.
-     *
-     * @param parameters parameters
-     * @return jdbc url
-     */
-    public static String getJdbcUrl(final Map<String, Object> parameters) {
-        Object result = parameters.getOrDefault("url", parameters.get("jdbcUrl"));
-        Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
         return result.toString();
     }
 }

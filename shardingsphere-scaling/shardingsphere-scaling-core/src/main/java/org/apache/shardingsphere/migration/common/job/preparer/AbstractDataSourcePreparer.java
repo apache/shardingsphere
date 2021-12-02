@@ -21,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
@@ -75,7 +75,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceFactory.newInstance(jobConfig.getRuleConfig().getTarget().unwrap());
     }
     
-    protected Collection<String> getLogicTableNames(final ScalingDataSourceConfiguration sourceConfig) {
+    protected Collection<String> getLogicTableNames(final TypedDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         return getLogicTableNames(ruleConfig);
@@ -96,7 +96,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
      * @param sourceConfig source data source configuration
      * @return data source table names map. map(data source, map(first actual table name of logic table, logic table name)).
      */
-    protected Map<DataSource, Map<String, String>> getDataSourceTableNamesMap(final ScalingDataSourceConfiguration sourceConfig) {
+    protected Map<DataSource, Map<String, String>> getDataSourceTableNamesMap(final TypedDataSourceConfiguration sourceConfig) {
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> dataSourceConfigs = JobConfigurationUtil.getDataSourceConfigurations(source.getRootConfig());

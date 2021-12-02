@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.util;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.ArrayList;

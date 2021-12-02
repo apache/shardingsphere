@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 import java.util.Map;
@@ -35,7 +35,7 @@ public class DumperConfiguration {
     
     private String dataSourceName;
     
-    private ScalingDataSourceConfiguration dataSourceConfig;
+    private TypedDataSourceConfiguration dataSourceConfig;
     
     private ScalingPosition<?> position;
     

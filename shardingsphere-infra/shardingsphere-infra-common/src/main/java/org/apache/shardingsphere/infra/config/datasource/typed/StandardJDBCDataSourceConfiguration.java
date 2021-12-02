@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.typed;
 
 import com.zaxxer.hikari.HikariConfig;
 import lombok.EqualsAndHashCode;
@@ -39,25 +39,39 @@ import java.util.Map;
  */
 @Getter
 @EqualsAndHashCode(of = "parameter")
-public final class StandardJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
+public final class StandardJDBCDataSourceConfiguration implements TypedDataSourceConfiguration {
     
-    /**
-     * Type.
-     */
-    public static final String TYPE = "JDBC";
+    private static final String TYPE = "JDBC";
     
     private static final String DATA_SOURCE_CLASS_NAME = "dataSourceClassName";
     
-    private final String parameter;
+    private volatile String parameter;
     
-    private final DataSourceConfiguration dataSourceConfig;
+    private volatile DataSourceConfiguration dataSourceConfig;
     
-    private final HikariConfig hikariConfig;
+    private volatile HikariConfig hikariConfig;
     
-    private final DatabaseType databaseType;
+    private volatile DatabaseType databaseType;
+    
+    public StandardJDBCDataSourceConfiguration() {
+    }
+    
+    public StandardJDBCDataSourceConfiguration(final String parameter) {
+        init(parameter);
+    }
+    
+    public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+        this(wrapParameter(jdbcUrl, username, password));
+    }
+    
+    @Override
+    public String getType() {
+        return TYPE;
+    }
     
     @SuppressWarnings("unchecked")
-    public StandardJDBCDataSourceConfiguration(final String parameter) {
+    @Override
+    public void init(final String parameter) {
         this.parameter = parameter;
         Map<String, Object> yamlConfig = YamlEngine.unmarshal(parameter, Map.class);
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
@@ -67,10 +81,6 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         hikariConfig = unmarshalSkipMissingProperties(YamlEngine.marshal(yamlConfig), HikariConfig.class);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
-    }
-    
-    public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this(wrapParameter(jdbcUrl, username, password));
     }
     
     private <T> T unmarshalSkipMissingProperties(final String yamlContent, final Class<T> classType) {
@@ -89,8 +99,8 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     }
     
     @Override
-    public ScalingDataSourceConfigurationWrap wrap() {
-        ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
+    public TypedDataSourceConfigurationWrap wrap() {
+        TypedDataSourceConfigurationWrap result = new TypedDataSourceConfigurationWrap();
         result.setType(TYPE);
         result.setParameter(parameter);
         return result;

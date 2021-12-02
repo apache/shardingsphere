@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.datasource;
+package org.apache.shardingsphere.driver.config.datasource;
 
+import com.google.common.base.Preconditions;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
-import org.apache.shardingsphere.scaling.core.config.yaml.YamlParameterConfiguration;
-import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -39,24 +48,21 @@ import java.util.Map;
  */
 @Getter
 @EqualsAndHashCode(of = "parameter")
-public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
+public final class ShardingSphereJDBCDataSourceConfiguration implements TypedDataSourceConfiguration {
     
-    /**
-     * Type.
-     */
-    public static final String TYPE = "ShardingSphereJDBC";
+    private static final String TYPE = "ShardingSphereJDBC";
     
-    private final String parameter;
+    private volatile String parameter;
     
-    private final YamlRootConfiguration rootConfig;
+    private volatile YamlRootConfiguration rootConfig;
     
-    private final DatabaseType databaseType;
+    private volatile DatabaseType databaseType;
+    
+    public ShardingSphereJDBCDataSourceConfiguration() {
+    }
     
     public ShardingSphereJDBCDataSourceConfiguration(final String parameter) {
-        this.parameter = parameter;
-        rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class);
-        Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
-        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
+        init(parameter);
     }
     
     public ShardingSphereJDBCDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -64,13 +70,37 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
         this.parameter = YamlEngine.marshal(parameterConfig);
         this.rootConfig = rootConfig;
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
-        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
+    }
+    
+    /**
+     * Get jdbc url from parameters, the key can be url or jdbcUrl.
+     *
+     * @param parameters parameters
+     * @return jdbc url
+     */
+    private String getJdbcUrl(final Map<String, Object> parameters) {
+        Object result = parameters.getOrDefault("url", parameters.get("jdbcUrl"));
+        Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
+        return result.toString();
     }
     
     @Override
-    public ScalingDataSourceConfigurationWrap wrap() {
-        ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
-        result.setSchemaName(rootConfig.getSchemaName());
+    public String getType() {
+        return TYPE;
+    }
+    
+    @Override
+    public void init(final String parameter) {
+        this.parameter = parameter;
+        rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class);
+        Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
+    }
+    
+    @Override
+    public TypedDataSourceConfigurationWrap wrap() {
+        TypedDataSourceConfigurationWrap result = new TypedDataSourceConfigurationWrap();
         result.setType(TYPE);
         result.setParameter(parameter);
         return result;
@@ -80,5 +110,19 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     public DataSource toDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
                 rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
+    }
+    
+    /**
+     * YAML parameter configuration.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    private static class YamlParameterConfiguration implements YamlConfiguration {
+        
+        private Map<String, Map<String, Object>> dataSources = new HashMap<>();
+        
+        private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     }
 }

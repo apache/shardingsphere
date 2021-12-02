@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigu
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 

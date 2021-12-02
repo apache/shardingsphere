@@ -29,7 +29,7 @@ import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
