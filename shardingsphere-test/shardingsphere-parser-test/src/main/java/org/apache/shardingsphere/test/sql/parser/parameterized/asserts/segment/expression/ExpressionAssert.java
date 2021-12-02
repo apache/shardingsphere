@@ -295,7 +295,8 @@ public final class ExpressionAssert {
         assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));
         assertThat(assertContext.getText("Function parameter size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
-        Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
+        Iterator<ExpressionSegment> actualIterator = actual.getParameters().stream().filter(sqlSegment -> sqlSegment instanceof ExpressionSegment)
+                .map(sqlSegment -> (ExpressionSegment) sqlSegment).iterator();
         while (expectedIterator.hasNext()) {
             ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
         }
