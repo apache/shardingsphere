@@ -31,6 +31,7 @@ import javax.annotation.Resource;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = DatabaseDiscoverySpringBootStarterTest.class)
@@ -49,5 +50,7 @@ public class DatabaseDiscoverySpringBootStarterTest {
         assertThat(dataSourceRuleConfig.getName(), is("primary_replica_ds"));
         assertThat(dataSourceRuleConfig.getDataSourceNames().size(), is(2));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
+        assertThat(config.getDiscoveryHeartbeats().size(), is(1));
+        assertNotNull(config.getDiscoveryHeartbeats().get("mgr-heartbeat"));
     }
 }
