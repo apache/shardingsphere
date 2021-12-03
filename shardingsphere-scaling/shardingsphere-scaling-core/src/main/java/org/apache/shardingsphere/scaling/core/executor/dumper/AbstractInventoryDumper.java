@@ -28,7 +28,6 @@ import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
@@ -106,7 +105,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         } catch (final SQLException ex) {
             stop();
             channel.close();
-            throw new ScalingTaskExecuteException(ex);
+            throw new RuntimeException(ex);
         } finally {
             pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }
