@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.junit.Test;
