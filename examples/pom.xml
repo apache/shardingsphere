@@ -73,6 +73,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
         <snakeyaml.version>1.16</snakeyaml.version>
+        <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
