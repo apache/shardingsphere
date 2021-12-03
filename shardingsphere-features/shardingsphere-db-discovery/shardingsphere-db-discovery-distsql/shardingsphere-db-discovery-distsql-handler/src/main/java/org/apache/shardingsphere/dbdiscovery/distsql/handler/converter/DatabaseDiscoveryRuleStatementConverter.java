@@ -49,7 +49,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         for (DatabaseDiscoveryRuleSegment each : ruleSegments) {
             String type = getDatabaseDiscoveryType(each.getName(), each.getDiscoveryTypeName());
             //TODO get real discoveryHeartbeatName
-            dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), type, ""));
+            dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), "", type));
             discoveryTypes.put(type, new ShardingSphereAlgorithmConfiguration(each.getDiscoveryTypeName(), each.getProps()));
         }
         return new DatabaseDiscoveryRuleConfiguration(dataSources, Collections.emptyMap(), discoveryTypes);

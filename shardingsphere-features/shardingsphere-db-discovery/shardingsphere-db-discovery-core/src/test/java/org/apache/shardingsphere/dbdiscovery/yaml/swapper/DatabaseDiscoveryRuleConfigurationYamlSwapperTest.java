@@ -48,7 +48,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName", "ha_heartbeat");
+                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
                 Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
@@ -58,7 +58,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"),
-                "discoveryTypeName", "ha_heartbeat");
+                "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.emptyMap()));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));

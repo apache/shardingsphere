@@ -101,7 +101,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private DatabaseDiscoveryRule createRule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "TEST", "ha_heartbeat");
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "TEST");
         return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.emptyMap(), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))), "ha_db", dataSourceMap);
     }

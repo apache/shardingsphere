@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.yaml.config.rule;
+package org.apache.shardingsphere.dbdiscovery.api.config.rule;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
 /**
- * Database discovery heart beat rule configuration for YAML.
+ * Database discovery heartbeat configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlDatabaseDiscoveryHeartbeatRuleConfiguration implements YamlConfiguration {
+public final class DatabaseDiscoveryHeartBeatConfiguration {
     
-    private Properties props = new Properties();
+    private final Properties props;
 }

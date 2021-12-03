@@ -49,7 +49,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @Test
     public void assertBuild() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "TEST", "ha_heartbeat");
+                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "ha_heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);

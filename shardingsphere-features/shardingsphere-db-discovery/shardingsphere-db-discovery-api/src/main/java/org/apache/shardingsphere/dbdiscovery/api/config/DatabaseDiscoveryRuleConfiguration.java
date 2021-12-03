@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DataBaseDiscoveryHeartBeatRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
@@ -37,7 +37,7 @@ public final class DatabaseDiscoveryRuleConfiguration implements SchemaRuleConfi
     
     private final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources;
     
-    private final Map<String, DataBaseDiscoveryHeartBeatRuleConfiguration> discoveryHeartbeats;
+    private final Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats;
     
     private final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
 }

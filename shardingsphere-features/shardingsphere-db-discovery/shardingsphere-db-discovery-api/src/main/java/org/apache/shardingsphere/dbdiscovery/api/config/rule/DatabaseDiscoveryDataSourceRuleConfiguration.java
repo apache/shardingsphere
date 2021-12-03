@@ -33,7 +33,7 @@ public final class DatabaseDiscoveryDataSourceRuleConfiguration {
     
     private final List<String> dataSourceNames;
     
-    private final String discoveryTypeName;
-    
     private final String discoveryHeartbeatName;
+    
+    private final String discoveryTypeName;
 }
