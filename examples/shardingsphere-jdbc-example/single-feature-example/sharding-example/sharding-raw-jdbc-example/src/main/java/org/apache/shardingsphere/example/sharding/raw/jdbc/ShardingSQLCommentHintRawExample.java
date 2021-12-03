@@ -49,10 +49,10 @@ public final class ShardingSQLCommentHintRawExample {
     private static void processWithHintValue(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("/* sql hint: dataSourceName=ds_1 */select * from t_order");
-            statement.execute("/* sql hint: dataSourceName=ds_1 */SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id");
-            statement.execute("/* sql hint: dataSourceName=ds_1 */select * from t_order_item");
-            statement.execute("/* sql hint: dataSourceName=ds_1 */INSERT INTO t_order (user_id, address_id, status) VALUES (1, 1, 'init')");
+            statement.execute("/* ShardingSphere hint: dataSourceName=ds_1 */select * from t_order");
+            statement.execute("/* ShardingSphere hint: dataSourceName=ds_1 */SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id");
+            statement.execute("/* ShardingSphere hint: dataSourceName=ds_1 */select * from t_order_item");
+            statement.execute("/* ShardingSphere hint: dataSourceName=ds_1 */INSERT INTO t_order (user_id, address_id, status) VALUES (1, 1, 'init')");
         }
     }
 }

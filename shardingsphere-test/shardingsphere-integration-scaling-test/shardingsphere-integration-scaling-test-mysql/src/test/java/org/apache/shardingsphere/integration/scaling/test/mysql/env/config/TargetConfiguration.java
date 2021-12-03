@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Properties;

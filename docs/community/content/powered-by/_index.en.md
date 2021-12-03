@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 171 companies.
+Total: 172 companies.
 
 ### Infra
 <ul>
@@ -182,6 +182,7 @@ Total: 171 companies.
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">GUANG DONG DA XIN</a></li>
+    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>
 </ul>
 
 ### Communication

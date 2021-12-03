@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -303,6 +304,22 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of schema:{} with data source:{} failed", tableName, schemaName, dataSourceName, ex);
         }
+    }
+    
+    /**
+     * Drop tables.
+     * 
+     * @param schemaName schema name
+     * @param tables tables
+     */
+    public void dropTables(final String schemaName, final Collection<String> tables) {
+        Collection<MutableDataNodeRule> rules = metaDataContexts.getMetaData(schemaName).getRuleMetaData().findRules(MutableDataNodeRule.class);
+        for (String table : tables) {
+            metaDataContexts.getMetaData(schemaName).getSchema().remove(table);
+            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(schemaName).remove(table);
+            rules.forEach(rule -> rule.remove(table));
+        }
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
     }
     
     private void loadTableMetaData(final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {

@@ -34,5 +34,8 @@
         <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jdbc-example</module>
         <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jpa-example</module>
         <module>shardingsphere-jdbc-memory-local-encrypt-spring-namespace-mybatis-example</module>
+        <module>shardingsphere-jdbc-memory-local-encrypt-springboot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-encrypt-springboot-starter-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-encrypt-springboot-starter-mybatis-example</module>
     </modules>
 </project>

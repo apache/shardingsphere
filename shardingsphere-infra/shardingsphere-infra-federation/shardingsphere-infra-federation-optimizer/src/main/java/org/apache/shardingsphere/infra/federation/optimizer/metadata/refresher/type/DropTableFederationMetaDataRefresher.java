@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.sql.SQLException;
@@ -31,8 +32,8 @@ import java.util.Collection;
 public final class DropTableFederationMetaDataRefresher implements FederationMetaDataRefresher<DropTableStatement> {
 
     @Override
-    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames,
-                        final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, 
+                        final ShardingSphereMetaData schemaMetaData, final ConfigurationProperties props) throws SQLException {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }
 }

@@ -46,7 +46,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertBuild() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "discoveryTypeName");
+        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "ha_heartbeat", "discoveryTypeName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.opengauss.wal;
 
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;

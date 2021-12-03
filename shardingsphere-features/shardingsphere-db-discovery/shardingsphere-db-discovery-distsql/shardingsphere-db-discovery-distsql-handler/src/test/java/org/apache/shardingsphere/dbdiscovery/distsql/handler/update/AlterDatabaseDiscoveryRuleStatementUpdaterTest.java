@@ -64,7 +64,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -84,7 +84,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "TEST");
-        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha-heartbeat", "TEST");
+        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap(), Collections.emptyMap());
     }
 }

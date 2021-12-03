@@ -35,7 +35,11 @@ public final class SpringbootStarterJDBCGenerator extends ExampleGenerateEngine 
         
         UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
         UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
-
+        UN_NAME_TEMPLATE_MAP.put("entity/User", "entity/User.java");
+        UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
+        
+        RESOURCE_TEMPLATE_MAP.put("log/logback", "logback.xml");
+        RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
     }
 

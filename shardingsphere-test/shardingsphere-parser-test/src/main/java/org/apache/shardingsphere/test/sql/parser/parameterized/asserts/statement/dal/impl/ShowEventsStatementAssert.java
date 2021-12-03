@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 public final class ShowEventsStatementAssert {
     
     /**
-     * Assert show events statement is correct with expected show procedure code statement test case.
+     * Assert show events statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual show events statement

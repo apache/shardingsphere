@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -40,8 +41,8 @@ public final class ShardingPrepareStatementValidator extends ShardingDDLStatemen
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, 
-                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters, 
+                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().isEmpty()) {
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
         }

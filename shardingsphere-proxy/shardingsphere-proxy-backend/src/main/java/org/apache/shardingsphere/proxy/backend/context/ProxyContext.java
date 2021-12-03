@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
+import org.apache.shardingsphere.migration.common.api.ScalingWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
