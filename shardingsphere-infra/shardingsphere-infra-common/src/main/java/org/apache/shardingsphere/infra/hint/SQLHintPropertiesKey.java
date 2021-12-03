@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hint.sqlhint;
+package org.apache.shardingsphere.infra.hint;
 
-import org.apache.shardingsphere.infra.properties.TypedProperties;
-
-import java.util.Properties;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
 /**
- * SQL Hint properties.
+ * Typed property key of SQL Hint.
  */
-public final class SQLHintProperties extends TypedProperties<SQLHintPropertiesKey> {
+@Getter
+@RequiredArgsConstructor
+public enum SQLHintPropertiesKey implements TypedPropertyKey {
     
-    public SQLHintProperties(final Properties props) {
-        super(SQLHintPropertiesKey.class, props);
-    }
+    /**
+     * Hint data source name.
+     */
+    DATASOURCE_NAME_KEY("dataSourceName", "", String.class),
+    
+    /**
+     * Whether hint route write data source or not.
+     */
+    WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

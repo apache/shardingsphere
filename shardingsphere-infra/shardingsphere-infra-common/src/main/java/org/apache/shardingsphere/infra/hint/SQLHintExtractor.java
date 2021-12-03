@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hint.sqlhint;
+package org.apache.shardingsphere.infra.hint;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -45,7 +45,7 @@ public final class SQLHintExtractor {
      * Extract from statement.
      *
      * @param statement statement
-     * @return sql hint map
+     * @return sql hint properties
      */
     public SQLHintProperties extract(final AbstractSQLStatement statement) {
         Properties properties = new Properties();
