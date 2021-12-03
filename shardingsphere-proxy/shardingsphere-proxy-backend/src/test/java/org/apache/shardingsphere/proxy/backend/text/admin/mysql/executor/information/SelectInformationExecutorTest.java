@@ -21,13 +21,14 @@ import com.zaxxer.hikari.pool.HikariProxyResultSet;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -48,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,8 @@ public final class SelectInformationExecutorTest {
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
     
+    private final BackendConnection backendConnection = mock(BackendConnection.class);
+    
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
@@ -75,6 +79,7 @@ public final class SelectInformationExecutorTest {
                 mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
+        when(backendConnection.getGrantee()).thenReturn(new Grantee("root", "127.0.0.1"));
     }
     
     private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
@@ -91,9 +96,20 @@ public final class SelectInformationExecutorTest {
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
+        ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
+        when(metaData.getRules()).thenReturn(Collections.emptyList());
         return new ShardingSphereMetaData("sharding_db",
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
-                mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereSchema.class)
+                metaData, mock(ShardingSphereSchema.class)
+        );
+    }
+    
+    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) throws SQLException {
+        ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
+        when(metaData.getRules()).thenReturn(Collections.emptyList());
+        return new ShardingSphereMetaData(schemaName,
+                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
+                metaData, mock(ShardingSphereSchema.class)
         );
     }
     
@@ -122,9 +138,9 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockResultSetMap, true, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        metaDataMap.put("test", mock(ShardingSphereMetaData.class));
+        metaDataMap.put("test", getEmptyMetaData("test"));
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(backendConnection);
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         int count = 0;
         while (selectSchemataExecutor.getMergedResult().next()) {
@@ -153,7 +169,7 @@ public final class SelectInformationExecutorTest {
         mockResultSetMap.put("DEFAULT_ENCRYPTION", "NO");
         mockResultSet(mockResultSetMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
+        metaDataMap.put("sharding_db", getEmptyMetaData("sharding_db"));
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
@@ -170,7 +186,7 @@ public final class SelectInformationExecutorTest {
         final String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(backendConnection);
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
     }
 
@@ -183,7 +199,7 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockResultSetMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("demo_ds_0", getMetaData());
-        metaDataMap.put("test", mock(ShardingSphereMetaData.class));
+        metaDataMap.put("test", getEmptyMetaData("test"));
         DefaultDatabaseMetadataExecutor selectExecutor = new DefaultDatabaseMetadataExecutor(sql);
         selectExecutor.execute(mock(BackendConnection.class));
         assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));

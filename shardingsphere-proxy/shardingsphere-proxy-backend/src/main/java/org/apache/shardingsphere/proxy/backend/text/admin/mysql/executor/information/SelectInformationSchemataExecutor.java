@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
@@ -63,8 +64,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     }
     
     @Override
-    protected List<String> getSchemaNames() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+    protected List<String> getSchemaNames(final BackendConnection backendConnection) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, backendConnection.getGrantee())).collect(Collectors.toList());
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
         List<String> result = schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
