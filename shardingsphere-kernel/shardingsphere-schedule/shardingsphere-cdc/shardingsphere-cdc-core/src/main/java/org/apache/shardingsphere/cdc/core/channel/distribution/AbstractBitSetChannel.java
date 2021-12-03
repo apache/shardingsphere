@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel.distribution;
 
 import lombok.AccessLevel;
 import lombok.Getter;

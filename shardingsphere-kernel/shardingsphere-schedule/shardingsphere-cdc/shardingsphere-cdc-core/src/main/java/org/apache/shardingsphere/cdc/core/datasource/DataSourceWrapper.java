@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.datasource;
+package org.apache.shardingsphere.cdc.core.datasource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

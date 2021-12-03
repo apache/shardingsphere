@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
+import org.apache.shardingsphere.cdc.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;

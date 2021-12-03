@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
-import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
+import org.apache.shardingsphere.cdc.core.channel.MemoryChannel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;

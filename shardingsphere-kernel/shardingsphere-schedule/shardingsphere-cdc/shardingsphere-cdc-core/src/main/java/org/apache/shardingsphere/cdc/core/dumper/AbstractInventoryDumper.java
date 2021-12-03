@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor.dumper;
+package org.apache.shardingsphere.cdc.core.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.cdc.core.record.Column;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.FinishedRecord;

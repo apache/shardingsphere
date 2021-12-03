@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel;
 
 import org.apache.shardingsphere.cdc.core.record.Record;
 
-import java.util.BitSet;
 import java.util.List;
 
 /**
- * BitSet channel interface.
+ * Channel.
  */
-public interface BitSetChannel {
+public interface Channel {
     
     /**
-     * Push a {@code DataRecord} with index to channel.
+     * push a {@code DataRecord} to channel.
      *
      * @param dataRecord data
-     * @param index data index
      * @throws InterruptedException if thread interrupted
      */
-    void pushRecord(Record dataRecord, long index) throws InterruptedException;
+    void pushRecord(Record dataRecord) throws InterruptedException;
     
     /**
-     * Fetch {@code Record} from channel, if the timeout also returns the record.
+     * fetch {@code Record} from channel, if the timeout also returns the record.
      *
      * @param batchSize record batch size
      * @param timeout timeout(seconds)
@@ -49,28 +47,6 @@ public interface BitSetChannel {
      * Ack the last batch.
      */
     void ack();
-    
-    /**
-     * Get acknowledged BitSet.
-     *
-     * @param fromIndex from index
-     * @return BitSet
-     */
-    BitSet getAckBitSet(long fromIndex);
-    
-    /**
-     * Remove earliest acknowledged record.
-     *
-     * @return record
-     */
-    Record removeAckRecord();
-    
-    /**
-     * Clear BitSet.
-     *
-     * @param index BitSet index
-     */
-    void clear(long index);
     
     /**
      * Close channel.

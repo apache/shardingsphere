@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;

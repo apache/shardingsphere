@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.cdc.core.record.Column;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.FinishedRecord;

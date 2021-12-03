@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
 import org.apache.shardingsphere.cdc.core.record.Record;

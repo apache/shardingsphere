@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;

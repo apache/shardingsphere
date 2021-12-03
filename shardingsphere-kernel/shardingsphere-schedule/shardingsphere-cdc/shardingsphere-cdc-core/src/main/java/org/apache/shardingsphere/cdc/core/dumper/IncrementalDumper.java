@@ -15,41 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel;
-
-import org.apache.shardingsphere.cdc.core.record.Record;
-
-import java.util.List;
+package org.apache.shardingsphere.cdc.core.dumper;
 
 /**
- * Channel.
+ * Incremental dumper.
  */
-public interface Channel {
-    
-    /**
-     * push a {@code DataRecord} to channel.
-     *
-     * @param dataRecord data
-     * @throws InterruptedException if thread interrupted
-     */
-    void pushRecord(Record dataRecord) throws InterruptedException;
-    
-    /**
-     * fetch {@code Record} from channel, if the timeout also returns the record.
-     *
-     * @param batchSize record batch size
-     * @param timeout timeout(seconds)
-     * @return record
-     */
-    List<Record> fetchRecords(int batchSize, int timeout);
-    
-    /**
-     * Ack the last batch.
-     */
-    void ack();
-    
-    /**
-     * Close channel.
-     */
-    void close();
+public interface IncrementalDumper extends Dumper {
 }

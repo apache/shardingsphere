@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.cdc.core.record.Column;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;

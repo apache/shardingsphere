@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel;
 
+import org.apache.shardingsphere.cdc.core.channel.MemoryChannel;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;

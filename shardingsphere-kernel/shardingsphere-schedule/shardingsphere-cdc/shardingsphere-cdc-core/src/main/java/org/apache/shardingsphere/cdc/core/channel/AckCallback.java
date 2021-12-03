@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor.dumper;
+package org.apache.shardingsphere.cdc.core.channel;
+
+import org.apache.shardingsphere.cdc.core.record.Record;
+
+import java.util.List;
 
 /**
- * Inventory dumper.
+ * Record acknowledged callback.
  */
-public interface InventoryDumper extends Dumper {
+public interface AckCallback {
+    
+    /**
+     * Call after record acknowledged.
+     *
+     * @param records acknowledged record list
+     */
+    void onAck(List<Record> records);
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
+import org.apache.shardingsphere.cdc.core.channel.distribution.AutoAcknowledgeChannel;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Before;

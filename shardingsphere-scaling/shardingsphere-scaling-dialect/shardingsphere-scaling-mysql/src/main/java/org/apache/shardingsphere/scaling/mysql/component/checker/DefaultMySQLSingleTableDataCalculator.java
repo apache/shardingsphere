@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 

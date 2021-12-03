@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor.dumper;
+package org.apache.shardingsphere.cdc.core.dumper;
+
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 /**
- * Incremental dumper.
+ * Dumper interface.
  */
-public interface IncrementalDumper extends Dumper {
+public interface Dumper extends LifecycleExecutor {
+    
+    /**
+     * Set channel.
+     *
+     * @param channel channel
+     */
+    void setChannel(Channel channel);
 }

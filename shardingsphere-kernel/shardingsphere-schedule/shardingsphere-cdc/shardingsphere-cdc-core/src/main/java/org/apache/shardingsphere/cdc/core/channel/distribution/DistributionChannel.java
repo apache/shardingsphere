@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel.distribution;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.common.channel.AckCallback;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.cdc.core.channel.AckCallback;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
 import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
