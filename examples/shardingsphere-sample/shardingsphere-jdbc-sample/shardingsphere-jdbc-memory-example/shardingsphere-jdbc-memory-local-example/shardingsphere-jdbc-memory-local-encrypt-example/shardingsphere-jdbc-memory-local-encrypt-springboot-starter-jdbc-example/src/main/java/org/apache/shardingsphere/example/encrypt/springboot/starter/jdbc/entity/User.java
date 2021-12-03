@@ -15,41 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity;
+package org.apache.shardingsphere.example.encrypt.springboot.starter.jdbc.entity;
 
-<#if framework?contains("jpa")>
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-</#if>
 import java.io.Serializable;
 
-<#if framework?contains("jpa")>
-@Entity
-@Table(name = "t_user")
-</#if>
 public class User implements Serializable {
     
     private static final long serialVersionUID = 263434701950670170L;
     
-    <#if framework?contains("jpa")>
-    @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    </#if>
     private int userId;
-
-    <#if framework?contains("jpa")>
-    @Column(name = "user_name")
-    </#if>
+    
     private String userName;
-
-    <#if framework?contains("jpa")>
-    @Column(name = "pwd")
-    </#if>
+    
     private String pwd;
     
     public int getUserId() {
