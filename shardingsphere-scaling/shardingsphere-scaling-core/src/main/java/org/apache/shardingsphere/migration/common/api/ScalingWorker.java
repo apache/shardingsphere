@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -122,6 +123,8 @@ public final class ScalingWorker {
     
     private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         RuleConfiguration result = new RuleConfiguration();
+        // TODO handle several rules changed or dataSources changed
+        result.setChangedYamlRuleConfigClassNames(Collections.singletonList(YamlShardingRuleConfiguration.class.getName()));
         result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceRootConfig).wrap());
         result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetRootConfig).wrap());
         return result;

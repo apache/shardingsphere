@@ -17,45 +17,72 @@
 
 package org.apache.shardingsphere.infra.config.datasource.typed;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.datasource.typed.creator.TypedDataSourceCreator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Typed data source configuration, SPI interface.
+ * Typed data source configuration.
  */
-public interface TypedDataSourceConfiguration extends TypedSPI {
+public abstract class TypedDataSourceConfiguration {
+    
+    static {
+        ShardingSphereServiceLoader.register(TypedDataSourceCreator.class);
+    }
     
     /**
-     * Initialization.
+     * Get type.
      *
-     * @param parameter data source configuration
+     * @return type
      */
-    void init(String parameter);
+    public abstract String getType();
+    
+    /**
+     * Get parameter.
+     *
+     * @return parameter
+     */
+    public abstract String getParameter();
+    
+    /**
+     * Get data source configuration, related to {@link #getParameter()}.
+     *
+     * @return data source configuration
+     */
+    protected abstract Object getDataSourceConfiguration();
     
     /**
      * Append JDBC parameters.
      *
      * @param parameters JDBC parameters
      */
-    void appendJDBCParameters(Map<String, String> parameters);
+    public abstract void appendJDBCParameters(Map<String, String> parameters);
     
     /**
      * Get database type.
      *
      * @return database type
      */
-    DatabaseType getDatabaseType();
+    public abstract DatabaseType getDatabaseType();
     
     /**
      * Wrap.
      *
      * @return typed data source configuration wrap
      */
-    TypedDataSourceConfigurationWrap wrap();
+    public TypedDataSourceConfigurationWrap wrap() {
+        TypedDataSourceConfigurationWrap result = new TypedDataSourceConfigurationWrap();
+        result.setType(getType());
+        result.setParameter(getParameter());
+        return result;
+    }
     
     /**
      * To data source.
@@ -63,5 +90,10 @@ public interface TypedDataSourceConfiguration extends TypedSPI {
      * @return data source
      * @throws SQLException SQL exception
      */
-    DataSource toDataSource() throws SQLException;
+    public DataSource toDataSource() throws SQLException {
+        String type = getType();
+        Optional<TypedDataSourceCreator> creatorOptional = TypedSPIRegistry.findRegisteredService(TypedDataSourceCreator.class, type, null);
+        Preconditions.checkArgument(creatorOptional.isPresent(), "Unsupported data source type '%s'", type);
+        return creatorOptional.get().createDataSource(getParameter(), getDataSourceConfiguration());
+    }
 }

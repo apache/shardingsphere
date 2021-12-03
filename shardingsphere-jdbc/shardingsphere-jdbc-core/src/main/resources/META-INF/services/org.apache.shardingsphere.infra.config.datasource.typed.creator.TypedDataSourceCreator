@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration
+org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCTypedDataSourceCreator

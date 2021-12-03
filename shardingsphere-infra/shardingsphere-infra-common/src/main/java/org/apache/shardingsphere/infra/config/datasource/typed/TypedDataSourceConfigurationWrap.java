@@ -20,18 +20,14 @@ package org.apache.shardingsphere.infra.config.datasource.typed;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import lombok.SneakyThrows;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 public final class TypedDataSourceConfigurationWrap {
-    
-    static {
-        ShardingSphereServiceLoader.register(TypedDataSourceConfiguration.class);
-    }
     
     private String type;
     
@@ -42,11 +38,24 @@ public final class TypedDataSourceConfigurationWrap {
      *
      * @return typed data source configuration
      */
+    @SneakyThrows(ReflectiveOperationException.class)
     public TypedDataSourceConfiguration unwrap() {
-        Optional<TypedDataSourceConfiguration> configOptional = TypedSPIRegistry.findRegisteredService(TypedDataSourceConfiguration.class, type, null);
-        Preconditions.checkArgument(configOptional.isPresent(), "Unsupported data source type '%s'", type);
-        TypedDataSourceConfiguration result = configOptional.get();
-        result.init(parameter);
-        return result;
+        Map<String, Class<?>> classMap = DataSourceConfigurationHolder.getInstances();
+        Preconditions.checkArgument(classMap.containsKey(type.toLowerCase()), "Unsupported data source type '%s'", type);
+        return (TypedDataSourceConfiguration) classMap.get(type.toLowerCase()).getConstructor(String.class).newInstance(parameter);
+    }
+    
+    private static class DataSourceConfigurationHolder {
+        
+        private static final Map<String, Class<?>> INSTANCES = new HashMap<>(2, 1);
+        
+        static {
+            INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
+            INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
+        }
+        
+        private static Map<String, Class<?>> getInstances() {
+            return INSTANCES;
+        }
     }
 }
