@@ -69,7 +69,7 @@ public final class SM3EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecryptWithoutKey() {
+    public void assertDecryptWithoutSalt() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
