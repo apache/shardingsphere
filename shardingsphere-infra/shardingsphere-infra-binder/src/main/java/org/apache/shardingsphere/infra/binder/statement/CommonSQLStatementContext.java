@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.SQLHintExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -54,7 +53,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
         databaseType = getDatabaseType(sqlStatement);
-        sqlHintExtractor = new SQLHintExtractor((AbstractSQLStatement) sqlStatement);
+        sqlHintExtractor = new SQLHintExtractor(sqlStatement);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {

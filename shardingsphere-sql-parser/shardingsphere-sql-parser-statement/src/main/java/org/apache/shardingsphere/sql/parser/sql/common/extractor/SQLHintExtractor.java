@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,10 +43,20 @@ public final class SQLHintExtractor {
     
     private final Map<String, String> sqlHintMap;
     
-    public SQLHintExtractor(AbstractSQLStatement sqlStatement) {
-        sqlHintMap = extract(sqlStatement);
+    public SQLHintExtractor(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof AbstractSQLStatement) {
+            sqlHintMap = extract((AbstractSQLStatement) sqlStatement);
+        } else {
+            sqlHintMap = Collections.emptyMap();
+        }
     }
     
+    /**
+     * Extract from statement.
+     *
+     * @param statement statement
+     * @return sql hint map
+     */
     public static Map<String, String> extract(final AbstractSQLStatement statement) {
         for (CommentSegment each : statement.getCommentSegments()) {
             Optional<Map<String, String>> map = extractFromComment(each.getText());
