@@ -75,6 +75,7 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
                                     <resources>
                                         <resource>META-INF/*.*</resource>
+                                        <resource>module-info.*</resource>
                                     </resources>
                                 </transformer>
                             </transformers>
