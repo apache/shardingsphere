@@ -21,11 +21,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,25 +43,23 @@ public final class DataSourceManager implements AutoCloseable {
     
     private final Map<TypedDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
     
-    public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
-        createDataSources(taskConfigs);
+    /**
+     * Create source data source.
+     *
+     * @param dataSourceConfig data source configuration
+     */
+    public void createSourceDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+        DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+        cachedDataSources.put(dataSourceConfig, dataSource);
+        sourceDataSources.put(dataSourceConfig, dataSource);
     }
     
-    private void createDataSources(final List<TaskConfiguration> taskConfigs) {
-        createSourceDataSources(taskConfigs);
-        createTargetDataSources(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
-    }
-    
-    private void createSourceDataSources(final List<TaskConfiguration> taskConfigs) {
-        for (TaskConfiguration taskConfig : taskConfigs) {
-            TypedDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
-            DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
-            cachedDataSources.put(dataSourceConfig, dataSource);
-            sourceDataSources.put(dataSourceConfig, dataSource);
-        }
-    }
-    
-    private void createTargetDataSources(final TypedDataSourceConfiguration dataSourceConfig) {
+    /**
+     * Create target data source.
+     *
+     * @param dataSourceConfig data source configuration
+     */
+    public void createTargetDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
         DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         targetDataSources.put(dataSourceConfig, dataSource);

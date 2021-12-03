@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -54,7 +55,8 @@ public final class ScalingJobPreparer {
      */
     public void prepare(final JobContext jobContext) {
         prepareTarget(jobContext.getJobConfig());
-        try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
+        try (DataSourceManager dataSourceManager = new DataSourceManager()) {
+            initDataSourceManager(dataSourceManager, jobContext.getTaskConfigs());
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
             initInventoryTasks(jobContext, dataSourceManager);
@@ -73,6 +75,14 @@ public final class ScalingJobPreparer {
             return;
         }
         dataSourcePreparer.prepareTargetTables(jobConfig);
+    }
+    
+    private void initDataSourceManager(final DataSourceManager dataSourceManager, final List<TaskConfiguration> taskConfigs) {
+        for (TaskConfiguration taskConfig : taskConfigs) {
+            TypedDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
+            dataSourceManager.createSourceDataSource(dataSourceConfig);
+        }
+        dataSourceManager.createTargetDataSource(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
     }
     
     private void checkDataSource(final JobContext jobContext, final DataSourceManager dataSourceManager) {
@@ -126,7 +136,8 @@ public final class ScalingJobPreparer {
      * @param jobContext job context
      */
     public void cleanup(final JobContext jobContext) {
-        try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
+        try (DataSourceManager dataSourceManager = new DataSourceManager()) {
+            initDataSourceManager(dataSourceManager, jobContext.getTaskConfigs());
             for (TaskConfiguration each : jobContext.getTaskConfigs()) {
                 PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(each.getHandleConfig().getDatabaseType());
                 positionInitializer.destroy(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
