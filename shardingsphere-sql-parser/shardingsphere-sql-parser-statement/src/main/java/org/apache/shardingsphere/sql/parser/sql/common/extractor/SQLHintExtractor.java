@@ -22,9 +22,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * SQL hint extractor.
@@ -37,13 +39,17 @@ public final class SQLHintExtractor {
     
     private static final String SQL_HINT_SPLIT = "=";
     
-    private static final String SQL_HINT_DATASOURCE_NAME_KEY = "datasourcename";
+    private static final String SQL_HINT_DATASOURCE_NAME_KEY = "dataSourceName";
     
-    private static final String SQL_HINT_WRITE_ROUTE_ONLY_KEY = "writerouteonly";
+    private static final String SQL_HINT_WRITE_ROUTE_ONLY_KEY = "writeRouteOnly";
     
     private final Map<String, String> sqlHintMap;
     
+    private final Set<String> supportedSet = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
     public SQLHintExtractor(final SQLStatement sqlStatement) {
+        supportedSet.add(SQL_HINT_DATASOURCE_NAME_KEY);
+        supportedSet.add(SQL_HINT_WRITE_ROUTE_ONLY_KEY);
         if (sqlStatement instanceof AbstractSQLStatement) {
             sqlHintMap = extract((AbstractSQLStatement) sqlStatement);
         } else {
@@ -57,30 +63,25 @@ public final class SQLHintExtractor {
      * @param statement statement
      * @return sql hint map
      */
-    public static Map<String, String> extract(final AbstractSQLStatement statement) {
+    public Map<String, String> extract(final AbstractSQLStatement statement) {
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (CommentSegment each : statement.getCommentSegments()) {
-            Optional<Map<String, String>> map = extractFromComment(each.getText());
-            if (map.isPresent()) {
-                return map.get();
-            }
+            extractFromComment(each.getText(), result);
         }
-        return Collections.emptyMap();
+        return result;
     }
     
-    private static Optional<Map<String, String>> extractFromComment(final String comment) {
+    private void extractFromComment(final String comment, final Map<String, String> result) {
         int startIndex = comment.toLowerCase().indexOf(SQL_HINT_TOKEN);
         if (startIndex < 0) {
-            return Optional.empty();
+            return;
         }
         startIndex = startIndex + SQL_HINT_TOKEN.length();
         int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
         String[] hintValue = comment.substring(startIndex, endIndex).trim().split(SQL_HINT_SPLIT);
-        if (2 == hintValue.length && hintValue[0].trim().length() > 0 && hintValue[1].trim().length() > 0) {
-            Map<String, String> result = new HashMap<>(1, 1);
-            result.put(hintValue[0].trim().toLowerCase(), hintValue[1].trim());
-            return Optional.of(result);
+        if (2 == hintValue.length && hintValue[0].trim().length() > 0 && hintValue[1].trim().length() > 0 && supportedSet.contains(hintValue[0].trim())) {
+            result.put(hintValue[0].trim(), hintValue[1].trim());
         }
-        return Optional.empty();
     }
     
     /**
@@ -93,11 +94,11 @@ public final class SQLHintExtractor {
     }
     
     /**
-     * Is hint write route only.
+     * Judge whether is hint routed to write data source.
      *
-     * @return boolean
+     * @return whether is hint routed to write data source
      */
     public boolean isHintWriteRouteOnly() {
-        return "true".equals(sqlHintMap.get(SQL_HINT_WRITE_ROUTE_ONLY_KEY));
+        return "true".equalsIgnoreCase(sqlHintMap.get(SQL_HINT_WRITE_ROUTE_ONLY_KEY));
     }
 }

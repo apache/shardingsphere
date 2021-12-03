@@ -88,9 +88,9 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     }
     
     /**
-     * Is hint write route only.
+     * Judge whether is hint routed to write data source.
      *
-     * @return boolean
+     * @return whether is hint routed to write data source
      */
     public boolean isHintWriteRouteOnly() {
         return sqlHintExtractor.isHintWriteRouteOnly();
