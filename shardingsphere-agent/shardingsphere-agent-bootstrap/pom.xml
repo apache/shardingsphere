@@ -60,6 +60,16 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
@@ -71,12 +81,6 @@
                                         <Can-Redefine-Classes>${can.redefine.classes}</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>${can.retransform.classes}</Can-Retransform-Classes>
                                     </manifestEntries>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resources>
-                                        <resource>META-INF/*.*</resource>
-                                        <resource>module-info.*</resource>
-                                    </resources>
                                 </transformer>
                             </transformers>
                             <artifactSet>
