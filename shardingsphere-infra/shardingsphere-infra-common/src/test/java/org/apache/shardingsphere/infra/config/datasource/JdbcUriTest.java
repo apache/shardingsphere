@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.datasource;
+package org.apache.shardingsphere.infra.config.datasource;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 import java.util.Map;
@@ -42,5 +43,12 @@ public final class JdbcUriTest {
         assertThat(parameters.size(), is(2));
         assertThat(parameters.get("useSSL"), is("true"));
         assertThat(parameters.get("maxReconnects"), is("30"));
+    }
+    
+    @Test
+    public void assertAppendJDBCParameters() {
+        JdbcUri jdbcUri = new JdbcUri("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false");
+        String jdbcUrl = jdbcUri.appendParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        assertThat(jdbcUrl, is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.common.datasource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,11 +39,11 @@ public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
+    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
-    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
+    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
     
-    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
+    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
     
     public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
         createDataSources(taskConfigs);
@@ -56,26 +56,26 @@ public final class DataSourceManager implements AutoCloseable {
     
     private void createSourceDataSources(final List<TaskConfiguration> taskConfigs) {
         for (TaskConfiguration taskConfig : taskConfigs) {
-            ScalingDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
+            TypedDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
             DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, dataSource);
             sourceDataSources.put(dataSourceConfig, dataSource);
         }
     }
     
-    private void createTargetDataSources(final ScalingDataSourceConfiguration dataSourceConfig) {
+    private void createTargetDataSources(final TypedDataSourceConfiguration dataSourceConfig) {
         DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         targetDataSources.put(dataSourceConfig, dataSource);
     }
     
     /**
-     * Get data source by {@code DataSourceConfiguration}.
+     * Get data source.
      *
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public DataSource getDataSource(final ScalingDataSourceConfiguration dataSourceConfig) {
+    public DataSource getDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
         if (cachedDataSources.containsKey(dataSourceConfig)) {
             return cachedDataSources.get(dataSourceConfig);
         }

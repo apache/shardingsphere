@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
 
 /**
  * Rule configuration.
@@ -27,21 +27,21 @@ import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourc
 @Getter
 public final class RuleConfiguration {
     
-    private ScalingDataSourceConfigurationWrap source;
+    private TypedDataSourceConfigurationWrap source;
     
-    private ScalingDataSourceConfigurationWrap target;
+    private TypedDataSourceConfigurationWrap target;
     
     /**
      * Set source.
      *
      * @param source source configuration
      */
-    public void setSource(final ScalingDataSourceConfigurationWrap source) {
+    public void setSource(final TypedDataSourceConfigurationWrap source) {
         checkParameters(source);
         this.source = source;
     }
     
-    private void checkParameters(final ScalingDataSourceConfigurationWrap wrap) {
+    private void checkParameters(final TypedDataSourceConfigurationWrap wrap) {
         Preconditions.checkNotNull(wrap);
         Preconditions.checkNotNull(wrap.getType());
         Preconditions.checkNotNull(wrap.getParameter());
@@ -52,7 +52,7 @@ public final class RuleConfiguration {
      *
      * @param target target configuration
      */
-    public void setTarget(final ScalingDataSourceConfigurationWrap target) {
+    public void setTarget(final TypedDataSourceConfigurationWrap target) {
         checkParameters(target);
         this.target = target;
     }

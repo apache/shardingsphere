@@ -40,7 +40,7 @@ public final class ScalingJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("Execute scaling job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        JobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), JobConfiguration.class);
+        JobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), JobConfiguration.class, true);
         jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
         JobContext jobContext = new JobContext(jobConfig);
         jobContext.setInitProgress(governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
