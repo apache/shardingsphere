@@ -73,8 +73,9 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name",
-                Collections.singletonList("dataSourceNames"), "discoveryTypeName");
+                Collections.singletonList("dataSourceNames"), "ha_heartbeat", "discoveryTypeName");
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("mgr", new MGRDatabaseDiscoveryType())));
+                new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), Collections.emptyList(),
+                        ImmutableMap.of("mgr", new MGRDatabaseDiscoveryType())));
     }
 }

@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
@@ -41,6 +42,8 @@ import java.util.Map;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+    
+    private Collection<DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedList<>();
     
     private Map<String, DatabaseDiscoveryType> discoveryTypes = new LinkedHashMap<>();
 }
