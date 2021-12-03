@@ -60,16 +60,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
@@ -91,6 +81,7 @@
                                     <exclude>org.slf4j:*</exclude>
                                     <exclude>org.yaml:snakeyaml:*</exclude>
                                     <exclude>org.apache.commons:logging:*</exclude>
+                                    <exclude>org.bouncycastle:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
