@@ -21,19 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Database discovery data source rule configuration for YAML.
+ * Database discovery heart beat configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
-
-    private List<String> dataSourceNames = new ArrayList<>();
+public final class YamlDatabaseDiscoveryHeartBeatConfiguration implements YamlConfiguration {
     
-    private String discoveryHeartbeatName;
-    
-    private String discoveryTypeName;
+    private Properties props = new Properties();
 }

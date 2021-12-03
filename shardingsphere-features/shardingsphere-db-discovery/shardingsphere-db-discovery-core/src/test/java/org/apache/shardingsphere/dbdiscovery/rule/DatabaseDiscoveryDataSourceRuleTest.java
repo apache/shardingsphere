@@ -33,21 +33,21 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private final DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = new DatabaseDiscoveryDataSourceRule(
-            new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+            new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
     }
     
     @Test
