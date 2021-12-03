@@ -1,4 +1,4 @@
-Bcprov-jdk15to18 License
+Bcprov-jdk15on License
 ---------------
 
 Copyright (c) 2000 - 2021 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)
