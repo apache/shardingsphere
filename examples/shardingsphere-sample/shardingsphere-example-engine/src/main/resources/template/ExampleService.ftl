@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
 <#if feature=="encrypt">
-import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.User;
-import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.UserRepository;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.UserRepository;
 <#else>
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
