@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseTimestampUtils;
@@ -85,13 +85,13 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
         switch (rowEventType) {
-            case ScalingConstant.INSERT:
+            case CDCDataChangeType.INSERT:
                 result = readWriteRowEvent(mppTableData);
                 break;
-            case ScalingConstant.UPDATE:
+            case CDCDataChangeType.UPDATE:
                 result = readUpdateRowEvent(mppTableData);
                 break;
-            case ScalingConstant.DELETE:
+            case CDCDataChangeType.DELETE:
                 result = readDeleteRowEvent(mppTableData);
                 break;
             default:

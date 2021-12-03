@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
@@ -94,14 +94,14 @@ public final class WalEventConverter {
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        result.setType(ScalingConstant.INSERT);
+        result.setType(CDCDataChangeType.INSERT);
         putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(writeRowEvent.getTableName(), databaseType), writeRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        result.setType(ScalingConstant.UPDATE);
+        result.setType(CDCDataChangeType.UPDATE);
         putColumnsIntoDataRecord(result, metaDataManager.getTableMetaData(updateRowEvent.getTableName(), databaseType), updateRowEvent.getAfterRow());
         return result;
     }
@@ -109,7 +109,7 @@ public final class WalEventConverter {
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
-        result.setType(ScalingConstant.DELETE);
+        result.setType(CDCDataChangeType.DELETE);
         List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName(), databaseType).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));

@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
@@ -148,13 +148,13 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             switch (buffer.get(0).getType()) {
-                case ScalingConstant.INSERT:
+                case CDCDataChangeType.INSERT:
                     executeBatchInsert(connection, buffer);
                     break;
-                case ScalingConstant.UPDATE:
+                case CDCDataChangeType.UPDATE:
                     executeUpdate(connection, buffer);
                     break;
-                case ScalingConstant.DELETE:
+                case CDCDataChangeType.DELETE:
                     executeBatchDelete(connection, buffer);
                     break;
                 default:

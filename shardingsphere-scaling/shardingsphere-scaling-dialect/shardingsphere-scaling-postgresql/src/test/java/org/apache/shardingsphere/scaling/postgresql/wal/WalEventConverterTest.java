@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
@@ -77,21 +77,21 @@ public final class WalEventConverterTest {
     public void assertConvertWriteRowEvent() {
         Record record = walEventConverter.convert(mockWriteRowEvent());
         assertTrue(record instanceof DataRecord);
-        assertThat(((DataRecord) record).getType(), is(ScalingConstant.INSERT));
+        assertThat(((DataRecord) record).getType(), is(CDCDataChangeType.INSERT));
     }
     
     @Test
     public void assertConvertUpdateRowEvent() {
         Record record = walEventConverter.convert(mockUpdateRowEvent());
         assertTrue(record instanceof DataRecord);
-        assertThat(((DataRecord) record).getType(), is(ScalingConstant.UPDATE));
+        assertThat(((DataRecord) record).getType(), is(CDCDataChangeType.UPDATE));
     }
     
     @Test
     public void assertConvertDeleteRowEvent() {
         Record record = walEventConverter.convert(mockDeleteRowEvent());
         assertTrue(record instanceof DataRecord);
-        assertThat(((DataRecord) record).getType(), is(ScalingConstant.DELETE));
+        assertThat(((DataRecord) record).getType(), is(CDCDataChangeType.DELETE));
     }
     
     @Test

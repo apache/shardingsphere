@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
@@ -93,7 +93,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             int rowCount = 0;
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
-                record.setType(ScalingConstant.INSERT);
+                record.setType(CDCDataChangeType.INSERT);
                 record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));

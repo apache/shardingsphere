@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.constant;
+package org.apache.shardingsphere.cdc.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Scaling constants.
+ * CDC data change type.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingConstant {
+public final class CDCDataChangeType {
     
     /**
      * Insert flag.
@@ -40,9 +40,4 @@ public final class ScalingConstant {
      * Delete flag.
      */
     public static final String DELETE = "DELETE";
-    
-    /**
-     * Scaling root path.
-     */
-    public static final String SCALING_ROOT = "/scaling";
 }
