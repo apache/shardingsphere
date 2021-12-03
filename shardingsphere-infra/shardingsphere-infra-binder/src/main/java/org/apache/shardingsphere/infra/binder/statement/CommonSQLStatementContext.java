@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.SQLHintExtractor;
+import org.apache.shardingsphere.infra.hint.sqlhint.SQLHintExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -88,9 +88,9 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     }
     
     /**
-     * Judge whether is hint routed to write data source.
+     * Judge whether is hint routed to write data source or not.
      *
-     * @return whether is hint routed to write data source
+     * @return whether is hint routed to write data source or not
      */
     public boolean isHintWriteRouteOnly() {
         return sqlHintExtractor.isHintWriteRouteOnly();
