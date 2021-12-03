@@ -60,9 +60,9 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters, 
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
-        ShardingConditions shardingConditions = createSetAssignmentShardingConditions(sqlStatementContext, shardingRule, parameters);
-        RouteContext setAssignmentRouteContext = new ShardingStandardRoutingEngine(tableName, shardingConditions, props).route(shardingRule);
-        if (!isSameRouteContext(routeContext, setAssignmentRouteContext)) {
+        Optional<ShardingConditions> shardingConditions = createSetAssignmentShardingConditions(sqlStatementContext, shardingRule, parameters);
+        Optional<RouteContext> setAssignmentRouteContext = shardingConditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional, props).route(shardingRule));
+        if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new ShardingSphereException("Can not update sharding key since the updated value will change %s's data nodes.", tableName);
         }
         if (UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
@@ -108,20 +108,24 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private ShardingConditions createSetAssignmentShardingConditions(final SQLStatementContext<UpdateStatement> sqlStatementContext, 
-                                                                     final ShardingRule shardingRule, final List<Object> parameters) {
-        List<ShardingConditionValue> conditionValues = new LinkedList<>();
+    private Optional<ShardingConditions> createSetAssignmentShardingConditions(final SQLStatementContext<UpdateStatement> sqlStatementContext,
+                                                                               final ShardingRule shardingRule, final List<Object> parameters) {
+        List<ShardingConditionValue> values = new LinkedList<>();
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (AssignmentSegment each : sqlStatementContext.getSqlStatement().getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
                 Optional<Object> setAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
-                setAssignmentValue.ifPresent(optional -> conditionValues.add(new ListShardingConditionValue(shardingColumn, tableName, Collections.singletonList(optional))));
+                setAssignmentValue.ifPresent(optional -> values.add(new ListShardingConditionValue(shardingColumn, tableName, Collections.singletonList(optional))));
             }
         }
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getValues().addAll(conditionValues);
-        return new ShardingConditions(Collections.singletonList(shardingCondition), sqlStatementContext, shardingRule);
+        ShardingConditions result = null;
+        if (!values.isEmpty()) {
+            ShardingCondition shardingCondition = new ShardingCondition();
+            shardingCondition.getValues().addAll(values);
+            result = new ShardingConditions(Collections.singletonList(shardingCondition), sqlStatementContext, shardingRule);
+        }
+        return Optional.ofNullable(result);
     }
     
     private Optional<Object> getShardingColumnSetAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
