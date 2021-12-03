@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 171 家公司。
+共计 172 家公司。
 
 ### 基础设施
 <ul>
@@ -182,6 +182,7 @@ chapter = true
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信 - 昆明市自来水客户营销平台</a></li>
+    <li><a href="https://hulucc.com/" rel="nofollow">葫芦</a></li>
 </ul>
 
 ### 通信科技
