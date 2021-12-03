@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.record;
 
 import lombok.Getter;
 import lombok.Setter;

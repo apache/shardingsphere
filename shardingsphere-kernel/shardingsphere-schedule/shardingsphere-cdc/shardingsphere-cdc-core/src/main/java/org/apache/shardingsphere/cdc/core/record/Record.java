@@ -15,15 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.record;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 
 /**
- * Finished inventory position.
+ * Record interface.
  */
-public final class FinishedPosition implements ScalingPosition<FinishedPosition> {
+@RequiredArgsConstructor
+@Getter
+@Setter
+@ToString
+public abstract class Record {
     
-    @Override
-    public int compareTo(final FinishedPosition position) {
-        return 0;
-    }
+    private final CDCPosition<?> position;
+        
+    private long commitTime;
 }

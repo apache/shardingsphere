@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.position;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrimaryKeyPosition implements ScalingPosition<PrimaryKeyPosition> {
+public final class PrimaryKeyPosition implements CDCPosition<PrimaryKeyPosition> {
     
     private final long beginValue;
     

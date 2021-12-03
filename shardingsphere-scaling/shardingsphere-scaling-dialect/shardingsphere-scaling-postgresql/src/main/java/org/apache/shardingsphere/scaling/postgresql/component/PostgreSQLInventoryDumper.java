@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
 
 import java.sql.Connection;

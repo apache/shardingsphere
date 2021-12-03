@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.record;
+
+import lombok.ToString;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 
 /**
- * Placeholder position.
+ * Placeholder record.
  */
-public final class PlaceholderPosition implements ScalingPosition<PlaceholderPosition> {
+@ToString(callSuper = true)
+public final class PlaceholderRecord extends Record {
     
-    @Override
-    public int compareTo(final PlaceholderPosition position) {
-        return 1;
-    }
-    
-    @Override
-    public String toString() {
-        return "";
+    public PlaceholderRecord(final CDCPosition<?> position) {
+        super(position);
     }
 }

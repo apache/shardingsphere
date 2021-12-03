@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

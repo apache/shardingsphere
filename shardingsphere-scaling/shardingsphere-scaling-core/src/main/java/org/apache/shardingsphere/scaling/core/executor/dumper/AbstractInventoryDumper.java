@@ -28,16 +28,16 @@ import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
+import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -111,7 +111,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private String getWhereCondition(final String primaryKey, final ScalingPosition<?> position) {
+    private String getWhereCondition(final String primaryKey, final CDCPosition<?> position) {
         if (null == primaryKey || null == position) {
             return "";
         }
@@ -119,7 +119,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, primaryKeyPosition.getBeginValue(), primaryKeyPosition.getEndValue());
     }
     
-    private ScalingPosition<?> newPosition(final ResultSet rs) throws SQLException {
+    private CDCPosition<?> newPosition(final ResultSet rs) throws SQLException {
         if (null == inventoryDumperConfig.getPrimaryKey()) {
             return new PlaceholderPosition();
         }

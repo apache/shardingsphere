@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.record;
 
-/**
- * Scaling position.
- */
-public interface ScalingPosition<T> extends Comparable<T> {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
+
+@Getter
+@RequiredArgsConstructor
+@ToString
+public final class GroupedDataRecord {
+    
+    private final String tableName;
+    
+    private final List<DataRecord> insertDataRecords;
+    
+    private final List<DataRecord> updateDataRecords;
+    
+    private final List<DataRecord> deleteDataRecords;
 }

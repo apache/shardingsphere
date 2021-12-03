@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.executor.engine;
 
 import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
+import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.Collections;

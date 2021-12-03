@@ -20,10 +20,10 @@ package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.channel.AckCallback;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
+import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
 
 import java.util.BitSet;
 import java.util.HashMap;

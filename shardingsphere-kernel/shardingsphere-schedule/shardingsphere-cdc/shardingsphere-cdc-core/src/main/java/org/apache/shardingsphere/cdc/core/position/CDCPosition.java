@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.util;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.cdc.core.position;
 
 /**
- * Thread util.
+ * CDC position.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ThreadUtil {
-    
-    /**
-     * Sleep ignored InterruptedException.
-     *
-     * @param millis sleep time.
-     */
-    public static void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (final InterruptedException ignored) {
-        }
-    }
+public interface CDCPosition<T> extends Comparable<T> {
 }

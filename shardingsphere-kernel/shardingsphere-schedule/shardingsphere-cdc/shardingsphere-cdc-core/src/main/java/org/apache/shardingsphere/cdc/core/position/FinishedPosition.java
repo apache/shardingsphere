@@ -15,39 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+package org.apache.shardingsphere.cdc.core.position;
 
 /**
- * Position initializer.
+ * Finished inventory position.
  */
-public interface PositionInitializer {
+public final class FinishedPosition implements CDCPosition<FinishedPosition> {
     
-    /**
-     * Init position by data source.
-     *
-     * @param dataSource data source
-     * @return position
-     * @throws SQLException SQL exception
-     */
-    ScalingPosition<?> init(DataSource dataSource) throws SQLException;
-    
-    /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
-     */
-    ScalingPosition<?> init(String data);
-    
-    /**
-     * Clean up by data source if necessary.
-     *
-     * @param dataSource data source
-     * @throws SQLException SQL exception
-     */
-    default void destroy(DataSource dataSource) throws SQLException {
+    @Override
+    public int compareTo(final FinishedPosition position) {
+        return 0;
     }
 }

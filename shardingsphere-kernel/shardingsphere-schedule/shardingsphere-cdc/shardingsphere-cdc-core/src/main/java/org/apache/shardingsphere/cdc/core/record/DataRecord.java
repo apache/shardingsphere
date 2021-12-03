@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.record;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public final class DataRecord extends Record {
     
     private String tableName;
     
-    public DataRecord(final ScalingPosition<?> position, final int columnCount) {
+    public DataRecord(final CDCPosition<?> position, final int columnCount) {
         super(position);
         columns = new ArrayList<>(columnCount);
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNu
  */
 @RequiredArgsConstructor
 @Getter
-public final class WalPosition implements ScalingPosition<WalPosition> {
+public final class WalPosition implements CDCPosition<WalPosition> {
     
     private final BaseLogSequenceNumber logSequenceNumber;
     

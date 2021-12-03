@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Record interface.
+ * Thread util.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-@ToString
-public abstract class Record {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ThreadUtil {
     
-    private final ScalingPosition<?> position;
-        
-    private long commitTime;
+    /**
+     * Sleep ignored InterruptedException.
+     *
+     * @param millis sleep time.
+     */
+    public static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException ignored) {
+        }
+    }
 }

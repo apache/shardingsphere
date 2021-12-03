@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;

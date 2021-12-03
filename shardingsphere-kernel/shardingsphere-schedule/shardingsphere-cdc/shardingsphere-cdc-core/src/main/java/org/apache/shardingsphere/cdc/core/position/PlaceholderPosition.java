@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-
-import java.util.Map;
+package org.apache.shardingsphere.cdc.core.position;
 
 /**
- * Dumper configuration.
+ * Placeholder position.
  */
-@Getter
-@Setter
-@ToString(exclude = "dataSourceConfig")
-public class DumperConfiguration {
+public final class PlaceholderPosition implements CDCPosition<PlaceholderPosition> {
     
-    private String dataSourceName;
+    @Override
+    public int compareTo(final PlaceholderPosition position) {
+        return 1;
+    }
     
-    private TypedDataSourceConfiguration dataSourceConfig;
-    
-    private ScalingPosition<?> position;
-    
-    /**
-     * Table name map. Key is actual table name, value is logic table name.
-     */
-    private Map<String, String> tableNameMap;
+    @Override
+    public String toString() {
+        return "";
+    }
 }

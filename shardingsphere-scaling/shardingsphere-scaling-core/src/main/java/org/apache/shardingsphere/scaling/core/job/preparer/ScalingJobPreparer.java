@@ -26,9 +26,9 @@ import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
+import org.apache.shardingsphere.cdc.core.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
@@ -110,9 +110,9 @@ public final class ScalingJobPreparer {
         }
     }
     
-    private ScalingPosition<?> getIncrementalPosition(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
+    private CDCPosition<?> getIncrementalPosition(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
-            Optional<ScalingPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+            Optional<CDCPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
             if (positionOptional.isPresent()) {
                 return positionOptional.get();
             }

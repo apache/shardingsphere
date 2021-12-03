@@ -19,10 +19,10 @@ package org.apache.shardingsphere.scaling.core.executor.importer;
 
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.exception.UnexpectedDataRecordOrderException;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.GroupedDataRecord;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.GroupedDataRecord;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Test;
 
 import java.util.Arrays;

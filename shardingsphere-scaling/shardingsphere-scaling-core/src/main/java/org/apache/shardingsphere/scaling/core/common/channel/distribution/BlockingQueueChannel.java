@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
+import org.apache.shardingsphere.cdc.core.record.Record;
+import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 
 import java.util.ArrayList;
 import java.util.List;

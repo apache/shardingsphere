@@ -15,29 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.cdc.core.position;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Inventory dumper configuration.
+ * Position initializer.
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class InventoryDumperConfiguration extends DumperConfiguration {
+public interface PositionInitializer {
     
-    private String tableName;
+    /**
+     * Init position by data source.
+     *
+     * @param dataSource data source
+     * @return position
+     * @throws SQLException SQL exception
+     */
+    CDCPosition<?> init(DataSource dataSource) throws SQLException;
     
-    private String primaryKey;
+    /**
+     * Init position by string data.
+     *
+     * @param data string data
+     * @return position
+     */
+    CDCPosition<?> init(String data);
     
-    private Integer shardingItem;
-    
-    public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
-        setDataSourceName(dumperConfig.getDataSourceName());
-        setDataSourceConfig(dumperConfig.getDataSourceConfig());
-        setTableNameMap(dumperConfig.getTableNameMap());
+    /**
+     * Clean up by data source if necessary.
+     *
+     * @param dataSource data source
+     * @throws SQLException SQL exception
+     */
+    default void destroy(DataSource dataSource) throws SQLException {
     }
 }

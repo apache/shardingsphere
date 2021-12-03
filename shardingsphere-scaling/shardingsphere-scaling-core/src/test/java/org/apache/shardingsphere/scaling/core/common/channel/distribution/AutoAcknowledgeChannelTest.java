@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
 

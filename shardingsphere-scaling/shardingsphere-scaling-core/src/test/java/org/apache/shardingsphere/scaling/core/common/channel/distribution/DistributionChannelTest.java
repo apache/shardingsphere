@@ -21,14 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.channel.AckCallback;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
+import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -116,7 +116,7 @@ public final class DistributionChannelTest {
     
     @RequiredArgsConstructor
     @Getter
-    private static final class IntPosition implements ScalingPosition<IntPosition> {
+    private static final class IntPosition implements CDCPosition<IntPosition> {
         
         private final int id;
         

@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
- * Placeholder record.
+ * Inventory dumper configuration.
  */
+@Getter
+@Setter
 @ToString(callSuper = true)
-public final class PlaceholderRecord extends Record {
+public final class InventoryDumperConfiguration extends DumperConfiguration {
     
-    public PlaceholderRecord(final ScalingPosition<?> position) {
-        super(position);
+    private String tableName;
+    
+    private String primaryKey;
+    
+    private Integer shardingItem;
+    
+    public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
+        setDataSourceName(dumperConfig.getDataSourceName());
+        setDataSourceConfig(dumperConfig.getDataSourceConfig());
+        setTableNameMap(dumperConfig.getTableNameMap());
     }
 }

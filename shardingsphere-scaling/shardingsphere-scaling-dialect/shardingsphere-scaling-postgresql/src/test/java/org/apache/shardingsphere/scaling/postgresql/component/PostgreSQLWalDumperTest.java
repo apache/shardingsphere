@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;

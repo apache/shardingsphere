@@ -23,9 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.Dumper;
@@ -33,8 +33,8 @@ import org.apache.shardingsphere.scaling.core.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Optional;
@@ -59,7 +59,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Sc
     
     private Dumper dumper;
     
-    private ScalingPosition<?> position;
+    private CDCPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         this(inventoryDumperConfig, importerConfig, new DataSourceManager());

@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
+
+import java.util.Map;
 
 /**
- * Finished record.
+ * Dumper configuration.
  */
-@ToString(callSuper = true)
-public final class FinishedRecord extends Record {
+@Getter
+@Setter
+@ToString(exclude = "dataSourceConfig")
+public class DumperConfiguration {
     
-    public FinishedRecord(final ScalingPosition<?> position) {
-        super(position);
-    }
+    private String dataSourceName;
+    
+    private TypedDataSourceConfiguration dataSourceConfig;
+    
+    private CDCPosition<?> position;
+    
+    /**
+     * Table name map. Key is actual table name, value is logic table name.
+     */
+    private Map<String, String> tableNameMap;
 }

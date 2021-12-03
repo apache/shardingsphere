@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.Record;
 
 import java.util.BitSet;
 import java.util.Deque;

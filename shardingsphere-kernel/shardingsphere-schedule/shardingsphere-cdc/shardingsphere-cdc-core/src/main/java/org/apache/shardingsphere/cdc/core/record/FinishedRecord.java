@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.record;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 
-import java.util.List;
-
-@Getter
-@RequiredArgsConstructor
-@ToString
-public final class GroupedDataRecord {
+/**
+ * Finished record.
+ */
+@ToString(callSuper = true)
+public final class FinishedRecord extends Record {
     
-    private final String tableName;
-    
-    private final List<DataRecord> insertDataRecords;
-    
-    private final List<DataRecord> updateDataRecords;
-    
-    private final List<DataRecord> deleteDataRecords;
+    public FinishedRecord(final CDCPosition<?> position) {
+        super(position);
+    }
 }
