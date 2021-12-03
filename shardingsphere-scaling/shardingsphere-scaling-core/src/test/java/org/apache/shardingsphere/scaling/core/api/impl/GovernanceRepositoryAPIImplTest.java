@@ -36,7 +36,7 @@ import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;

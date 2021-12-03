@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.position;
 
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class PlaceholderPositionTest {
+public final class PrimaryKeyPositionTest {
     
     @Test
     public void assertCompareTo() {
-        PlaceholderPosition position1 = new PlaceholderPosition();
-        PlaceholderPosition position2 = new PlaceholderPosition();
-        assertThat(position1.compareTo(position2), is(1));
+        PrimaryKeyPosition position1 = new PrimaryKeyPosition(1, 100);
+        PrimaryKeyPosition position2 = new PrimaryKeyPosition(101, 200);
+        assertThat(position1.compareTo(null), is(1));
+        assertTrue(position1.compareTo(position2) < 0);
+    }
+    
+    @Test
+    public void assertInit() {
+        PrimaryKeyPosition position = PrimaryKeyPosition.init("1,100");
+        assertThat(position.getBeginValue(), is(1L));
+        assertThat(position.getEndValue(), is(100L));
     }
     
     @Test
     public void assertToString() {
-        assertThat(new PlaceholderPosition().toString(), is(""));
+        assertThat(new PrimaryKeyPosition(1, 100).toString(), is("1,100"));
     }
 }

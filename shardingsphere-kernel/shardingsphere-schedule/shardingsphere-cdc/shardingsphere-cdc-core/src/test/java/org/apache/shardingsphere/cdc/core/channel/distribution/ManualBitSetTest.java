@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel.distribution;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.cdc.core.channel.distribution.ManualBitSet;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.junit.Test;
 
 import java.util.BitSet;

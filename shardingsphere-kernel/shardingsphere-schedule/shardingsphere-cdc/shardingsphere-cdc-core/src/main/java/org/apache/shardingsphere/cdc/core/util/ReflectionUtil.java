@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.util;
+package org.apache.shardingsphere.cdc.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

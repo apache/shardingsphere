@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLCo
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

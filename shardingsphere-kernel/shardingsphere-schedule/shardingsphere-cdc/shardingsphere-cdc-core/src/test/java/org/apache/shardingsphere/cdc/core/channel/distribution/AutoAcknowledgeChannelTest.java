@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel.distribution;
 
-import org.apache.shardingsphere.cdc.core.channel.distribution.AutoAcknowledgeChannel;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.junit.Before;
 import org.junit.Test;
 

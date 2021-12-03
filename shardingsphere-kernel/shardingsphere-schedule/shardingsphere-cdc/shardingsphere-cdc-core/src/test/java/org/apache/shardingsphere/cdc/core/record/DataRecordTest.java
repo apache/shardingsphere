@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.record;
+package org.apache.shardingsphere.cdc.core.record;
 
 import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

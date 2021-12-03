@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.core.config;
+package org.apache.shardingsphere.cdc.core.position;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Dumper configuration.
- */
-@Getter
-@Setter
-@ToString(exclude = "dataSourceConfig")
-public class DumperConfiguration {
+public final class PlaceholderPositionTest {
     
-    private String dataSourceName;
+    @Test
+    public void assertCompareTo() {
+        PlaceholderPosition position1 = new PlaceholderPosition();
+        PlaceholderPosition position2 = new PlaceholderPosition();
+        assertThat(position1.compareTo(position2), is(1));
+    }
     
-    private TypedDataSourceConfiguration dataSourceConfig;
-    
-    private CDCPosition<?> position;
-    
-    /**
-     * Table name map. Key is actual table name, value is logic table name.
-     */
-    private Map<String, String> tableNameMap;
+    @Test
+    public void assertToString() {
+        assertThat(new PlaceholderPosition().toString(), is(""));
+    }
 }

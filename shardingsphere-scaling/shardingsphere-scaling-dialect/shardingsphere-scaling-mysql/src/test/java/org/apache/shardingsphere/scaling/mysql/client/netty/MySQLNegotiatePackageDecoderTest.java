@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

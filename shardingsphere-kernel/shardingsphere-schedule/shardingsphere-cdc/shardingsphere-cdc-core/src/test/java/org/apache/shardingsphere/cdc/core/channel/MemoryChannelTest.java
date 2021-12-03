@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.cdc.core.channel;
 
-import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-public final class PrimaryKeyPositionTest {
+public final class MemoryChannelTest {
     
     @Test
-    public void assertCompareTo() {
-        PrimaryKeyPosition position1 = new PrimaryKeyPosition(1, 100);
-        PrimaryKeyPosition position2 = new PrimaryKeyPosition(101, 200);
-        assertThat(position1.compareTo(null), is(1));
-        assertTrue(position1.compareTo(position2) < 0);
+    public void assertFetchRecords() throws InterruptedException {
+        MemoryChannel memoryChannel = new MemoryChannel(records -> {
+        });
+        memoryChannel.pushRecord(new DataRecord(new PlaceholderPosition(), 1));
+        List<Record> records = memoryChannel.fetchRecords(10, 1);
+        assertThat(records.size(), is(1));
     }
     
     @Test
-    public void assertInit() {
-        PrimaryKeyPosition position = PrimaryKeyPosition.init("1,100");
-        assertThat(position.getBeginValue(), is(1L));
-        assertThat(position.getEndValue(), is(100L));
-    }
-    
-    @Test
-    public void assertToString() {
-        assertThat(new PrimaryKeyPosition(1, 100).toString(), is("1,100"));
+    public void assertAck() throws InterruptedException {
+        MemoryChannel memoryChannel = new MemoryChannel(records -> assertThat(records.size(), is(1)));
+        memoryChannel.pushRecord(new DataRecord(new PlaceholderPosition(), 1));
+        memoryChannel.fetchRecords(1, 1);
+        memoryChannel.ack();
     }
 }

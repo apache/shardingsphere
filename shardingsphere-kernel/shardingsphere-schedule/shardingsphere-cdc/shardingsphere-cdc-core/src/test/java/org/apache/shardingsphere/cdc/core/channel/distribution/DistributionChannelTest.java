@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.distribution;
+package org.apache.shardingsphere.cdc.core.channel.distribution;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.cdc.core.channel.AckCallback;
-import org.apache.shardingsphere.cdc.core.channel.distribution.DistributionChannel;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
 import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
 import org.apache.shardingsphere.cdc.core.record.Record;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -45,11 +41,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class DistributionChannelTest {
-    
-    @Before
-    public void setUp() {
-        ScalingContext.getInstance().init(new ServerConfiguration());
-    }
     
     @Test
     public void assertAckCallbackResultSortable() {

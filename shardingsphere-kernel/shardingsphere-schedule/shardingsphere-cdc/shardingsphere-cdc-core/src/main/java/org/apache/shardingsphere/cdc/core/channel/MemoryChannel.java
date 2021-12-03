@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.cdc.core.channel;
 
-import org.apache.shardingsphere.cdc.core.channel.AckCallback;
-import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 
