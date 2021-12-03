@@ -20,12 +20,16 @@ package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.mgr.MGRDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -43,6 +47,8 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
+        assertNotNull(actual.getDiscoveryHeartbeats());
+        assertThat(actual.getDiscoveryHeartbeats().keySet(), is(Collections.singleton("mgr_heartbeat")));
     }
     
     @Test
@@ -54,6 +60,8 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
+        assertNotNull(actual.getDiscoveryHeartbeats());
+        assertThat(actual.getDiscoveryHeartbeats().keySet(), is(Collections.singleton("mgr_heartbeat")));
     }
     
     @Test
@@ -73,9 +81,11 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name",
-                Collections.singletonList("dataSourceNames"), "ha_heartbeat", "discoveryTypeName");
+                Collections.singletonList("dataSourceNames"), "mgr_heartbeat", "discoveryTypeName");
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig = new LinkedHashMap<>();
+        heartBeatConfig.put("mgr_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), Collections.emptyList(),
+                new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), heartBeatConfig,
                         ImmutableMap.of("mgr", new MGRDatabaseDiscoveryType())));
     }
 }
