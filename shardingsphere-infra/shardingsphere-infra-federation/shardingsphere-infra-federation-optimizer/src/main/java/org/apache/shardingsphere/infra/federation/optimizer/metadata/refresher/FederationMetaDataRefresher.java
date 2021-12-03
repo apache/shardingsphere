@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -38,8 +39,10 @@ public interface FederationMetaDataRefresher<T extends SQLStatement> extends Met
      * @param schema federation schema to be refreshed
      * @param logicDataSourceNames logic data source names
      * @param sqlStatement SQL statement
-     * @param materials schema builder materials
+     * @param schemaMetaData meta data
+     * @param props props                      
      * @throws SQLException SQL exception
      */
-    void refresh(FederationSchemaMetaData schema, Collection<String> logicDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    void refresh(FederationSchemaMetaData schema, Collection<String> logicDataSourceNames, T sqlStatement, ShardingSphereMetaData schemaMetaData, 
+                 ConfigurationProperties props) throws SQLException;
 }
