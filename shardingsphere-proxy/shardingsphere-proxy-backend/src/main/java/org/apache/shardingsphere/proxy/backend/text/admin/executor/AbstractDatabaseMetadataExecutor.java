@@ -160,7 +160,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      *
      * @param schemaName schema name
      * @param grantee grantee
-     * @return has datasource or not
+     * @return has authority or not
      */
     protected static boolean hasAuthority(final String schemaName, final Grantee grantee) {
         return SQLCheckEngine.check(schemaName, getRules(schemaName), grantee);
