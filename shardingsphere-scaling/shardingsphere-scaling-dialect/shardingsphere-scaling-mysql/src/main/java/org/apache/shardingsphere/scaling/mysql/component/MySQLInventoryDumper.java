@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
-import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +35,7 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        JDBCUtil.appendJDBCParameter(inventoryDumperConfig.getDataSourceConfig(), ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
+        inventoryDumperConfig.getDataSourceConfig().appendJDBCParameters(ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
     }
     
     @Override

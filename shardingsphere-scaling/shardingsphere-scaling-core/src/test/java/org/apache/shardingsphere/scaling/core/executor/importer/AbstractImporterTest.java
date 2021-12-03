@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public final class AbstractImporterTest {
     private ScalingSQLBuilder scalingSqlBuilder;
     
     @Mock
-    private ScalingDataSourceConfiguration dataSourceConfig;
+    private TypedDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;

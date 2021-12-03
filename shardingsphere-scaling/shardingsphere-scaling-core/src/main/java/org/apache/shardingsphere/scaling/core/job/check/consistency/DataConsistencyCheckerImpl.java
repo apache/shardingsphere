@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactor
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilderFactory;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import javax.sql.DataSource;
@@ -79,8 +79,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
-        ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
-        ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        TypedDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
+        TypedDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
@@ -107,9 +107,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     @Override
     public Map<String, Boolean> dataCheck(final ScalingDataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        ScalingDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
+        TypedDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        ScalingDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        TypedDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
                 .distinct().collect(Collectors.toList());
@@ -152,7 +152,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private Map<String, Collection<String>> getTablesColumnNamesMap(final ScalingDataSourceConfiguration dataSourceConfig) {
+    private Map<String, Collection<String>> getTablesColumnNamesMap(final TypedDataSourceConfiguration dataSourceConfig) {
         try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
              Connection connection = dataSource.getConnection()) {
             Map<String, Collection<String>> result = new LinkedHashMap<>();
