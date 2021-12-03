@@ -100,19 +100,21 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ### 使用 Hint 强制主库路由
 
-#### 获取 HintManager
+#### 使用手动编程的方式
+
+##### 获取 HintManager
 
 与基于 Hint 的数据分片相同。
 
-#### 设置主库路由
+##### 设置主库路由
 
 - 使用 `hintManager.setWriteRouteOnly` 设置主库路由。
 
-#### 清除分片键值
+##### 清除分片键值
 
 与基于 Hint 的数据分片相同。
 
-#### 完整代码示例
+##### 完整代码示例
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -126,6 +128,19 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
+```
+
+#### 使用 SQL 注释的方式
+
+##### 使用规范
+
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sql-comment-parse-enabled` 为 `true`。
+注释格式暂时只支持`/* */`，内容需要以`ShardingSphere hint:`开始，属性名为 `writeRouteOnly`。
+
+##### 完整示例
+```sql
+/* ShardingSphere hint: writeRouteOnly=true */
+SELECT * FROM t_order;
 ```
 
 ### 使用 Hint 路由至指定数据库
@@ -161,10 +176,10 @@ try (HintManager hintManager = HintManager.getInstance();
 ##### 使用规范
 
 SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sql-comment-parse-enabled` 为 `true`，目前只支持路由至一个数据源。
-注释格式暂时只支持`/* */`，内容需要以`sql hint:`开始，属性名为 `dataSourceName`。
+注释格式暂时只支持`/* */`，内容需要以`ShardingSphere hint:`开始，属性名为 `dataSourceName`。
 
 ##### 完整示例
 ```sql
-/* sql hint: dataSourceName=ds_0 */
+/* ShardingSphere hint: dataSourceName=ds_0 */
 SELECT * FROM t_order;
 ```
