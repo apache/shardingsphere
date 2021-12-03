@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -32,8 +34,6 @@ import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
@@ -72,7 +72,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private TableMetaData createTableMetaData() {
-        ScalingDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
+        TypedDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
         return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
     }

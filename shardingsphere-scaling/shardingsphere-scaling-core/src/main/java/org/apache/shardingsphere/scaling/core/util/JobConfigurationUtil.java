@@ -29,15 +29,15 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -107,11 +107,11 @@ public final class JobConfigurationUtil {
     }
     
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final JobConfiguration jobConfig) {
-        ScalingDataSourceConfiguration sourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
+        TypedDataSourceConfiguration sourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
-                "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
+                "Only ShardingSphereJdbc type of source TypedDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
+        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         ShardingRule shardingRule = new ShardingRule(sourceRuleConfig, source.getRootConfig().getDataSources().keySet());
         Map<String, TableRule> tableRules = shardingRule.getTableRules();
         Map<String, List<DataNode>> result = new LinkedHashMap<>();
@@ -145,7 +145,7 @@ public final class JobConfigurationUtil {
     public static List<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(jobConfig);
-        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
+        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> sourceDataSource = getDataSourceConfigurations(sourceConfig.getRootConfig());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getRootConfig().getDataSources().keySet()));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(jobConfig);
@@ -162,7 +162,7 @@ public final class JobConfigurationUtil {
     }
     
     private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final JobConfiguration jobConfig) {
-        ScalingDataSourceConfiguration result = jobConfig.getRuleConfig().getSource().unwrap();
+        TypedDataSourceConfiguration result = jobConfig.getRuleConfig().getSource().unwrap();
         Preconditions.checkArgument(result instanceof ShardingSphereJDBCDataSourceConfiguration, "Only support ShardingSphere source data source.");
         return (ShardingSphereJDBCDataSourceConfiguration) result;
     }
@@ -181,10 +181,10 @@ public final class JobConfigurationUtil {
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final JobConfiguration jobConfig) {
-        ScalingDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
+        TypedDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return Optional.of(
-                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
+                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
         }
         return Optional.empty();
     }

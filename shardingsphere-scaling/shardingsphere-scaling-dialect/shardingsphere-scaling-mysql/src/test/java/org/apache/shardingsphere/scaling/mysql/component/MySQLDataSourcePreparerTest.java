@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourcePreparer;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.Before;
@@ -47,10 +47,10 @@ public final class MySQLDataSourcePreparerTest {
     private RuleConfiguration ruleConfiguration;
 
     @Mock
-    private ScalingDataSourceConfigurationWrap sourceScalingDataSourceConfigurationWrap;
+    private TypedDataSourceConfigurationWrap sourceDataSourceConfigurationWrap;
 
     @Mock
-    private ScalingDataSourceConfigurationWrap targetScalingDataSourceConfigurationWrap;
+    private TypedDataSourceConfigurationWrap targetDataSourceConfigurationWrap;
 
     @Mock
     private ShardingSphereJDBCDataSourceConfiguration sourceScalingDataSourceConfiguration;
@@ -73,13 +73,13 @@ public final class MySQLDataSourcePreparerTest {
     @Before
     public void setUp() throws SQLException {
         when(jobConfiguration.getRuleConfig()).thenReturn(ruleConfiguration);
-        when(ruleConfiguration.getSource()).thenReturn(sourceScalingDataSourceConfigurationWrap);
-        when(sourceScalingDataSourceConfigurationWrap.unwrap()).thenReturn(sourceScalingDataSourceConfiguration);
+        when(ruleConfiguration.getSource()).thenReturn(sourceDataSourceConfigurationWrap);
+        when(sourceDataSourceConfigurationWrap.unwrap()).thenReturn(sourceScalingDataSourceConfiguration);
         when(sourceScalingDataSourceConfiguration.toDataSource()).thenReturn(sourceDataSource);
         when(sourceScalingDataSourceConfiguration.getRootConfig()).thenReturn(yamlRootConfiguration);
         when(yamlRootConfiguration.getRules()).thenReturn(Collections.singletonList(yamlShardingRuleConfiguration));
-        when(ruleConfiguration.getTarget()).thenReturn(targetScalingDataSourceConfigurationWrap);
-        when(targetScalingDataSourceConfigurationWrap.unwrap()).thenReturn(targetScalingDataSourceConfiguration);
+        when(ruleConfiguration.getTarget()).thenReturn(targetDataSourceConfigurationWrap);
+        when(targetDataSourceConfigurationWrap.unwrap()).thenReturn(targetScalingDataSourceConfiguration);
         when(targetScalingDataSourceConfiguration.toDataSource()).thenReturn(targetDataSource);
     }
 
