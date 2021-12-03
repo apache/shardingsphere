@@ -43,7 +43,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleConfiguration implement
     
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
-    private Collection<DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedList<>();
+    private Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedHashMap<>();
     
     private Map<String, DatabaseDiscoveryType> discoveryTypes = new LinkedHashMap<>();
 }
