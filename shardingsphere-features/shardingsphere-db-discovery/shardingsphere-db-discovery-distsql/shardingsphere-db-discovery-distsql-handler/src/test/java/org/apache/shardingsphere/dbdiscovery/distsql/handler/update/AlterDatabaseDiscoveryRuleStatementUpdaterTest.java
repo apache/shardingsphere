@@ -84,7 +84,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "TEST", "ha-heartbeat");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha-heartbeat", "TEST");
         return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap(), Collections.emptyMap());
     }
 }
