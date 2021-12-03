@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;

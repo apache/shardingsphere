@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer;
+package org.apache.shardingsphere.migration.common.job.preparer;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
 import org.junit.Test;
 
 import java.util.ArrayList;

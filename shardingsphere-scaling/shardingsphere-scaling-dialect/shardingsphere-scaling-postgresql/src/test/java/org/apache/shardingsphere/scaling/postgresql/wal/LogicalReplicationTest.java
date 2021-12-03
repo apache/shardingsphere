@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Before;

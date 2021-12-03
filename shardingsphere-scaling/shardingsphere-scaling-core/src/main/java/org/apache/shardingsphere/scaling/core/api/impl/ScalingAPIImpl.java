@@ -40,7 +40,7 @@ import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
@@ -259,11 +259,12 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfiguration jobConfig = getJobConfig(jobId);
         Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        TypedDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
         WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-        String ruleCacheId = null != workflowConfig ? workflowConfig.getRuleCacheId() : null;
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), yamlRootConfig, ruleCacheId);
+        String schemaName = workflowConfig.getSchemaName();
+        String ruleCacheId = workflowConfig.getRuleCacheId();
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
             each.setStatus(JobStatus.FINISHED);
@@ -285,7 +286,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
+        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {

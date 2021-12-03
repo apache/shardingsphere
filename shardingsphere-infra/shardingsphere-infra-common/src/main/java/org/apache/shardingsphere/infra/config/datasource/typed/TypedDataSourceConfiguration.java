@@ -15,17 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.typed;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * Scaling data source configuration.
+ * Typed data source configuration, SPI interface.
  */
-public interface ScalingDataSourceConfiguration {
+public interface TypedDataSourceConfiguration extends TypedSPI {
+    
+    /**
+     * Initialization.
+     *
+     * @param parameter data source configuration
+     */
+    void init(String parameter);
+    
+    /**
+     * Append JDBC parameters.
+     *
+     * @param parameters JDBC parameters
+     */
+    void appendJDBCParameters(Map<String, String> parameters);
     
     /**
      * Get database type.
@@ -37,9 +53,9 @@ public interface ScalingDataSourceConfiguration {
     /**
      * Wrap.
      *
-     * @return scaling data source configuration wrap
+     * @return typed data source configuration wrap
      */
-    ScalingDataSourceConfigurationWrap wrap();
+    TypedDataSourceConfigurationWrap wrap();
     
     /**
      * To data source.

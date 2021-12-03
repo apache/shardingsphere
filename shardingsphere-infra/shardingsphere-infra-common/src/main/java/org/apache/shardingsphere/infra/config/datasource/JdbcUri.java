@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.datasource;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import com.google.common.base.Strings;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Jdbc uri.
@@ -94,5 +95,33 @@ public final class JdbcUri {
             result.put(args[0], 1 == args.length ? null : args[1]);
         }
         return result;
+    }
+    
+    /**
+     * Append parameters.
+     *
+     * @param parameters JDBC parameters
+     * @return new JDBC url
+     */
+    public String appendParameters(final Map<String, String> parameters) {
+        return String.format("jdbc:%s://%s/%s?%s", getScheme(), getHost(), getDatabase(), mergeParameters(getParameters(), parameters));
+    }
+    
+    private String mergeParameters(final Map<String, String> parameters, final Map<String, String> appendParameters) {
+        parameters.putAll(appendParameters);
+        return formatParameters(parameters);
+    }
+    
+    private String formatParameters(final Map<String, String> parameters) {
+        StringBuilder result = new StringBuilder();
+        for (Entry<String, String> entry : parameters.entrySet()) {
+            result.append(entry.getKey());
+            if (null != entry.getValue()) {
+                result.append("=").append(entry.getValue());
+            }
+            result.append("&");
+        }
+        result.deleteCharAt(result.length() - 1);
+        return result.toString();
     }
 }
