@@ -55,19 +55,6 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
-        for (SQLTokenGenerator each : result) {
-            if (each instanceof ShardingRuleAware) {
-                ((ShardingRuleAware) each).setShardingRule(shardingRule);
-            }
-            if (each instanceof RouteContextAware) {
-                ((RouteContextAware) each).setRouteContext(routeContext);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
         addSQLTokenGenerator(result, new TableTokenGenerator());
         addSQLTokenGenerator(result, new DistinctProjectionPrefixTokenGenerator());
@@ -89,6 +76,12 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
         if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && routeContext.isSingleRouting()) {
             return;
+        }
+        if (toBeAddedSQLTokenGenerator instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) toBeAddedSQLTokenGenerator).setShardingRule(shardingRule);
+        }
+        if (toBeAddedSQLTokenGenerator instanceof RouteContextAware) {
+            ((RouteContextAware) toBeAddedSQLTokenGenerator).setRouteContext(routeContext);
         }
         sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
     }
