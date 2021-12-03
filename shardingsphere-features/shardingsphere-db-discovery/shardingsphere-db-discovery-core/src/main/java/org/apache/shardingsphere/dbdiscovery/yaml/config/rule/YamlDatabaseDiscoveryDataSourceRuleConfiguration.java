@@ -33,7 +33,7 @@ public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements Y
 
     private List<String> dataSourceNames = new ArrayList<>();
     
-    private String discoveryTypeName;
-    
     private String discoveryHeartbeatName;
+    
+    private String discoveryTypeName;
 }

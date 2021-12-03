@@ -62,8 +62,8 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     }
     
     private DatabaseDiscoveryDataSourceRuleConfiguration swapToObject(final String name, final YamlDatabaseDiscoveryDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new DatabaseDiscoveryDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(), yamlDataSourceRuleConfig.getDiscoveryTypeName(),
-                yamlDataSourceRuleConfig.getDiscoveryHeartbeatName());
+        return new DatabaseDiscoveryDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(), yamlDataSourceRuleConfig.getDiscoveryHeartbeatName(),
+                yamlDataSourceRuleConfig.getDiscoveryTypeName());
     }
     
     @Override
