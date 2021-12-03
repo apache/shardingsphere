@@ -73,7 +73,8 @@
                                     </manifestEntries>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resource>BC1024KE.DSA</resource>
+                                    <resource>*.DSA</resource>
+                                    <resource>*.SF</resource>
                                 </transformer>
                             </transformers>
                             <artifactSet>
