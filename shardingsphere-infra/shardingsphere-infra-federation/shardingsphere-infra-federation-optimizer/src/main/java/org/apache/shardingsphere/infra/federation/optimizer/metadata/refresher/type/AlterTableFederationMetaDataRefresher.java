@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -35,8 +37,10 @@ import java.util.Optional;
 public final class AlterTableFederationMetaDataRefresher implements FederationMetaDataRefresher<AlterTableStatement> {
     
     @Override
-    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames,
-                        final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, final AlterTableStatement sqlStatement, 
+                        final ShardingSphereMetaData schemaMetaData, final ConfigurationProperties props) throws SQLException {
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(),
+                schemaMetaData.getRuleMetaData().getRules(), props);
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTableName = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
