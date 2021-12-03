@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
 import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class BlockingQueueChannel extends AbstractBitSetChannel {
     
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfig().getBlockQueueSize());
+    // TODO persist blockQueueSize into registry center and transfer it here by construction
+    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
     
     private long fetchedIndex;
     
