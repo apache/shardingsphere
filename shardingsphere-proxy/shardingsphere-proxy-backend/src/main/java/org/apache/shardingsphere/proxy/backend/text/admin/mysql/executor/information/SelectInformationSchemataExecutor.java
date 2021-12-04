@@ -60,7 +60,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private String schemaNameAlias = SCHEMA_NAME;
     
-    private boolean isQueryDatabase;
+    private boolean queryDatabase;
     
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
         super(sql);
@@ -73,7 +73,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     }
     
     private void removeDuplicatedRow() {
-        if (isQueryDatabase) {
+        if (queryDatabase) {
             List<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
                     .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
             reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
@@ -97,7 +97,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
-        isQueryDatabase = !rowValue.isEmpty();
+        queryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
             rowMap.replace(schemaNameAlias, schemaName);
         } else {
