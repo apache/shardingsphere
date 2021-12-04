@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.cdc.core.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
+import org.apache.shardingsphere.cdc.mysql.binlog.BinlogPosition;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
