@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.cdc.core.channel.MemoryChannel;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -110,7 +110,7 @@ public final class PostgreSQLWalDumperTest {
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             walDumper.start();
-        } catch (final ScalingTaskExecuteException ignored) {
+        } catch (final CDCException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
     }

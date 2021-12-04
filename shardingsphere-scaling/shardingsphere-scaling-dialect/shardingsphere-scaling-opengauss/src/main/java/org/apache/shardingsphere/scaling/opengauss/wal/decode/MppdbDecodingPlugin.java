@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseTimestampUtils;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingException;
@@ -95,7 +95,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 result = readDeleteRowEvent(mppTableData);
                 break;
             default:
-                throw new ScalingTaskExecuteException("");
+                throw new CDCException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = mppTableData.getTableName().split("\\.");
         result.setSchemaName(tableMetaData[0]);

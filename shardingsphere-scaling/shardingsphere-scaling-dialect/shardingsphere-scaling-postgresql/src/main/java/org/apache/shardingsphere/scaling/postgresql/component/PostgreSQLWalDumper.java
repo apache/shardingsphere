@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.cdc.core.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
@@ -95,7 +95,7 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
                 pushRecord(record);
             }
         } catch (final SQLException ex) {
-            throw new ScalingTaskExecuteException(ex);
+            throw new CDCException(ex);
         }
     }
     

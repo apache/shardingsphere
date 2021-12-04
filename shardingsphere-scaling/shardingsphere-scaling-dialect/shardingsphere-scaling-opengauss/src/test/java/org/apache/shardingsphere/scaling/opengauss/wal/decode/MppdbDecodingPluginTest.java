@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
@@ -208,7 +208,7 @@ public final class MppdbDecodingPluginTest {
         assertTrue(actual instanceof PlaceholderEvent);
     }
     
-    @Test(expected = ScalingTaskExecuteException.class)
+    @Test(expected = CDCException.class)
     public void assertDecodeUnknownRowEventType() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");

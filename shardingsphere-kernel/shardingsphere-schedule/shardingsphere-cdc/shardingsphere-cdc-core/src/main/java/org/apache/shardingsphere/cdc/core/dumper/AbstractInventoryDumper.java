@@ -26,6 +26,7 @@ import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.cdc.core.datasource.MetaDataManager;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
 import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
@@ -105,7 +106,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         } catch (final SQLException ex) {
             stop();
             channel.close();
-            throw new RuntimeException(ex);
+            throw new CDCException(ex);
         } finally {
             pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }

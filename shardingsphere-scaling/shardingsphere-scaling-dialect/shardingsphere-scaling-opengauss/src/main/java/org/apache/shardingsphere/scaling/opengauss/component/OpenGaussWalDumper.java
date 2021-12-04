@@ -19,10 +19,10 @@ package org.apache.shardingsphere.scaling.opengauss.component;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.cdc.core.record.Column;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.Record;
@@ -127,7 +127,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
             if (ex.getMessage().contains("is already active")) {
                 return;
             }
-            throw new ScalingTaskExecuteException(ex);
+            throw new CDCException(ex);
         }
     }
 
