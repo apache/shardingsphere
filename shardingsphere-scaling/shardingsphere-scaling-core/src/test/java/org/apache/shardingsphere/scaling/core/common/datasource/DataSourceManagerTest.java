@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
-import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -36,27 +36,30 @@ import static org.junit.Assert.assertTrue;
 
 public final class DataSourceManagerTest {
     
-    private List<TaskConfiguration> taskConfigurations;
+    private JobConfiguration jobConfig;
     
     @Before
     public void setUp() {
-        taskConfigurations = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs();
+        jobConfig = ResourceUtil.mockJobConfig();
     }
     
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(taskConfigurations.get(0).getDumperConfig().getDataSourceConfig());
+        DataSource actual = dataSourceManager.getDataSource(jobConfig.getRuleConfig().getSource().unwrap());
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
-        DataSourceManager dataSourceManager = new DataSourceManager(taskConfigurations);
-        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
-        assertNotNull(cachedDataSources);
-        assertThat(cachedDataSources.size(), is(2));
-        dataSourceManager.close();
-        assertTrue(cachedDataSources.isEmpty());
+        try (DataSourceManager dataSourceManager = new DataSourceManager()) {
+            dataSourceManager.createSourceDataSource(jobConfig.getRuleConfig().getSource().unwrap());
+            dataSourceManager.createTargetDataSource(jobConfig.getRuleConfig().getTarget().unwrap());
+            Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
+            assertNotNull(cachedDataSources);
+            assertThat(cachedDataSources.size(), is(2));
+            dataSourceManager.close();
+            assertTrue(cachedDataSources.isEmpty());
+        }
     }
 }

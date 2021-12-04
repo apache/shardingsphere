@@ -20,14 +20,14 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.record.Record;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
+import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
+import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
@@ -61,7 +61,7 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<WalPosition> position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final CDCPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.scaling.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingAPIImpl;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -167,7 +167,7 @@ public final class ScalingAPIFactory {
         private ElasticJobAPIHolder() {
             checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
-            String namespace = repositoryConfig.getNamespace() + ScalingConstant.SCALING_ROOT;
+            String namespace = repositoryConfig.getNamespace() + MigrationConstant.MIGRATION_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
             jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -209,7 +209,7 @@ public final class ScalingAPIFactory {
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + ScalingConstant.SCALING_ROOT);
+            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + MigrationConstant.MIGRATION_ROOT);
             Properties props = repositoryConfig.getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 
 /**
  * Task configuration.

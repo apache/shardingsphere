@@ -19,18 +19,18 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
-import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.channel.MemoryChannel;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.DeleteRowsEvent;
@@ -104,7 +104,7 @@ public final class MySQLIncrementalDumperTest {
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
-        assertThat(((DataRecord) records.get(0)).getType(), is(ScalingConstant.INSERT));
+        assertThat(((DataRecord) records.get(0)).getType(), is(CDCDataChangeType.INSERT));
     }
     
     @Test
@@ -122,7 +122,7 @@ public final class MySQLIncrementalDumperTest {
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
-        assertThat(((DataRecord) records.get(0)).getType(), is(ScalingConstant.UPDATE));
+        assertThat(((DataRecord) records.get(0)).getType(), is(CDCDataChangeType.UPDATE));
     }
     
     @Test
@@ -137,7 +137,7 @@ public final class MySQLIncrementalDumperTest {
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
-        assertThat(((DataRecord) records.get(0)).getType(), is(ScalingConstant.DELETE));
+        assertThat(((DataRecord) records.get(0)).getType(), is(CDCDataChangeType.DELETE));
     }
     
     @Test

@@ -22,20 +22,20 @@ import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
+import org.apache.shardingsphere.cdc.core.record.PlaceholderRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
@@ -83,7 +83,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
                 .stream().collect(Collectors.toMap(ValueHandler::getTypeName, v -> v));
     }
     
-    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
+    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final CDCPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");
@@ -137,7 +137,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType(ScalingConstant.INSERT);
+            record.setType(CDCDataChangeType.INSERT);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
             }
@@ -151,7 +151,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord record = createDataRecord(event, beforeValues.length);
-            record.setType(ScalingConstant.UPDATE);
+            record.setType(CDCDataChangeType.UPDATE);
             for (int j = 0; j < beforeValues.length; j++) {
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
@@ -168,7 +168,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType(ScalingConstant.DELETE);
+            record.setType(CDCDataChangeType.DELETE);
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
             }
