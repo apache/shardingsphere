@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.opengauss.wal.decode;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.BaseTimestampUtils;
+import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseTimestampUtils;
 import org.opengauss.jdbc.TimestampUtils;
 
 import java.sql.SQLException;

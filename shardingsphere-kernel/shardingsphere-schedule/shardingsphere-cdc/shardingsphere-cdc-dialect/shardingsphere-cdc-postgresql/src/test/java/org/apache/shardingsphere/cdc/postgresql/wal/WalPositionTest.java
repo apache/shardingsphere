@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.cdc.postgresql.wal;
 
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
-import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.cdc.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLScalingSQLBuilderTest {
+public final class WalPositionTest {
     
     @Test
-    public void assertBuildInsertSQL() {
-        String actual = new PostgreSQLScalingSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
-        assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
+    public void assertCompareTo() {
+        WalPosition walPosition = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
+        assertThat(walPosition.compareTo(null), is(1));
+        assertThat(walPosition.compareTo(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)))), is(0));
     }
     
-    private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
-        result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
-        return result;
+    @Test
+    public void assertToString() {
+        assertThat(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("100"));
     }
 }

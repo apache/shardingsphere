@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.postgresql.replication.LogSequenceNumber;
 
 /**
- * OpenGauss sequence.
+ * PostgreSQL sequence.
  */
 @AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public final class PostgreSQLLogSequenceNumber implements BaseLogSequenceNumber {
     
     private final LogSequenceNumber logSequenceNumber;
 

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import org.apache.shardingsphere.cdc.postgresql.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionInitializer;
+import org.apache.shardingsphere.cdc.postgresql.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.cdc.postgresql.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 
 /**

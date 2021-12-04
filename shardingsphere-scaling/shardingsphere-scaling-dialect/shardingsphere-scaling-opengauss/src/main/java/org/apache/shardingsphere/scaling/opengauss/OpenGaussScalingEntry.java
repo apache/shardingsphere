@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussPositionIn
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussWalDumper;
 import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.cdc.postgresql.PostgreSQLInventoryDumper;
 
 /**
  * OpenGauss scaling entry.

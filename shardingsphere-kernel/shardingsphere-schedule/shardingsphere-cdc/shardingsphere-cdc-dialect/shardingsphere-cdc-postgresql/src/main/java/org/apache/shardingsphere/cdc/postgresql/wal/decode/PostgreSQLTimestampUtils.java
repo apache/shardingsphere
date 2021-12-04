@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.postgresql.jdbc.TimestampUtils;
+
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
- * OpenGauss sequence.
+ * PostgreSQL sequence.
  */
 @AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {
     
-    private final LogSequenceNumber logSequenceNumber;
+    private final TimestampUtils timestampUtils;
 
     @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
+    public Time toTime(final Calendar cal, final String input) throws SQLException {
+        return timestampUtils.toTime(cal, input);
     }
 
     @Override
-    public Object get() {
-        return logSequenceNumber;
+    public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
+        return timestampUtils.toTimestamp(cal, input);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.opengauss.component;
 import org.apache.shardingsphere.cdc.core.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.opengauss.wal.OpenGaussLogicalReplication;
 import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;

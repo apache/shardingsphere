@@ -35,11 +35,11 @@ import org.apache.shardingsphere.scaling.opengauss.wal.OpenGaussLogicalReplicati
 import org.apache.shardingsphere.scaling.opengauss.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussTimestampUtils;
 import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
-import org.apache.shardingsphere.scaling.postgresql.wal.decode.DecodingPlugin;
-import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
-import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
+import org.apache.shardingsphere.cdc.postgresql.wal.WalEventConverter;
+import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.cdc.postgresql.wal.decode.DecodingPlugin;
+import org.apache.shardingsphere.cdc.postgresql.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.cdc.postgresql.wal.event.PlaceholderEvent;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 

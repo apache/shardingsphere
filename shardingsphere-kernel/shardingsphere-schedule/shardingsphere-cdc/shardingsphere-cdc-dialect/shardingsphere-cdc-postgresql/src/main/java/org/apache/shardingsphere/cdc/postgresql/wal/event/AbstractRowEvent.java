@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.postgresql.wal.event;
 
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * OpenGauss sequence.
+ * Abstract row event.
  */
-@AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public abstract class AbstractRowEvent extends AbstractWalEvent {
     
-    private final LogSequenceNumber logSequenceNumber;
-
-    @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
-    }
-
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    private String schemaName;
+    
+    private String tableName;
 }

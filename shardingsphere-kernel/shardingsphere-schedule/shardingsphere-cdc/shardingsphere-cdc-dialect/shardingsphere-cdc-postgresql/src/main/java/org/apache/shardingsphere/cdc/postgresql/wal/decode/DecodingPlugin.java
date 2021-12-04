@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.postgresql.wal.decode;
 
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.apache.shardingsphere.cdc.postgresql.wal.event.AbstractWalEvent;
+
+import java.nio.ByteBuffer;
 
 /**
- * OpenGauss sequence.
+ * logical replication decoding plugin interface.
  */
-@AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public interface DecodingPlugin {
     
-    private final LogSequenceNumber logSequenceNumber;
-
-    @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
-    }
-
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    /**
+     * Decode wal event from logical replication data.
+     *
+     * @param data of logical replication
+     * @param logSequenceNumber wal lsn
+     * @return wal event
+     */
+    AbstractWalEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
 }

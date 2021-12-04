@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
-
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+package org.apache.shardingsphere.cdc.postgresql.wal.decode;
 
 /**
- * OpenGauss sequence.
+ * Base of log sequence number interface.
  */
-@AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public interface BaseLogSequenceNumber {
     
-    private final LogSequenceNumber logSequenceNumber;
+    /**
+     * Convert log sequence number to long.
+     *
+     * @return Long the squence number of long value
+     */
+    long asLong();
 
-    @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
-    }
-
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    /**
+     * Get the binded object.
+     *
+     * @return Object the bind log sequence number
+     */
+    Object get();
 }

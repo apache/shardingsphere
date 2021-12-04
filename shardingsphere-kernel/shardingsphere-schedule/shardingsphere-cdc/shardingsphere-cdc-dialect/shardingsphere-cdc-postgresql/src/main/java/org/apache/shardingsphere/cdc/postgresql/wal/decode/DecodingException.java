@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
-
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+package org.apache.shardingsphere.cdc.postgresql.wal.decode;
 
 /**
- * OpenGauss sequence.
+ * Decoding exception.
  */
-@AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public final class DecodingException extends RuntimeException {
     
-    private final LogSequenceNumber logSequenceNumber;
-
-    @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
-    }
-
-    @Override
-    public Object get() {
-        return logSequenceNumber;
+    private static final long serialVersionUID = -2864367374002473380L;
+    
+    public DecodingException(final Throwable cause) {
+        super(cause);
     }
 }

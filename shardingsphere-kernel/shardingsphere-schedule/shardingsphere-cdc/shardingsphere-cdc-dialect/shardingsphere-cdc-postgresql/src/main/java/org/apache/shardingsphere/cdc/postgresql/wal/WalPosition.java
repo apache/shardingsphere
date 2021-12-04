@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.postgresql.wal;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.cdc.postgresql.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
 
 /**
- * OpenGauss sequence.
+ * PostgreSQL wal position.
  */
-@AllArgsConstructor
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+@RequiredArgsConstructor
+@Getter
+public final class WalPosition implements CDCPosition<WalPosition> {
     
-    private final LogSequenceNumber logSequenceNumber;
-
+    private final BaseLogSequenceNumber logSequenceNumber;
+    
     @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
+    public int compareTo(final WalPosition position) {
+        if (null == position) {
+            return 1;
+        }
+        return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
     }
-
+    
     @Override
-    public Object get() {
-        return logSequenceNumber;
+    public String toString() {
+        return String.valueOf(logSequenceNumber.asLong());
     }
 }
