@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.component;
+package org.apache.shardingsphere.cdc.opengauss;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.cdc.core.exception.CDCException;
-import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.cdc.core.channel.Channel;
 import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.cdc.core.record.Column;
 import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.cdc.core.record.Record;
-import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
-import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
-import org.apache.shardingsphere.scaling.opengauss.wal.OpenGaussLogicalReplication;
-import org.apache.shardingsphere.scaling.opengauss.wal.decode.MppdbDecodingPlugin;
-import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussTimestampUtils;
-import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.cdc.opengauss.wal.OpenGaussLogicalReplication;
+import org.apache.shardingsphere.cdc.opengauss.wal.decode.MppdbDecodingPlugin;
+import org.apache.shardingsphere.cdc.opengauss.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.cdc.opengauss.wal.decode.OpenGaussTimestampUtils;
 import org.apache.shardingsphere.cdc.postgresql.wal.WalEventConverter;
 import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
 import org.apache.shardingsphere.cdc.postgresql.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.cdc.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.cdc.postgresql.wal.event.PlaceholderEvent;
+import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 

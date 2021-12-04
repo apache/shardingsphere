@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.component;
+package org.apache.shardingsphere.cdc.opengauss;
 
 import org.apache.shardingsphere.cdc.core.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.opengauss.wal.OpenGaussLogicalReplication;
-import org.apache.shardingsphere.scaling.opengauss.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.cdc.opengauss.wal.OpenGaussLogicalReplication;
+import org.apache.shardingsphere.cdc.opengauss.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
 import org.opengauss.replication.LogSequenceNumber;
 

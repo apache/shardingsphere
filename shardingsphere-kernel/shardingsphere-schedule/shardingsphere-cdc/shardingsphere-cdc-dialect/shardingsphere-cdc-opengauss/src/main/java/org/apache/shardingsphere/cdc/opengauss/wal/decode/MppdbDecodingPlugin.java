@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.wal.decode;
+package org.apache.shardingsphere.cdc.opengauss.wal.decode;
 
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
