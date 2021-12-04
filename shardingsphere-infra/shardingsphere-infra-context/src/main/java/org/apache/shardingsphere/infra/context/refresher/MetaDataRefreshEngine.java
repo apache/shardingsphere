@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
@@ -51,15 +50,12 @@ public final class MetaDataRefreshEngine {
     
     private final FederationSchemaMetaData federationMetaData;
     
-    private final SchemaBuilderMaterials materials;
-    
     private final ConfigurationProperties props;
     
     public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData, final ConfigurationProperties props) {
         this.schemaMetaData = schemaMetaData;
         this.federationMetaData = federationMetaData;
         this.props = props;
-        materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
     }
     
     /**
@@ -85,10 +81,10 @@ public final class MetaDataRefreshEngine {
     private void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames, final Collection<MetaDataRefresher> refreshers) throws SQLException {
         for (MetaDataRefresher each : refreshers) {
             if (each instanceof SchemaRefresher) {
-                ((SchemaRefresher) each).refresh(schemaMetaData, logicDataSourceNames, sqlStatement, materials.getProps());
+                ((SchemaRefresher) each).refresh(schemaMetaData, logicDataSourceNames, sqlStatement, props);
             }
             if (each instanceof FederationMetaDataRefresher) {
-                ((FederationMetaDataRefresher) each).refresh(federationMetaData, logicDataSourceNames, sqlStatement, materials);
+                ((FederationMetaDataRefresher) each).refresh(federationMetaData, logicDataSourceNames, sqlStatement, schemaMetaData, props);
             }
         }
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(schemaMetaData.getName(), loadActualSchema(schemaMetaData)));

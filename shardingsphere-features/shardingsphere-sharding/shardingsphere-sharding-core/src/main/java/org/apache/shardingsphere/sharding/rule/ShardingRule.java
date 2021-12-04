@@ -282,7 +282,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @param schema schema
      * @param sqlStatementContext sqlStatementContext
      * @param logicTableNames logic table names
-     * @return whether logic table is all binding tables.
+     * @return whether logic table is all binding tables
      */
     public boolean isAllBindingTables(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final Collection<String> logicTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {

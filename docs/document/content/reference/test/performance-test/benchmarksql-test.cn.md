@@ -278,3 +278,438 @@ rules:
         props:
           algorithm-expression: ds_${ol_w_id & 3}
 ```
+
+## BenchmarkSQL 5.0 PostgreSQL 语句列表
+
+### Create tables
+
+```sql
+create table bmsql_config (
+  cfg_name    varchar(30) primary key,
+  cfg_value   varchar(50)
+);
+
+create table bmsql_warehouse (
+  w_id        integer   not null,
+  w_ytd       decimal(12,2),
+  w_tax       decimal(4,4),
+  w_name      varchar(10),
+  w_street_1  varchar(20),
+  w_street_2  varchar(20),
+  w_city      varchar(20),
+  w_state     char(2),
+  w_zip       char(9)
+);
+
+create table bmsql_district (
+  d_w_id       integer       not null,
+  d_id         integer       not null,
+  d_ytd        decimal(12,2),
+  d_tax        decimal(4,4),
+  d_next_o_id  integer,
+  d_name       varchar(10),
+  d_street_1   varchar(20),
+  d_street_2   varchar(20),
+  d_city       varchar(20),
+  d_state      char(2),
+  d_zip        char(9)
+);
+
+create table bmsql_customer (
+  c_w_id         integer        not null,
+  c_d_id         integer        not null,
+  c_id           integer        not null,
+  c_discount     decimal(4,4),
+  c_credit       char(2),
+  c_last         varchar(16),
+  c_first        varchar(16),
+  c_credit_lim   decimal(12,2),
+  c_balance      decimal(12,2),
+  c_ytd_payment  decimal(12,2),
+  c_payment_cnt  integer,
+  c_delivery_cnt integer,
+  c_street_1     varchar(20),
+  c_street_2     varchar(20),
+  c_city         varchar(20),
+  c_state        char(2),
+  c_zip          char(9),
+  c_phone        char(16),
+  c_since        timestamp,
+  c_middle       char(2),
+  c_data         varchar(500)
+);
+
+create sequence bmsql_hist_id_seq;
+
+create table bmsql_history (
+  hist_id  integer,
+  h_c_id   integer,
+  h_c_d_id integer,
+  h_c_w_id integer,
+  h_d_id   integer,
+  h_w_id   integer,
+  h_date   timestamp,
+  h_amount decimal(6,2),
+  h_data   varchar(24)
+);
+
+create table bmsql_new_order (
+  no_w_id  integer   not null,
+  no_d_id  integer   not null,
+  no_o_id  integer   not null
+);
+
+create table bmsql_oorder (
+  o_w_id       integer      not null,
+  o_d_id       integer      not null,
+  o_id         integer      not null,
+  o_c_id       integer,
+  o_carrier_id integer,
+  o_ol_cnt     integer,
+  o_all_local  integer,
+  o_entry_d    timestamp
+);
+
+create table bmsql_order_line (
+  ol_w_id         integer   not null,
+  ol_d_id         integer   not null,
+  ol_o_id         integer   not null,
+  ol_number       integer   not null,
+  ol_i_id         integer   not null,
+  ol_delivery_d   timestamp,
+  ol_amount       decimal(6,2),
+  ol_supply_w_id  integer,
+  ol_quantity     integer,
+  ol_dist_info    char(24)
+);
+
+create table bmsql_item (
+  i_id     integer      not null,
+  i_name   varchar(24),
+  i_price  decimal(5,2),
+  i_data   varchar(50),
+  i_im_id  integer
+);
+
+create table bmsql_stock (
+  s_w_id       integer       not null,
+  s_i_id       integer       not null,
+  s_quantity   integer,
+  s_ytd        integer,
+  s_order_cnt  integer,
+  s_remote_cnt integer,
+  s_data       varchar(50),
+  s_dist_01    char(24),
+  s_dist_02    char(24),
+  s_dist_03    char(24),
+  s_dist_04    char(24),
+  s_dist_05    char(24),
+  s_dist_06    char(24),
+  s_dist_07    char(24),
+  s_dist_08    char(24),
+  s_dist_09    char(24),
+  s_dist_10    char(24)
+);
+```
+
+### Create indexes
+
+```sql
+alter table bmsql_warehouse add constraint bmsql_warehouse_pkey
+  primary key (w_id);
+
+alter table bmsql_district add constraint bmsql_district_pkey
+  primary key (d_w_id, d_id);
+
+alter table bmsql_customer add constraint bmsql_customer_pkey
+  primary key (c_w_id, c_d_id, c_id);
+
+create index bmsql_customer_idx1
+  on  bmsql_customer (c_w_id, c_d_id, c_last, c_first);
+
+alter table bmsql_oorder add constraint bmsql_oorder_pkey
+  primary key (o_w_id, o_d_id, o_id);
+
+create unique index bmsql_oorder_idx1
+  on  bmsql_oorder (o_w_id, o_d_id, o_carrier_id, o_id);
+
+alter table bmsql_new_order add constraint bmsql_new_order_pkey
+  primary key (no_w_id, no_d_id, no_o_id);
+
+alter table bmsql_order_line add constraint bmsql_order_line_pkey
+  primary key (ol_w_id, ol_d_id, ol_o_id, ol_number);
+
+alter table bmsql_stock add constraint bmsql_stock_pkey
+  primary key (s_w_id, s_i_id);
+
+alter table bmsql_item add constraint bmsql_item_pkey
+  primary key (i_id);
+```
+
+### New Order 业务
+
+stmtNewOrderSelectWhseCust
+```sql
+UPDATE bmsql_district 
+    SET d_next_o_id = d_next_o_id + 1 
+    WHERE d_w_id = ? AND d_id = ?
+```
+
+stmtNewOrderSelectDist
+```sql
+SELECT d_tax, d_next_o_id 
+    FROM bmsql_district 
+    WHERE d_w_id = ? AND d_id = ? 
+    FOR UPDATE
+```
+
+stmtNewOrderUpdateDist
+```sql
+UPDATE bmsql_district 
+    SET d_next_o_id = d_next_o_id + 1 
+    WHERE d_w_id = ? AND d_id = ?
+```
+
+stmtNewOrderInsertOrder
+```sql
+INSERT INTO bmsql_oorder (
+    o_id, o_d_id, o_w_id, o_c_id, o_entry_d, 
+    o_ol_cnt, o_all_local) 
+VALUES (?, ?, ?, ?, ?, ?, ?)
+```
+
+stmtNewOrderInsertNewOrder
+```sql
+INSERT INTO bmsql_new_order (
+    no_o_id, no_d_id, no_w_id) 
+VALUES (?, ?, ?)
+```
+
+stmtNewOrderSelectStock
+```sql
+SELECT s_quantity, s_data, 
+       s_dist_01, s_dist_02, s_dist_03, s_dist_04, 
+       s_dist_05, s_dist_06, s_dist_07, s_dist_08, 
+       s_dist_09, s_dist_10 
+    FROM bmsql_stock 
+    WHERE s_w_id = ? AND s_i_id = ? 
+    FOR UPDATE
+```
+
+stmtNewOrderSelectItem
+```sql
+SELECT i_price, i_name, i_data 
+    FROM bmsql_item 
+    WHERE i_id = ?
+```
+
+stmtNewOrderUpdateStock
+```sql
+UPDATE bmsql_stock 
+    SET s_quantity = ?, s_ytd = s_ytd + ?, 
+        s_order_cnt = s_order_cnt + 1, 
+        s_remote_cnt = s_remote_cnt + ? 
+    WHERE s_w_id = ? AND s_i_id = ?
+```
+
+stmtNewOrderInsertOrderLine
+```sql
+INSERT INTO bmsql_order_line (
+    ol_o_id, ol_d_id, ol_w_id, ol_number, 
+    ol_i_id, ol_supply_w_id, ol_quantity, 
+    ol_amount, ol_dist_info) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+```
+
+### Payment 业务
+
+stmtPaymentSelectWarehouse
+```sql
+SELECT w_name, w_street_1, w_street_2, w_city, 
+       w_state, w_zip 
+    FROM bmsql_warehouse 
+    WHERE w_id = ? 
+```
+
+stmtPaymentSelectDistrict
+```sql
+SELECT d_name, d_street_1, d_street_2, d_city, 
+       d_state, d_zip 
+    FROM bmsql_district 
+    WHERE d_w_id = ? AND d_id = ?
+```
+
+stmtPaymentSelectCustomerListByLast
+```sql
+SELECT c_id 
+    FROM bmsql_customer 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_last = ? 
+    ORDER BY c_first
+```
+
+stmtPaymentSelectCustomer
+```sql
+SELECT c_first, c_middle, c_last, c_street_1, c_street_2, 
+       c_city, c_state, c_zip, c_phone, c_since, c_credit, 
+       c_credit_lim, c_discount, c_balance 
+    FROM bmsql_customer 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ? 
+    FOR UPDATE
+```
+
+stmtPaymentSelectCustomerData
+```sql
+SELECT c_data 
+    FROM bmsql_customer 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?
+```
+
+stmtPaymentUpdateWarehouse
+```sql
+UPDATE bmsql_warehouse 
+    SET w_ytd = w_ytd + ? 
+    WHERE w_id = ?
+```
+
+stmtPaymentUpdateDistrict
+```sql
+UPDATE bmsql_district 
+    SET d_ytd = d_ytd + ? 
+    WHERE d_w_id = ? AND d_id = ?
+```
+
+stmtPaymentUpdateCustomer
+```sql
+UPDATE bmsql_customer 
+    SET c_balance = c_balance - ?, 
+        c_ytd_payment = c_ytd_payment + ?, 
+        c_payment_cnt = c_payment_cnt + 1 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?
+```
+
+stmtPaymentUpdateCustomerWithData
+```sql
+UPDATE bmsql_customer 
+    SET c_balance = c_balance - ?, 
+        c_ytd_payment = c_ytd_payment + ?, 
+        c_payment_cnt = c_payment_cnt + 1, 
+        c_data = ? 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?
+```
+
+stmtPaymentInsertHistory
+```sql
+INSERT INTO bmsql_history (
+    h_c_id, h_c_d_id, h_c_w_id, h_d_id, h_w_id, 
+    h_date, h_amount, h_data) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+```
+
+### Order Status 业务
+
+stmtOrderStatusSelectCustomerListByLast
+```sql
+SELECT c_id 
+    FROM bmsql_customer 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_last = ? 
+    ORDER BY c_first
+```
+
+stmtOrderStatusSelectCustomer
+```sql
+SELECT c_first, c_middle, c_last, c_balance 
+    FROM bmsql_customer 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?
+```
+
+stmtOrderStatusSelectLastOrder
+```sql
+SELECT o_id, o_entry_d, o_carrier_id 
+    FROM bmsql_oorder 
+    WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ? 
+      AND o_id = (
+          SELECT max(o_id) 
+              FROM bmsql_oorder 
+              WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ?
+          )
+```
+
+stmtOrderStatusSelectOrderLine
+```sql
+SELECT ol_i_id, ol_supply_w_id, ol_quantity, 
+       ol_amount, ol_delivery_d 
+    FROM bmsql_order_line 
+    WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ? 
+    ORDER BY ol_w_id, ol_d_id, ol_o_id, ol_number
+```
+
+### Stock level 业务
+
+stmtStockLevelSelectLow
+```sql
+SELECT count(*) AS low_stock FROM (
+    SELECT s_w_id, s_i_id, s_quantity 
+        FROM bmsql_stock 
+        WHERE s_w_id = ? AND s_quantity < ? AND s_i_id IN (
+            SELECT ol_i_id 
+                FROM bmsql_district 
+                JOIN bmsql_order_line ON ol_w_id = d_w_id 
+                 AND ol_d_id = d_id 
+                 AND ol_o_id >= d_next_o_id - 20 
+                 AND ol_o_id < d_next_o_id 
+                WHERE d_w_id = ? AND d_id = ? 
+        ) 
+    ) AS L
+```
+
+### Delivery BG 业务
+
+stmtDeliveryBGSelectOldestNewOrder
+```sql
+SELECT no_o_id 
+    FROM bmsql_new_order 
+    WHERE no_w_id = ? AND no_d_id = ? 
+    ORDER BY no_o_id ASC
+```
+
+stmtDeliveryBGDeleteOldestNewOrder
+```sql
+DELETE FROM bmsql_new_order 
+    WHERE no_w_id = ? AND no_d_id = ? AND no_o_id = ?
+```
+
+stmtDeliveryBGSelectOrder
+```sql
+SELECT o_c_id 
+    FROM bmsql_oorder 
+    WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?
+```
+
+stmtDeliveryBGUpdateOrder
+```sql
+UPDATE bmsql_oorder 
+    SET o_carrier_id = ? 
+    WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?
+```
+
+stmtDeliveryBGSelectSumOLAmount
+```sql
+SELECT sum(ol_amount) AS sum_ol_amount 
+    FROM bmsql_order_line 
+    WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?
+```
+
+stmtDeliveryBGUpdateOrderLine
+```sql
+UPDATE bmsql_order_line
+SET ol_delivery_d = ?
+WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?
+```
+
+stmtDeliveryBGUpdateCustomer
+```sql
+UPDATE bmsql_customer 
+    SET c_balance = c_balance + ?, 
+        c_delivery_cnt = c_delivery_cnt + 1 
+    WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?
+```

@@ -49,7 +49,7 @@ public final class DatabaseDiscoverySpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.database-discovery.data-sources.pr_ds.discovery-type-name", "mgr");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.database-discovery.data-sources.primary_replica_ds.discovery-type-name", "mgr");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);

@@ -21,8 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.SQLHintExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -48,10 +47,13 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     private final DatabaseType databaseType;
     
+    private final SQLHintExtractor sqlHintExtractor;
+    
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
         databaseType = getDatabaseType(sqlStatement);
+        sqlHintExtractor = new SQLHintExtractor(sqlStatement);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
@@ -82,6 +84,15 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
      * @return dataSource name
      */
     public Optional<String> findHintDataSourceName() {
-        return SQLHintExtractor.findHintDataSourceName((AbstractSQLStatement) sqlStatement);
+        return sqlHintExtractor.findHintDataSourceName();
+    }
+    
+    /**
+     * Judge whether is hint routed to write data source or not.
+     *
+     * @return whether is hint routed to write data source or not
+     */
+    public boolean isHintWriteRouteOnly() {
+        return sqlHintExtractor.isHintWriteRouteOnly();
     }
 }

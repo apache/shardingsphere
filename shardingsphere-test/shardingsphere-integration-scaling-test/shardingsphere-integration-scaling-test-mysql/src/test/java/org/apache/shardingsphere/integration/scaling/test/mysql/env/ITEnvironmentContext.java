@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import java.io.FileReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,11 +80,16 @@ public final class ITEnvironmentContext {
     }
     
     private static String createScalingConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
-        JobConfiguration jobConfiguration = new JobConfiguration();
         RuleConfiguration ruleConfiguration = new RuleConfiguration();
+        setupChangedYamlRuleConfigClassNames(ruleConfiguration);
         ruleConfiguration.setSource(SourceConfiguration.getDockerConfiguration(tableRules).wrap());
         ruleConfiguration.setTarget(TargetConfiguration.getDockerConfiguration().wrap());
+        JobConfiguration jobConfiguration = new JobConfiguration();
         jobConfiguration.setRuleConfig(ruleConfiguration);
         return new Gson().toJson(jobConfiguration);
+    }
+    
+    private static void setupChangedYamlRuleConfigClassNames(final RuleConfiguration ruleConfig) {
+        ruleConfig.setChangedYamlRuleConfigClassNames(Collections.singletonList("org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"));
     }
 }

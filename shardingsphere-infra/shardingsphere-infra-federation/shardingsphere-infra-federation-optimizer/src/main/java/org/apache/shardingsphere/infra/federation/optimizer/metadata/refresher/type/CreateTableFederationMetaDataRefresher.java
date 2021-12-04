@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -34,8 +36,10 @@ import java.util.Optional;
 public final class CreateTableFederationMetaDataRefresher implements FederationMetaDataRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames,
-                        final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, 
+                        final ShardingSphereMetaData schemaMetaData, final ConfigurationProperties props) throws SQLException {
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), 
+                schemaMetaData.getRuleMetaData().getRules(), props);
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
                 .map(each -> TableMetaDataBuilder.decorateFederationTableMetaData(each, materials.getRules())).ifPresent(schema::put);

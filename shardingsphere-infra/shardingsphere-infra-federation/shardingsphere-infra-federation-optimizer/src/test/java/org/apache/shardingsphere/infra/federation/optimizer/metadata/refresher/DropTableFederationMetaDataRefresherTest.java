@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.DropTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -73,7 +74,7 @@ public final class DropTableFederationMetaDataRefresherTest {
         FederationSchemaMetaData schema = buildSchema();
         FederationMetaDataRefresher<DropTableStatement> schemaRefresher = new DropTableFederationMetaDataRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
+        schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class));
         assertFalse(schema.getTables().containsKey("t_order"));
     }
     
@@ -106,7 +107,7 @@ public final class DropTableFederationMetaDataRefresherTest {
         FederationSchemaMetaData schema = buildSchema();
         FederationMetaDataRefresher<DropTableStatement> schemaRefresher = new DropTableFederationMetaDataRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        schemaRefresher.refresh(schema, Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
+        schemaRefresher.refresh(schema, Collections.singletonList("t_order_item"), dropTableStatement, mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private FederationSchemaMetaData buildSchema() {

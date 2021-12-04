@@ -18,4 +18,5 @@
 
 <sql-cases>
     <distsql-case id="preview-sql" value="PREVIEW SELECT * FROM t_order;" />
+    <distsql-case id="parse-sql" value="PARSE SELECT * FROM t_order;" />
 </sql-cases>

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.scaling.core.util;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.driver.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -53,12 +54,17 @@ public final class ResourceUtil {
      * @return ShardingSphere-JDBC target job configuration
      */
     public static JobConfiguration mockShardingSphereJdbcTargetJobConfig() {
-        JobConfiguration result = new JobConfiguration();
         RuleConfiguration ruleConfig = new RuleConfiguration();
+        setupChangedYamlRuleConfigClassNames(ruleConfig);
         ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
         ruleConfig.setTarget(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_target.yaml")).wrap());
+        JobConfiguration result = new JobConfiguration();
         result.setRuleConfig(ruleConfig);
         return result;
+    }
+    
+    private static void setupChangedYamlRuleConfigClassNames(final RuleConfiguration ruleConfig) {
+        ruleConfig.setChangedYamlRuleConfigClassNames(Collections.singletonList("org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"));
     }
     
     /**
@@ -67,10 +73,11 @@ public final class ResourceUtil {
      * @return standard JDBC as target job configuration
      */
     public static JobConfiguration mockStandardJdbcTargetJobConfig() {
-        JobConfiguration result = new JobConfiguration();
         RuleConfiguration ruleConfig = new RuleConfiguration();
+        setupChangedYamlRuleConfigClassNames(ruleConfig);
         ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
         ruleConfig.setTarget(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml")).wrap());
+        JobConfiguration result = new JobConfiguration();
         result.setRuleConfig(ruleConfig);
         return result;
     }

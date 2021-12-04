@@ -19,13 +19,22 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Rule configuration.
  */
 @Getter
 public final class RuleConfiguration {
+    
+    @Setter
+    @NonNull
+    private List<String> changedYamlRuleConfigClassNames = Collections.emptyList();
     
     private TypedDataSourceConfigurationWrap source;
     

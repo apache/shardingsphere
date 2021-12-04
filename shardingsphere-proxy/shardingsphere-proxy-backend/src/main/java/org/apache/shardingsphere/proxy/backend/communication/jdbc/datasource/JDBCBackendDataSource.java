@@ -40,18 +40,6 @@ import java.util.Optional;
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     /**
-     * Get connection.
-     *
-     * @param schemaName scheme name
-     * @param dataSourceName data source name
-     * @return connection
-     * @throws SQLException SQL exception
-     */
-    public Connection getConnection(final String schemaName, final String dataSourceName) throws SQLException {
-        return getConnections(schemaName, dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-    }
-    
-    /**
      * Get connections.
      *
      * @param schemaName scheme name

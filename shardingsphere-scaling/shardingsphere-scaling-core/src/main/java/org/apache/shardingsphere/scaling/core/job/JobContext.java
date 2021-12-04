@@ -25,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,9 +56,9 @@ public final class JobContext {
     
     public JobContext(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
-        JobConfigurationUtil.fillInProperties(jobConfig);
+        jobConfig.fillInProperties();
         jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getShardingItem();
-        taskConfigs = JobConfigurationUtil.toTaskConfigs(jobConfig);
+        taskConfigs = jobConfig.convertToTaskConfigs();
     }
 }

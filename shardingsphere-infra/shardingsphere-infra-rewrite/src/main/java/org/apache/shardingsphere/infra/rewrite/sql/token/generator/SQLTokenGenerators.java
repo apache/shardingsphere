@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL token generators.
  */
 public final class SQLTokenGenerators {
     
-    private final Collection<SQLTokenGenerator> sqlTokenGenerators = new LinkedList<>();
+    private final Map<Class<?>, SQLTokenGenerator> sqlTokenGenerators = new LinkedHashMap<>();
     
     /**
      * Add all SQL token generators.
@@ -42,19 +44,10 @@ public final class SQLTokenGenerators {
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (!containsClass(each)) {
-                this.sqlTokenGenerators.add(each);
+            if (!this.sqlTokenGenerators.containsKey(each.getClass())) {
+                this.sqlTokenGenerators.put(each.getClass(), each);
             }
         }
-    }
-    
-    private boolean containsClass(final SQLTokenGenerator sqlTokenGenerator) {
-        for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (each.getClass() == sqlTokenGenerator.getClass()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**
@@ -62,13 +55,13 @@ public final class SQLTokenGenerators {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param schema sShardingSphere schema
+     * @param schema ShardingSphere schema
      * @return SQL tokens
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
         List<SQLToken> result = new LinkedList<>();
-        for (SQLTokenGenerator each : sqlTokenGenerators) {
+        for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
             setUpSQLTokenGenerator(each, parameters, schema, result);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;

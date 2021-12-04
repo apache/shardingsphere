@@ -17,6 +17,6 @@
 
 mode: memory
 transaction: local
-feature: readwrite-splitting
+feature: encrypt
 framework: springboot-starter-jpa
 

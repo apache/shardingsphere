@@ -32,7 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Native authority provide algorithm.
+ * 
+ * @deprecated This algorithm will be removed in a future version.
 */
+@Deprecated
 public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
