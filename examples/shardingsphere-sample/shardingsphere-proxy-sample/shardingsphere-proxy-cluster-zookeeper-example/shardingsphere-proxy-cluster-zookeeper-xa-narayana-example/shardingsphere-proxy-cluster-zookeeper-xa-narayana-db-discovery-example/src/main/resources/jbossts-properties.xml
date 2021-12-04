@@ -23,15 +23,15 @@ Narayana official website：https://narayana.io/documentation/index.html
 <properties>
     <entry key="CoordinatorEnvironmentBean.commitOnePhase">YES</entry>
     <entry key="ObjectStoreEnvironmentBean.objectStoreType">com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore</entry>
-    <entry key="ObjectStoreEnvironmentBean.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=172.25.4.62;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
+    <entry key="ObjectStoreEnvironmentBean.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=localhost;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
     <entry key="ObjectStoreEnvironmentBean.tablePrefix">Action</entry>
     <entry key="ObjectStoreEnvironmentBean.dropTable">true</entry>
     <entry key="ObjectStoreEnvironmentBean.stateStore.objectStoreType">com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore</entry>
-    <entry key="ObjectStoreEnvironmentBean.stateStore.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=172.25.4.62;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
+    <entry key="ObjectStoreEnvironmentBean.stateStore.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=localhost;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
     <entry key="ObjectStoreEnvironmentBean.stateStore.tablePrefix">stateStore</entry>
     <entry key="ObjectStoreEnvironmentBean.stateStore.dropTable">true</entry>
     <entry key="ObjectStoreEnvironmentBean.communicationStore.objectStoreType">com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore</entry>
-    <entry key="ObjectStoreEnvironmentBean.communicationStore.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=172.25.4.62;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
+    <entry key="ObjectStoreEnvironmentBean.communicationStore.jdbcAccess">com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;DatabaseName=jbossts;ServerName=localhost;PortNumber=3306;User=j_jbossts;Password=9MfNHoRncCi8</entry>
     <entry key="ObjectStoreEnvironmentBean.communicationStore.tablePrefix">Communication</entry>
     <entry key="ObjectStoreEnvironmentBean.communicationStore.dropTable">true</entry>
     <entry key="ObjectStoreEnvironmentBean.transactionSync">ON</entry>
