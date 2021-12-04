@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -54,17 +55,17 @@ public final class ProxyConfigurationLoader {
      * @param path configuration path of ShardingSphere-Proxy
      * @return configuration of ShardingSphere-Proxy
      * @throws IOException IO exception
-     * @throws URISyntaxException URI syntax exception
      */
-    public static YamlProxyConfiguration load(final String path) throws IOException, URISyntaxException {
+    public static YamlProxyConfiguration load(final String path) throws IOException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigs = loadRuleConfigurations(configPath);
         return new YamlProxyConfiguration(serverConfig, ruleConfigs.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
-    
-    private static File getResourceFile(final String path) throws URISyntaxException {
+
+    @SneakyThrows(URISyntaxException.class)
+    private static File getResourceFile(final String path) {
         URL url = ProxyConfigurationLoader.class.getResource(path);
         return null == url ? new File(path) : new File(url.toURI().getPath());
     }
