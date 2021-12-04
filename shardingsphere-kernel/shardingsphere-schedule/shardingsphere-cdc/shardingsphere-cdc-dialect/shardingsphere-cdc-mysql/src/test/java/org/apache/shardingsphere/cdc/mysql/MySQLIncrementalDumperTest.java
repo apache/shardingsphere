@@ -35,8 +35,6 @@ import org.apache.shardingsphere.cdc.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.cdc.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +61,6 @@ public final class MySQLIncrementalDumperTest {
     
     @Before
     public void setUp() {
-        ScalingContext.getInstance().init(new ServerConfiguration());
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
         channel = new MemoryChannel(records -> {

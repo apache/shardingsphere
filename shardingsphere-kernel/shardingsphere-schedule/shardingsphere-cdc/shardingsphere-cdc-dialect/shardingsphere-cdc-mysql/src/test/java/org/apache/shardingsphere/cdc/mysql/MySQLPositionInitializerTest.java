@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql.component;
+package org.apache.shardingsphere.cdc.mysql;
 
 import org.apache.shardingsphere.cdc.mysql.binlog.BinlogPosition;
 import org.junit.Before;
