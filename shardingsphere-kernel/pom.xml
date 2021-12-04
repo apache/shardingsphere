@@ -34,6 +34,7 @@
         <module>shardingsphere-authority</module>
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-schedule</module>
+        <module>shardingsphere-data-pipeline</module>
         <module>shardingsphere-parser</module>
     </modules>
 </project>

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.migration.common.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
