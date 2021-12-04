@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.core.job.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 

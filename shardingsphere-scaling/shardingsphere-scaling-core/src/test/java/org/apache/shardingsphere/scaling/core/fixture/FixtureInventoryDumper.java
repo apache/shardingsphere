@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.cdc.core.dumper.AbstractInventoryDumper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

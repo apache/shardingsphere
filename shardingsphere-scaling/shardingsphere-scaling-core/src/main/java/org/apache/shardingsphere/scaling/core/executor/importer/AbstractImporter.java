@@ -20,20 +20,20 @@ package org.apache.shardingsphere.scaling.core.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.cdc.core.channel.Channel;
-import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
-import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
-import org.apache.shardingsphere.cdc.core.record.GroupedDataRecord;
-import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -148,13 +148,13 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             switch (buffer.get(0).getType()) {
-                case CDCDataChangeType.INSERT:
+                case IngestDataChangeType.INSERT:
                     executeBatchInsert(connection, buffer);
                     break;
-                case CDCDataChangeType.UPDATE:
+                case IngestDataChangeType.UPDATE:
                     executeUpdate(connection, buffer);
                     break;
-                case CDCDataChangeType.DELETE:
+                case IngestDataChangeType.DELETE:
                     executeBatchDelete(connection, buffer);
                     break;
                 default:
