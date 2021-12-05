@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.cdc.core.exception.CDCException;
 import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
 import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -49,7 +50,7 @@ public final class InventoryTaskTest {
         taskConfig = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
     }
     
-    @Test(expected = RuntimeException.class)
+    @Test(expected = CDCException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_non_exist");
