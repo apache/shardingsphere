@@ -2542,3 +2542,75 @@ LIKE_REGEX
 EQ_REGEX
     : E Q UL_ R E G E X
     ;
+
+SYS
+    : S Y S
+    ;
+
+MAXDATAFILES
+    : M A X D A T A F I L E S
+    ;
+
+MAXINSTANCES
+    : M A X I N S T A N C E S
+    ;
+
+AL32UTF8
+    : A L '3' '2' U T F '8'
+    ;
+
+AL16UTF16
+    : A L '1' '6' U T F '1' '6'
+    ;
+
+UTF8
+    : U T F '8'
+    ;
+
+USER_DATA
+    : U S E R UL_ D A T A
+    ;
+
+MAXLOGFILES
+    : M A X L O G F I L E S
+    ;
+
+MAXLOGMEMBERS
+    : M A X L O G M E M B E R S
+    ;
+
+MAXLOGHISTORY
+    : M A X L O G H I S T O R Y
+    ;
+
+EXTENT
+    : E X T E N T
+    ;
+
+SYSAUX
+    : S Y S A U X
+    ;
+
+LEAF
+    : L E A F
+    ;
+
+AUTOALLOCATE
+    : A U T O A L L O C A T E
+    ;
+
+UNIFORM
+    : U N I F O R M
+    ;
+
+FILE_NAME_CONVERT
+    : F I L E UL_ N A M E UL_ C O N V E R T
+    ;
+
+ALLOCATE
+    : A L L O C A T E
+    ;
+
+DEALLOCATE
+    : D E A L L O C A T E
+    ;
