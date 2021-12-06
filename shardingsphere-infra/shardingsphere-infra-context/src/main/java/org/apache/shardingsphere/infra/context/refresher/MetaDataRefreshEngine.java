@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
