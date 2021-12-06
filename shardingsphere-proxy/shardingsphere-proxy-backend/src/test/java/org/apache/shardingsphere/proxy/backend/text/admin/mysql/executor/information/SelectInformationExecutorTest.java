@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -65,6 +68,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SelectInformationExecutorTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(SQLChecker.class);
+    }
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
     
@@ -97,7 +104,7 @@ public final class SelectInformationExecutorTest {
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaData.getRules()).thenReturn(Collections.emptyList());
+        when(metaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
         return new ShardingSphereMetaData("sharding_db",
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
                 metaData, mock(ShardingSphereSchema.class)
@@ -106,7 +113,7 @@ public final class SelectInformationExecutorTest {
     
     private ShardingSphereMetaData getEmptyMetaData(final String schemaName) throws SQLException {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaData.getRules()).thenReturn(Collections.emptyList());
+        when(metaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
         return new ShardingSphereMetaData(schemaName,
                 new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
                 metaData, mock(ShardingSphereSchema.class)
@@ -155,7 +162,7 @@ public final class SelectInformationExecutorTest {
                 fail("expected : `sharding_db` or `test`");
             }
         }
-        assertThat(count, is(2));
+        assertThat(count, is(1));
     }
     
     @Test
