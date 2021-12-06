@@ -56,8 +56,8 @@ public class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkN
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
-        ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration shardingConfiguration = new ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
+        ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration configuration = new ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration();
+        DataSource dataSource = configuration.getDataSource();
         ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}ExampleService exampleService = new ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}ExampleService(dataSource);
         exampleService.run();
     <#else>

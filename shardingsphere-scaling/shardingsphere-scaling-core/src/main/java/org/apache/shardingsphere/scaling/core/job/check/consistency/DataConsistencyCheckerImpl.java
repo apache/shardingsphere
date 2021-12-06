@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceCo
 import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;

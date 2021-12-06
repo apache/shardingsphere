@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.check;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingFixtureDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
