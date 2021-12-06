@@ -21,6 +21,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
@@ -43,12 +44,12 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     
     private final BackendTransactionManager backendTransactionManager;
 
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
-        this.backendConnection = backendConnection;
+        this.connectionSession = backendConnection;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
@@ -56,7 +57,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
-                if (tclStatement instanceof MySQLBeginTransactionStatement && backendConnection.getTransactionStatus().isInTransaction()) {
+                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
                     backendTransactionManager.commit();
                 }
                 backendTransactionManager.begin();

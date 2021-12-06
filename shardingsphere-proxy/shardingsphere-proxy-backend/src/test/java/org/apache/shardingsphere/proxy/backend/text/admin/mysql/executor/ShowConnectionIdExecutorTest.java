@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -42,8 +42,8 @@ public final class ShowConnectionIdExecutorTest {
         }
     }
     
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
+    private ConnectionSession mockBackendConnection() {
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionId()).thenReturn(109);
         return result;
     }
