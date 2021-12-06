@@ -35,7 +35,7 @@ public final class AuthorityCheckerFixture implements SQLChecker<AuthorityRule> 
     
     @Override
     public boolean check(final String schemaName, final Grantee grantee, final AuthorityRule authorityRule) {
-        return !schemaName.equals("test");
+        return !"test".equals(schemaName);
     }
     
     @Override
