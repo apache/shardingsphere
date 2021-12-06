@@ -55,14 +55,7 @@ public final class FilterableTable extends AbstractTable implements ProjectableF
     
     @Override
     public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        Collection<QueryResult> queryResults = executor.execute(metaData, new FilterableTableScanContext(root, filters, projects));
-        return new AbstractEnumerable<Object[]>() {
-            
-            @Override
-            public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(queryResults);
-            }
-        };
+        return executor.execute(metaData, new FilterableTableScanContext(root, filters, projects));
     }
     
     @Override

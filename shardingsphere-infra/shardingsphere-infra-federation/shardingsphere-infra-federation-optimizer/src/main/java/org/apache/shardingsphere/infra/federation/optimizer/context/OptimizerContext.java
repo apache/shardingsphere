@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import java.util.Map;
 public final class OptimizerContext {
     
     private final FederationMetaData metaData;
+    
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final Map<String, OptimizerParserContext> parserContexts;
     

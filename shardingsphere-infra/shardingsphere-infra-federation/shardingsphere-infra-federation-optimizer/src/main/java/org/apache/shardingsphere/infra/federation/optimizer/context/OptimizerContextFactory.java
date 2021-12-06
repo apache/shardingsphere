@@ -44,6 +44,6 @@ public final class OptimizerContextFactory {
         FederationMetaData federationMetaData = new FederationMetaData(metaDataMap);
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(metaDataMap);
         Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(federationMetaData);
-        return new OptimizerContext(federationMetaData, parserContexts, plannerContexts);
+        return new OptimizerContext(federationMetaData, metaDataMap, parserContexts, plannerContexts);
     }
 }
