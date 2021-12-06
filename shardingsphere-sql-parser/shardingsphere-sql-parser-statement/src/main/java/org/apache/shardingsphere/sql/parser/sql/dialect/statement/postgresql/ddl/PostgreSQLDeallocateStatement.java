@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL deallocate statement.
  */
 @ToString
-@Getter
-@Setter
-public final class PostgreSQLDeallocateStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLDeallocateStatement extends DeallocateStatement implements PostgreSQLStatement {
 }

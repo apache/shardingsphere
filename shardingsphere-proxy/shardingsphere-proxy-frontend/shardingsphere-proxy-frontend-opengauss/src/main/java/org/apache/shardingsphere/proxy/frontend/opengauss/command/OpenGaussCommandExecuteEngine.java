@@ -67,6 +67,11 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     }
     
     @Override
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+        return OpenGaussErrorPacketFactory.newInstance(cause);
+    }
+    
+    @Override
     public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         return postgreSQLCommandExecuteEngine.getOtherPacket(backendConnection);
     }

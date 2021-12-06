@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.backend.text.admin.mysql.MySQLAdminExecutorFactory
+org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorFactory

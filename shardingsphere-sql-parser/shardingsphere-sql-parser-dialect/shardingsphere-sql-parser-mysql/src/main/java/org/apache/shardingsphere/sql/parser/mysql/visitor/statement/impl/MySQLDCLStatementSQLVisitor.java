@@ -86,7 +86,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUsageContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ACLTypeEnum;
@@ -567,11 +566,6 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         result.setRetainCurrentPassword(false);
         return result;
-    }
-    
-    @Override
-    public ASTNode visitString_(final String_Context ctx) {
-        return new StringLiteralValue(ctx.getText());
     }
     
     @Override

@@ -63,7 +63,7 @@
         </data-source>
     </alter-resource>
     
-    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
@@ -78,9 +78,9 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </alter-sharding-table-rule>
+    </alter-sharding-auto-table-rule>
 
-    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-inline-expression">
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-inline-expression">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy algorithm-name="hash_mod">
@@ -94,8 +94,21 @@
                 </properties>
             </key-generate-strategy>
         </rule>
-    </alter-sharding-table-rule>
+    </alter-sharding-auto-table-rule>
 
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+    
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
         <rule table-groups="t_order,t_order_item"/>
         <rule table-groups="t_1,t_2"/>
@@ -152,7 +165,7 @@
         </rule>
     </alter-encrypt-rule>
 
-    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assistedQueryColumn">
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
                 <encryptor algorithm-name="AES">
@@ -166,7 +179,22 @@
             </column>
         </rule>
     </alter-encrypt-rule>
-
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
+        <rule name="t_encrypt" queryWithCipherColumn="false">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule  table-name="t_order">
@@ -201,4 +229,16 @@
             </algorithm>
         </shadow-algorithm>
     </alter-shadow-algorithm>
+
+    <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
+        <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
+            <algorithm algorithm-name="inline">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
+                </properties>
+            </algorithm>
+        </shardingAlgorithm>
+    </alter-sharding-algorithm>
+
+    <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 </sql-parser-test-cases>

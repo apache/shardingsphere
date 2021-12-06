@@ -1,5 +1,5 @@
 +++
-pre = "<b>5.8. </b>"
+pre = "<b>6.8. </b>"
 title = "Distributed Transaction"
 weight = 8
 chapter = true
@@ -7,14 +7,14 @@ chapter = true
 
 ## ShardingSphereTransactionManager
 
-| *SPI Name*                               | *Description*                         |
-| ---------------------------------------- | ------------------------------------- |
-| ShardingSphereTransactionManager         | Distributed transaction manager       |
+| *SPI Name*                              | *Description*                         |
+| --------------------------------------- | ------------------------------------- |
+| ShardingSphereTransactionManager        | Distributed transaction manager       |
 
-| *Implementation Class*                   | *Description*                         |
-| ---------------------------------------- | ------------------------------------- |
-| XAShardingSphereTransactionManager       | XA distributed transaction manager    |
-| SeataATShardingSphereTransactionManager  | Seata distributed transaction manager |
+| *Implementation Class*                  | *Description*                         |
+| --------------------------------------- | ------------------------------------- |
+| XAShardingSphereTransactionManager      | XA distributed transaction manager    |
+| SeataATShardingSphereTransactionManager | Seata distributed transaction manager |
 
 ## XATransactionManagerProvider
 

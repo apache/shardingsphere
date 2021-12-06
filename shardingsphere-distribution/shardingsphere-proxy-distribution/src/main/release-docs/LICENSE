@@ -219,10 +219,10 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.0: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.5.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.17.0: https://calcite.apache.org/avatica, Apache 2.0 
-    avatica-metrics 1.17.0: https://calcite.apache.org/avatica, Apache 2.0
-    calcite-core 1.26.0: https://calcite.apache.org, Apache 2.0
-    calcite-linq4j 1.26.0: https://calcite.apache.org, Apache 2.0
+    avatica-core 1.18.0: https://calcite.apache.org/avatica, Apache 2.0 
+    avatica-metrics 1.18.0: https://calcite.apache.org/avatica, Apache 2.0
+    calcite-core 1.27.0: https://calcite.apache.org, Apache 2.0
+    calcite-linq4j 1.27.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.10: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
     commons-dbcp 1.4: https://github.com/apache/commons-dbcp, Apache 2.0
@@ -236,7 +236,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-recipes 5.1.0:  https://github.com/apache/curator, Apache 2.0
     error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
-    Failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
+    failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
     grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
@@ -249,7 +249,6 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.8.6: https://github.com/google/gson, Apache 2.0
     guava 29.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    HikariCP-java7-2.4.13: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient 4.5.9: http://hc.apache.org/httpcomponents-client, Apache 2.0
     httpcore 4.4.11: http://hc.apache.org/httpcomponents-core-ga, Apache 2.0
     jackson-annotations 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
@@ -263,9 +262,22 @@ The text of each license is the standard Apache 2.0 license.
     json-smart 2.3: https://www.minidev.net/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     listenablefuture 9999.0-empty-to-avoid-conflict-with-guava:https://github.com/google/guava, Apache 2.0
-    log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
+    log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-all 4.1.45: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.69.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.69.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.69.Final: https://github.com/netty, Apache 2.0
     opentracing-api 0.30.0: https://opentracing.io, Apache 2.0
     opentracing-noop 0.30.0: https://opentracing.io, Apache 2.0
     opentracing-util 0.30.0: https://opentracing.io, Apache 2.0
@@ -285,12 +297,12 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
-    atomikos-util 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-api 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-jdbc 4.0.6: https://www.atomikos.com, Apache 2.0
-    transactions-jta 4.0.6: https://www.atomikos.com, Apache 2.0
+    groovy 2.4.19-indy: https://github.com/apache/groovy, Apache 2.0
+    atomikos-util 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-jdbc 5.0.8: https://www.atomikos.com, Apache 2.0
+    transactions-jta 5.0.8: https://www.atomikos.com, Apache 2.0
     
 ========================================================================
 BSD licenses
@@ -299,7 +311,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.7.2: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.9.2: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 5.0.4: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License

@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,11 +37,9 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter<SQLStatementContext> implements SchemaMetaDataAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter<SQLStatementContext> implements SchemaMetaDataAware {
     
     private ShardingSphereSchema schema;
-    
-    private boolean queryWithCipherColumn;
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -50,12 +48,13 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
+        Collection<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;
         }
         String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (EncryptCondition each : encryptConditions) {
+            boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(each.getTableName());
             if (queryWithCipherColumn) {
                 encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(parameters)));
             }

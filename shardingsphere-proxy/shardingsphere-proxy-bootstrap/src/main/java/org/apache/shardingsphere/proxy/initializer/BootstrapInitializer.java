@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.initializer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -32,12 +33,13 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.version.ProxyVersion;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
+import org.apache.shardingsphere.migration.common.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
@@ -89,6 +91,7 @@ public final class BootstrapInitializer {
     }
     
     private void setDatabaseServerInfo() {
+        CommonConstants.PROXY_VERSION.set(ProxyVersion.VERSION);
         findBackendDataSource().ifPresent(dataSourceSample -> {
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
             log.info(databaseServerInfo.toString());
@@ -129,7 +132,6 @@ public final class BootstrapInitializer {
         if (null == yamlConfig.getServerConfiguration().getScaling()) {
             return Optional.empty();
         }
-        
         ServerConfiguration result = new ServerConfiguration();
         result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());

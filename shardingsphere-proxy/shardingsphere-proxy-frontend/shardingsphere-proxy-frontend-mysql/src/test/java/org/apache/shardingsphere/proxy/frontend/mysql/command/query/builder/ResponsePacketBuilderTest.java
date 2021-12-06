@@ -47,7 +47,7 @@ public final class ResponsePacketBuilderTest {
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 8, "VARCHAR", 7, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
-        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader);
+        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255);
         assertTrue(actual.stream().findAny().isPresent());
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
     }

@@ -17,31 +17,68 @@
   -->
 
 <sql-cases>
-    <!--  
-    <sql-case id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
-    <sql-case id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
-    -->
-    <!--<sql-case id="assertSelectWindow" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" db-types="PostgreSQL" />-->
-    <!--<sql-case id="assertSelectFetch" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" db-types="PostgreSQL" />-->
-    <!--<sql-case id="assertSelectFor" value="SELECT * FROM t_order FOR UPDATE OF t_order" db-types="PostgreSQL" />-->
-    <!--<sql-case id="assertSelectRowNumberAndPartition" value="SELECT ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_id ASC) AS row_, user_id, order_id FROM t_order" db-types="SQLServer" />-->
-    <!--<sql-case id="assertSelectWithStartWith" value="SELECT * FROM t_order_item START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" db-types="Oracle" />-->
-    <!--<sql-case id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />-->
-    <!--<sql-case id="assertInsertWithAll" value="INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
-    <!--<sql-case id="assertInsertWithFirst" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
-    <!--<sql-case id="assertDeleteTableAlias" value="DELETE ALIAS_XXX FROM TABLES_XXX AS ALIAS_XXX" db-types="MySQL,Oracle,SQLServer"/>-->
-    <!--<sql-case id="assertSelectWithCaseWithParameterMarker" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithOrSignWithParameterMarker" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithTildeWithParameterMarker" value="SELECT * FROM t_order WHERE ~t_order.order_id" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithBinaryWithParameterMarker" value="SELECT * FROM t_order WHERE BINARY t_order.order_id" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithJsonExtractSignWithParameterMarker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithJsonUnquoteExtractSignWithParameterMarker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithRowWithParameterMarker" value="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithOdbcEscapeSyntaxWithParameterMarker" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithMatchWithParameterMarker" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithCollateWithMarker" value="NOT SUPPORT SELECT * FROM t_order WHERE order_id collate ?" db-types="MySQL"/>-->
-    <!--<sql-case id="assertSelectWithMatchAgainstWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE MATCH(TABLE_XXX.COLUMN_XXX) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />-->
-    <!--<sql-case id="assertSelectLikeConcatWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE COLUMN_XXX LIKE CONCAT('%%', ?, '%%')" />-->
-    <!--<sql-case id="assertSelectGeographyWithParameterMarker" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />-->
-    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW REPLICA_QUERY RULE FROM schema_name" />
+    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" db-types="MySQL,Oracle" />
+    <sql-case id="assert_select_with_collate_with_marker" value="NOT SUPPORT SELECT * FROM t_order WHERE order_id collate ?" db-types="MySQL"/>
+    <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>
+    <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>
+    <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />
+    <sql-case id="assert_dist_SQL_show_rule_parse_conflict" value="SHOW REPLICA_QUERY RULE FROM schema_name"/>
+    <sql-case id="create_bit_xor_table" value="create table BIT_XOR (a int);" db-types="MySQL"/>
+    <sql-case id="select_with_comment1" value="select 2 as expected, /*!01000/**/*/ 2 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment2" value="select 1 as expected, /*!99998/**/*/ 1 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment5" value="select 7 as expected, /*!01000 1 + /* 8 + */ 2 + */ 4 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment6" value="select 7 as expected, /*!01000 1 + /*!99998 8 + */ 2 + */ 4 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment7" value="select 4 as expected, /*!99998 1 + /*!99998 8 + */ 2 + */ 4 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment8" value="select 4 as expected, /*!99998 1 + /*!01000 8 + */ 2 + */ 4 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment9" value="select 7 as expected, /*!01000 1 + /*!01000 8 + /*!01000 error */ 16 + */ 2 + */ 4 as result;" db-types="MySQL"/>
+    <sql-case id="select_with_comment10" value="select 4 as expected, /* 1 + /*!01000 8 + */ 2 + */ 4;" db-types="MySQL"/>
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT;" db-types="MySQL"/>
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL"/>
+    <sql-case id="delimiter" value="DELIMITER |;" db-types="MySQL"/>
+    <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL"/>
+    <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL"/>
+    <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL"/>
+    <sql-case id="copy_table_from_stdin" value="COPY bitwise_test FROM STDIN NULL 'null';" db-types="PostgreSQL" />
+    <sql-case id="create_type" value="create type avg_state as (total bigint, count bigint);" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate" value="create aggregate my_avg(int4) (stype = avg_state, sfunc = avg_transfn, finalfunc = avg_finalfn)" db-types="PostgreSQL"/>
+    <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
+    <sql-case id="create_schema" value="CREATE SCHEMA alt_nsp1;" db-types="PostgreSQL" />
+    <sql-case id="alter_aggregate" value="ALTER AGGREGATE alt_agg3(int) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
+    <sql-case id="create_conversion" value="CREATE CONVERSION alt_conv1 FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;" db-types="PostgreSQL" />
+    <sql-case id="alter_conversion" value="ALTER CONVERSION alt_conv1 RENAME TO alt_conv2;" db-types="PostgreSQL" />
+    <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
+    <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
+    <sql-case id="create_language" value="CREATE LANGUAGE alt_lang1 HANDLER plpgsql_call_handler" db-types="PostgreSQL" />
+    <sql-case id="alter_language" value="ALTER LANGUAGE alt_lang1 OWNER TO regress_alter_generic_user1" db-types="PostgreSQL" />
+    <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
+    <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
+    <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
+    <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
+    <sql-case id="create_text_search_dictionary" value="CREATE TEXT SEARCH DICTIONARY alt_ts_dict1 (template=simple);" db-types="PostgreSQL" />
+    <sql-case id="alter_text_search_dictionary" value="ALTER TEXT SEARCH DICTIONARY alt_ts_dict1 RENAME TO alt_ts_dict2" db-types="PostgreSQL" />
+    <sql-case id="create_text_search_template" value="CREATE TEXT SEARCH TEMPLATE alt_ts_temp1 (lexize=dsimple_lexize)" db-types="PostgreSQL" />
+    <sql-case id="alter_text_search_template" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp1 RENAME TO alt_ts_temp2" db-types="PostgreSQL" />
+    <sql-case id="create_tex_search_parser" value="CREATE TEXT SEARCH PARSER alt_ts_prs1 (start = prsd_start, gettoken = prsd_nexttoken, end = prsd_end, lextypes = prsd_lextype)" db-types="PostgreSQL" />
+    <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL" />
+    <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
+    <sql-case id="drop_language" value="DROP LANGUAGE alt_lang2 CASCADE" db-types="PostgreSQL" />
+    <sql-case id="drop_schema" value="DROP SCHEMA alt_nsp1 CASCADE" db-types="PostgreSQL" />
+    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
+    <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
+    <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
+    <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
+    <sql-case id="create_rule" value="create rule def_view_test_ins as on insert to def_view_test do instead insert into def_test select new.*" db-types="PostgreSQL" />
+    <sql-case id="drop_rule" value="drop rule def_view_test_ins on def_view_test" db-types="PostgreSQL" />
+    <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
+    <sql-case id="create_domain" value="create domain mytype as text" db-types="PostgreSQL" />
+    <sql-case id="drop_domain" value="drop domain mytype cascade" db-types="PostgreSQL" />
+    <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
+    <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
+    <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="drop_type" value="drop type lockmodes" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
+    <sql-case id="alter_view_set" value="alter view my_locks set (autovacuum_enabled = false)" db-types="PostgreSQL" />
+    <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
 </sql-cases>

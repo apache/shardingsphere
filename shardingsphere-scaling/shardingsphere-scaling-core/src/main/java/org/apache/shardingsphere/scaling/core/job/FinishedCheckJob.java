@@ -45,7 +45,7 @@ public final class FinishedCheckJob implements SimpleJob {
             }
             long jobId = jobInfo.getJobId();
             try {
-                JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class);
+                JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
                 if (!ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                     continue;
                 }

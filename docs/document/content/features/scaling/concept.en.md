@@ -1,16 +1,11 @@
 +++
-pre = "<b>3.5.1. </b>"
 title = "Core Concept"
 weight = 1
 +++
 
 ## Scaling Job
 
-It refers one complete process of scaling data from old sharding rules to new sharding rule.
-
-## Data Node
-
-Same as the [Data Node](/en/features/sharding/concept/sql/) in sharding/SQL.
+It refers one complete process of scaling data from old rule to new rule.
 
 ## Inventory Data
 

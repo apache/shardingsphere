@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-db-discovery-distsql</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-db-discovery-distsql-parser</artifactId>
     <name>${project.artifactId}</name>
@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-parser-engine</artifactId>
+            <artifactId>shardingsphere-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

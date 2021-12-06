@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,13 +27,15 @@ public final class MySQLServerInfoTest {
     
     @Test
     public void assertSetServerVersion() {
+        CommonConstants.PROXY_VERSION.set("5.0.0");
         MySQLServerInfo.setServerVersion("5.1.47");
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.1.47-ShardingSphere-Proxy 5.0.0-beta"));
+        assertThat(MySQLServerInfo.getServerVersion(), is("5.1.47-ShardingSphere-Proxy 5.0.0"));
     }
     
     @Test
     public void assertSetServerVersionForNull() {
+        CommonConstants.PROXY_VERSION.set("5.0.0");
         MySQLServerInfo.setServerVersion(null);
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0-beta"));
+        assertThat(MySQLServerInfo.getServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
     }
 }

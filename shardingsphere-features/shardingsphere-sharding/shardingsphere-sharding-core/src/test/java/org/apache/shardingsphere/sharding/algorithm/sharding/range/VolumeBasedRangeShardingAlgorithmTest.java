@@ -46,38 +46,74 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0L));
+    }
+    
+    private void assertPreciseDoSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0L)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, shardingValue), is("t_order_0"));
+    }
+    
+    @Test
+    public void assertPreciseDoShardingWithIntShardingValue() {
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0));
     }
     
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
+        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12L)));
+    }
+    
+    private void assertRangeDoShardingWithoutLowerBound(final RangeShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_0"));
         assertTrue(actual.contains("t_order_1"));
     }
     
     @Test
+    public void assertRangeDoShardingWithoutLowerBoundWithIntShardingValue() {
+        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12)));
+    }
+    
+    @Test
     public void assertRangeDoShardingWithoutUpperBound() {
+        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40L)));
+    }
+    
+    private void assertRangeDoShardingWithoutUpperBound(final RangeShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_4"));
         assertTrue(actual.contains("t_order_5"));
     }
     
     @Test
+    public void assertRangeDoShardingWithoutUpperBoundWithIntShardingValue() {
+        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40)));
+    }
+    
+    @Test
     public void assertRangeDoSharding() {
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(12L, 55L)));
+    }
+    
+    private void assertRangeDoSharding(final RangeShardingValue<Comparable<?>> shardingValue) {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(12L, 55L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertThat(actual.size(), is(5));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_3"));
         assertTrue(actual.contains("t_order_4"));
         assertTrue(actual.contains("t_order_5"));
+    }
+    
+    @Test
+    public void assertRangeDoShardingWithIntegerShardingValue() {
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(12, 55)));
     }
     
     @Test

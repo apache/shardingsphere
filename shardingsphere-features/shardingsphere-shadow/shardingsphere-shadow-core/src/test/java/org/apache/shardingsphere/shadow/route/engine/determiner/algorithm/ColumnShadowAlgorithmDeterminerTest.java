@@ -67,7 +67,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()), "t_order"), is(true));
+        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -105,16 +105,14 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition shadowDetermineCondition = new ShadowDetermineCondition(ShadowOperationType.INSERT);
-        shadowDetermineCondition.initShadowColumnCondition(createColumnValuesMappings());
-        return shadowDetermineCondition;
+        ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
+        result.initShadowColumnCondition(createColumnValuesMapping());
+        return result;
     }
     
-    private Collection<ShadowColumnCondition> createColumnValuesMappings() {
-        Collection<ShadowColumnCondition> result = new LinkedList<>();
+    private ShadowColumnCondition createColumnValuesMapping() {
         Collection<Comparable<?>> values = new LinkedList<>();
         values.add(1);
-        result.add(new ShadowColumnCondition("t_order", "user_id", values));
-        return result;
+        return new ShadowColumnCondition("t_order", "user_id", values);
     }
 }

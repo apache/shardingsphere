@@ -21,7 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import lombok.ToString;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
@@ -31,13 +32,14 @@ import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class IncrementalTaskProgress implements Progress {
     
-    private volatile ScalingPosition<?> position;
+    private volatile CDCPosition<?> position;
     
     private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
     
-    public IncrementalTaskProgress(final ScalingPosition<?> position) {
+    public IncrementalTaskProgress(final CDCPosition<?> position) {
         this.position = position;
     }
 }

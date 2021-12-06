@@ -43,6 +43,6 @@ public final class RewriteAssertionEntity {
     @XmlElement(required = true, name = "output")
     private List<RewriteOutputEntity> outputs;
     
-    @XmlAttribute(name = "db-type")
-    private String databaseType;
+    @XmlAttribute(name = "db-types")
+    private String databaseTypes;
 }

@@ -27,14 +27,14 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -82,12 +82,12 @@ public final class SelectInformationExecutorTest {
         List<String> keys = new ArrayList<>(mockMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
             when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
+            when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
             when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
         }
         when(RESULT_SET.next()).thenReturn(true, false);
         when(metaData.getColumnCount()).thenReturn(mockMap.size());
         when(RESULT_SET.getMetaData()).thenReturn(metaData);
-        
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
@@ -173,6 +173,22 @@ public final class SelectInformationExecutorTest {
         selectSchemataExecutor.execute(mock(BackendConnection.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
     }
+
+    @Test
+    public void assertSelectSchemaAliasExecute() throws SQLException {
+        final String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
+        Map<String, String> mockResultSetMap = new HashMap<>();
+        mockResultSetMap.put("sn", "demo_ds_0");
+        mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
+        mockResultSet(mockResultSetMap, false);
+        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
+        metaDataMap.put("demo_ds_0", getMetaData());
+        metaDataMap.put("test", mock(ShardingSphereMetaData.class));
+        DefaultDatabaseMetadataExecutor selectExecutor = new DefaultDatabaseMetadataExecutor(sql);
+        selectExecutor.execute(mock(BackendConnection.class));
+        assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
+        assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
+    }
     
     @Test
     public void assertDefaultExecute() throws SQLException {
@@ -182,7 +198,7 @@ public final class SelectInformationExecutorTest {
         mockResultSet(mockMap, false);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        DefaultSelectInformationExecutor defaultSelectMetaDataExecutor = new DefaultSelectInformationExecutor(sql);
+        DefaultDatabaseMetadataExecutor defaultSelectMetaDataExecutor = new DefaultDatabaseMetadataExecutor(sql);
         defaultSelectMetaDataExecutor.execute(mock(BackendConnection.class));
         assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
         while (defaultSelectMetaDataExecutor.getMergedResult().next()) {

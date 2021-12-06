@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -36,6 +37,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
@@ -43,11 +45,12 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public final class CommandExecutorTaskTest {
     
@@ -60,7 +63,7 @@ public final class CommandExecutorTaskTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext handlerContext;
     
     @Mock
@@ -90,6 +93,8 @@ public final class CommandExecutorTaskTest {
     @Before
     public void setup() {
         when(backendConnection.closeDatabaseCommunicationEngines(anyBoolean())).thenReturn(Collections.emptyList());
+        when(backendConnection.isAutoCommit()).thenReturn(true);
+        when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     
     @Test
@@ -99,14 +104,11 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, backendConnection)).thenReturn(queryCommandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
-        when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(queryCommandExecutor).close();
         verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
@@ -119,14 +121,11 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine().writeQueryData(any(ChannelHandlerContext.class), any(BackendConnection.class), any(QueryCommandExecutor.class), anyInt())).thenReturn(true);
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
-        when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
@@ -143,14 +142,11 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, backendConnection)).thenReturn(commandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
-        when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(connectionStatus).waitUntilConnectionRelease();
-        verify(connectionStatus).switchToUsing();
-        verify(connectionStatus).switchToReleased();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(commandExecutor).close();
@@ -161,15 +157,16 @@ public final class CommandExecutorTaskTest {
     public void assertRunWithError() {
         RuntimeException mockException = new RuntimeException("mock");
         when(backendConnection.getConnectionStatus()).thenReturn(connectionStatus);
-        doThrow(mockException).when(connectionStatus).switchToUsing();
-        when(engine.getCodecEngine().createPacketPayload(message)).thenReturn(payload);
+        doThrow(mockException).when(backendConnection).isAutoCommit();
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException, backendConnection)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(backendConnection)).thenReturn(Optional.of(databasePacket));
         when(backendConnection.closeConnections(false)).thenReturn(Collections.emptyList());
         when(backendConnection.closeFederationExecutor()).thenReturn(Collections.emptyList());
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
-        verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
+        verify(handlerContext, times(2)).write(databasePacket);
+        verify(handlerContext).flush();
         verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
 }

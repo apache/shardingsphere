@@ -26,12 +26,13 @@ chapter = true
 | Yang Yi             | KomachiSion             |
 | Yonglun Zhang       | tuohai666, zhangyonglun |
 | Kimm King           | kimmking                |
+| Haoran Meng         | menghaoranss            |
 
 ### Committers
 
 | Name            | GitHub ID               |
 | :-------------- | :---------------------- |
-| Guangyuan Wang  | wgy8283335              |
+| Xiaoman Wang    | wgy8283335              |
 | Haisheng Sun    | sunbufu                 |
 | Qi Wang         | wqzwh                   |
 | Ya Li           | betterjava              |
@@ -42,7 +43,6 @@ chapter = true
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
 | Xiao Yu         | yu199195                |
-| Haoran Meng     | menghaoranss            |
 | Jingshang Lu    | jingshanglu             |
 | Zhengqiang Duan | strongduanmu            |
 | Jiwei Guo       | Technoboy-              |
@@ -50,6 +50,7 @@ chapter = true
 | Lu Qiu          | Lucas-307               |
 | Hongsheng Zhong | sandynz                 |
 | Longtao Jiang   | RaigorJiang             |
+| Thanoshan MV | ThanoshanMV |
 
 ## Contributors
 

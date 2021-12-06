@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -28,11 +29,11 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -63,11 +64,15 @@ public final class CommandExecutorTask implements Runnable {
     @Override
     public void run() {
         boolean isNeedFlush = false;
-        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
+        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
             ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 connectionStatus.waitUntilConnectionRelease();
                 connectionStatus.switchToUsing();
+            }
+            if (!backendConnection.isAutoCommit() && !backendConnection.getTransactionStatus().isInTransaction()) {
+                BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
+                transactionManager.begin();
             }
             isNeedFlush = executeCommand(context, payload, backendConnection);
             // CHECKSTYLE:OFF
@@ -78,13 +83,13 @@ public final class CommandExecutorTask implements Runnable {
             // TODO optimize SQLStatementSchemaHolder
             SQLStatementSchemaHolder.remove();
             Collection<SQLException> exceptions = closeExecutionResources();
-            if (isNeedFlush) {
-                context.flush();
-            }
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
                 exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
                 exceptions.addAll(backendConnection.closeConnections(false));
                 backendConnection.getConnectionStatus().switchToReleased();
+            }
+            if (isNeedFlush) {
+                context.flush();
             }
             processClosedExceptions(exceptions);
         }
@@ -114,14 +119,14 @@ public final class CommandExecutorTask implements Runnable {
         if (!ExpectedExceptions.isExpected(cause.getClass())) {
             log.error("Exception occur: ", cause);
         }
-        context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, backendConnection));
+        context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, backendConnection));
         Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(backendConnection);
-        databasePacket.ifPresent(context::writeAndFlush);
+        databasePacket.ifPresent(context::write);
+        context.flush();
     }
     
     private Collection<SQLException> closeExecutionResources() {
         Collection<SQLException> result = new LinkedList<>();
-        PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeDatabaseCommunicationEngines(false));
         result.addAll(backendConnection.closeFederationExecutor());
         return result;

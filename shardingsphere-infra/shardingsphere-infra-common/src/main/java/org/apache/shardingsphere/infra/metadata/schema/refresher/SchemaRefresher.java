@@ -36,7 +36,7 @@ public interface SchemaRefresher<T extends SQLStatement> extends MetaDataRefresh
      * Refresh ShardingSphere schema.
      *
      * @param schemaMetaData schema meta data
-     * @param logicDataSourceNames route dataSource names
+     * @param logicDataSourceNames route data source names
      * @param sqlStatement SQL statement
      * @param props configuration properties
      * @throws SQLException SQL exception

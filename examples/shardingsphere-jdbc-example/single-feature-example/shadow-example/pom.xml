@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>single-feature-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shadow-example</artifactId>
     <packaging>pom</packaging>
@@ -32,5 +32,6 @@
     <modules>
         <module>shadow-spring-namespace-mybatis-example</module>
         <module>shadow-spring-boot-mybatis-example</module>
+        <module>shadow-raw-jdbc-example</module>
     </modules>
 </project>

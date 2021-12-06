@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
 
 import java.util.Map;

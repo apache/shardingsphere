@@ -22,7 +22,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -124,23 +126,18 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
-                                        final String groupName, final String primaryDataSourceName) {
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        if (null == primaryDataSourceName || primaryDataSourceName.equals(oldPrimaryDataSource)) {
-            String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
-            if (newPrimaryDataSource.isEmpty()) {
-                return;
-            }
-            if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-                oldPrimaryDataSource = newPrimaryDataSource;
-                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
-            }
-        } else {
-            oldPrimaryDataSource = primaryDataSourceName;
+        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+        if (newPrimaryDataSource.isEmpty()) {
+            return;
+        }
+        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
+            oldPrimaryDataSource = newPrimaryDataSource;
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
         }
     }
     
@@ -148,7 +145,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
         String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
         return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
     }
-
+    
     private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
@@ -268,8 +265,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames,
-                                      final String groupName, final String primaryDataSourceName) {
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
@@ -279,13 +275,26 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
         }
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames,
-                groupName, primaryDataSourceName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
+                groupName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }
     
     @Override
     public String getPrimaryDataSource() {
         return oldPrimaryDataSource;
+    }
+    
+    @Override
+    public void updateProperties(final String groupName, final Properties props) {
+        new JobConfigurationAPIImpl(coordinatorRegistryCenter).updateJobConfiguration(createJobConfiguration("MGR-" + groupName, props.getProperty("keepAliveCron")));
+    }
+    
+    private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
+        JobConfigurationPOJO result = new JobConfigurationPOJO();
+        result.setJobName(jobName);
+        result.setCron(cron);
+        result.setShardingTotalCount(1);
+        return result;
     }
     
     @Override

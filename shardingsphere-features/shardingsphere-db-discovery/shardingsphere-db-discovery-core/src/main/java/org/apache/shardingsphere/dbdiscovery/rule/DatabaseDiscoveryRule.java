@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryRuleConstants;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -48,7 +50,7 @@ import java.util.Optional;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
@@ -68,7 +70,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
     }
     
-    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes, 
+    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes,
                                   final String schemaName, final Map<String, DataSource> dataSourceMap) {
         checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
         this.discoveryTypes = discoveryTypes;
@@ -111,13 +113,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryType databaseDiscoveryType = dataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
-            String primaryDataSourceName = dataSourceRule.getPrimaryDataSourceName();
-            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
+            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
             databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
-                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName, primaryDataSourceName);
+                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -139,7 +140,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return found data source rule
      */
@@ -173,6 +174,19 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
                 }
             }
         }
+    }
+    
+    @Override
+    public Map<String, Object> export() {
+        Map<String, Object> result = new HashMap<>(1, 1);
+        result.put(DatabaseDiscoveryRuleConstants.PRIMARY_DATA_SOURCE_KEY, exportPrimaryDataSourceMap());
+        return result;
+    }
+    
+    private Map<String, String> exportPrimaryDataSourceMap() {
+        Map<String, String> result = new HashMap<>(dataSourceRules.size(), 1);
+        dataSourceRules.forEach((name, dataSourceRule) -> result.put(dataSourceRule.getName(), dataSourceRule.getPrimaryDataSourceName()));
+        return result;
     }
     
     @Override

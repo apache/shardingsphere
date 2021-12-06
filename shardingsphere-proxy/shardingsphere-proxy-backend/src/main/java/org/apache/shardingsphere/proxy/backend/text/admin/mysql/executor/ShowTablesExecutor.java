@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,6 +47,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Getter
 public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
+    
+    private static final String TABLE_TYPE = "BASE TABLE";
     
     private final MySQLShowTablesStatement showTablesStatement;
     
@@ -63,18 +66,29 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
+        List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> {
+            List<Object> rowValues = new LinkedList<>();
+            rowValues.add(each);
+            rowValues.add(TABLE_TYPE);
+            return new MemoryQueryResultDataRow(rowValues);
+        }).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
     private Collection<String> getAllTableNames(final String schemaName) {
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
-        Optional<String> pattern = showTablesStatement.getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
-        return pattern.isPresent() ? allTableNames.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : allTableNames;
+        if (showTablesStatement.getFilter().isPresent()) {
+            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
+            return pattern.isPresent() ? allTableNames.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : allTableNames;
+        }
+        return allTableNames;
     }
     
     private QueryResultMetaData createQueryResultMetaData(final String schemaName) {
-        String columnName = String.format("Tables_in_%s", schemaName);
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", columnName, columnName, Types.VARCHAR, "VARCHAR", 255, 0)));
+        List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
+        String tableColumnName = String.format("Tables_in_%s", schemaName);
+        columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
+        columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
+        return new RawQueryResultMetaData(columnNames);
     }
 }

@@ -102,6 +102,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
             for (String each : availableTargetNames) {
                 if (each.endsWith(String.valueOf(i))) {
                     result.add(each);
+                    break;
                 }
                 if (result.size() == availableTargetNames.size()) {
                     return result;

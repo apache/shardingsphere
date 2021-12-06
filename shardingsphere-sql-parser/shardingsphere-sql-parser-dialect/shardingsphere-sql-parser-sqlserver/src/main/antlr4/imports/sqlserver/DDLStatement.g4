@@ -20,6 +20,10 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement, DCLStatement;
 
 createTable
+    : createTableClause | createTableAsSelectClause
+    ;
+
+createTableClause
     : CREATE TABLE tableName fileTableClause createDefinitionClause
     ;
 
@@ -357,6 +361,7 @@ tableOption
     | distributionOption
     | dataWareHouseTableOption
     | dataDelectionOption
+    | dataWareHousePartitionOption
     ;
 
 dataDelectionOption
@@ -384,7 +389,7 @@ distributionOption
     ;
 
 dataWareHouseTableOption
-    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
+    : CLUSTERED COLUMNSTORE INDEX | CLUSTERED COLUMNSTORE INDEX ORDER columnNames | HEAP | CLUSTERED INDEX LP_ (columnName (ASC | DESC)?) (COMMA_ (columnName (ASC | DESC)?))* RP_
     ;
 
 dataWareHousePartitionOption
@@ -1064,4 +1069,24 @@ schemaNameClause
 
 schemaElement
     : createTable | createView | grant | revoke | deny
+    ;
+
+createTableAsSelectClause
+    : createTableAsSelect | createRemoteTableAsSelect
+    ;
+
+createTableAsSelect
+    : CREATE TABLE tableName columnNames? withDistributionOption AS select optionQueryHintClause
+    ;
+
+createRemoteTableAsSelect
+    : CREATE REMOTE TABLE tableName AT LP_ stringLiterals RP_ (WITH LP_ BATCH_SIZE EQ_ INT_NUM_ RP_)? AS select
+    ;
+
+withDistributionOption
+    : WITH LP_ distributionOption (COMMA_ tableOption (COMMA_ tableOption)*)? RP_
+    ;
+
+optionQueryHintClause
+    : (OPTION LP_ queryHint (COMMA_ queryHint)* RP_)?
     ;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.rule;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.note.SimpleSQLNoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,21 +59,21 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-note-algorithm", createNoteShadowAlgorithm());
+        result.put("simple-hint-algorithm", createHintShadowAlgorithm());
         result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
         result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm("user_id", "update"));
         result.put("order-id-insert-regex-algorithm", createColumnShadowAlgorithm("order_id", "insert"));
         return result;
     }
     
-    private ShadowAlgorithm createNoteShadowAlgorithm() {
-        SimpleSQLNoteShadowAlgorithm simpleSQLNoteShadowAlgorithm = new SimpleSQLNoteShadowAlgorithm();
-        simpleSQLNoteShadowAlgorithm.setProps(createNoteProperties());
-        simpleSQLNoteShadowAlgorithm.init();
-        return simpleSQLNoteShadowAlgorithm;
+    private ShadowAlgorithm createHintShadowAlgorithm() {
+        SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
+        simpleHintShadowAlgorithm.setProps(createHintProperties());
+        simpleHintShadowAlgorithm.init();
+        return simpleHintShadowAlgorithm;
     }
     
-    private Properties createNoteProperties() {
+    private Properties createHintProperties() {
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");
         return properties;
@@ -104,7 +103,7 @@ public final class ShadowRuleTest {
     
     private Collection<String> createShadowAlgorithmNames(final String tableName) {
         Collection<String> result = new LinkedList<>();
-        result.add("simple-note-algorithm");
+        result.add("simple-hint-algorithm");
         if ("t_user".equals(tableName)) {
             result.add("user-id-insert-regex-algorithm");
             result.add("user-id-update-regex-algorithm");
@@ -141,9 +140,11 @@ public final class ShadowRuleTest {
     
     private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
         if ("t_user".equals(tableName)) {
-            assertThat(shadowTableRule.getShadowAlgorithmNames().size(), is(3));
+            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(2));
         } else {
-            assertThat(shadowTableRule.getShadowAlgorithmNames().size(), is(2));
+            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
+            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(1));
         }
     }
     
@@ -169,25 +170,6 @@ public final class ShadowRuleTest {
         Iterator<String> iterator = allShadowTableNames.iterator();
         assertThat(iterator.next(), is("t_user"));
         assertThat(iterator.next(), is("t_order"));
-    }
-    
-    @Test
-    public void assertGetRelatedShadowAlgorithms() {
-        Optional<Collection<ShadowAlgorithm>> shadowAlgorithmsOptional = shadowRuleWithAlgorithm.getRelatedShadowAlgorithms("t_user");
-        assertThat(shadowAlgorithmsOptional.isPresent(), is(true));
-        Collection<ShadowAlgorithm> shadowAlgorithms = shadowAlgorithmsOptional.get();
-        Iterator<ShadowAlgorithm> iterator = shadowAlgorithms.iterator();
-        ShadowAlgorithm shadowAlgorithm0 = iterator.next();
-        assertThat(shadowAlgorithm0.getType(), is("SIMPLE_NOTE"));
-        assertThat(shadowAlgorithm0.getProps().get("shadow"), is("true"));
-        ShadowAlgorithm shadowAlgorithm1 = iterator.next();
-        assertThat(shadowAlgorithm1.getType(), is("COLUMN_REGEX_MATCH"));
-        assertThat(shadowAlgorithm1.getProps().get("operation"), is("insert"));
-        assertThat(shadowAlgorithm1.getProps().get("column"), is("user_id"));
-        ShadowAlgorithm shadowAlgorithm2 = iterator.next();
-        assertThat(shadowAlgorithm2.getType(), is("COLUMN_REGEX_MATCH"));
-        assertThat(shadowAlgorithm2.getProps().get("operation"), is("update"));
-        assertThat(shadowAlgorithm2.getProps().get("column"), is("user_id"));
     }
     
     @Test

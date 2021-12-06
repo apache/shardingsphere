@@ -61,7 +61,7 @@ public final class MySQLColumnDefinition41PacketTest {
     @Test
     public void assertWriteWithPayload() {
         when(payload.readInt1()).thenReturn(1, MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
-        when(payload.readInt2()).thenReturn(MySQLServerInfo.CHARSET, 0);
+        when(payload.readInt2()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
         when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
@@ -77,7 +77,7 @@ public final class MySQLColumnDefinition41PacketTest {
         verify(payload, times(2)).writeStringLenenc("tbl");
         verify(payload, times(2)).writeStringLenenc("id");
         verify(payload).writeIntLenenc(0x0c);
-        verify(payload).writeInt2(MySQLServerInfo.CHARSET);
+        verify(payload).writeInt2(MySQLServerInfo.DEFAULT_CHARSET.getId());
         verify(payload).writeInt4(10);
         verify(payload).writeInt1(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue());
         verify(payload).writeInt2(0);

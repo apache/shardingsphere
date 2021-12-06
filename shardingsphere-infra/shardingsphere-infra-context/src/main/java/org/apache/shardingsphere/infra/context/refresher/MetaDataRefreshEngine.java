@@ -20,17 +20,18 @@ package org.apache.shardingsphere.infra.context.refresher;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.optimize.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.optimize.metadata.refresher.FederationMetaDataRefresher;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -49,15 +50,12 @@ public final class MetaDataRefreshEngine {
     
     private final FederationSchemaMetaData federationMetaData;
     
-    private final SchemaBuilderMaterials materials;
-    
     private final ConfigurationProperties props;
     
     public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData, final ConfigurationProperties props) {
         this.schemaMetaData = schemaMetaData;
         this.federationMetaData = federationMetaData;
         this.props = props;
-        materials = new SchemaBuilderMaterials(schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
     }
     
     /**
@@ -83,10 +81,10 @@ public final class MetaDataRefreshEngine {
     private void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames, final Collection<MetaDataRefresher> refreshers) throws SQLException {
         for (MetaDataRefresher each : refreshers) {
             if (each instanceof SchemaRefresher) {
-                ((SchemaRefresher) each).refresh(schemaMetaData, logicDataSourceNames, sqlStatement, materials.getProps());
+                ((SchemaRefresher) each).refresh(schemaMetaData, logicDataSourceNames, sqlStatement, props);
             }
             if (each instanceof FederationMetaDataRefresher) {
-                ((FederationMetaDataRefresher) each).refresh(federationMetaData, logicDataSourceNames, sqlStatement, materials);
+                ((FederationMetaDataRefresher) each).refresh(federationMetaData, logicDataSourceNames, sqlStatement, schemaMetaData, props);
             }
         }
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(schemaMetaData.getName(), loadActualSchema(schemaMetaData)));
@@ -95,7 +93,8 @@ public final class MetaDataRefreshEngine {
     private ShardingSphereSchema loadActualSchema(final ShardingSphereMetaData schemaMetaData) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getResource().getDataSources());
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getRuleMetaData().getConfigurations());
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, props.getProps()).load();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props.getProps());
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props.getProps()).load();
         return schemas.get(schemaMetaData.getName());
     }
 }

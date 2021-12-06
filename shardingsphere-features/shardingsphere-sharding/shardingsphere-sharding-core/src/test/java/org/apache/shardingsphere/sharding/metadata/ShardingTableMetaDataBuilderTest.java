@@ -104,7 +104,7 @@ public class ShardingTableMetaDataBuilderTest {
         tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "snowflake"));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     private void mockSQLServerResultSet(final Connection connection) throws SQLException {
@@ -291,7 +291,7 @@ public class ShardingTableMetaDataBuilderTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, "ds.T_ORDER_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", dataSource));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     @Test
@@ -302,8 +302,17 @@ public class ShardingTableMetaDataBuilderTest {
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
         Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         assertResult(actual);
+    }
+    
+    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_name")).thenReturn("t_order_0");
+        return result;
     }
     
     @Test

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -58,7 +59,7 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+        BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
         backendConnection.setCurrentSchema("test");
         ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));

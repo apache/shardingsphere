@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-db-discovery-provider</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-db-discovery-mgr</artifactId>
     <name>${project.artifactId}</name>
@@ -33,6 +33,11 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-db-discovery-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-lifecycle</artifactId>
+            <version>${elasticjob.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere.elasticjob</groupId>
@@ -53,6 +58,11 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -56,4 +56,12 @@ public interface SchemaBasedPersistService<T> {
      * @return configuration existed or not
      */
     boolean isExisted(String schemaName);
+    
+    /**
+     * Cache configurations.
+     *
+     * @param schemaName schema name
+     * @param configs configurations
+     */
+    default void cache(String schemaName, T configs) { }
 }

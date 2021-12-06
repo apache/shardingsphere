@@ -26,8 +26,5 @@
         <column name="status" />
         <column name="creation_date" />
     </metadata>
-    <row values="10, 10000, a10, init, 100000, 10, init, 2017-08-08" />
     <row values="11, 11000, b11, init, 110000, 11, init, 2017-08-08" />
-    <row values="12, 12000, c12, init, 120000, 12, init, 2017-08-08" />
-    <row values="13, 13000, d13, init, 130000, 13, init, 2017-08-08" />
 </dataset>

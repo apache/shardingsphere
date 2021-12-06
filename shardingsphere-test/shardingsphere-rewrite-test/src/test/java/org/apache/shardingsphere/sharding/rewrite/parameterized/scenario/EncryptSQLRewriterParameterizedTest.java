@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -42,11 +42,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     
     private static final String CASE_PATH = "scenario/encrypt/case";
     
-    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+                                               final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
     
-    @Parameters(name = "{0}: {1} -> {2}")
+    @Parameters(name = "{0}: {1} ({3}) -> {2}")
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, EncryptSQLRewriterParameterizedTest.class);
     }
@@ -63,6 +64,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;
     }
     
@@ -70,13 +72,9 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().addDataNode("t_account", "encrypt_ds");
-            singleTableRule.get().addDataNode("t_account_bak", "encrypt_ds");
+            singleTableRule.get().put("t_account", "encrypt_ds");
+            singleTableRule.get().put("t_account_bak", "encrypt_ds");
+            singleTableRule.get().put("t_account_detail", "encrypt_ds");
         }
-    }
-
-    @Override
-    protected String getDataBaseType() {
-        return null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
     }
 }

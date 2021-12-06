@@ -45,15 +45,16 @@ public final class ResponsePacketBuilder {
      * Build query response packets.
      * 
      * @param queryResponseHeader query response header
+     * @param characterSet MySQL character set id
      * @return query response packets
      */
-    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader) {
+    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         int sequenceId = 0;
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++sequenceId, queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
-            result.add(new MySQLColumnDefinition41Packet(++sequenceId, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
+            result.add(new MySQLColumnDefinition41Packet(++sequenceId, characterSet, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
         result.add(new MySQLEofPacket(++sequenceId));

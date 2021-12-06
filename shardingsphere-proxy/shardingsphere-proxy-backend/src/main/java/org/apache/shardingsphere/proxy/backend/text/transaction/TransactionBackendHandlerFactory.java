@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
@@ -54,11 +53,7 @@ public final class TransactionBackendHandlerFactory {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
-            if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
-                return backendConnection.getTransactionStatus().isInTransaction()
-                        ? new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler(tclStatement);
-            }
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
+            return new TransactionAutoCommitHandler((SetAutoCommitStatement) tclStatement, backendConnection);
         }
         if (tclStatement instanceof SavepointStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, backendConnection);

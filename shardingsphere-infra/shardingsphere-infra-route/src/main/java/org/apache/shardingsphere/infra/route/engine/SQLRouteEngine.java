@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
@@ -54,6 +55,6 @@ public final class SQLRouteEngine {
     
     // TODO use dynamic config to judge UnconfiguredSchema
     private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLShowTablesStatement;
+        return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement;
     }
 }

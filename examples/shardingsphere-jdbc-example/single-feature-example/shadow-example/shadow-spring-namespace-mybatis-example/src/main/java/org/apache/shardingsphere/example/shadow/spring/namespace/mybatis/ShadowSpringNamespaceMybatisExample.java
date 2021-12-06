@@ -27,6 +27,7 @@ import java.sql.SQLException;
 public final class ShadowSpringNamespaceMybatisExample {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-shadow-default-algorithm.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-shadow-encrypt.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-shadow-readwrite-splitting.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-shadow-sharding-databases.xml";

@@ -19,7 +19,7 @@ schemaName: sharding_governance
 
 dataSources:
   governance_db:
-    url: jdbc:postgresql://postgresql.sharding_governance.host:5432/governance_db?serverTimezone=UTC&useSSL=false
+    url: jdbc:postgresql://postgresql.sharding_governance.host:5432/governance_db
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000

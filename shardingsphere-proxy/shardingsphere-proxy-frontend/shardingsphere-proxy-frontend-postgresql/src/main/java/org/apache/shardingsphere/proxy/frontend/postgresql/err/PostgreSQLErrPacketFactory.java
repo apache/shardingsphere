@@ -61,6 +61,7 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof PostgreSQLAuthenticationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
         }
+        // TODO PostgreSQL need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);
     }
     
@@ -72,7 +73,7 @@ public final class PostgreSQLErrPacketFactory {
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
                 .detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
                 .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
                 .schemaName(serverErrorMessage.getSchema()).tableName(serverErrorMessage.getTable()).columnName(serverErrorMessage.getColumn()).dataTypeName(serverErrorMessage.getDatatype())

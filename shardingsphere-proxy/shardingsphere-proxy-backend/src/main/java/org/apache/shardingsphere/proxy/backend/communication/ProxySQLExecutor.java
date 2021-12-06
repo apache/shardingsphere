@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -96,7 +97,7 @@ public final class ProxySQLExecutor {
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
         if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement()) 
-                || isExecuteDDLInPostgreSQLTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
+                || isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
             throw new TableModifyInTransactionException(executionContext.getSqlStatementContext());
         }
     }
@@ -106,9 +107,10 @@ public final class ProxySQLExecutor {
         return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
     }
     
-    private boolean isExecuteDDLInPostgreSQLTransaction(final SQLStatement sqlStatement) {
-        // TODO implement DDL statement commit/rollback in PostgreSQL transaction
-        return sqlStatement instanceof DDLStatement && sqlStatement instanceof PostgreSQLStatement && backendConnection.getTransactionStatus().isInTransaction();
+    private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
+        // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
+        boolean isPostgreSQLOpenGaussStatement = sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
+        return sqlStatement instanceof DDLStatement && isPostgreSQLOpenGaussStatement && backendConnection.getTransactionStatus().isInTransaction();
     }
     
     /**

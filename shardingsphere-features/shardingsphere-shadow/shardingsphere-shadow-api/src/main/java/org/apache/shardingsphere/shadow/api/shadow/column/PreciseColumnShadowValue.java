@@ -23,7 +23,9 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowValue;
 
 /**
- * Shadow value for precise column.
+ * Precise value of shadow column.
+ *
+ * @param <T> class type of shadow column value
  */
 @RequiredArgsConstructor
 @Getter

@@ -21,10 +21,13 @@
     <distsql-case id="drop-resource-ignore-single-tables" value="DROP RESOURCE ds_0,ds_1 ignore single tables;" />
     <distsql-case id="drop-sharding-table-rule" value="DROP SHARDING TABLE RULE t_order,t_order_item" />
     <distsql-case id="drop-sharding-binding-table-rules" value="DROP SHARDING BINDING TABLE RULES" />
+    <distsql-case id="drop-sharding-binding-table-specified-rules" value="DROP SHARDING BINDING TABLE RULES (t_1,t_2)" />
     <distsql-case id="drop-sharding-broadcast-table-rules" value="DROP SHARDING BROADCAST TABLE RULES" />
+    <distsql-case id="drop-sharding-broadcast-table-specified-table" value="DROP SHARDING BROADCAST TABLE RULES t_order" />
     <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />
     <distsql-case id="drop-database-discovery-rule" value="DROP DB_DISCOVERY RULE ha_group_0,ha_group_1" />
     <distsql-case id="drop-encrypt-rule" value="DROP ENCRYPT RULE t_encrypt,t_encrypt_order" />
     <distsql-case id="drop-shadow-rule" value="DROP SHADOW RULE shadow_rule_1,shadow_rule_2" />
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
+    <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE" />
 </sql-cases>

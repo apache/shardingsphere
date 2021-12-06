@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -73,6 +74,8 @@ public final class ScalingAPIImplTest {
         assertTrue(jobInfo.isActive());
         assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
+        List<Long> uncompletedJobIds = scalingAPI.getUncompletedJobIds("logic_db");
+        assertThat(uncompletedJobIds.size(), is(0));
     }
     
     private Optional<JobInfo> getJobInfo(final long jobId) {

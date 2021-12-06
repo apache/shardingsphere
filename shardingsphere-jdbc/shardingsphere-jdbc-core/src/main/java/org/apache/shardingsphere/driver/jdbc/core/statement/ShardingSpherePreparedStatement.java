@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -196,7 +197,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (executionContext.getRouteContext().isFederated()) {
             return Collections.singletonList(executor.getFederationExecutor().getResultSet());
         }
-        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
+        List<ResultSet> result = new ArrayList<>(statements.size());
+        for (PreparedStatement each : statements) {
+            ResultSet resultSet = getResultSet(each);
+            result.add(resultSet);
+        }
+        return result;
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
@@ -225,7 +231,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection, 
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), 
                 statementOption, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules());
     }
     
@@ -405,7 +411,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void replay() throws SQLException {
         replaySetParameter();
-        statements.forEach(this::replayMethodsInvocation);
+        for (Statement each : statements) {
+            getMethodInvocationRecorder().replay(each);
+        }
     }
     
     private void replaySetParameter() throws SQLException {
@@ -464,9 +472,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void initBatchPreparedStatementExecutor() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                connection, statementOption, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules());
-        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(),
-                new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
+                connection.getConnectionManager(), statementOption, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules());
+        List<ExecutionUnit> executionUnits = new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits().size());
+        for (BatchExecutionUnit each : batchPreparedStatementExecutor.getBatchExecutionUnits()) {
+            ExecutionUnit executionUnit = each.getExecutionUnit();
+            executionUnits.add(executionUnit);
+        }
+        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits));
         setBatchParametersForStatements();
     }
     

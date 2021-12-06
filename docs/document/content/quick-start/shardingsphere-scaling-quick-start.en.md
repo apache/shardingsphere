@@ -1,29 +1,38 @@
 +++
 pre = "<b>2.3. </b>"
-title = "ShardingSphere-Scaling(Alpha)"
+title = "ShardingSphere-Scaling (Experimental)"
 weight = 3
 +++
 
-## 1. Rule Configuration
+## Rule Configuration
 
-Edit `%SHARDINGSPHERE_SCALING_HOME%/conf/server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`.
 
-> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere scaling extract path. for example: /Users/ss/shardingsphere-scaling-bin/
+> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /opt/shardingsphere-proxy-bin/
 
-## 2. Import Dependencies
+Please refer to [Build Manual](/en/user-manual/shardingsphere-scaling/build/) for more details.
+
+## Import Dependencies
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.
 
-If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `%SHARDINGSPHERE_SCALING_HOME%/lib` directory.
+If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) and put it into `%SHARDINGSPHERE_PROXY_HOME%/lib` directory.
 
-## 3. Start Server
+## Start Server
 
 ```bash
-sh %SHARDINGSPHERE_SCALING_HOME%/bin/start.sh
+sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 ```
 
-## 4. Create Migration Job
+## Create Migration Job
 
-Use HTTP interface to manage the migration jobs.
+Use DistSQL interface to manage the migration jobs.
 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 
+Please refer to [Usage Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 
+
+## Related documents
+
+- [Features#Scaling](/en/features/scaling/) : Core Concept, User Norms
+- [User Manual#Scaling](/en/user-manual/shardingsphere-scaling/) : Build, Manual
+- [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) : DistSQL for Scaling
+- [Dev Manual#Scaling](/en/dev-manual/scaling/) : SPI interfaces and implementations

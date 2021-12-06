@@ -108,7 +108,10 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
         for (Method each : allGetterMethods) {
             String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
             if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
-                result.put(propertyName, each.invoke(target));
+                Object propertyValue = each.invoke(target);
+                if (null != propertyValue) {
+                    result.put(propertyName, propertyValue);
+                }
             }
         }
         return result;

@@ -21,6 +21,7 @@ import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (createShardingTableRule
+    | createDefaultShardingStrategy
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
     | alterShardingTableRule
@@ -39,5 +40,8 @@ execute
     | addShardingHintTableValue
     | showShardingHintStatus
     | clearShardingHint
+    | createShardingAlgorithm
+    | alterShardingAlgorithm
+    | showShardingTableNodes
     ) SEMI?
     ;

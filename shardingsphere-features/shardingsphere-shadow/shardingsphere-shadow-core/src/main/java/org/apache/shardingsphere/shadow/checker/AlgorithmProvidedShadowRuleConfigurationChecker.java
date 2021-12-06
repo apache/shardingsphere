@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+
+import java.util.Map;
 
 /**
  * Algorithm provided shadow rule configuration checker.
@@ -26,8 +31,20 @@ import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 public final class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    protected boolean isAvailableShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
-        return true;
+    protected void checkShadowRuleConfiguration(final AlgorithmProvidedShadowRuleConfiguration config) {
+        if (config.isEnable()) {
+            Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+            Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
+            Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
+            String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+            sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
+            shadowAlgorithmsSizeCheck(shadowAlgorithms);
+            shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
+            shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+            defaultShadowAlgorithmCheck(defaultShadowAlgorithmName, shadowAlgorithms);
+            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet(), defaultShadowAlgorithmName);
+            shadowTableAlgorithmsReferencesCheck(shadowTables);
+        }
     }
     
     @Override

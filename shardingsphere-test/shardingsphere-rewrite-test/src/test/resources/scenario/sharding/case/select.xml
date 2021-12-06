@@ -37,7 +37,7 @@
         <output sql="SELECT * FROM t_account_0 WHERE 100 = account_id" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_not_exists" db-type="MySQL">
+    <rewrite-assertion id="select_with_not_exists" db-types="MySQL">
         <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
         <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />
     </rewrite-assertion>
@@ -52,17 +52,12 @@
         <output sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account_0 t WHERE account_id = 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_having">
+    <rewrite-assertion id="select_with_having" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_having_and_window_for_mysql" db-type="MySQL">
-        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_having_and_window_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_with_having_and_window" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
@@ -73,37 +68,37 @@
         <output sql="SELECT * FROM t_account_1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery" db-types="MySQL">
         <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 100" parameters="100" />
         <output sql="SELECT * FROM (select t_account_0.account_id from t_account_0 where t_account_0.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_and_different_sharding_conditions" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_and_different_sharding_conditions" db-types="MySQL">
         <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
         <output sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_with_subquery" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_with_subquery" db-types="MySQL">
         <input sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
-        <output sql="SELECT * FROM (select b.account_id from (select t_account_0.account_id from t_account_0) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
+        <output sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_in_projection_and_where" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_in_projection_and_where" db-types="MySQL">
         <input sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
         <output sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_only_in_projection" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_only_in_projection" db-types="MySQL">
         <input sql="SELECT (select id from t_account)"/>
         <output sql="SELECT (select id from t_account)"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount IN (SELECT amount FROM t_account WHERE account_id = ?)"  parameters="100, 100"/>
         <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount IN (SELECT amount FROM t_account_0 WHERE account_id = ?)"  parameters="100, 100"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_subquery_for_where_between_and_predicate" db-type="MySQL">
+    <rewrite-assertion id="select_with_subquery_for_where_between_and_predicate" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account WHERE account_id = ?) AND ?"  parameters="100, 100, 1500"/>
         <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account_0 WHERE account_id = ?) AND ?"  parameters="100, 100, 1500"/>
     </rewrite-assertion>
@@ -120,19 +115,19 @@
         <output sql="SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_for_literals_with_order_by" db-type="MySQL">
+    <rewrite-assertion id="select_for_literals_with_order_by" db-types="MySQL">
         <input sql="SELECT distinct a.account_id FROM t_account as a" />
         <output sql="SELECT distinct a.account_id FROM t_account_0 as a ORDER BY a.account_id ASC " />
         <output sql="SELECT distinct a.account_id FROM t_account_1 as a ORDER BY a.account_id ASC " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_for_literals_with_order_by_with_table_prefix" db-type="MySQL">
+    <rewrite-assertion id="select_for_literals_with_order_by_with_table_prefix" db-types="MySQL">
         <input sql="SELECT `t_account`.`amount` FROM `t_account` order by `t_account`.`account_id` ASC" />
         <output sql="SELECT `t_account_0`.`amount` , `t_account_0`.`account_id` AS ORDER_BY_DERIVED_0 FROM `t_account_0` order by `t_account_0`.`account_id` ASC" />
         <output sql="SELECT `t_account_1`.`amount` , `t_account_1`.`account_id` AS ORDER_BY_DERIVED_0 FROM `t_account_1` order by `t_account_1`.`account_id` ASC" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_for_literals_with_order_by_no_quote_with_table_prefix" db-type="MySQL">
+    <rewrite-assertion id="select_for_literals_with_order_by_no_quote_with_table_prefix" db-types="MySQL">
         <input sql="SELECT t_account.amount FROM t_account order by t_account.account_id ASC" />
         <output sql="SELECT t_account_0.amount , t_account_0.account_id AS ORDER_BY_DERIVED_0 FROM t_account_0 order by t_account_0.account_id ASC" />
         <output sql="SELECT t_account_1.amount , t_account_1.account_id AS ORDER_BY_DERIVED_0 FROM t_account_1 order by t_account_1.account_id ASC" />
@@ -270,197 +265,197 @@
         <output sql="SELECT status , account_id AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY account_id ORDER BY account_id DESC" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT ?, ?" parameters="100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT ?, ?" parameters="100, 10" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT 100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT 100, 10" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT ?, ?" parameters="100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT ?, ?" parameters="0, 110" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT ?, ?" parameters="0, 110" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT 100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT 0, 110" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT 0, 110" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_mysql" db-type="MySQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_mysql" db-types="MySQL">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 100, 10" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 2147483647" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 0, 2147483647" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_single_route_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id = 100 LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 LIMIT 10 OFFSET 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) LIMIT 110 OFFSET 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) LIMIT 110 OFFSET 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-type="PostgreSQL">
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM t_account WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
     </rewrite-assertion>
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id = 100) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id = 100) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
     <!--</rewrite-assertion>-->
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_for_literals_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_literals_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id = 100) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id = 100) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 100" />-->
     <!--</rewrite-assertion>-->
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 0" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 0" />-->
     <!--</rewrite-assertion>-->
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_for_literals_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_literals_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 0" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 0" />-->
     <!--</rewrite-assertion>-->
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_parameters_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_parameters_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; ?" parameters="2147483647, 0" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; ?" parameters="2147483647, 0" />-->
     <!--</rewrite-assertion>-->
     
     <!-- FIXME -->
-    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_literals_for_oracle" db-type="Oracle">-->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_literals_for_oracle" db-types="Oracle">-->
         <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 110 GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; 100" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 2147483647 GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; 0" />-->
         <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) row_ WHERE rownum &lt;= 2147483647 GROUP BY account_id,rownum ORDER BY account_id DESC) t WHERE t.rownum_ &gt; 0" />-->
     <!--</rewrite-assertion>-->
 
-    <rewrite-assertion id="select_top_with_single_route_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_single_route_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_top_with_single_route_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_single_route_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_with_multiple_route_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_multiple_route_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_with_multiple_route_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_multiple_route_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_with_single_route_with_memory_group_by_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_single_route_with_memory_group_by_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_with_single_route_with_memory_group_by_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_single_route_with_memory_group_by_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_with_memory_group_by_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_with_memory_group_by_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_with_memory_group_by_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_single_route_with_memory_group_by_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100 GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />
         <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_with_memory_group_by_for_parameters_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_with_memory_group_by_for_parameters_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
         <output sql="SELECT * FROM (SELECT TOP(?) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_with_memory_group_by_for_literals_for_sqlserver" db-type="SQLServer">
+    <rewrite-assertion id="select_top_percent_with_ties_with_multiple_route_with_memory_group_by_for_literals_for_sqlserver" db-types="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />
         <output sql="SELECT * FROM (SELECT TOP(110) PERCENT WITH TIES row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />
@@ -476,7 +471,7 @@
         <output sql="SELECT * FROM t_account_1, t_account_detail_1 WHERE t_account_1.account_id = 1 AND t_account_1.account_id = t_account_detail_1.account_id" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_join_table_on_condition_with_qualified_columns">
+    <rewrite-assertion id="select_with_join_table_on_condition_with_qualified_columns" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id = ?" parameters="1"/>
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id = ?" parameters="1"/>
     </rewrite-assertion>
@@ -486,12 +481,12 @@
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id where t_account_1.account_id = ?" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_join_table_on_in_condition_with_qualified_columns">
+    <rewrite-assertion id="select_with_join_table_on_in_condition_with_qualified_columns" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1"/>
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_union_single_table" db-type="MySQL">
+    <rewrite-assertion id="select_union_single_table" db-types="MySQL">
         <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
         <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
     </rewrite-assertion>
@@ -505,5 +500,37 @@
         <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
         <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
         <output sql="SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
+        <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1"/>
+        <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_broadcast_table_and_single_table">
+        <input sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
+        <output sql="SELECT * FROM t_single s INNER JOIN t_config c ON s.account_id = c.account_id" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_binding_table_with_uppercase_table_name">
+        <input sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
+        <output sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_and_condition_and_lowercase_keyword">
+        <input sql="select * from t_account where amount=? and account_id=?" parameters="1,2"/>
+        <output sql="select * from t_account_0 where amount=? and account_id=?" parameters="1,2"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_case_when_then_in_group_by_item_and_order_by_item" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Oracle">
+        <input sql="SELECT account_id FROM t_account GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+        <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+        <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_sub_query_with_no_alias" db-types="Oracle">
+        <input sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,5" />
+        <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_0 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
+        <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_1 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
     </rewrite-assertion>
 </rewrite-assertions>

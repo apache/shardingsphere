@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.3.1. </b>"
 title = "Core Concept"
 weight = 1
 +++
@@ -15,8 +14,8 @@ It refers to the database used in data query. It supports multiple replica datab
 ## Primary Replica Replication
 
 It refers to the operation to asynchronously replicate data from the primary database to the replica database. 
-Because of replica query asynchronization, there may be short-time data inconsistency between them.  
+Because of the asynchrony of primary-replica synchronization, there may be short-time data inconsistency between them.  
 
 ## Load Balance Strategy
 
-Through this strategy, queries are separated to different replica databases.
+Through this strategy, queries separated to different replica databases.

@@ -22,14 +22,13 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-scaling</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-scaling-bootstrap</module>
         <module>shardingsphere-scaling-core</module>
         <module>shardingsphere-scaling-distsql</module>
         <module>shardingsphere-scaling-dialect</module>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.Record;
 
 import java.util.List;
 

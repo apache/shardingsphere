@@ -35,7 +35,7 @@ public final class ConnectionUrlParserTest {
     
     private static final String MYSQL_CONNECTION_WITH_REPLICATION = "jdbc:mysql:replication://master_ip:3306,slave_1_ip:3306,slave_2_ip:3306/demo_ds?useUnicode=true";
     
-    private static final String POSTGRESQL_CONNECTION_WITH_PROPS = "jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false";
+    private static final String POSTGRESQL_CONNECTION_WITH_PROPS = "jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared";
     
     private static final String MICROSOFT_SQLSERVER_CONNECTION_WITHOUT_PROPS = "jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds";
     
@@ -82,10 +82,10 @@ public final class ConnectionUrlParserTest {
         assertThat(connectionUrlParser.getScheme(), is("jdbc:postgresql:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:5432"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertThat(connectionUrlParser.getQuery(), is("serverTimezone=UTC&useSSL=false"));
+        assertThat(connectionUrlParser.getQuery(), is("prepareThreshold=1&preferQueryMode=extendedForPrepared"));
         assertThat(connectionUrlParser.getQueryMap().size(), is(2));
-        assertThat(connectionUrlParser.getQueryMap().get("serverTimezone"), is("UTC"));
-        assertThat(connectionUrlParser.getQueryMap().get("useSSL"), is("false"));
+        assertThat(connectionUrlParser.getQueryMap().get("prepareThreshold"), is("1"));
+        assertThat(connectionUrlParser.getQueryMap().get("preferQueryMode"), is("extendedForPrepared"));
     }
     
     @Test

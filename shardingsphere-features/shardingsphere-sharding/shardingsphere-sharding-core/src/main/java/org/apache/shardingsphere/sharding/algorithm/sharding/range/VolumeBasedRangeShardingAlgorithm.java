@@ -40,7 +40,7 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     private static final String SHARDING_VOLUME_KEY = "sharding-volume";
     
     @Override
-    public Map<Integer, Range<Long>> calculatePartitionRange(final Properties props) {
+    public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {
         Preconditions.checkState(props.containsKey(RANGE_LOWER_KEY), "Lower range cannot be null.");
         Preconditions.checkState(props.containsKey(RANGE_UPPER_KEY), "Upper range cannot be null.");
         Preconditions.checkState(props.containsKey(SHARDING_VOLUME_KEY), "Sharding volume cannot be null.");
@@ -49,7 +49,7 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
         long volume = Long.parseLong(props.getProperty(SHARDING_VOLUME_KEY));
         Preconditions.checkArgument(upper - lower >= volume, "Range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
-        Map<Integer, Range<Long>> result = new HashMap<>(partitionSize + 2, 1);
+        Map<Integer, Range<Comparable<?>>> result = new HashMap<>(partitionSize + 2, 1);
         result.put(0, Range.lessThan(lower));
         for (int i = 0; i < partitionSize; i++) {
             result.put(i + 1, Range.closedOpen(lower + i * volume, Math.min(lower + (i + 1) * volume, upper)));

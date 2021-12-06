@@ -58,6 +58,10 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
+    private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
+
+    private static final String LOAD_FILTED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
+    
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
@@ -74,6 +78,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, SortedMap<Integer, ColumnMetaData>> result = new HashMap<>();
+        Collection<String> roleTableGrants = loadRoleTableGrants(dataSource, tables);
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
@@ -82,6 +87,9 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("table_name");
+                    if (!roleTableGrants.contains(tableName)) {
+                        continue;
+                    }
                     SortedMap<Integer, ColumnMetaData> columns = result.computeIfAbsent(tableName, key -> new TreeMap<>());
                     ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, primaryKeys, resultSet);
                     columns.put(resultSet.getInt("ordinal_position"), columnMetaData);
@@ -137,6 +145,24 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
             }
         }
         return result;
+    }
+    
+    private Collection<String> loadRoleTableGrants(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(getLoadRoleTableGrantsSQL(tables))) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString("table_name"));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private String getLoadRoleTableGrantsSQL(final Collection<String> tables) {
+        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL, 
+            tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override

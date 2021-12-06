@@ -50,7 +50,15 @@ rules:
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
-  
+    t_account:
+      actualDataSources: ds_0,ds_1
+      shardingStrategy:
+        standard:
+          shardingAlgorithmName: auto_mod
+      keyGenerateStrategy:
+        column: account_id
+        keyGeneratorName: snowflake
+  defaultShardingColumn: account_id
   shardingAlgorithms:
     auto_mod:
       type: MOD

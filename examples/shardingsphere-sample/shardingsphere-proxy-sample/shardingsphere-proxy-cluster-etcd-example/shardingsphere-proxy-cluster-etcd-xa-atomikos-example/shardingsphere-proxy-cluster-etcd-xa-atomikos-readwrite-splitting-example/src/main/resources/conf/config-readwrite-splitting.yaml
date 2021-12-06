@@ -55,7 +55,6 @@ rules:
           - read_ds_0
           - read_ds_1
         loadBalancerName: read_balance
-        queryConsistent: false
 
     loadBalancers:
       read_balance:

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
+import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -81,7 +82,7 @@ public final class BackendConnectionTest {
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     public void setUp() throws ReflectiveOperationException {
@@ -212,14 +213,14 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() {
+    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

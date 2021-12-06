@@ -77,12 +77,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.function.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;

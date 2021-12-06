@@ -39,6 +39,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
+    private String algorithmExpression;
+    
     private boolean allowRangeQuery;
     
     @Getter
@@ -47,16 +49,14 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public void init() {
+        algorithmExpression = getAlgorithmExpression();
         allowRangeQuery = isAllowRangeQuery();
     }
     
-    private Closure<?> createClosure() {
+    private String getAlgorithmExpression() {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        return result;
+        return InlineExpressionParser.handlePlaceHolder(expression.trim());
     }
     
     private boolean isAllowRangeQuery() {
@@ -76,6 +76,12 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
             return availableTargetNames;
         }
         throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
+    }
+    
+    private Closure<?> createClosure() {
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        return result;
     }
     
     @Override

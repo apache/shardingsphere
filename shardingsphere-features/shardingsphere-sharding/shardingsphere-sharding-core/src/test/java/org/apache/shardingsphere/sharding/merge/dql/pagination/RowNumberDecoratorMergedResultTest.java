@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.junit.Test;
 
@@ -62,7 +63,7 @@ public final class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
@@ -105,7 +106,7 @@ public final class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
@@ -137,7 +138,7 @@ public final class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(SelectStatement.class);
+        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");

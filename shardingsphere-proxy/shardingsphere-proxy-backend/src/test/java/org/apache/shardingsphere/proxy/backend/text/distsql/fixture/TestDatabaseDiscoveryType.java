@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
@@ -31,7 +32,7 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                                        final Collection<String> disabledDataSourceNames, final String groupName, final String primaryDataSourceName) {
+                                        final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     
     @Override
@@ -39,13 +40,17 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                                      final Collection<String> disabledDataSourceNames, final String groupName, final String primaryDataSourceName) {
+    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     
     @Override
     public String getPrimaryDataSource() {
         return null;
+    }
+    
+    @Override
+    public void updateProperties(final String groupName, final Properties props) {
+    
     }
     
     @Override

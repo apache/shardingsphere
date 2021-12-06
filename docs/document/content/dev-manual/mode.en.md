@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.9. </b>"
+pre = "<b>6.1. </b>"
 title = "Mode"
-weight = 9
+weight = 2
 chapter = true
 +++
 
@@ -34,9 +34,8 @@ chapter = true
 
 | *Implementation Class*           | *Description*                     |
 | -------------------------------- | --------------------------------- |
-| TerminalStateChangedWatcher      | Terminal state changed watcher    |
-| DataSourceStateChangedWatcher    | Data source state changed watcher |
-| LockChangedWatcher               | Lock changed watcher              |
+| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
+| ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
 | PropertiesChangedWatcher         | Properties changed watcher        |
 | PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
 | GlobalRuleChangedWatcher         | Global rule changed watcher       |

@@ -99,15 +99,15 @@
         <assertion parameters="100001:int" expected-data-file="select_alias_as_keyword.xml" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id WHERE o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </test-case>
 
-    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </test-case>
 
-    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.order_id in (?,?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id in (?,?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int,1001:int" expected-data-file="select_in_with_force_index_join.xml" />
     </test-case>
 
@@ -232,7 +232,7 @@
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL default order by collate -->
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ?" db-types="H2,MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR status = ? ORDER BY order_id" db-types="H2,MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, init:String" expected-data-file="select_or_with_none_sharding_columns.xml" />
     </test-case>
     
@@ -487,15 +487,14 @@
         <assertion expected-data-file="select_with_case_expression.xml" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="select_for_left_join.xml"/>
     </test-case>
     
     <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="select_for_broadcast_table.xml"/>
     </test-case>
-    <!--TODO #9625 fix 'select *' of dbtbl_with_readwrite_splitting_and_encrypt -->
-    <test-case sql="SELECT * FROM t_user" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_encrypt.xml"/>
     </test-case>
     
@@ -510,12 +509,11 @@
     <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_in_encrypt_without_pwd.xml"/>
     </test-case>
-    <!--TODO #9625 fix 'select *' of dbtbl_with_readwrite_splitting_and_encrypt -->
-    <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_in_or_encrypt.xml"/>
     </test-case>
     
-    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11, 22, 33, 44, 55, 66, 77, 88, 99)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_join_encrypt.xml"/>
     </test-case>
 
@@ -616,4 +614,11 @@
         <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_alias.xml"/>
     </test-case>
 
+    <test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="select_shorthand_projection_with_subquery.xml"/>
+    </test-case>
+
+    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL">
+        <assertion expected-data-file="select_aggregation_projection_with_subquery.xml"/>
+    </test-case>
 </integration-test-cases>

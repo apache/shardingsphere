@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.metadata.persist.node.CacheNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
@@ -66,5 +67,10 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     @Override
     public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName)));
+    }
+    
+    @Override
+    public void cache(final String schemaName, final Collection<RuleConfiguration> configs) {
+        repository.persist(CacheNode.getCachePath(SchemaMetaDataNode.getRulePath(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
 }

@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
-import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 
@@ -47,9 +48,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private volatile boolean authenticated;
     
-    public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
+    public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        backendConnection = new BackendConnection(getTransactionRule().getDefaultType());
+        backendConnection = new BackendConnection(getTransactionRule().getDefaultType(), channel);
     }
     
     private TransactionRule getTransactionRule() {
@@ -75,7 +76,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     private boolean authenticate(final ChannelHandlerContext context, final ByteBuf message) {
-        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
+        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
             if (authResult.isFinished()) {
                 backendConnection.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
@@ -100,7 +101,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(backendConnection.getConnectionId());
-        PrimaryVisitedManager.clear();
         backendConnection.closeDatabaseCommunicationEngines(true);
         backendConnection.closeConnections(true);
         backendConnection.closeFederationExecutor();

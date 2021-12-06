@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Substitutable column name token.
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     @Getter
@@ -96,7 +96,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         }
         builder.append(quoteCharacter.wrap(columnProjection.getName()));
         if (columnProjection.getAlias().isPresent()) {
-            builder.append(" AS ").append(columnProjection.getAlias().get());
+            builder.append(" AS ").append(quoteCharacter.wrap(columnProjection.getAlias().get()));
         }
         return builder.toString();
     }

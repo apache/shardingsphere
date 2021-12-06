@@ -17,32 +17,36 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.HintShadowAlgorithmDeterminer;
 
 /**
  * Shadow determiner factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowDeterminerFactory {
     
     /**
      * Create new instance of Shadow algorithm determiner.
      *
-     * @param shadowAlgorithm shadow algorithm.
+     * @param hintShadowAlgorithm hint shadow algorithm
      * @return new instance of Shadow algorithm determiner
      */
-    @SuppressWarnings(value = "unchecked")
-    public static ShadowAlgorithmDeterminer newInstance(final ShadowAlgorithm shadowAlgorithm) {
-        if (shadowAlgorithm instanceof NoteShadowAlgorithm) {
-            return new NoteShadowAlgorithmDeterminer((NoteShadowAlgorithm<Comparable<?>>) shadowAlgorithm);
-        } else if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-            return new ColumnShadowAlgorithmDeterminer((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithm);
-        } else {
-            throw new ShadowAlgorithmException("Shadow algorithm determiner factory new instance failed shadow algorithm type is `%s`.", shadowAlgorithm.getType());
-        }
+    public static ShadowAlgorithmDeterminer newInstance(final HintShadowAlgorithm<Comparable<?>> hintShadowAlgorithm) {
+        return new HintShadowAlgorithmDeterminer(hintShadowAlgorithm);
+    }
+    
+    /**
+     * Create new instance of Shadow algorithm determiner.
+     *
+     * @param columnShadowAlgorithm column shadow algorithm
+     * @return new instance of Shadow algorithm determiner
+     */
+    public static ShadowAlgorithmDeterminer newInstance(final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm) {
+        return new ColumnShadowAlgorithmDeterminer(columnShadowAlgorithm);
     }
 }

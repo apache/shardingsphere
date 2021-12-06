@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.inform
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.AbstractSelectInformationExecutor.DefaultSelectInformationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +40,7 @@ import java.util.stream.Stream;
 /**
  * Schemata query executor, used to query the schemata table.
  */
-public final class SelectInformationSchemataExecutor extends DefaultSelectInformationExecutor {
+public final class SelectInformationSchemataExecutor extends DefaultDatabaseMetadataExecutor {
     
     public static final String SCHEMA_NAME = "SCHEMA_NAME";
     
@@ -56,16 +58,33 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
     
     private final SelectStatement sqlStatement;
     
+    private String schemaNameAlias = SCHEMA_NAME;
+    
+    private boolean queryDatabase;
+    
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
         super(sql);
         this.sqlStatement = sqlStatement;
     }
     
     @Override
+    protected void createPreProcessing() {
+        removeDuplicatedRow();
+    }
+    
+    private void removeDuplicatedRow() {
+        if (queryDatabase) {
+            List<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
+                    .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
+            reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
+        }
+    }
+    
+    @Override
     protected List<String> getSchemaNames() {
         Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractSelectInformationExecutor.hasDatasource(each)).collect(Collectors.toSet()));
-        List<String> result = schemaNames.stream().filter(AbstractSelectInformationExecutor::hasDatasource).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
+        List<String> result = schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDatasource();
         }
@@ -73,14 +92,16 @@ public final class SelectInformationSchemataExecutor extends DefaultSelectInform
     }
     
     @Override
-    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rows) {
+    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        String rowValue = null == rows.get(SCHEMA_NAME) ? rows.getOrDefault(SCHEMA_NAME.toLowerCase(), "").toString() : rows.getOrDefault(SCHEMA_NAME, "").toString();
+        schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
+        String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
+        queryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rows.replace(SCHEMA_NAME, schemaName);
+            rowMap.replace(schemaNameAlias, schemaName);
         } else {
-            rows.clear();
+            rowMap.clear();
         }
     }
     

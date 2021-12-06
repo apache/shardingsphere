@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -78,7 +78,7 @@ public final class ShowTablesExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         showTablesExecutor.execute(mockBackendConnection());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         while (showTablesExecutor.getMergedResult().next()) {
             assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is(1));
         }

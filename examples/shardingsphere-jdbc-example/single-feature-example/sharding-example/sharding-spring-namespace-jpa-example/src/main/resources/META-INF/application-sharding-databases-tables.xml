@@ -82,7 +82,16 @@
             <prop key="algorithm-expression">t_order_${order_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
+
+    <sharding:sharding-algorithm id="accountTableAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm-expression">t_account_${account_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderTableAlgorithm" />
+
+    <sharding:standard-strategy id="accountTableStrategy" algorithm-ref="accountTableAlgorithm" />
     
     <sharding:sharding-algorithm id="orderItemTableAlgorithm" type="INLINE">
         <props>
@@ -99,11 +108,13 @@
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="accountKeyGenerator" column="account_id" algorithm-ref="snowflakeAlgorithm" />
     
-    <sharding:rule id="shardingRule">
+    <sharding:rule id="shardingRule" default-sharding-column="account_id">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_account" actual-data-nodes="demo_ds_${0..1}.t_account_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="accountTableStrategy" key-generate-strategy-ref="accountKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>

@@ -232,6 +232,14 @@ public enum SQLVisitorRule {
     
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
     
+    SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
+    
+    SHOW_CHARACTER_SET("ShowCharacterSet", SQLStatementType.DAL),
+    
+    SHOW_COLLATION("ShowCollation", SQLStatementType.DAL),
+    
+    SHOW_VARIABLES("ShowVariables", SQLStatementType.DAL),
+    
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
     SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),
@@ -242,8 +250,26 @@ public enum SQLVisitorRule {
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
     
-    SHOW("Show", SQLStatementType.DAL),
+    SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
+    SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_HOSTS("ShowSlaveHosts", SQLStatementType.DAL),
+    
+    SHOW_SLAVE_STATUS("ShowSlaveStatus", SQLStatementType.DAL),
+    
+    SHOW_STATUS("ShowStatus", SQLStatementType.DAL),
+    
+    SHOW("Show", SQLStatementType.DAL),
+
+    SHOW_RELAYLOG_EVENTS("ShowRelaylogEventsStatement", SQLStatementType.DAL),
+
+    SHOW_PROCEDURE_CODE("ShowProcedureCodeStatement", SQLStatementType.DAL),
+    
+    SHOW_OPEN_TABLES("ShowOpenTables", SQLStatementType.DAL),
+
+    SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
+
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),
@@ -261,6 +287,46 @@ public enum SQLVisitorRule {
     ANALYZE_TABLE("AnalyzeTable", SQLStatementType.DAL),
     
     LOAD("Load", SQLStatementType.DAL),
+    
+    INSTALL("Install", SQLStatementType.DAL),
+    
+    UNINSTALL("Uninstall", SQLStatementType.DAL),
+    
+    FLUSH("Flush", SQLStatementType.DAL),
+
+    RESTART("Restart", SQLStatementType.DAL),
+    
+    SHUTDOWN("Shutdown", SQLStatementType.DAL),
+
+    CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
+    
+    SET_RESOURCE_GROUP("SetResourceGroup", SQLStatementType.DAL),
+    
+    BINLOG("Binlog", SQLStatementType.DAL),
+    
+    OPTIMIZE_TABLE("OptimizeTable", SQLStatementType.DAL),
+
+    CLONE("Clone", SQLStatementType.DAL),
+    
+    REPAIR_TABLE("RepairTable", SQLStatementType.DAL),
+    
+    KILL("Kill", SQLStatementType.DAL),
+    
+    RESET("ResetStatement", SQLStatementType.DAL),
+
+    RESET_PERSIST("ResetPersistStatement", SQLStatementType.DAL),
+
+    CACHE_INDEX("CacheIndex", SQLStatementType.DAL),
+    
+    LOAD_INDEX_INFO("LoadIndexInfo", SQLStatementType.DAL),
+    
+    CHECK_TABLE("CheckTable", SQLStatementType.DAL),
+    
+    CHECKSUM_TABLE("ChecksumTable", SQLStatementType.DAL),
+    
+    DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
+    
+    ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

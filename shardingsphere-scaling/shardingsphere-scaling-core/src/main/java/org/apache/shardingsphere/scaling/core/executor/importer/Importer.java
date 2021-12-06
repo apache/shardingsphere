@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 /**
  * Importer.
  */
-public interface Importer extends ScalingExecutor {
+public interface Importer extends LifecycleExecutor {
     
     /**
      * Set channel.

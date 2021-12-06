@@ -61,7 +61,7 @@ public final class SQLRewriteContext {
         this.sql = sql;
         this.parameters = parameters;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
-        parameterBuilder = sqlStatementContext instanceof InsertStatementContext
+        parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
                         ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
                 : new StandardParameterBuilder(parameters);

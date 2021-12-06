@@ -31,9 +31,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.SetReadwriteSplittingHintSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingHintStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingReadResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
@@ -92,18 +94,22 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     @Override
     public ASTNode visitReadwriteSplittingRuleDefinition(final ReadwriteSplittingRuleDefinitionContext ctx) {
         Properties props = new Properties();
-        if (null != ctx.algorithmDefinition().algorithmProperties()) {
+        String algorithmName = null;
+        if (null != ctx.algorithmDefinition()) {
+            algorithmName = getIdentifierValue(ctx.algorithmDefinition().algorithmName());
+        }
+        if (null != ctx.algorithmDefinition() && null != ctx.algorithmDefinition().algorithmProperties()) {
             ctx.algorithmDefinition().algorithmProperties().algorithmProperty().forEach(each -> props.setProperty(each.key.getText(), each.value.getText()));
         }
         if (null == ctx.staticReadwriteSplittingRuleDefinition()) {
-            return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.dynamicReadwriteSplittingRuleDefinition().resourceName()), 
-                    getIdentifierValue(ctx.algorithmDefinition().algorithmName()), props);
+            return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.dynamicReadwriteSplittingRuleDefinition().resourceName()),
+                    algorithmName, props);
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
         return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()),
                 getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()), 
                 staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()),
-                getIdentifierValue(ctx.algorithmDefinition().algorithmName()), props);
+                algorithmName, props);
     }
     
     @Override
@@ -114,6 +120,11 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
+    }
+    
+    @Override
+    public ASTNode visitShowReadwriteSplittingReadResources(final ShowReadwriteSplittingReadResourcesContext ctx) {
+        return new ShowReadwriteSplittingReadResourcesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
     
     @Override

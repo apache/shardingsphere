@@ -20,20 +20,20 @@ package org.apache.shardingsphere.scaling.core.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
-import org.apache.shardingsphere.scaling.core.common.record.GroupedDataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
+import org.apache.shardingsphere.cdc.core.record.GroupedDataRecord;
+import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Abstract importer.
  */
 @Slf4j
-public abstract class AbstractImporter extends AbstractScalingExecutor implements Importer {
+public abstract class AbstractImporter extends AbstractLifecycleExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -86,9 +86,12 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     
     @Override
     public final void write() {
+        log.info("importer write");
+        int rowCount = 0;
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(1024, 3);
             if (null != records && !records.isEmpty()) {
+                rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 if (null != importerListener) {
                     importerListener.recordsImported(records);
@@ -100,6 +103,7 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
             }
             channel.ack();
         }
+        log.info("importer write, rowCount={}", rowCount);
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {
@@ -144,13 +148,13 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             switch (buffer.get(0).getType()) {
-                case ScalingConstant.INSERT:
+                case CDCDataChangeType.INSERT:
                     executeBatchInsert(connection, buffer);
                     break;
-                case ScalingConstant.UPDATE:
+                case CDCDataChangeType.UPDATE:
                     executeUpdate(connection, buffer);
                     break;
-                case ScalingConstant.DELETE:
+                case CDCDataChangeType.DELETE:
                     executeBatchDelete(connection, buffer);
                     break;
                 default:

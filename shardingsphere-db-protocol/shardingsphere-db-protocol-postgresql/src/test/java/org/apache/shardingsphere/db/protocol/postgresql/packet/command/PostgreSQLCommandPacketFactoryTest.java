@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync.PostgreSQLComSyncPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
@@ -49,9 +49,9 @@ public final class PostgreSQLCommandPacketFactoryTest {
     
     @Before
     public void init() {
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "sts-id", "", new EmptyStatement(),
-                Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "sts-id", "", new EmptyStatement(),
+                Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
     }
     
     @Test

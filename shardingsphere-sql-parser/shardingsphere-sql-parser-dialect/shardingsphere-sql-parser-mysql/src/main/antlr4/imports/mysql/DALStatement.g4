@@ -47,7 +47,7 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? COLUMNS fromTable fromSchema? (showColumnLike | showWhereClause)?
+    : SHOW EXTENDED? FULL? COLUMNS fromTable fromSchema? showFilter?
     ;
 
 showIndex
@@ -67,10 +67,6 @@ fromTable
     ;
 
 showLike
-    : LIKE stringLiterals
-    ;
-
-showColumnLike
     : LIKE stringLiterals
     ;
 
@@ -203,7 +199,7 @@ showProcedureCode
     ;
 
 showProcedureStatus
-    : SHOW PROCEDURE STATUS showFilter
+    : SHOW PROCEDURE STATUS showFilter?
     ;
 
 showProcesslist
@@ -234,8 +230,8 @@ showStatus
     : SHOW (GLOBAL | SESSION)? STATUS showFilter?
     ;
 
-showTrriggers
-    : SHOW TRIGGER fromSchema? showFilter?
+showTriggers
+    : SHOW TRIGGERS fromSchema? showFilter?
     ;
 
 showVariables
@@ -244,6 +240,14 @@ showVariables
 
 showWarnings
     : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    ;
+
+showReplicas
+    : SHOW REPLICAS
+    ;
+    
+showReplicaStatus
+    : SHOW REPLICA STATUS (FOR CHANNEL channelName)?
     ;
 
 setCharacter
@@ -297,11 +301,11 @@ histogram
     ;
 
 checkTable
-    : CHECK tableOrTables tableList checkTableOption?
+    : CHECK TABLE tableList checkTableOption?
     ;
 
 checkTableOption
-    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGE
+    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGED
     ;
 
 checksumTable
@@ -342,11 +346,11 @@ binlog
     ;
 
 cacheIndex
-    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN (identifier | DEFAULT)
+    : CACHE INDEX (cacheTableIndexList (COMMA_ cacheTableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN (identifier | DEFAULT)
     ;
 
-tableIndexList
-    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
+cacheTableIndexList
+    : tableName ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)?
     ;
 
 partitionList
@@ -372,7 +376,11 @@ kill
     ;
 
 loadIndexInfo
-    : LOAD INDEX INTO CACHE tableIndexList (COMMA_ tableIndexList)*
+    : LOAD INDEX INTO CACHE loadTableIndexList (COMMA_ loadTableIndexList)*
+    ;
+
+loadTableIndexList
+    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)? (IGNORE LEAVES)?
     ;
 
 resetStatement
@@ -448,7 +456,9 @@ show
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus
-    | showTrriggers
+    | showTriggers
     | showWarnings
     | showVariables
+    | showReplicas
+    | showReplicaStatus
     ;

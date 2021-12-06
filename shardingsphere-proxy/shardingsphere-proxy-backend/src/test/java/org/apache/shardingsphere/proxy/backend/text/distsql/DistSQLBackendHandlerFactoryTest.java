@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -109,6 +109,8 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData("schema");
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -261,7 +263,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowScalingCheckAlgorithmsStatement.class), connection).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ShowScalingCheckAlgorithmsStatement.class), connection).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
@@ -270,7 +272,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopScalingSourceWritingStatement.class), connection).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(StopScalingSourceWritingStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -280,7 +282,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(CheckoutScalingStatement.class), connection).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CheckoutScalingStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Typed property key of configuration.
  */
@@ -84,11 +88,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
     
     /**
-     * Whether enable lock.
-     */
-    LOCK_ENABLED("lock-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
@@ -113,11 +112,45 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
      * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
      */
-    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class);
+    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
+    
+    /**
+     * Less than or equal to 0 means no limitation.
+     */
+    PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class),
+    
+    /**
+     * Whether enable sql federation.
+     */
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+
+    /**
+     * SQL Statement cache initial capacity.
+     */
+    SQL_CACHE_INITIAL_CAPACITY("sql-cache-initial-capacity", String.valueOf(2000), int.class),
+
+    /**
+     * SQL statement cache maximum size.
+     */
+    SQL_CACHE_MAXIMUM_SIZE("sql-cache-maximum-size", String.valueOf(65535L), long.class),
+
+    /**
+     * SQL statement cache concurrency level.
+     */
+    SQL_CACHE_CONCURRENCY_LEVEL("sql-cache-concurrency-level", String.valueOf(4), int.class);
     
     private final String key;
     
     private final String defaultValue;
     
     private final Class<?> type;
+    
+    /**
+     * Get property key names.
+     *
+     * @return collection of key names
+     */
+    public static Collection<String> getKeyNames() {
+        return Arrays.stream(values()).map(ConfigurationPropertyKey::name).collect(Collectors.toList());
+    }
 }

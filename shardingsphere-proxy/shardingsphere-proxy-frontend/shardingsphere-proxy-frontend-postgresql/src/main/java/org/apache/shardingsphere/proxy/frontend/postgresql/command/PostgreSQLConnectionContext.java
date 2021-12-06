@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,36 +33,37 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * PostgreSQL connection context.
  */
+@Getter
 @Setter
 public final class PostgreSQLConnectionContext {
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, PostgreSQLPortal> portals = new LinkedHashMap<>();
     
-    @Getter
     private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
     
-    @Getter
-    private long updateCount;
+    private PostgreSQLCommandPacketType currentPacketType;
+    
+    private boolean errorOccurred;
     
     /**
      * Create a portal.
      *
      * @param portal portal name
-     * @param binaryStatement binary statement
+     * @param preparedStatement prepared statement
      * @param parameters bind parameters
      * @param resultFormats result formats
      * @param backendConnection backend connection
      * @return a new portal
      * @throws SQLException SQL exception
      */
-    public PostgreSQLPortal createPortal(final String portal, final PostgreSQLBinaryStatement binaryStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    public PostgreSQLPortal createPortal(final String portal, final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                                          final BackendConnection backendConnection) throws SQLException {
-        PostgreSQLPortal result = new PostgreSQLPortal(binaryStatement, parameters, resultFormats, backendConnection);
+        PostgreSQLPortal result = new PostgreSQLPortal(preparedStatement, parameters, resultFormats, backendConnection);
         portals.put(portal, result);
         return result;
     }
@@ -91,8 +93,10 @@ public final class PostgreSQLConnectionContext {
     
     /**
      * Close all portals.
+     * 
+     * @throws SQLException SQL exception
      */
-    public void closeAllPortals() {
+    public void closeAllPortals() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (PostgreSQLPortal each : portals.values()) {
             try {
@@ -107,15 +111,7 @@ public final class PostgreSQLConnectionContext {
         }
         SQLException ex = new SQLException("Close all portals failed.");
         result.forEach(ex::setNextException);
-    }
-    
-    /**
-     * Get describe command executor.
-     *
-     * @return describe command executor
-     */
-    public Optional<PostgreSQLComDescribeExecutor> getDescribeExecutor() {
-        return pendingExecutors.stream().filter(PostgreSQLComDescribeExecutor.class::isInstance).map(PostgreSQLComDescribeExecutor.class::cast).findFirst();
+        throw ex;
     }
     
     /**
@@ -123,6 +119,7 @@ public final class PostgreSQLConnectionContext {
      */
     public void clearContext() {
         pendingExecutors.clear();
-        updateCount = 0;
+        currentPacketType = null;
+        errorOccurred = false;
     }
 }

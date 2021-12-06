@@ -57,6 +57,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
         factory.addPropertyValue("enable", parseShadowEnableConfiguration(element));
         factory.addPropertyValue("dataSources", parseDataSourcesConfiguration(element));
         factory.addPropertyValue("tables", parseShadowTablesConfiguration(element));
+        factory.addPropertyValue("defaultShadowAlgorithmName", parseDefaultShadowAlgorithmName(element));
         factory.addPropertyValue("shadowAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShadowAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
@@ -69,9 +70,17 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
         List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(element, ShadowRuleBeanDefinitionTag.SHADOW_TABLE_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(tableRuleElements.size());
         for (Element each : tableRuleElements) {
-            result.put(each.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_TABLE_NAME_ATTRIBUTE), parseShadowTableConfiguration(each));
+            result.put(each.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_NAME_ATTRIBUTE), parseShadowTableConfiguration(each));
         }
         return result;
+    }
+    
+    private String parseDefaultShadowAlgorithmName(final Element element) {
+        Element defaultShadowAlgorithmElement = DomUtils.getChildElementByTagName(element, ShadowRuleBeanDefinitionTag.SHADOW_DEFAULT_SHADOW_ALGORITHM_NAME);
+        if (null == defaultShadowAlgorithmElement) {
+            return null;
+        }
+        return defaultShadowAlgorithmElement.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_NAME_ATTRIBUTE);
     }
     
     private BeanDefinition parseShadowTableConfiguration(final Element element) {

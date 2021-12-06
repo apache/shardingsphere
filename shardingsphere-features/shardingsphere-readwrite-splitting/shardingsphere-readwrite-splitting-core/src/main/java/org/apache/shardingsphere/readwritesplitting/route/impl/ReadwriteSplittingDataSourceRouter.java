@@ -21,6 +21,8 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -43,14 +45,11 @@ public final class ReadwriteSplittingDataSourceRouter {
     /**
      * Route.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @return data source name
      */
-    public String route(final SQLStatement sqlStatement) {
-        if (isPrimaryRoute(sqlStatement)) {
-            if (rule.isQueryConsistent()) {
-                PrimaryVisitedManager.setPrimaryVisited();
-            }
+    public String route(final SQLStatementContext<?> sqlStatementContext) {
+        if (isPrimaryRoute(sqlStatementContext)) {
             String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
             if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
                 return rule.getWriteDataSourceName();
@@ -72,9 +71,13 @@ public final class ReadwriteSplittingDataSourceRouter {
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), rule.getReadDataSourceNames());
     }
     
-    private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement)
-                || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly() || TransactionHolder.isTransaction();
+    private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || isHintWriteRouteOnly(sqlStatementContext) || TransactionHolder.isTransaction();
+    }
+    
+    private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
+        return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

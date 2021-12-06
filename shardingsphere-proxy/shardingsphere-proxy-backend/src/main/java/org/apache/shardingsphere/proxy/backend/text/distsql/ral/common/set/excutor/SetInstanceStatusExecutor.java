@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.status.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;

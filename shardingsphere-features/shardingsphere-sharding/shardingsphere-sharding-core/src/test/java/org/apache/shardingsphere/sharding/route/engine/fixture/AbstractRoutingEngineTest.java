@@ -32,10 +32,12 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +59,7 @@ public abstract class AbstractRoutingEngineTest {
         Properties props1 = new Properties();
         props1.setProperty("algorithm-expression", "t_order_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createErrorShardingRule() {
@@ -69,7 +71,7 @@ public abstract class AbstractRoutingEngineTest {
         Properties props1 = new Properties();
         props1.setProperty("algorithm-expression", "t_order_${order_id % 3}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createBindingShardingRule() {
@@ -86,7 +88,7 @@ public abstract class AbstractRoutingEngineTest {
         Properties props2 = new Properties();
         props2.setProperty("algorithm-expression", "t_order_item_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_item_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props2));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createBroadcastShardingRule() {
@@ -103,14 +105,14 @@ public abstract class AbstractRoutingEngineTest {
         Properties props2 = new Properties();
         props2.setProperty("algorithm-expression", "t_order_item_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_item_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props2));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createHintShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
         shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createMixedShardingRule() {
@@ -126,7 +128,7 @@ public abstract class AbstractRoutingEngineTest {
         Properties props1 = new Properties();
         props1.setProperty("algorithm-expression", "t_hint_ds_test_${order_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_hint_ds_test_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createAllShardingRule() {
@@ -151,7 +153,7 @@ public abstract class AbstractRoutingEngineTest {
         props3.setProperty("algorithm-expression", "t_user_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props3));
         shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMapWithMain());
+        return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
     }
     
     protected final ShardingRule createIntervalTableShardingRule() {
@@ -166,7 +168,7 @@ public abstract class AbstractRoutingEngineTest {
         props0.setProperty("datetime-interval-amount", "1");
         props0.setProperty("datetime-interval-unit", "MONTHS");
         shardingRuleConfig.getShardingAlgorithms().put("interval_test", new ShardingSphereAlgorithmConfiguration("INTERVAL", props0));
-        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
@@ -227,11 +229,8 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        return result;
+    private Collection<String> createDataSourceNames() {
+        return Arrays.asList("ds_0", "ds_1");
     }
     
     private Map<String, DataSource> createDataSourceMapWithMain() {
@@ -244,8 +243,8 @@ public abstract class AbstractRoutingEngineTest {
     
     protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        singleTableRule.addDataNode("t_category", dataSourceMap.keySet().iterator().next());
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        singleTableRule.put("t_category", dataSourceMap.keySet().iterator().next());
         return singleTableRule;
     }
 }

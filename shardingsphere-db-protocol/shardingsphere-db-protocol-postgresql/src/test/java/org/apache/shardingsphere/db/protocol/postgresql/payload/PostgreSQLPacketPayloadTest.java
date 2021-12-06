@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.db.protocol.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
-import java.nio.charset.StandardCharsets;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,7 +31,7 @@ public class PostgreSQLPacketPayloadTest {
     @Test
     public void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(16, 128);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         byte expectedInt1 = (byte) 'i';
         payload.writeInt1(expectedInt1);
         assertThat(payload.readInt1(), is((int) expectedInt1));

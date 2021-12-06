@@ -305,7 +305,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             if (each instanceof AlterTableDropContext) {
                 AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
                 if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
-                    return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(alterTableDrop.identifier()));
+                    ConstraintSegment constraintSegment = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
+                            (IdentifierValue) visit(alterTableDrop.identifier()));
+                    result.getValue().add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
                 } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
                 }

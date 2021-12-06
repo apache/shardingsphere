@@ -52,7 +52,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
     public MySQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final BackendConnection backendConnection) throws SQLException {
-        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload);
+        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload, backendConnection.getConnectionId());
     }
     
     @Override
@@ -62,6 +62,11 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause, final BackendConnection backendConnection) {
+        return MySQLErrPacketFactory.newInstance(cause);
+    }
+    
+    @Override
+    public DatabasePacket<?> getErrorPacket(final Exception cause) {
         return MySQLErrPacketFactory.newInstance(cause);
     }
     

@@ -41,15 +41,16 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDatabaseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateServiceContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
@@ -134,25 +135,34 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        SQLServerCreateTableStatement result;
+        if (null != ctx.createTableClause()) {
+            result = (SQLServerCreateTableStatement) visit(ctx.createTableClause());
+        } else {
+            result = (SQLServerCreateTableStatement) visit(ctx.createTableAsSelectClause());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        if (null != ctx.createDefinitionClause()) {
-            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
-            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
-                if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
-                }
+        CollectionValue<CreateDefinitionSegment> createDefinitions =
+                (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
+        for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+            if (each instanceof ColumnDefinitionSegment) {
+                result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+            } else if (each instanceof ConstraintDefinitionSegment) {
+                result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
             }
         }
         return result;
     }
-
-    @Override
-    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+    
+    private ASTNode generateCreateDefinitionSegment(final CreateTableDefinitionsContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
-        for (CreateTableDefinitionContext each : ctx.createTableDefinitions().createTableDefinition()) {
+        for (CreateTableDefinitionContext each : ctx.createTableDefinition()) {
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
@@ -162,7 +172,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());

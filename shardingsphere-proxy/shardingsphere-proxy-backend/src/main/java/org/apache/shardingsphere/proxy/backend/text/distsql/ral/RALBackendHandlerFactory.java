@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLState
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.AdvancedDistSQLBackendHandlerFactory;
@@ -42,12 +43,13 @@ public final class RALBackendHandlerFactory {
     /**
      * Create new instance of RAL backend handler.
      *
+     * @param databaseType database type
      * @param sqlStatement RAL statement
      * @param backendConnection backend connection
      * @return RAL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof QueryableRALStatement) {
             return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
         }
@@ -58,7 +60,7 @@ public final class RALBackendHandlerFactory {
             return CommonDistSQLBackendHandlerFactory.newInstance((CommonDistSQLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof AdvancedDistSQLStatement) {
-            return AdvancedDistSQLBackendHandlerFactory.newInstance((AdvancedDistSQLStatement) sqlStatement, backendConnection);
+            return AdvancedDistSQLBackendHandlerFactory.newInstance(databaseType, (AdvancedDistSQLStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

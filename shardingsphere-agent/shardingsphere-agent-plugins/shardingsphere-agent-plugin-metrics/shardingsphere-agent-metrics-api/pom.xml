@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-metrics-api</artifactId>
     <name>${project.artifactId}</name>
@@ -39,12 +39,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-route</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
