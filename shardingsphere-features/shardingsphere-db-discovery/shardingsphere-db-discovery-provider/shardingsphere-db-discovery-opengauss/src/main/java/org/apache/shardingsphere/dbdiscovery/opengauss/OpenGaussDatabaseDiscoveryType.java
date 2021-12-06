@@ -122,9 +122,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap,
             final Collection<String> disabledDataSourceNames) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
         determineDisabledDataSource(schemaName, activeDataSourceMap);
     }
     

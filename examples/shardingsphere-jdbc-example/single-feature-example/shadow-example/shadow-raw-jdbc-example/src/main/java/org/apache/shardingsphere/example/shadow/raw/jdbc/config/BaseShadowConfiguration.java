@@ -21,6 +21,8 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -41,8 +43,11 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        result.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), "true");
         return result;
+    }
+    
+    protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
+        return new DefaultSQLParserRuleConfigurationBuilder().build();
     }
     
     protected Collection<String> createShadowAlgorithmNames() {

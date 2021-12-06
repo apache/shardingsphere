@@ -21,8 +21,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -30,20 +30,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementCacheBuilder {
-    
+
     /**
      * Build SQL statement cache.
      *
-     * @param props configuration props
+     * @param sqlParserRule sql parser rule
      * @param databaseType database type
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final ConfigurationProperties props, final String databaseType) {
-        int initialCapacity = props.getValue(ConfigurationPropertyKey.SQL_CACHE_INITIAL_CAPACITY);
-        long maximumSize = props.getValue(ConfigurationPropertyKey.SQL_CACHE_MAXIMUM_SIZE);
-        int concurrencyLevel = props.getValue(ConfigurationPropertyKey.SQL_CACHE_CONCURRENCY_LEVEL);
-        boolean sqlCommentParseEnabled = props.getValue(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED);
-        return CacheBuilder.newBuilder().softValues().initialCapacity(initialCapacity).maximumSize(maximumSize)
-                .concurrencyLevel(concurrencyLevel).build(new SQLStatementCacheLoader(databaseType, sqlCommentParseEnabled));
+    public static LoadingCache<String, SQLStatement> build(final SQLParserRule sqlParserRule, final String databaseType) {
+        CacheOption sqlStatementCache = sqlParserRule.getSqlStatementCache();
+        return CacheBuilder.newBuilder().softValues().initialCapacity(sqlStatementCache.getInitialCapacity()).maximumSize(sqlStatementCache.getMaximumSize())
+                .concurrencyLevel(sqlStatementCache.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, sqlParserRule));
     }
 }

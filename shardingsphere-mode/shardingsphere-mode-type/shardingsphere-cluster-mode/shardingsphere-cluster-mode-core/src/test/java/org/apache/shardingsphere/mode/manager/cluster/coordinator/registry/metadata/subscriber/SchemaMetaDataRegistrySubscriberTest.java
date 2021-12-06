@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

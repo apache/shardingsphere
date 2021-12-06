@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 
 /**
  * Schema meta data registry subscriber.
