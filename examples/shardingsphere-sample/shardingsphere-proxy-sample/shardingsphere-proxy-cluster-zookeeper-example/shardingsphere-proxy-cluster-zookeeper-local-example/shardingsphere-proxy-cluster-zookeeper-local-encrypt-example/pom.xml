@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-cluster-zookeeper-local-example</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-cluster-zookeeper-local-encrypt-example</artifactId>
     <name>${project.artifactId}</name>

@@ -22,7 +22,7 @@
     <parent>
         <artifactId>shardingsphere-jdbc-memory-local-readwrite-splitting-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-jdbc-example</artifactId>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
             <artifactId>example-raw-jdbc</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
