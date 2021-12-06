@@ -451,29 +451,29 @@
                 </executions>
             </plugin>
             <plugin>
-		        <groupId>org.codehaus.mojo</groupId>
-		        <artifactId>flatten-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
                 <version>${flatten-maven-plugin.version}</version>
-		        <configuration>
-		            <updatePomFile>true</updatePomFile>
-		        </configuration>
-		        <executions>
-		            <execution>
-			            <id>flatten</id>
-			            <phase>process-resources</phase>
-			            <goals>
-			                <goal>flatten</goal>
-			            </goals>
-		            </execution>
-		            <execution>
-		                <id>flatten.clean</id>
-		                <phase>clean</phase>
-		                <goals>
-    		                <goal>clean</goal>
-		                </goals>
-		            </execution>
-		        </executions>
-	        </plugin>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
