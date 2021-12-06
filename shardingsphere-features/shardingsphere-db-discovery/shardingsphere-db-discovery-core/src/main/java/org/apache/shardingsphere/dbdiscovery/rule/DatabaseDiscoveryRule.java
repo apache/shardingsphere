@@ -22,7 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryRuleConstants;
+import org.apache.shardingsphere.dbdiscovery.heartbeat.DatabaseDiscoveryHeartBeat;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
@@ -57,22 +59,25 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         ShardingSphereServiceLoader.register(DataSourceNameAware.class);
     }
     
-    private final Map<String, DatabaseDiscoveryType> discoveryTypes;
-    
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        this(config.getDataSources(), getDiscoveryTypes(config.getDiscoveryTypes()), schemaName, dataSourceMap);
+    private final Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats;
+    
+    private final Map<String, DatabaseDiscoveryType> discoveryTypes;
+    
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryTypes(config.getDiscoveryTypes()));
     }
     
-    public DatabaseDiscoveryRule(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), config.getDiscoveryTypes());
     }
     
-    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes,
-                                  final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
+                                  final Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats, final Map<String, DatabaseDiscoveryType> discoveryTypes) {
         checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
+        this.discoveryHeartbeats = discoveryHeartbeats;
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs);
         startMonitor(schemaName, dataSourceMap);
@@ -96,12 +101,15 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         Map<String, DatabaseDiscoveryDataSourceRule> result = new HashMap<>(dataSources.size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : dataSources) {
             checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each);
-            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, discoveryTypes.get(each.getDiscoveryTypeName())));
+            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, discoveryHeartbeats.get(each.getDiscoveryHeartbeatName()), discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         return result;
     }
     
     private void checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig) {
+        Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryHeartbeatName(), "Discovery heartbeat cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
+        Preconditions.checkArgument(discoveryHeartbeats.containsKey(dataSourceRuleConfig.getDiscoveryHeartbeatName()),
+                "Can not find discovery heartbeat of rule name `%s`.", dataSourceRuleConfig.getName());
         Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryTypeName(), "Discovery type cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
         Preconditions.checkArgument(discoveryTypes.containsKey(dataSourceRuleConfig.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", dataSourceRuleConfig.getName());
     }
@@ -118,7 +126,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
-                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
+                new DatabaseDiscoveryHeartBeat().startMonitorHeartbeat(schemaName, groupName, originalDataSourceMap, databaseDiscoveryType,
+                        dataSourceRule.getHeartbeatProps(), disabledDataSourceNames);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }

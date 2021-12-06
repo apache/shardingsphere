@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mgr;
+package org.apache.shardingsphere.dbdiscovery.job;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
@@ -30,7 +30,7 @@ import java.util.Map;
  * MGR heartbeat job.
  */
 @RequiredArgsConstructor
-public final class MGRHeartbeatJob implements SimpleJob {
+public final class HeartbeatJob implements SimpleJob {
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
     

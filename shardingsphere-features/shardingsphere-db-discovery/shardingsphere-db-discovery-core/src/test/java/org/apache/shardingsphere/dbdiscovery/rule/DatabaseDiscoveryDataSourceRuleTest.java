@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.mgr.MGRDatabaseDiscoveryType;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,21 +35,25 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private final DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = new DatabaseDiscoveryDataSourceRule(
-            new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+            new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"),
+            new DatabaseDiscoveryHeartBeatConfiguration(new Properties()), new MGRDatabaseDiscoveryType());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"),
+                new DatabaseDiscoveryHeartBeatConfiguration(new Properties()), new MGRDatabaseDiscoveryType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"),
+                new DatabaseDiscoveryHeartBeatConfiguration(new Properties()), new MGRDatabaseDiscoveryType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"), new MGRDatabaseDiscoveryType());
+        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
+                new DatabaseDiscoveryHeartBeatConfiguration(new Properties()), new MGRDatabaseDiscoveryType());
     }
     
     @Test
