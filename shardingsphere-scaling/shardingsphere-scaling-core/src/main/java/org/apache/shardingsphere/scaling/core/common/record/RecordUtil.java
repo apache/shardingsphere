@@ -19,6 +19,8 @@ package org.apache.shardingsphere.scaling.core.common.record;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
 
 import java.util.ArrayList;
 import java.util.List;

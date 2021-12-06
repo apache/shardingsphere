@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
 import org.apache.shardingsphere.scaling.core.common.exception.UnexpectedDataRecordOrderException;
-import org.apache.shardingsphere.scaling.core.common.record.Column;
-import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.common.record.GroupedDataRecord;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.record.Column;
+import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.cdc.core.record.GroupedDataRecord;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -74,7 +74,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.INSERT));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.INSERT));
         assertThat(dataRecord.getTableName(), is("order"));
         assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
@@ -89,7 +89,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.INSERT));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.INSERT));
         assertThat(dataRecord.getTableName(), is("order"));
         assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(2));
@@ -104,7 +104,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.UPDATE));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.UPDATE));
         assertThat(dataRecord.getTableName(), is("order"));
         assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
@@ -119,7 +119,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.UPDATE));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.UPDATE));
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getColumn(0).getOldValue(), is(1));
         assertThat(dataRecord.getColumn(0).getValue(), is(2));
@@ -134,7 +134,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.UPDATE));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.UPDATE));
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getColumn(0).getOldValue(), is(1));
         assertThat(dataRecord.getColumn(0).getValue(), is(2));
@@ -149,7 +149,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.UPDATE));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.UPDATE));
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getColumn(0).getOldValue(), is(1));
         assertThat(dataRecord.getColumn(0).getValue(), is(3));
@@ -189,7 +189,7 @@ public final class DataRecordMergerTest {
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
         DataRecord dataRecord = actual.iterator().next();
-        assertThat(dataRecord.getType(), is(ScalingConstant.DELETE));
+        assertThat(dataRecord.getType(), is(CDCDataChangeType.DELETE));
         assertThat(dataRecord.getTableName(), is("order"));
         assertNull(dataRecord.getColumn(0).getOldValue());
         assertThat(dataRecord.getColumn(0).getValue(), is(1));
@@ -235,7 +235,7 @@ public final class DataRecordMergerTest {
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(ScalingConstant.INSERT);
+        result.setType(CDCDataChangeType.INSERT);
         result.setTableName(tableName);
         result.addColumn(new Column("id", id, true, true));
         result.addColumn(new Column("user_id", userId, true, false));
@@ -257,7 +257,7 @@ public final class DataRecordMergerTest {
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(ScalingConstant.UPDATE);
+        result.setType(CDCDataChangeType.UPDATE);
         result.setTableName(tableName);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
         result.addColumn(new Column("user_id", userId, true, false));
@@ -271,7 +271,7 @@ public final class DataRecordMergerTest {
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setType(ScalingConstant.DELETE);
+        result.setType(CDCDataChangeType.DELETE);
         result.setTableName(tableName);
         result.addColumn(new Column("id", id, true, true));
         result.addColumn(new Column("user_id", userId, true, false));

@@ -27,16 +27,21 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-</#if>
-<#if feature=="readwrite-splitting">
+<#elseif feature=="readwrite-splitting">
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-</#if>
-<#if feature=="encrypt">
+<#elseif feature=="encrypt">
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+<#elseif feature=="shadow">
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 </#if>
 
 import javax.sql.DataSource;
@@ -62,13 +67,14 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
     private static final String PASSWORD = "${(password)?c}";
 <#if feature=="sharding">
     <#include "shardingConfiguration.ftl">
-</#if>
-<#if feature=="readwrite-splitting">
+<#elseif feature=="readwrite-splitting">
     <#include "readwritesplittingConfiguration.ftl">
-</#if>
-<#if feature=="encrypt">
+<#elseif feature=="encrypt">
     <#include "encryptConfiguration.ftl">
+<#elseif feature=="shadow">
+    <#include "shadowConfiguration.ftl">
 </#if>
+    
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

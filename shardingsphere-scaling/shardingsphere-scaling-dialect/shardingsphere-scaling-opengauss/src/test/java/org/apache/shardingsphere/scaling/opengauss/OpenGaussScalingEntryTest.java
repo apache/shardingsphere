@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.opengauss;
 
+import org.apache.shardingsphere.cdc.opengauss.OpenGaussPositionInitializer;
+import org.apache.shardingsphere.cdc.opengauss.OpenGaussWalDumper;
+import org.apache.shardingsphere.cdc.postgresql.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;
-import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussPositionInitializer;
-import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussWalDumper;
 import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.junit.Test;
 
