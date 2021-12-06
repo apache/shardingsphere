@@ -53,11 +53,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Backend connection.
+ * JDBC connection session.
  */
 @Getter
 @Setter
-public final class BackendConnection extends ConnectionSession implements ExecutorJDBCManager {
+public final class JDBCConnectionSession extends ConnectionSession implements ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
@@ -79,7 +79,7 @@ public final class BackendConnection extends ConnectionSession implements Execut
     
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
-    public BackendConnection(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
+    public JDBCConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         super(initialTransactionType, attributeMap);
         fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
                 .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));

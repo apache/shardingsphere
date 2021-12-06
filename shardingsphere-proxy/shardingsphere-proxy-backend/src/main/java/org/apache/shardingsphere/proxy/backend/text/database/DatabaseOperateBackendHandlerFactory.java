@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -37,20 +37,20 @@ public final class DatabaseOperateBackendHandlerFactory {
      * Create new instance of database operate backend handler.
      * 
      * @param sqlStatement SQL statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return database operate backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        return createBackendHandler(sqlStatement, backendConnection);
+    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
+        return createBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static TextProtocolBackendHandler createBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createBackendHandler(final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection);
+            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

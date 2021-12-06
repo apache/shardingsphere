@@ -35,14 +35,14 @@ public final class ShowConnectionIdExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor();
-        executor.execute(mockBackendConnection());
+        executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, Object.class), is(109));
         }
     }
     
-    private ConnectionSession mockBackendConnection() {
+    private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionId()).thenReturn(109);
         return result;

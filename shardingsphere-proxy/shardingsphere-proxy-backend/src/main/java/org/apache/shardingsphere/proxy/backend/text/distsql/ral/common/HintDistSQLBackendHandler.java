@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -40,7 +40,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private final HintDistSQLStatement sqlStatement;
     
-    private final BackendConnection backendConnection;
+    private final JDBCConnectionSession connectionSession;
     
     private HintStatementExecutor hintStatementExecutor;
     
@@ -49,7 +49,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
         if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
-        hintStatementExecutor = HintStatementExecutorFactory.newInstance(sqlStatement, backendConnection);
+        hintStatementExecutor = HintStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
         return hintStatementExecutor.execute();
     }
     

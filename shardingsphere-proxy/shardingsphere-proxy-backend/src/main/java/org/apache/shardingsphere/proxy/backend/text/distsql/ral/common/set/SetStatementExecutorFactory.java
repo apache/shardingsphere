@@ -21,7 +21,7 @@ import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
@@ -38,16 +38,16 @@ public final class SetStatementExecutorFactory {
      * Create set statement executor instance.
      *
      * @param sqlStatement set statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return set command executor
      * @throws SQLException SQL exception
      */
-    public static SetStatementExecutor newInstance(final SetDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static SetStatementExecutor newInstance(final SetDistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetVariableStatement) {
-            return new SetVariableExecutor((SetVariableStatement) sqlStatement, backendConnection);
+            return new SetVariableExecutor((SetVariableStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof SetReadwriteSplittingStatusStatement) {
-            return new SetReadwriteSplittingStatusExecutor((SetReadwriteSplittingStatusStatement) sqlStatement, backendConnection);
+            return new SetReadwriteSplittingStatusExecutor((SetReadwriteSplittingStatusStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof SetInstanceStatusStatement) {
             return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);

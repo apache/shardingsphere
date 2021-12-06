@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
@@ -40,22 +40,22 @@ public final class ShowStatementExecutorFactory {
      * Create show statement executor instance.
      *
      * @param sqlStatement show statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return show command executor
      * @throws SQLException SQL exception
      */
-    public static ShowStatementExecutor newInstance(final ShowDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static ShowStatementExecutor newInstance(final ShowDistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof ShowInstanceStatement) {
             return new ShowInstanceExecutor();
         }
         if (sqlStatement instanceof ShowReadwriteSplittingReadResourcesStatement) {
-            return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, backendConnection);
+            return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof ShowAllVariablesStatement) {
-            return new ShowAllVariablesExecutor(backendConnection);
+            return new ShowAllVariablesExecutor(connectionSession);
         }
         if (sqlStatement instanceof ShowVariableStatement) {
-            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);
+            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
