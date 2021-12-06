@@ -44,7 +44,8 @@ public final class AdvancedDistSQLBackendHandlerFactory {
      * @return advanced dist sql backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final AdvancedDistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final AdvancedDistSQLStatement sqlStatement,
+                                                         final JDBCConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof PreviewStatement) {
             return new PreviewDistSQLBackendHandler((PreviewStatement) sqlStatement, connectionSession);
         } else if (sqlStatement instanceof ParseStatement) {
