@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.executor.engine;
 
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
-import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
+import org.apache.shardingsphere.cdc.core.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -70,9 +70,9 @@ public final class ExecuteEngineTest {
         };
     }
     
-    private ScalingExecutor mockScalingExecutor() {
+    private LifecycleExecutor mockScalingExecutor() {
         
-        return new ScalingExecutor() {
+        return new LifecycleExecutor() {
             @Override
             public void run() {
                 ThreadUtil.sleep(100L);

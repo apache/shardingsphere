@@ -20,10 +20,12 @@ package org.apache.shardingsphere.scaling.core.executor.dumper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
+import org.apache.shardingsphere.cdc.core.dumper.InventoryDumper;
+import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
@@ -53,7 +55,7 @@ public final class DumperFactory {
      * @param position position
      * @return log dumper
      */
-    public static IncrementalDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    public static IncrementalDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final CDCPosition<?> position) {
         return newInstanceLogDumper(dumperConfig.getDataSourceConfig().getDatabaseType().getName(), dumperConfig, position);
     }
     
@@ -66,8 +68,8 @@ public final class DumperFactory {
      * @return log dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static IncrementalDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    public static IncrementalDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final CDCPosition<?> position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, ScalingPosition.class).newInstance(dumperConfig, position);
+        return scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, CDCPosition.class).newInstance(dumperConfig, position);
     }
 }

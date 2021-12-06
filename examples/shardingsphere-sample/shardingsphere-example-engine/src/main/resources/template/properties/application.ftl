@@ -18,6 +18,11 @@
 <#if framework?contains("mybatis")>
 mybatis.mapper-locations=classpath*:mappers/*Mapper.xml
 
+<#elseif framework?contains("jpa")>
+spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+spring.jpa.properties.hibernate.show_sql=false
+
 </#if>
 spring.shardingsphere.datasource.ds-0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-0.driver-class-name=com.mysql.jdbc.Driver
@@ -43,4 +48,8 @@ spring.shardingsphere.datasource.names=ds-0,ds-1
 spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
 
     <#include "readwriteSplittingApplication.ftl">
+<#elseif feature=="encrypt">
+spring.shardingsphere.datasource.names=ds-0
+    
+    <#include "encryptApplication.ftl">
 </#if>

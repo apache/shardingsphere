@@ -25,9 +25,11 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
 
 /**
  * Database discovery rule statement converter.
@@ -46,10 +48,11 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(ruleSegments.size(), 1);
         for (DatabaseDiscoveryRuleSegment each : ruleSegments) {
             String type = getDatabaseDiscoveryType(each.getName(), each.getDiscoveryTypeName());
-            dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), type));
+            //TODO get real discoveryHeartbeatName
+            dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), "", type));
             discoveryTypes.put(type, new ShardingSphereAlgorithmConfiguration(each.getDiscoveryTypeName(), each.getProps()));
         }
-        return new DatabaseDiscoveryRuleConfiguration(dataSources, discoveryTypes);
+        return new DatabaseDiscoveryRuleConfiguration(dataSources, Collections.emptyMap(), discoveryTypes);
     }
     
     private static String getDatabaseDiscoveryType(final String ruleName, final String type) {

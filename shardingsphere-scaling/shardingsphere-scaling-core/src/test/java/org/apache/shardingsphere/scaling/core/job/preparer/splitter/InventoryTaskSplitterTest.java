@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.After;

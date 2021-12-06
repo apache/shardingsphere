@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
 import lombok.AllArgsConstructor;
-<#if feature=="encrypt">
+<#if feature=="encrypt" || feature=="shadow" >
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
 <#else>
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
@@ -67,10 +67,10 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
             this.cleanEnvironment();
         }
     }
-
-<#if feature=="encrypt">
-    <#include "encryptExampleService.ftl">
+    
+<#if feature=="encrypt" || feature=="shadow">
+    <#include "userExampleService.ftl">
 <#else>
-    <#include "otherExampleService.ftl">
+    <#include "orderExampleService.ftl">
 </#if>
 }

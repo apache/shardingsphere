@@ -23,6 +23,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -32,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobCreationException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
@@ -50,7 +50,6 @@ import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsiste
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
-import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
@@ -135,14 +134,14 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        JobConfigurationUtil.fillInProperties(jobConfig);
+        jobConfig.fillInProperties();
         if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", MigrationConstant.MIGRATION_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", MigrationConstant.MIGRATION_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
@@ -259,11 +258,12 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfiguration jobConfig = getJobConfig(jobId);
         Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        ScalingDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        TypedDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
         WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-        String ruleCacheId = null != workflowConfig ? workflowConfig.getRuleCacheId() : null;
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(targetConfig.getSchemaName(), yamlRootConfig, ruleCacheId);
+        String schemaName = workflowConfig.getSchemaName();
+        String ruleCacheId = workflowConfig.getRuleCacheId();
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
             each.setStatus(JobStatus.FINISHED);
@@ -285,7 +285,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
+        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 
@@ -37,9 +37,9 @@ import java.util.regex.Pattern;
  * Scaling job executor.
  */
 @Slf4j
-public final class ScalingJobExecutor extends AbstractScalingExecutor {
+public final class ScalingJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingConstant.SCALING_ROOT + "/(\\d+)/config");
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(MigrationConstant.MIGRATION_ROOT + "/(\\d+)/config");
     
     private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
     
@@ -51,7 +51,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor {
     }
     
     private void watchGovernanceRepositoryConfiguration() {
-        ScalingAPIFactory.getGovernanceRepositoryAPI().watch(ScalingConstant.SCALING_ROOT, event -> {
+        ScalingAPIFactory.getGovernanceRepositoryAPI().watch(MigrationConstant.MIGRATION_ROOT, event -> {
             Optional<JobConfigurationPOJO> jobConfigPOJOOptional = getJobConfigPOJO(event);
             if (!jobConfigPOJOOptional.isPresent()) {
                 return;
@@ -78,7 +78,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor {
         try {
             if (CONFIG_PATTERN.matcher(event.getKey()).matches()) {
                 log.info("{} job config: {}", event.getType(), event.getKey());
-                return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class));
+                return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true));
             }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
@@ -84,7 +84,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private String getCheckResultPath(final long jobId) {
-        return String.format("%s/%d/check/result", ScalingConstant.SCALING_ROOT, jobId);
+        return String.format("%s/%d/check/result", MigrationConstant.MIGRATION_ROOT, jobId);
     }
     
     @Override
@@ -96,13 +96,13 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void deleteJobProgress(final long jobId) {
         log.info("delete job progress {}", jobId);
-        repository.delete(String.format("%s/%d/offset", ScalingConstant.SCALING_ROOT, jobId));
+        repository.delete(String.format("%s/%d/offset", MigrationConstant.MIGRATION_ROOT, jobId));
     }
     
     @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobId));
+        repository.delete(String.format("%s/%d", MigrationConstant.MIGRATION_ROOT, jobId));
     }
     
     @Override
@@ -121,6 +121,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private String getOffsetPath(final long jobId, final int shardingItem) {
-        return String.format("%s/%d/offset/%d", ScalingConstant.SCALING_ROOT, jobId, shardingItem);
+        return String.format("%s/%d/offset/%d", MigrationConstant.MIGRATION_ROOT, jobId, shardingItem);
     }
 }
