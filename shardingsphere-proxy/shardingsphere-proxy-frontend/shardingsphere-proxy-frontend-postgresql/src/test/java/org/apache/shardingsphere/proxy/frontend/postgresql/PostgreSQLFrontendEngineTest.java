@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContextRegistry;
@@ -45,14 +45,14 @@ public final class PostgreSQLFrontendEngineTest {
     
     @Test
     public void assertRelease() {
-        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
-        when(backendConnection.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
         PostgreSQLConnectionContextRegistry.getInstance().get(connectionId);
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
-        frontendEngine.release(backendConnection);
+        frontendEngine.release(connectionSession);
         assertTrue(getConnectionContexts().isEmpty());
     }
     

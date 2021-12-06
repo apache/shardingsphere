@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
@@ -41,12 +41,12 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
     private final PostgreSQLComBindPacket packet;
     
-    private final BackendConnection backendConnection;
+    private final JDBCConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(backendConnection.getConnectionId(), packet.getStatementId());
-        connectionContext.createPortal(packet.getPortal(), preparedStatement, packet.getParameters(), packet.getResultFormats(), backendConnection).execute();
+        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
+        connectionContext.createPortal(packet.getPortal(), preparedStatement, packet.getParameters(), packet.getResultFormats(), connectionSession).execute();
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
 }

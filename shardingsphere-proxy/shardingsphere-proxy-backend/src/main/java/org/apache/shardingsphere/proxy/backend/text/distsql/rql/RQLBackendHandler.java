@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -38,8 +38,8 @@ public final class RQLBackendHandler extends SchemaRequiredBackendHandler<RQLSta
     
     private final DistSQLResultSet resultSet;
     
-    public RQLBackendHandler(final RQLStatement sqlStatement, final BackendConnection backendConnection, final DistSQLResultSet resultSet) {
-        super(sqlStatement, backendConnection);
+    public RQLBackendHandler(final RQLStatement sqlStatement, final JDBCConnectionSession connectionSession, final DistSQLResultSet resultSet) {
+        super(sqlStatement, connectionSession);
         this.resultSet = resultSet;
     }
     

@@ -21,7 +21,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public final class LocalTransactionManagerTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -52,10 +52,10 @@ public final class LocalTransactionManagerTest {
     
     @Before
     public void setUp() throws SQLException {
-        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
-        when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
+        when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
+        when(connectionSession.getCachedConnections()).thenReturn(setCachedConnections());
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        localTransactionManager = new LocalTransactionManager(backendConnection);
+        localTransactionManager = new LocalTransactionManager(connectionSession);
     }
     
     private Multimap<String, Connection> setCachedConnections() {
@@ -69,7 +69,7 @@ public final class LocalTransactionManagerTest {
     @Test
     public void assertBegin() {
         localTransactionManager.begin();
-        verify(backendConnection).getConnectionPostProcessors();
+        verify(connectionSession).getConnectionPostProcessors();
     }
     
     @Test

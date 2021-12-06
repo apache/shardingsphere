@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -63,7 +63,7 @@ public final class RQLBackendHandlerTest {
     public void assertExecute() {
         DistSQLResultSet resultSet = mock(DistSQLResultSet.class);
         when(resultSet.getColumnNames()).thenReturn(Arrays.asList("foo", "bar"));
-        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
+        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(JDBCConnectionSession.class), resultSet);
         ResponseHeader responseHeader = handler.execute("test", mock(RQLStatement.class));
         assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().size(), is(2));
         assertQueryHeader(((QueryResponseHeader) responseHeader).getQueryHeaders().get(0), "foo");
@@ -89,7 +89,7 @@ public final class RQLBackendHandlerTest {
     public void assertGetRowData() {
         DistSQLResultSet resultSet = mock(DistSQLResultSet.class);
         when(resultSet.getRowData()).thenReturn(Arrays.asList("foo_value", "bar_value"));
-        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
+        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(JDBCConnectionSession.class), resultSet);
         handler.execute("test", mock(RQLStatement.class));
         Collection<Object> rowData = handler.getRowData();
         assertThat(rowData.size(), is(2));

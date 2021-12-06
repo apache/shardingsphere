@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
@@ -37,11 +37,11 @@ public final class SetDistSQLBackendHandler implements TextProtocolBackendHandle
     
     private final SetDistSQLStatement sqlStatement;
     
-    private final BackendConnection backendConnection;
+    private final JDBCConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        SetStatementExecutor setStatementExecutor = SetStatementExecutorFactory.newInstance(sqlStatement, backendConnection);
+        SetStatementExecutor setStatementExecutor = SetStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
         return setStatementExecutor.execute();
     }
 }

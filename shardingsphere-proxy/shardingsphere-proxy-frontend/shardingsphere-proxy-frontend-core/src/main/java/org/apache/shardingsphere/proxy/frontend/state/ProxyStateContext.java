@@ -21,7 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
@@ -51,10 +51,10 @@ public final class ProxyStateContext {
      * @param context channel handler context
      * @param message message
      * @param databaseProtocolFrontendEngine database protocol frontend engine
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      */
     public static void execute(final ChannelHandlerContext context, final Object message, 
-                               final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        STATES.get(ProxyContext.getInstance().getStateContext().getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
+                               final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final JDBCConnectionSession connectionSession) {
+        STATES.get(ProxyContext.getInstance().getStateContext().getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, connectionSession);
     }
 }
