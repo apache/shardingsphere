@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
@@ -56,6 +57,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -77,8 +79,9 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket packet, final BackendConnection backendConnection) throws SQLException {
         String schemaName = backendConnection.getSchemaName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), metaDataContexts.getProps());
+                metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), sqlParserRule.orElse(null));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), packet.getParameters(),
                 sqlStatement, backendConnection.getDefaultSchemaName());
