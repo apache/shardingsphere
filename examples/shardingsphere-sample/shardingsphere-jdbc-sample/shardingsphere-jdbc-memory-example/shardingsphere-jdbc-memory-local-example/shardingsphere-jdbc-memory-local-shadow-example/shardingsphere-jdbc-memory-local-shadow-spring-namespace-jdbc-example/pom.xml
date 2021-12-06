@@ -25,13 +25,18 @@
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-jdbc-memory-local-shadow-jdbc-example</artifactId>
+    <artifactId>shardingsphere-jdbc-memory-local-shadow-spring-namespace-jdbc-example</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.1.5.RELEASE</version>
         </dependency>
     </dependencies>
     

@@ -31,6 +31,9 @@
     
     <modules>
         <module>shardingsphere-jdbc-memory-local-shadow-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-mybatis-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-jpa-example</module>
     </modules>
     
 </project>

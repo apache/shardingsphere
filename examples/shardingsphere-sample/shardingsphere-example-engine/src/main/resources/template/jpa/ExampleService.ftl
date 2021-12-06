@@ -14,8 +14,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<#if feature=="encrypt">
-    <#include "encryptExampleService.ftl">
+<#if feature=="encrypt" || feature=="shadow">
+    <#include "userExampleService.ftl">
 <#else>
-    <#include "otherExampleService.ftl">
+    <#include "orderExampleService.ftl">
 </#if>
