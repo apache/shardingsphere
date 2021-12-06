@@ -77,7 +77,7 @@ DROP SCHEMA sharding_db;
 
 1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `schema` 或者没有添加 `resource` 时，ShardingSphere-Proxy 无法执行 SQL。
 2. 推荐先创建 `schema` 和 `resource` 之后再使用第三方数据库工具连接。
-3. 有关 `resource` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/)
+3. 有关 `resource` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
 
 ## 8. [分片] Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -159,7 +159,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/)
+3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
 
 ## 18. [DistSQL] 使用 `DistSQL` 删除资源时，出现 `Resource [xxx] is still used by [SingleTableRule]`。
 
