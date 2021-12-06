@@ -1,7 +1,5 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Arrays;
@@ -13,9 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Weight replica load-balance algorithm.
  */
-@Getter
-@Setter
-public class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+    
     private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
 
     private Properties props = new Properties();
@@ -39,8 +36,7 @@ public class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgo
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         Double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        String dataSourceName = getDataSourceName(readDataSourceNames, weight);
-        return dataSourceName;
+        return getDataSourceName(readDataSourceNames, weight);
     }
 
     private String getDataSourceName(final List<String> readDataSourceNames, final Double[] weight) {
@@ -48,25 +44,32 @@ public class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgo
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {
             index = -index - 1;
-            return index >= 0 && index < weight.length && randomWeight < weight[index] ? readDataSourceNames.get(index) : readDataSourceNames.get(readDataSourceNames.size() - 1);
+            return index < weight.length && randomWeight < weight[index] ? readDataSourceNames.get(index) : readDataSourceNames.get(readDataSourceNames.size() - 1);
         } else {
             return readDataSourceNames.get(index);
         }
     }
 
     private Double[] initWeight(final List<String> readDataSourceNames) {
-        Double[] weights;
+        Double[] weights = getWeights(readDataSourceNames);
+        if (weights.length != 0 && Math.abs(weights[weights.length - 1] - 1.0D) >= 0.0001) {
+            throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
+        }
+        return weights;
+    }
+    
+    private Double[] getWeights(final List<String> readDataSourceNames) {
         Double[] exactWeights = new Double[readDataSourceNames.size()];
-        Integer index = 0;
-        Double sum = 0D;
+        int index = 0;
+        double sum = 0D;
         for (String readDataSourceName : readDataSourceNames) {
             Object weightObject = props.get(readDataSourceName);
             if (weightObject == null) {
                 throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
             }
-            Double weight;
+            double weight;
             try {
-                weight = Double.valueOf(weightObject.toString());
+                weight = Double.parseDouble(weightObject.toString());
             } catch (NumberFormatException e) {
                 throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
             }
@@ -85,14 +88,11 @@ public class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgo
             }
             exactWeights[i] = exactWeights[i] / sum;
         }
-        weights = new Double[readDataSourceNames.size()];
+        Double[] weights = new Double[index];
         double randomRange = 0D;
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < weights.length; i++) {
             weights[i] = randomRange + exactWeights[i];
             randomRange += exactWeights[i];
-        }
-        if (index != 0 && Math.abs(weights[index - 1] - 1.0D) >= 0.0001) {
-            throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
         }
         return weights;
     }
