@@ -23,20 +23,20 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
+import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
+import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertDeleteJob() {
-        governanceRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
+        governanceRepositoryAPI.persist(MigrationConstant.MIGRATION_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob(1L);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(0L, 0);
         assertNull(actual);
@@ -92,8 +92,8 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT);
+        governanceRepositoryAPI.persist(MigrationConstant.MIGRATION_ROOT + "/1", "");
+        List<String> actual = governanceRepositoryAPI.getChildrenKeys(MigrationConstant.MIGRATION_ROOT);
         assertFalse(actual.isEmpty());
     }
     
@@ -101,8 +101,8 @@ public final class GovernanceRepositoryAPIImplTest {
     public void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        String key = ScalingConstant.SCALING_ROOT + "/1";
-        governanceRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
+        String key = MigrationConstant.MIGRATION_ROOT + "/1";
+        governanceRepositoryAPI.watch(MigrationConstant.MIGRATION_ROOT, event -> {
             if (event.getKey().equals(key)) {
                 eventReference.set(event);
                 countDownLatch.countDown();
