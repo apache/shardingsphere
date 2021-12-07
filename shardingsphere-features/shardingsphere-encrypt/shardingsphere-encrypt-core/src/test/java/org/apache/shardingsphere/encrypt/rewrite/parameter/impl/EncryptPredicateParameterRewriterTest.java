@@ -22,25 +22,30 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +68,6 @@ public class EncryptPredicateParameterRewriterTest {
         parameters.add("p1");
 
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        final InsertStatement insertStatement = mock(InsertStatement.class);
 
         reWriter.rewrite(parameterBuilder, insertStatementContext, parameters);
 
@@ -71,12 +75,10 @@ public class EncryptPredicateParameterRewriterTest {
     }
 
     @Test
-    public void rewriteTest() {
-        StandardParameterBuilder parameterBuilder = new StandardParameterBuilder(Collections.singletonList(new Object()));
+    public void rewriteWithEncryptedConditionsTest() {
         List<Object> parameters = new ArrayList<>();
         parameters.add("p1");
-        IdentifierValue idf = new IdentifierValue("idf");
-        HashMap<String, String> columnMap = new HashMap<>();
+        Map<String, String> columnMap = new HashMap<>();
         columnMap.put("table1", "col1");
 
         final UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class);
@@ -98,6 +100,7 @@ public class EncryptPredicateParameterRewriterTest {
         when(updateStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableName(anyCollection(), any())).thenReturn(columnMap);
         when(columnSegment.getQualifiedName()).thenReturn("table1");
+        IdentifierValue idf = new IdentifierValue("idf");
         when(columnSegment.getIdentifier()).thenReturn(idf);
         when(encryptRule.findEncryptor(anyString(), anyString(), anyString())).thenReturn(Optional.of(encryptAlgorithm));
 
@@ -105,6 +108,7 @@ public class EncryptPredicateParameterRewriterTest {
         reWriter.setSchema(shardingSphereSchema);
         reWriter.setQueryWithCipherColumn(true);
 
+        StandardParameterBuilder parameterBuilder = new StandardParameterBuilder(Collections.singletonList(new Object()));
         reWriter.rewrite(parameterBuilder, updateStatementContext, parameters);
 
         assertEquals(1, parameterBuilder.getParameters().size());
