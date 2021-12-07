@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.FunctionWithException;
 
 import javax.sql.DataSource;
@@ -64,7 +64,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
     
     @Override
-    public final void execute(final BackendConnection backendConnection) throws SQLException {
+    public final void execute(final ConnectionSession connectionSession) throws SQLException {
         List<String> schemaNames = getSchemaNames();
         for (String schemaName : schemaNames) {
             initSchemaData(schemaName);

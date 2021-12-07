@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -49,8 +49,8 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     
     private final DataSourceConfigurationValidator dataSourceConfigValidator;
     
-    public AlterResourceBackendHandler(final DatabaseType databaseType, final AlterResourceStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public AlterResourceBackendHandler(final DatabaseType databaseType, final AlterResourceStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession);
         this.databaseType = databaseType;
         dataSourceConfigValidator = new DataSourceConfigurationValidator();
     }

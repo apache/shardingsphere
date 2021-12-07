@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.r
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb.MySQLComInitDbExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.ping.MySQLComPingExecutor;
@@ -56,31 +56,31 @@ public final class MySQLCommandExecutorFactory {
      *
      * @param commandPacketType command packet type for MySQL
      * @param commandPacket command packet for MySQL
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return command executor
      * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final BackendConnection backendConnection) throws SQLException {
+    public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final JDBCConnectionSession connectionSession) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitExecutor();
             case COM_INIT_DB:
-                return new MySQLComInitDbExecutor((MySQLComInitDbPacket) commandPacket, backendConnection);
+                return new MySQLComInitDbExecutor((MySQLComInitDbPacket) commandPacket, connectionSession);
             case COM_FIELD_LIST:
-                return new MySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, backendConnection);
+                return new MySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, connectionSession);
             case COM_QUERY:
-                return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, backendConnection);
+                return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, connectionSession);
             case COM_PING:
                 return new MySQLComPingExecutor();
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, backendConnection);
+                return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, connectionSession);
             case COM_STMT_EXECUTE:
-                return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, backendConnection);
+                return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, connectionSession);
             case COM_STMT_RESET:
                 return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket);
             case COM_STMT_CLOSE:
-                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, backendConnection.getConnectionId());
+                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession.getConnectionId());
             default:
                 return new MySQLUnsupportedCommandExecutor(commandPacketType);
         }

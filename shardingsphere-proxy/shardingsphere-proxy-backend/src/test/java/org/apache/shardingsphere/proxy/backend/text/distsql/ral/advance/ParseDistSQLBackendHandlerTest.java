@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -63,7 +63,7 @@ public final class ParseDistSQLBackendHandlerTest {
     public void assertGetRowData() {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler(new MySQLDatabaseType(), parseStatement, mock(BackendConnection.class));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler(new MySQLDatabaseType(), parseStatement, mock(JDBCConnectionSession.class));
         parseDistSQLBackendHandler.execute();
         SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getFirst(), is(new Gson().toJson(statement)));
@@ -73,7 +73,7 @@ public final class ParseDistSQLBackendHandlerTest {
     public void assertExecute() {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler(new MySQLDatabaseType(), parseStatement, mock(BackendConnection.class));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler(new MySQLDatabaseType(), parseStatement, mock(JDBCConnectionSession.class));
         parseDistSQLBackendHandler.execute();
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 public final class DropDatabaseBackendHandlerTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Mock
     private DropDatabaseStatement sqlStatement;
@@ -61,7 +61,7 @@ public final class DropDatabaseBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        handler = new DropDatabaseBackendHandler(sqlStatement, backendConnection);
+        handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test_db", "other_db"));
     }
     
@@ -75,27 +75,27 @@ public final class DropDatabaseBackendHandlerTest {
     public void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(backendConnection, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentSchema(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 
     @Test
     public void assertExecuteDropCurrentDatabase() {
-        when(backendConnection.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getSchemaName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(backendConnection).setCurrentSchema(null);
+        verify(connectionSession).setCurrentSchema(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 
     @Test
     public void assertExecuteDropOtherDatabase() {
-        when(backendConnection.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getSchemaName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(backendConnection, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentSchema(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }

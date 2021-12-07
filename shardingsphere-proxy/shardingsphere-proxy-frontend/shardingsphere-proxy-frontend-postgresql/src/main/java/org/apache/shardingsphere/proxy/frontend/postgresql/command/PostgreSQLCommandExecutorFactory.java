@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
@@ -55,21 +55,21 @@ public final class PostgreSQLCommandExecutorFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param commandPacket command packet for PostgreSQL
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @param connectionContext PostgreSQL connection context
      * @return command executor
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
-                                              final BackendConnection backendConnection, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                              final JDBCConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, backendConnection);
+                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);
             case PARSE_COMMAND:
-                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
+                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, connectionSession);
             case BIND_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, backendConnection));
+                connectionContext.getPendingExecutors().add(new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, connectionSession));
                 break;
             case DESCRIBE_COMMAND:
                 connectionContext.getPendingExecutors().add(new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket));
@@ -77,9 +77,9 @@ public final class PostgreSQLCommandExecutorFactory {
             case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor(connectionContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:
-                return new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
+                return new PostgreSQLComSyncExecutor(connectionContext, connectionSession);
             case CLOSE_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, backendConnection));
+                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, connectionSession));
                 break;
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();

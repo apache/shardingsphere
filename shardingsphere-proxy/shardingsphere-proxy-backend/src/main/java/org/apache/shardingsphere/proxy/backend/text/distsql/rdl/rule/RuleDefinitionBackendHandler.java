@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -51,8 +51,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
     }
     
-    public RuleDefinitionBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public RuleDefinitionBackendHandler(final T sqlStatement, final JDBCConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

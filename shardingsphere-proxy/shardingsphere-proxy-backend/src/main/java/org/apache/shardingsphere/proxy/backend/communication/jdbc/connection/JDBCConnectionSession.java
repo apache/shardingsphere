@@ -21,22 +21,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.netty.util.AttributeMap;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -57,22 +53,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Backend connection.
+ * JDBC connection session.
  */
 @Getter
 @Setter
-public final class BackendConnection implements ExecutorJDBCManager {
+public final class JDBCConnectionSession extends ConnectionSession implements ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
-    
-    @Setter(AccessLevel.NONE)
-    private volatile String schemaName;
-    
-    private volatile int connectionId;
-    
-    private volatile Grantee grantee;
     
     private volatile FederationExecutor federationExecutor;
     
@@ -88,57 +77,17 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final ConnectionStatus connectionStatus = new ConnectionStatus();
     
-    private final TransactionStatus transactionStatus;
-    
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
-    private final AttributeMap attributeMap;
-
-    private boolean autoCommit = true;
-    
-    public BackendConnection(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
-        transactionStatus = new TransactionStatus(initialTransactionType);
+    public JDBCConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
+        super(initialTransactionType, attributeMap);
         fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
                 .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
-        this.attributeMap = attributeMap;
-    }
-    
-    /**
-     * Change schema of current channel.
-     *
-     * @param schemaName schema name
-     */
-    public void setCurrentSchema(final String schemaName) {
-        if (null != schemaName && schemaName.equals(this.schemaName)) {
-            return;
-        }
-        if (transactionStatus.isInTransaction()) {
-            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
-        }
-        this.schemaName = schemaName;
-    }
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    public String getSchemaName() {
-        return null == SQLStatementSchemaHolder.get() ? schemaName : SQLStatementSchemaHolder.get();
-    }
-    
-    /**
-     * Get default schema name.
-     *
-     * @return default schema name
-     */
-    public String getDefaultSchemaName() {
-        return schemaName;
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return transactionStatus.isInTransaction()
+        return getTransactionStatus().isInTransaction()
                 ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
@@ -232,7 +181,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return transactionStatus.isInTransaction() && (TransactionType.LOCAL == transactionStatus.getTransactionType() || TransactionType.XA == transactionStatus.getTransactionType());
+        return getTransactionStatus().isInTransaction() && (TransactionType.LOCAL == getTransactionStatus().getTransactionType() || TransactionType.XA == getTransactionStatus().getTransactionType());
     }
     
     /**
@@ -306,7 +255,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && transactionStatus.isInTransaction()) {
+                if (forceRollback && getTransactionStatus().isInTransaction()) {
                     each.rollback();
                 }
                 each.close();

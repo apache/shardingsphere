@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.exec
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
@@ -41,7 +41,7 @@ public final class SetVariableExecutorTest {
     @Test
     public void assertExecuteWithTransactionType() {
         SetVariableStatement statement = new SetVariableStatement("transaction_type", "local");
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         new SetVariableExecutor(statement, connection).execute();
         assertThat(connection.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
@@ -50,7 +50,7 @@ public final class SetVariableExecutorTest {
     @Test
     public void assertExecuteWithAgent() {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "false");
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         new SetVariableExecutor(statement, connection).execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is("false"));
@@ -63,7 +63,7 @@ public final class SetVariableExecutorTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         new SetVariableExecutor(statement, connection).execute();
         Object actualValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertNotNull(actualValue);

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -60,7 +60,7 @@ public final class DropResourceBackendHandlerTest {
     private DropResourceStatement dropResourceStatement;
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Mock
     private ShardingSphereMetaData metaData;
@@ -94,7 +94,7 @@ public final class DropResourceBackendHandlerTest {
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, backendConnection);
+        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     
     @Test

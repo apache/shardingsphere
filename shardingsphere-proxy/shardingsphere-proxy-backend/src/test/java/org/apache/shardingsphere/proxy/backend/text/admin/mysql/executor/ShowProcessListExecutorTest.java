@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public final class ShowProcessListExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        showProcessListExecutor.execute(new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap()));
+        showProcessListExecutor.execute(new JDBCConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap()));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {

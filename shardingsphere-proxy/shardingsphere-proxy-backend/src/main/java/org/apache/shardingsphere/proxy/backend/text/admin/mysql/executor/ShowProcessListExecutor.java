@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 
 import java.sql.Types;
@@ -72,7 +72,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     }
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
+    public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = new TransparentMergedResult(getQueryResult());
     }

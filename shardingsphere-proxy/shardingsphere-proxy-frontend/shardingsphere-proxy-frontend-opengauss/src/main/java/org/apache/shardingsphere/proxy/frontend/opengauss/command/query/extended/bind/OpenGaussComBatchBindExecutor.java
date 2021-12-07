@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -56,7 +56,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     private final OpenGaussComBatchBindPacket packet;
     
-    private final BackendConnection backendConnection;
+    private final JDBCConnectionSession connectionSession;
     
     private SQLStatement sqlStatement;
     
@@ -66,7 +66,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        sqlStatement = parseSql(packet.getSql(), backendConnection.getSchemaName());
+        sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
         while (packet.hasNextParameters()) {
             List<Object> parameters = packet.readOneGroupOfParameters();
             DatabaseCommunicationEngine databaseCommunicationEngine = newEngine(parameters);
@@ -76,19 +76,19 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
                     updateCount += ((UpdateResponseHeader) responseHeader).getUpdateCount();
                 }
             } finally {
-                backendConnection.closeDatabaseCommunicationEngines(false);
+                connectionSession.closeDatabaseCommunicationEngines(false);
             }
         }
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
     
     private DatabaseCommunicationEngine newEngine(final List<Object> parameter) {
-        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection);
+        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, connectionSession);
     }
     
     private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        return SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, backendConnection.getDefaultSchemaName());
+        return SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, connectionSession.getDefaultSchemaName());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
