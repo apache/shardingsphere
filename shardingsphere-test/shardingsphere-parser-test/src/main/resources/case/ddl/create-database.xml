@@ -23,4 +23,6 @@
     <create-database sql-case-id="create_database_with_location_and_encoding" />
     <create-database sql-case-id="create_database_with_location" />
     <create-database sql-case-id="create_database_with_file" />
+    <create-database sql-case-id="create_database_oracle1" />
+    <create-database sql-case-id="create_database_oracle2" />
 </sql-parser-test-cases>

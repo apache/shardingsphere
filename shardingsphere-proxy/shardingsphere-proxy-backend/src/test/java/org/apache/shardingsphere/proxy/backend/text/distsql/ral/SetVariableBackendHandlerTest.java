@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -60,7 +60,7 @@ public final class SetVariableBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
+    private final JDBCConnectionSession connectionSession = new JDBCConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -88,47 +88,47 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "XA"), backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "XA"), connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
+        assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
     
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "BASE"), backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "BASE"), connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
+        assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "LOCAL"), backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "XXX"), backendConnection).execute();
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        new SetDistSQLBackendHandler(new SetVariableStatement("transaction_type", "XXX"), connectionSession).execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        new SetDistSQLBackendHandler(new SetVariableStatement("@@session", "XXX"), backendConnection).execute();
+        new SetDistSQLBackendHandler(new SetVariableStatement("@@session", "XXX"), connectionSession).execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), 
-                backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()),
+                connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
@@ -136,8 +136,8 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
@@ -145,8 +145,8 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
-        backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), backendConnection);
+        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        SetDistSQLBackendHandler setDistSQLBackendHandler = new SetDistSQLBackendHandler(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));

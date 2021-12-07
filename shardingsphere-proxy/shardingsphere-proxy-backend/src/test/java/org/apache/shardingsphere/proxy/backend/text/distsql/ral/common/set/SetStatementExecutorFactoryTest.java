@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
@@ -40,23 +40,23 @@ import static org.mockito.Mockito.mock;
 public final class SetStatementExecutorFactoryTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Test
     public void assertSetVariableExecutor() throws SQLException {
         SetDistSQLStatement sqlStatement = mock(SetVariableStatement.class);
-        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, backendConnection), instanceOf(SetVariableExecutor.class));
+        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(SetVariableExecutor.class));
     }
     
     @Test
     public void assertSetReadwriteSplittingStatusExecutor() throws SQLException {
         SetDistSQLStatement sqlStatement = mock(SetReadwriteSplittingStatusStatement.class);
-        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, backendConnection), instanceOf(SetReadwriteSplittingStatusExecutor.class));
+        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(SetReadwriteSplittingStatusExecutor.class));
     }
     
     @Test
     public void assertSetInstanceStatusExecutor() throws SQLException {
         SetDistSQLStatement sqlStatement = mock(SetInstanceStatusStatement.class);
-        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, backendConnection), instanceOf(SetInstanceStatusExecutor.class));
+        assertThat(SetStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(SetInstanceStatusExecutor.class));
     }
 }

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-example</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-shadow-example</artifactId>
     <name>${project.artifactId}</name>

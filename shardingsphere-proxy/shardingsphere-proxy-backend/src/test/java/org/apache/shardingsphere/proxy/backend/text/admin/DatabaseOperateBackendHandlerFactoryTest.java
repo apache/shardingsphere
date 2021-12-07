@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -77,7 +77,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("new_db");
         setGovernanceMetaDataContexts(true);
@@ -96,7 +96,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
         setGovernanceMetaDataContexts(true);
@@ -115,7 +115,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
         setGovernanceMetaDataContexts(true);

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -67,9 +67,9 @@ public final class PostgreSQLComQueryExecutorTest {
     @Before
     public void setUp() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
-        BackendConnection backendConnection = mock(BackendConnection.class);
+        JDBCConnectionSession connectionSession = mock(JDBCConnectionSession.class);
         when(queryPacket.getSql()).thenReturn("");
-        queryExecutor = new PostgreSQLComQueryExecutor(connectionContext, queryPacket, backendConnection);
+        queryExecutor = new PostgreSQLComQueryExecutor(connectionContext, queryPacket, connectionSession);
         setMockFieldIntoExecutor(queryExecutor);
     }
     

@@ -42,6 +42,7 @@ public final class ShadowConfiguration extends BaseShadowConfiguration {
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     

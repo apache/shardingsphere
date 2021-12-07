@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
@@ -44,19 +44,19 @@ public final class DistSQLBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sqlStatement dist SQL statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final DistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final DistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
-            return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection);
+            return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, backendConnection);
+            return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
-            return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, backendConnection);
+            return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
