@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVa
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
@@ -44,7 +44,7 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
     
     private final ShowVariableStatement sqlStatement;
     
-    private final BackendConnection backendConnection;
+    private final JDBCConnectionSession connectionSession;
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
@@ -63,9 +63,9 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
             case AGENT_PLUGINS_ENABLED:
                 return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()))));
             case CACHED_CONNECTIONS:
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(backendConnection.getConnectionSize())));
+                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(connectionSession.getConnectionSize())));
             case TRANSACTION_TYPE:
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(backendConnection.getTransactionStatus().getTransactionType().name())));
+                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(connectionSession.getTransactionStatus().getTransactionType().name())));
             default:
                 throw new UnsupportedVariableException(sqlStatement.getName());
         }

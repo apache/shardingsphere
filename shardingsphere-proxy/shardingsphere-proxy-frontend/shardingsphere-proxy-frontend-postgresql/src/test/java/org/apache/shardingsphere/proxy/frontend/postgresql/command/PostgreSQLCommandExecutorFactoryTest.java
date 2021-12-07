@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLCommandExecutorFactoryTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Mock
     private PostgreSQLConnectionContext connectionContext;
@@ -70,7 +70,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     public void setup() {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
-        when(backendConnection.getConnectionId()).thenReturn(1);
+        when(connectionSession.getConnectionId()).thenReturn(1);
     }
     
     @Test
@@ -78,9 +78,9 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLConnectionContext connectionContext = mock(PostgreSQLConnectionContext.class);
         Collection<CommandExecutor> pendingCommandExecutors = new LinkedList<>();
         when(connectionContext.getPendingExecutors()).thenReturn(pendingCommandExecutors);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, mock(PostgreSQLComClosePacket.class), backendConnection, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, mock(PostgreSQLComBindPacket.class), backendConnection, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, backendConnection, connectionContext);
+        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, mock(PostgreSQLComClosePacket.class), connectionSession, connectionContext);
+        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, mock(PostgreSQLComBindPacket.class), connectionSession, connectionContext);
+        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, connectionSession, connectionContext);
         assertThat(pendingCommandExecutors.size(), is(3));
         Iterator<CommandExecutor> commandExecutorIterator = pendingCommandExecutors.iterator();
         assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComCloseExecutor.class));
@@ -90,7 +90,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     
     @Test
     public void assertNewInstance() throws SQLException {
-        when(backendConnection.getSchemaName()).thenReturn("schema");
+        when(connectionSession.getSchemaName()).thenReturn("schema");
         Collection<InputOutput> inputOutputs = Arrays.asList(
             new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
             new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
@@ -104,7 +104,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
                 commandPacketClass = PostgreSQLCommandPacket.class;
             }
             PostgreSQLCommandPacket packet = preparePacket(commandPacketClass);
-            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), packet, backendConnection, connectionContext);
+            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), packet, connectionSession, connectionContext);
             assertThat(actual, instanceOf(inputOutput.getResultClass()));
         }
     }

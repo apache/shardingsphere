@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
@@ -35,13 +35,13 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private final DropDatabaseStatement sqlStatement;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() {
         check(sqlStatement);
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
-            backendConnection.setCurrentSchema(null);
+            connectionSession.setCurrentSchema(null);
         }
         ProxyContext.getInstance().getContextManager().deleteSchema(sqlStatement.getDatabaseName());
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(
@@ -56,6 +56,6 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(backendConnection.getSchemaName()) && backendConnection.getSchemaName().equals(databaseName);
+        return !Strings.isNullOrEmpty(connectionSession.getSchemaName()) && connectionSession.getSchemaName().equals(databaseName);
     }
 }

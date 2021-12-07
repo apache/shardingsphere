@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,10 +63,11 @@ public final class ProxyConfigurationLoader {
         return new YamlProxyConfiguration(serverConfig, ruleConfigs.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
-    
+
+    @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) {
         URL url = ProxyConfigurationLoader.class.getResource(path);
-        return null == url ? new File(path) : new File(url.getFile());
+        return null == url ? new File(path) : new File(url.toURI().getPath());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind.OpenGaussComBatchBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecutorFactory;
@@ -46,14 +46,14 @@ public final class OpenGaussCommandExecutorFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL/openGauss
      * @param commandPacket command packet for PostgreSQL/openGauss
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @param connectionContext PostgreSQL connection context
      * @return command executor
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final CommandPacket commandPacket,
-                                              final BackendConnection backendConnection, final PostgreSQLConnectionContext connectionContext) throws SQLException {
-        return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindExecutor((OpenGaussComBatchBindPacket) commandPacket, backendConnection)
-                : PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, (PostgreSQLCommandPacket) commandPacket, backendConnection, connectionContext);
+                                              final JDBCConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+        return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindExecutor((OpenGaussComBatchBindPacket) commandPacket, connectionSession)
+                : PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, (PostgreSQLCommandPacket) commandPacket, connectionSession, connectionContext);
     }
 }

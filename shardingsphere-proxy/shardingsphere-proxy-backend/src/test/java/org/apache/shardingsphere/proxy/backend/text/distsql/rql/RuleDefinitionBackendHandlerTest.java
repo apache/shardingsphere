@@ -21,7 +21,7 @@ import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -59,10 +59,10 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
-        backendConnection.setCurrentSchema("test");
-        ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), backendConnection).execute();
+        JDBCConnectionSession connectionSession = new JDBCConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+        connectionSession.setCurrentSchema("test");
+        ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
-        assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
 }

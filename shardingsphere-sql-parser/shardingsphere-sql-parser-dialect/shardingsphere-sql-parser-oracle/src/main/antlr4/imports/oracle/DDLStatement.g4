@@ -529,7 +529,7 @@ storageClause
     ;
 
 sizeClause
-    : NUMBER_ ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
     ;
 
 maxsizeClause
@@ -994,7 +994,7 @@ modifyListPartition
 
 partitionExtendedName
     : PARTITION partitionName
-    | PARTITION FOR LR_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
+    | PARTITION FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
     ;
 
 addRangeSubpartition
@@ -1320,7 +1320,11 @@ databaseFileClauses
 
 createDatafileClause
     : CREATE DATAFILE (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
-    ( AS (fileSpecification (COMMA_ fileSpecification)* | NEW))?
+    ( AS (fileSpecifications | NEW))?
+    ;
+
+fileSpecifications
+    : fileSpecification (COMMA_ fileSpecification)*
     ;
 
 fileSpecification
@@ -1429,7 +1433,7 @@ maximizeStandbyDbClause
     ;
 
 registerLogfileClause
-    : REGISTER (OR REPLACE)? (PHYSICAL | LOGICAL)? LOGFILE fileSpecification (COMMA_ fileSpecification)* (FOR logminerSessionName)?
+    : REGISTER (OR REPLACE)? (PHYSICAL | LOGICAL)? LOGFILE fileSpecifications (FOR logminerSessionName)?
     ;
 
 commitSwitchoverClause
@@ -1462,7 +1466,7 @@ failoverClause
 
 defaultSettingsClauses
     : DEFAULT EDITION EQ_ editionName
-    | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
+    | SET DEFAULT bigOrSmallFiles TABLESPACE
     | DEFAULT TABLESPACE tablespaceName
     | DEFAULT LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
     | RENAME GLOBAL_NAME TO databaseName DOT_ domain (DOT_ domain)*
@@ -1476,7 +1480,7 @@ defaultSettingsClauses
     ;
 
 setTimeZoneClause
-    : SET TIME_ZONE EQ_ SQ_ ( (PLUS_ | MINUS_) dateValue  | timeZoneRegion ) SQ_
+    : SET TIME_ZONE EQ_ ((PLUS_ | MINUS_) dateValue | timeZoneRegion) 
     ;
 
 timeZoneRegion
@@ -1925,4 +1929,83 @@ purge
 
 rename
     : RENAME name TO name
+    ;
+
+createDatabase
+    : CREATE DATABASE databaseName? createDatabaseClauses+
+    ;
+
+createDatabaseClauses
+    : USER SYS IDENTIFIED BY password
+    | USER SYSTEM IDENTIFIED BY password
+    | CONTROLFILE REUSE
+    | MAXDATAFILES INTEGER_
+    | MAXINSTANCES INTEGER_
+    | CHARACTER SET databaseCharset
+    | NATIONAL CHARACTER SET nationalCharset
+    | SET DEFAULT bigOrSmallFiles TABLESPACE
+    | databaseLoggingClauses
+    | tablespaceClauses
+    | setTimeZoneClause
+    | bigOrSmallFiles? USER_DATA TABLESPACE tablespaceName DATAFILE datafileTempfileSpec (COMMA_ datafileTempfileSpec)*
+    | enablePluggableDatabase
+    | databaseName USING MIRROR COPY mirrorName
+    ;
+
+databaseLoggingClauses
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)*
+    | MAXLOGFILES INTEGER_
+    | MAXLOGMEMBERS INTEGER_
+    | MAXLOGHISTORY INTEGER_
+    | (ARCHIVELOG | NOARCHIVELOG)
+    | FORCE LOGGING
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
+    ;
+
+tablespaceClauses
+    : EXTENT MANAGEMENT LOCAL
+    | DATAFILE fileSpecifications
+    | SYSAUX DATAFILE fileSpecifications
+    | defaultTablespace
+    | defaultTempTablespace
+    | undoTablespace
+    ;
+
+defaultTablespace
+    : DEFAULT TABLESPACE tablespaceName (DATAFILE datafileTempfileSpec)? extentManagementClause?
+    ;
+
+defaultTempTablespace
+    : bigOrSmallFiles? DEFAULT 
+    (TEMPORARY TABLESPACE | LOCAL TEMPORARY TABLESPACE FOR (ALL | LEAF)) tablespaceName
+    (TEMPFILE fileSpecifications)? extentManagementClause?
+    ;
+
+undoTablespace
+    : bigOrSmallFiles? UNDO TABLESPACE tablespaceName (DATAFILE fileSpecifications)?
+    ;
+
+bigOrSmallFiles
+    : BIGFILE | SMALLFILE
+    ;
+
+extentManagementClause
+    : EXTENT MANAGEMENT LOCAL (AUTOALLOCATE | UNIFORM (SIZE sizeClause)?)?
+    ;
+
+enablePluggableDatabase
+    : ENABLE PLUGGABLE DATABASE 
+    (SEED fileNameConvert? (SYSTEM tablespaceDatafileClauses)? (SYSAUX tablespaceDatafileClauses)?)? undoModeClause?
+    ;
+
+fileNameConvert
+    : FILE_NAME_CONVERT EQ_ (LP_ replaceFileNamePattern (COMMA_ replaceFileNamePattern)* RP_| NONE)
+    ;
+
+replaceFileNamePattern
+    : filenamePattern COMMA_ filenamePattern 
+    ;
+
+tablespaceDatafileClauses
+    : DATAFILES (SIZE sizeClause | autoextendClause)+
     ;

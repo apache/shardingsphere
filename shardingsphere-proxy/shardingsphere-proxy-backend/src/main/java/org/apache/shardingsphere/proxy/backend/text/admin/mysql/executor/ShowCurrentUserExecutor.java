@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
@@ -47,10 +47,10 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
+    public void execute(final ConnectionSession connectionSession) {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules();
         Optional<Grantee> grantee = rules.stream().filter(each -> each instanceof AuthorityRule)
-                .map(each -> ((AuthorityRule) each).findUser(backendConnection.getGrantee())).filter(Optional::isPresent)
+                .map(each -> ((AuthorityRule) each).findUser(connectionSession.getGrantee())).filter(Optional::isPresent)
                 .map(Optional::get).map(ShardingSphereUser::getGrantee).findFirst();
         mergedResult = new SingleLocalDataMergedResult(Collections.singleton(grantee.isPresent() ? grantee.get().toString() : ""));
     }

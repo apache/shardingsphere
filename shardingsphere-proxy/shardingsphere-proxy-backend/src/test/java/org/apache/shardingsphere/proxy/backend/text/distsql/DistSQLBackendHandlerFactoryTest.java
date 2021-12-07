@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -97,7 +97,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteDataSourcesContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection).execute();
@@ -106,7 +106,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShardingTableRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData("schema");
@@ -117,7 +117,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteAddResourceContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection).execute();
@@ -126,7 +126,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteAlterResourceContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterResourceStatement.class), connection).execute();
@@ -135,7 +135,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteAlterShadowRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -145,7 +145,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteCreateShadowRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -155,7 +155,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteDropShadowRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -165,7 +165,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteAlterShadowAlgorithm() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -175,7 +175,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShowShadowRulesContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -185,7 +185,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShowShadowTableRulesContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -195,7 +195,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -205,7 +205,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteDropShadowAlgorithmContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         mockShardingSphereRuleMetaData();
@@ -215,7 +215,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteDropResourceContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection).execute();
@@ -224,7 +224,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection).execute();
@@ -233,7 +233,7 @@ public final class DistSQLBackendHandlerFactoryTest {
 
     @Test
     public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection).execute();
@@ -242,7 +242,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection).execute();
@@ -251,7 +251,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShowResourceContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         setContextManager(true);
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection).execute();
@@ -260,7 +260,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShowScalingCheckAlgorithmsContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
         ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ShowScalingCheckAlgorithmsStatement.class), connection).execute();
@@ -269,7 +269,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteStopScalingSourceWritingContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
         ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(StopScalingSourceWritingStatement.class), connection).execute();
@@ -279,7 +279,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     //TODO assertExecuteCheckoutScalingContext throw exception
     @Test(expected = RuntimeException.class)
     public void assertExecuteCheckoutScalingContext() throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
+        JDBCConnectionSession connection = mock(JDBCConnectionSession.class);
         when(connection.getSchemaName()).thenReturn("schema");
         mockScalingContext();
         ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CheckoutScalingStatement.class), connection).execute();

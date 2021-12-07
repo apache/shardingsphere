@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.FunctionWithException;
 
 import javax.sql.DataSource;
@@ -68,8 +69,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
     
     @Override
-    public final void execute(final BackendConnection backendConnection) throws SQLException {
-        List<String> schemaNames = getSchemaNames(backendConnection);
+    public final void execute(final ConnectionSession connectionSession) throws SQLException {
+        List<String> schemaNames = getSchemaNames(connectionSession);
         for (String schemaName : schemaNames) {
             initSchemaData(schemaName);
             getSourceData(schemaName, resultSet -> handleResultSet(schemaName, resultSet));
@@ -107,7 +108,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      *
      * @return schema names
      */
-    protected abstract List<String> getSchemaNames(BackendConnection backendConnection);
+    protected abstract List<String> getSchemaNames(ConnectionSession connectionSession);
     
     /**
      * Add default row data.
@@ -196,8 +197,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          * @return schema names
          */
         @Override
-        protected List<String> getSchemaNames(final BackendConnection backendConnection) {
-            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, backendConnection.getGrantee()))
+        protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
+            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
             return Collections.singletonList(schema);
         }

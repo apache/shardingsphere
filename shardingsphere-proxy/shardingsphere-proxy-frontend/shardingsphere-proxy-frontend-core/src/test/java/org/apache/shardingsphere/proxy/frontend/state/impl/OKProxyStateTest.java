@@ -22,7 +22,7 @@ import io.netty.util.concurrent.EventExecutor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
@@ -59,7 +59,7 @@ public final class OKProxyStateTest {
     private DatabaseProtocolFrontendEngine frontendEngine;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private BackendConnection connection;
+    private JDBCConnectionSession connection;
     
     @BeforeClass
     public static void setupGlobal() {

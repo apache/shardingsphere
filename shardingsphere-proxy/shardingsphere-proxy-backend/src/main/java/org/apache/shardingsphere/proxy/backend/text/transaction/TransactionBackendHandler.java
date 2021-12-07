@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
@@ -43,20 +44,20 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     
     private final BackendTransactionManager backendTransactionManager;
 
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
-    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
+    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final JDBCConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
-        this.backendConnection = backendConnection;
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        this.connectionSession = connectionSession;
+        backendTransactionManager = new BackendTransactionManager(connectionSession);
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
-                if (tclStatement instanceof MySQLBeginTransactionStatement && backendConnection.getTransactionStatus().isInTransaction()) {
+                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
                     backendTransactionManager.commit();
                 }
                 backendTransactionManager.begin();
