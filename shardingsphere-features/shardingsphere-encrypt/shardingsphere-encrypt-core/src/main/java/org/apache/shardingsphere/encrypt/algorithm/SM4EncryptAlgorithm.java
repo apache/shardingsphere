@@ -29,7 +29,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Security;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * SM4 encrypt algorithm.
@@ -46,11 +49,17 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final String SM4_IV = "sm4-iv";
     
+    private static final String SM4_MODE = "sm4-mode";
+    
+    private static final String SM4_PADDING = "sm4-padding";
+    
     private static final int KEY_LENGTH = 16;
     
     private static final int IV_LENGTH = 16;
     
-    private static final String ECB_PKCS5PADDING = "SM4/ECB/PKCS5Padding";
+    private static final Set<String> MODES = new HashSet<>(Arrays.asList("ECB", "CBC"));
+    
+    private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
     @Setter
     private Properties props;
@@ -91,7 +100,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
 
     @SneakyThrows
     private byte[] sm4(final byte[] input, final int mode) {
-        String modeAndPadding = ECB_PKCS5PADDING;
+        String modeAndPadding = String.format("SM4/%s/%s", checkAndGetMode(), checkAndGetPadding());
         Cipher cipher = Cipher.getInstance(modeAndPadding, org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec secretKeySpec = new SecretKeySpec(Hex.decodeHex(checkAndGetKey().toCharArray()), SM4);
         String iv = checkAndGetIv(modeAndPadding);
@@ -109,9 +118,22 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return result;
     }
     
-    private String checkAndGetIv(final String modeAndPadding) throws ShardingSphereException {
+    private String checkAndGetMode() throws ShardingSphereException {
+        String result = null == props.getProperty(SM4_MODE) ? null : String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
+        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
+        return result;
+    }
+    
+    private String checkAndGetPadding() throws ShardingSphereException {
+        Object objectPadding = props.getProperty(SM4_PADDING);
+        String result = null == objectPadding ? null : String.valueOf(objectPadding).toUpperCase().replace("PADDING", "Padding");
+        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
+        return result;
+    }
+    
+    private String checkAndGetIv(final String mode) throws ShardingSphereException {
         String result = null == props.getProperty(SM4_IV) ? null : String.valueOf(props.getProperty(SM4_IV));
-        if (modeAndPadding.contains("CBC")) {
+        if ("CBC".equalsIgnoreCase(mode)) {
             Preconditions.checkState(null == result || IV_LENGTH != result.length(), "Iv length must be " + IV_LENGTH + " bytes long.");
         }
         return result;

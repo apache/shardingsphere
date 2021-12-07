@@ -42,11 +42,13 @@ public final class SM4EncryptAlgorithmTest {
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("sm4-key", "4D744E003D713D054E7E407C350E447E");
+        props.setProperty("sm4-mode", "ECB");
+        props.setProperty("sm4-padding", "PKCS5Padding");
         encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("SM4", props), EncryptAlgorithm.class);
     }
     
     @Test
-    public void assertEncrypt() {
+    public void assertEncryptWithECBAndPKCS5Padding() {
         assertThat(encryptAlgorithm.encrypt("test"), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
@@ -55,6 +57,8 @@ public final class SM4EncryptAlgorithmTest {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
+        props.setProperty("sm4-mode", "ECB");
+        props.setProperty("sm4-padding", "PKCS5Padding");
         assertThat(encryptAlgorithm.encrypt("test"), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
@@ -73,6 +77,8 @@ public final class SM4EncryptAlgorithmTest {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
+        props.setProperty("sm4-mode", "ECB");
+        props.setProperty("sm4-padding", "PKCS5Padding");
         assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde").toString(), is("test"));
     }
     
