@@ -17,5 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+/**
+ * Backend connection for Proxy.
+ * 
+ * @see org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection
+ */
 public interface BackendConnection {
 }
