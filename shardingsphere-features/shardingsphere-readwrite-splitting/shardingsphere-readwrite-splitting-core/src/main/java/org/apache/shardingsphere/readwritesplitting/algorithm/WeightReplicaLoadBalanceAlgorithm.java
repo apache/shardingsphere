@@ -30,13 +30,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
-
     /**
-     * Cumulative accuracy loss threshold
+     * Cumulative accuracy loss threshold.
      */
     private static final double ACCURACY_THRESHOLD = 0.0001;
-
+    
+    private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    
     private Properties props = new Properties();
 
     @Override
@@ -85,22 +85,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
         int index = 0;
         double sum = 0D;
         for (String readDataSourceName : readDataSourceNames) {
-            Object weightObject = props.get(readDataSourceName);
-            if (weightObject == null) {
-                throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
-            }
-            double weight;
-            try {
-                weight = Double.parseDouble(weightObject.toString());
-            } catch (NumberFormatException e) {
-                throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
-            }
-            if (Double.isInfinite(weight)) {
-                weight = 10000.0D;
-            }
-            if (Double.isNaN(weight)) {
-                weight = 1.0D;
-            }
+            double weight = getWeightValue(readDataSourceName);
             exactWeights[index++] = weight;
             sum += weight;
         }
@@ -110,12 +95,36 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
             }
             exactWeights[i] = exactWeights[i] / sum;
         }
-        Double[] weights = new Double[index];
+        return calcWeight(exactWeights);
+    }
+    
+    private Double[] calcWeight(final Double[] exactWeights) {
+        Double[] weights = new Double[exactWeights.length];
         double randomRange = 0D;
         for (int i = 0; i < weights.length; i++) {
             weights[i] = randomRange + exactWeights[i];
             randomRange += exactWeights[i];
         }
         return weights;
+    }
+    
+    private double getWeightValue(final String readDataSourceName) {
+        Object weightObject = props.get(readDataSourceName);
+        if (weightObject == null) {
+            throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
+        }
+        double weight;
+        try {
+            weight = Double.parseDouble(weightObject.toString());
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
+        }
+        if (Double.isInfinite(weight)) {
+            weight = 10000.0D;
+        }
+        if (Double.isNaN(weight)) {
+            weight = 1.0D;
+        }
+        return weight;
     }
 }
