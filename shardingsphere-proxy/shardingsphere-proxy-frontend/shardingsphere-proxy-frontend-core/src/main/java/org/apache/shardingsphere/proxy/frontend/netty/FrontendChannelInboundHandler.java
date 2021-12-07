@@ -108,7 +108,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         try {
             connectionSession.getBackendConnection().closeAllResources();
         } catch (final BackendConnectionException ex) {
-            log.error("Exception occurred when frontend disconnect", ex);
+            log.error("Exception occurred when frontend connection [{}] disconnected", connectionSession.getConnectionId(), ex);
         }
         databaseProtocolFrontendEngine.release(connectionSession);
     }
