@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.feature;
 
+import org.apache.shardingsphere.example.proxy.distsql.DistSQLExecutor;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractFeatureExecutor implements FeatureExecutor {
+public abstract class AbstractFeatureExecutor implements DistSQLExecutor {
     
     protected Statement statement;
     

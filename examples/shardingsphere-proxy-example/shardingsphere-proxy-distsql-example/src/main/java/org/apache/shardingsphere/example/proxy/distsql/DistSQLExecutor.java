@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.proxy.distsql.feature;
+package org.apache.shardingsphere.example.proxy.distsql;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public interface FeatureExecutor {
+public interface DistSQLExecutor {
     
     void init(Statement statement);
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.hint;
 
+import org.apache.shardingsphere.example.proxy.distsql.DistSQLExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.hint.impl.AddShardingExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.hint.impl.SetShardingExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.hint.impl.SetReadwriteSplittingExecutor;
@@ -30,7 +31,7 @@ public enum HintType {
         }
     
         @Override
-        public HintExecutor getExecutor() {
+        public DistSQLExecutor getExecutor() {
             return new SetShardingExecutor();
         }
     }, ADD_SHARDING {
@@ -40,7 +41,7 @@ public enum HintType {
         }
         
         @Override
-        public HintExecutor getExecutor() {
+        public DistSQLExecutor getExecutor() {
             return new AddShardingExecutor();
         }
     }, SET_READWRITE_SPLITTING {
@@ -50,12 +51,12 @@ public enum HintType {
         }
         
         @Override
-        public HintExecutor getExecutor() {
+        public DistSQLExecutor getExecutor() {
             return new SetReadwriteSplittingExecutor();
         }
     };
     
     public abstract String getConfigPath();
     
-    public abstract HintExecutor getExecutor();
+    public abstract DistSQLExecutor getExecutor();
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.proxy.distsql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureType;
 import org.apache.shardingsphere.example.proxy.distsql.utils.FileUtil;
@@ -40,7 +39,7 @@ public final class DistSQLFeatureExample {
         try {
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            FeatureExecutor featureExecutor = selectFeature().getExecutor();
+            DistSQLExecutor featureExecutor = selectFeature().getExecutor();
             featureExecutor.init(statement);
             featureExecutor.execute();
         } catch (Exception e) {

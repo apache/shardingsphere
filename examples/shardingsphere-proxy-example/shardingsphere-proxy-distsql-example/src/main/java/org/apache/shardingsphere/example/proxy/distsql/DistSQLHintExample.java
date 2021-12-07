@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.proxy.distsql.factory.DataSourceFactory;
-import org.apache.shardingsphere.example.proxy.distsql.hint.HintExecutor;
 import org.apache.shardingsphere.example.proxy.distsql.hint.HintType;
 import org.apache.shardingsphere.example.proxy.distsql.utils.FileUtil;
 
@@ -57,7 +56,7 @@ public final class DistSQLHintExample {
         try {
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            HintExecutor executor = hintType.getExecutor();
+            DistSQLExecutor executor = hintType.getExecutor();
             executor.init(statement);
             executor.execute();
         } catch (Exception e) {

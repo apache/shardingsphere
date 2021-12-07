@@ -17,9 +17,27 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.hint;
 
-import java.sql.Statement;
+import org.apache.shardingsphere.example.proxy.distsql.DistSQLExecutor;
 
-public class StatementHolder {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
+
+public abstract class AbstractHintExecutor implements DistSQLExecutor {
     
     protected Statement statement;
+    
+    protected List<List<String>> getResultData(ResultSet resultSet) throws SQLException {
+        List<List<String>> result = new LinkedList<>();
+        while (resultSet.next()) {
+            List<String> row = new LinkedList<>();
+            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                row.add(resultSet.getString(i + 1));
+            }
+            result.add(row);
+        }
+        return result;
+    }
 }

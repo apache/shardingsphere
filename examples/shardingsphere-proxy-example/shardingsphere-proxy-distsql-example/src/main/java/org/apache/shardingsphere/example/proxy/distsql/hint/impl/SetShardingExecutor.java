@@ -19,15 +19,14 @@ package org.apache.shardingsphere.example.proxy.distsql.hint.impl;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.hint.StatementHolder;
-import org.apache.shardingsphere.example.proxy.distsql.hint.HintExecutor;
+import org.apache.shardingsphere.example.proxy.distsql.hint.AbstractHintExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 @Slf4j
-public final class SetShardingExecutor extends StatementHolder implements HintExecutor {
+public final class SetShardingExecutor extends AbstractHintExecutor {
     
     private static final String SET_SHARDING_HINT = "set sharding hint database_value=1";
     
