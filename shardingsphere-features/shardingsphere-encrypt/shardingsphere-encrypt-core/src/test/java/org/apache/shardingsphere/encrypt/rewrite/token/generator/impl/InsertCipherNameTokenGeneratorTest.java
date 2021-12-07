@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
@@ -33,9 +32,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,7 +51,7 @@ public class InsertCipherNameTokenGeneratorTest {
 
     @InjectMocks
     private InsertCipherNameTokenGenerator tokenGenerator;
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptTest() {
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -59,7 +65,7 @@ public class InsertCipherNameTokenGeneratorTest {
 
         assertTrue(tokenGenerator.isGenerateSQLTokenForEncrypt(insertStatementContext));
     }
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptForNonInsertTest() {
         final UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class);
@@ -67,11 +73,10 @@ public class InsertCipherNameTokenGeneratorTest {
         assertFalse(tokenGenerator.isGenerateSQLTokenForEncrypt(updateStatementContext));
     }
 
-
     @Test
     public void generateSQLTokensTest() {
-        IdentifierValue idf = new IdentifierValue("idf");
-        IdentifierValue idfc = new IdentifierValue("idfc");
+        final IdentifierValue idf = new IdentifierValue("idf");
+        final IdentifierValue idfc = new IdentifierValue("idfc");
         Map<String, String> map = new HashMap<>();
         map.put("idfc", "col1");
 
