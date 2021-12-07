@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -37,7 +36,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,7 +61,7 @@ public class EncryptCreateTableTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(createTableStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void generateSQLTokensTest() {
         IdentifierValue idf = new IdentifierValue("table1");
@@ -75,7 +76,6 @@ public class EncryptCreateTableTokenGeneratorTest {
         final EncryptRule encryptRule = mock(EncryptRule.class);
         final EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
 
-
         when(createTableStatementContext.getSqlStatement()).thenReturn(createTableStatement);
         when(createTableStatement.getTable()).thenReturn(simpleTableSegment);
         when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
@@ -87,7 +87,6 @@ public class EncryptCreateTableTokenGeneratorTest {
         when(encryptRule.getCipherColumn(anyString(), anyString())).thenReturn("col1");
         when(encryptRule.findAssistedQueryColumn(anyString(), anyString())).thenReturn(Optional.of("aqColumn"));
         when(encryptRule.findPlainColumn(anyString(), anyString())).thenReturn(Optional.of("fpColumn"));
-
 
         tokenGenerator.setEncryptRule(encryptRule);
 
