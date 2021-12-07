@@ -67,7 +67,7 @@ public final class PostgreSQLPortalTest {
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Mock
-    private JDBCBackendConnection connectionSession;
+    private JDBCBackendConnection backendConnection;
     
     private PostgreSQLPortal portal;
     
@@ -77,7 +77,7 @@ public final class PostgreSQLPortalTest {
         when(preparedStatement.getSql()).thenReturn("");
         when(preparedStatement.getSqlStatement()).thenReturn(new EmptyStatement());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        portal = new PostgreSQLPortal(preparedStatement, Collections.emptyList(), resultFormats, connectionSession);
+        portal = new PostgreSQLPortal(preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
     }
     
     @Test
@@ -164,7 +164,7 @@ public final class PostgreSQLPortalTest {
         setDatabaseCommunicationEngine(databaseCommunicationEngine);
         setTextProtocolBackendHandler(null);
         portal.suspend();
-        verify(connectionSession).markResourceInUse(databaseCommunicationEngine);
+        verify(backendConnection).markResourceInUse(databaseCommunicationEngine);
     }
     
     @Test
@@ -172,7 +172,7 @@ public final class PostgreSQLPortalTest {
         setDatabaseCommunicationEngine(databaseCommunicationEngine);
         setTextProtocolBackendHandler(textProtocolBackendHandler);
         portal.close();
-        verify(connectionSession).unmarkResourceInUse(databaseCommunicationEngine);
+        verify(backendConnection).unmarkResourceInUse(databaseCommunicationEngine);
         verify(textProtocolBackendHandler).close();
     }
     

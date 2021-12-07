@@ -68,7 +68,7 @@ public final class PostgreSQLPortal {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private final JDBCBackendConnection connectionSession;
+    private final JDBCBackendConnection backendConnection;
     
     private ResponseHeader responseHeader;
     
@@ -76,7 +76,7 @@ public final class PostgreSQLPortal {
                             final JDBCBackendConnection backendConnection) throws SQLException {
         this.sqlStatement = preparedStatement.getSqlStatement();
         this.resultFormats = resultFormats;
-        this.connectionSession = backendConnection;
+        this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement) {
             databaseCommunicationEngine = null;
             textProtocolBackendHandler =
@@ -181,7 +181,7 @@ public final class PostgreSQLPortal {
      * Suspend the portal.
      */
     public void suspend() {
-        connectionSession.markResourceInUse(databaseCommunicationEngine);
+        backendConnection.markResourceInUse(databaseCommunicationEngine);
     }
     
     /**
@@ -191,7 +191,7 @@ public final class PostgreSQLPortal {
      */
     public void close() throws SQLException {
         if (null != databaseCommunicationEngine) {
-            connectionSession.unmarkResourceInUse(databaseCommunicationEngine);
+            backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
         }
         if (null != textProtocolBackendHandler) {
             textProtocolBackendHandler.close();
