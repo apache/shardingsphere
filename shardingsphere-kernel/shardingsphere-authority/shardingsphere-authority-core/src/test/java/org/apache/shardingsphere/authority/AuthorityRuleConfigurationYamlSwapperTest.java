@@ -37,9 +37,6 @@ public class AuthorityRuleConfigurationYamlSwapperTest {
 
     private AuthorityRuleConfigurationYamlSwapper swapper =  new AuthorityRuleConfigurationYamlSwapper();
 
-    /**
-     * test swapToYamlConfiguration with authority rule configuration.
-     */
     @Test
     public void swapToYamlConfigurationTest() {
         AuthorityRuleConfiguration authorityRuleConfiguration = mock(AuthorityRuleConfiguration.class);
@@ -56,9 +53,6 @@ public class AuthorityRuleConfigurationYamlSwapperTest {
         assertNotNull(result.getProvider());
     }
 
-    /**
-     * test swap to objects.
-     */
     @Test
     public void swapToObjectTest() {
         YamlAuthorityRuleConfiguration authorityRuleConfiguration = mock(YamlAuthorityRuleConfiguration.class);
@@ -70,28 +64,24 @@ public class AuthorityRuleConfigurationYamlSwapperTest {
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
 
-        swapper.swapToObject(authorityRuleConfiguration);
+        final AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
+
+        assertNotNull(resultConfig);
+        assertNotNull(resultConfig.getUsers());
+        assertEquals(1, resultConfig.getUsers().size());
+        assertNotNull(resultConfig.getProvider());
     }
 
-    /**
-     * test get type.
-     */
     @Test
     public void getTypeClass() {
         assertEquals(AuthorityRuleConfiguration.class, swapper.getTypeClass());
     }
 
-    /**
-     * test rule tag name.
-     */
     @Test
     public void getRuleTagName() {
         assertEquals("AUTHORITY", swapper.getRuleTagName());
     }
 
-    /**
-     * test get order.
-     */
     @Test
     public void getOrder() {
         assertEquals(500, swapper.getOrder());
