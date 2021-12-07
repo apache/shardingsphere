@@ -69,11 +69,12 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
                     int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
                     return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(connectionSize)));
                 }
+                break;
             case TRANSACTION_TYPE:
                 TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
                 return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(transactionType.name())));
             default:
-                throw new UnsupportedVariableException(sqlStatement.getName());
         }
+        throw new UnsupportedVariableException(sqlStatement.getName());
     }
 }
