@@ -43,8 +43,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +83,7 @@ public class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriterTest {
     public void reWriteTest() {
         List<Object> groupedParameters = new ArrayList<>();
         groupedParameters.add(new Object());
-        GroupedParameterBuilder groupedParameterBuilder = new GroupedParameterBuilder(Collections.singletonList(groupedParameters), new ArrayList<>());
+        final GroupedParameterBuilder groupedParameterBuilder = new GroupedParameterBuilder(Collections.singletonList(groupedParameters), new ArrayList<>());
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         final OnDuplicateUpdateContext onDuplicateUpdateContext = mock(OnDuplicateUpdateContext.class);
         final InsertStatement insertStatement = mock(InsertStatement.class);
@@ -105,7 +109,6 @@ public class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriterTest {
         when(onDuplicateUpdateContext.getValue(anyInt())).thenReturn(new Object());
         when(columnSegment.getIdentifier()).thenReturn(iVal);
         when(encryptRule.findEncryptor(anyString(), anyString(), anyString())).thenReturn(Optional.of(encryptAlgorithm));
-        when(encryptRule.findAssistedQueryColumn(anyString(), anyString())).thenReturn(Optional.of("val1"));
         when(encryptRule.findPlainColumn(anyString(), anyString())).thenReturn(Optional.of("val2"));
 
         List<Object> parameters = new ArrayList<>();
@@ -123,7 +126,7 @@ public class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriterTest {
     public void reWriteWithQueryAssistedEncryptAlgorithmTest() {
         List<Object> groupedParameters = new ArrayList<>();
         groupedParameters.add(new Object());
-        GroupedParameterBuilder groupedParameterBuilder = new GroupedParameterBuilder(Collections.singletonList(groupedParameters), new ArrayList<>());
+        final GroupedParameterBuilder groupedParameterBuilder = new GroupedParameterBuilder(Collections.singletonList(groupedParameters), new ArrayList<>());
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         final OnDuplicateUpdateContext onDuplicateUpdateContext = mock(OnDuplicateUpdateContext.class);
         final InsertStatement insertStatement = mock(InsertStatement.class);
