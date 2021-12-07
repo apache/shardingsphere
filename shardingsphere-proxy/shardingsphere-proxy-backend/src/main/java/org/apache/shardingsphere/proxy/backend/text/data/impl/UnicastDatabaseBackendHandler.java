@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -44,23 +44,23 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     private final String sql;
     
-    private final JDBCConnectionSession connectionSession;
+    private final JDBCBackendConnection backendConnection;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originSchema = connectionSession.getSchemaName();
+        String originSchema = backendConnection.getConnectionSession().getSchemaName();
         String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
         if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            connectionSession.setCurrentSchema(schemaName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession);
+            backendConnection.getConnectionSession().setCurrentSchema(schemaName);
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
             return databaseCommunicationEngine.execute();
         } finally {
-            connectionSession.setCurrentSchema(originSchema);
+            backendConnection.getConnectionSession().setCurrentSchema(originSchema);
         }
     }
     

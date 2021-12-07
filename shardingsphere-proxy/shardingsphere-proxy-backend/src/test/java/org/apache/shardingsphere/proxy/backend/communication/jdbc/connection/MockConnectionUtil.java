@@ -44,7 +44,7 @@ final class MockConnectionUtil {
      * @param connectionSize connection size
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    static void setCachedConnections(final JDBCConnectionSession connectionSession, final String dataSourceName, final int connectionSize) {
+    static void setCachedConnections(final JDBCBackendConnection connectionSession, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(dataSourceName, mockNewConnections(connectionSize));
         Field field = connectionSession.getClass().getDeclaredField("cachedConnections");

@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import java.sql.SQLException;
@@ -49,7 +49,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private final DataSourceConfigurationValidator dataSourceConfigValidator;
     
-    public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+    public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         this.databaseType = databaseType;
         dataSourceConfigValidator = new DataSourceConfigurationValidator();

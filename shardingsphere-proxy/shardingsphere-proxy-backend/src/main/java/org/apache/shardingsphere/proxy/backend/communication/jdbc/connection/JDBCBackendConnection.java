@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import io.netty.util.AttributeMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -53,15 +53,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * JDBC connection session.
+ * JDBC backend connection.
  */
 @Getter
 @Setter
-public final class JDBCConnectionSession extends ConnectionSession implements ExecutorJDBCManager {
+public final class JDBCBackendConnection implements BackendConnection, ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
+    
+    private final ConnectionSession connectionSession;
     
     private volatile FederationExecutor federationExecutor;
     
@@ -79,15 +81,15 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
     
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
-    public JDBCConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
-        super(initialTransactionType, attributeMap);
+    public JDBCBackendConnection(final ConnectionSession connectionSession) {
+        this.connectionSession = connectionSession;
         fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
                 .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getTransactionStatus().isInTransaction()
+        return connectionSession.getTransactionStatus().isInTransaction()
                 ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
@@ -117,8 +119,8 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
@@ -126,8 +128,8 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
         }
@@ -169,7 +171,7 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
         if (fetchSizeSetters.containsKey(databaseType.getName())) {
             fetchSizeSetters.get(databaseType.getName()).setFetchSize(statement);
         }
@@ -181,7 +183,8 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
      * @return true or false
      */
     public boolean isSerialExecute() {
-        return getTransactionStatus().isInTransaction() && (TransactionType.LOCAL == getTransactionStatus().getTransactionType() || TransactionType.XA == getTransactionStatus().getTransactionType());
+        return connectionSession.getTransactionStatus().isInTransaction()
+                && (TransactionType.LOCAL == connectionSession.getTransactionStatus().getTransactionType() || TransactionType.XA == connectionSession.getTransactionStatus().getTransactionType());
     }
     
     /**
@@ -255,7 +258,7 @@ public final class JDBCConnectionSession extends ConnectionSession implements Ex
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && getTransactionStatus().isInTransaction()) {
+                if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                     each.rollback();
                 }
                 each.close();

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLSta
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ public final class AdvancedDistSQLBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final AdvancedDistSQLStatement sqlStatement,
-                                                         final JDBCConnectionSession connectionSession) throws SQLException {
+                                                         final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof PreviewStatement) {
             return new PreviewDistSQLBackendHandler((PreviewStatement) sqlStatement, connectionSession);
         } else if (sqlStatement instanceof ParseStatement) {

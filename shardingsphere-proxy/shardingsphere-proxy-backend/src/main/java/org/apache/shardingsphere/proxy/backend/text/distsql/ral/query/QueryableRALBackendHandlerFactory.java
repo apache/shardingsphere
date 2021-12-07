@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
@@ -45,7 +45,7 @@ public final class QueryableRALBackendHandlerFactory {
      * @param connectionSession connection session
      * @return queryable RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final QueryableRALStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+    public static TextProtocolBackendHandler newInstance(final QueryableRALStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         return new QueryableRALBackendHandler(sqlStatement, connectionSession, resultSet);
     }
