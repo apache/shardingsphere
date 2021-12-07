@@ -21,7 +21,8 @@ import io.netty.util.DefaultAttributeMap;
 import lombok.Getter;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.runner.RunWith;
@@ -35,7 +36,10 @@ public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTes
     @SuppressWarnings("ConstantConditions")
     @Override
     public final void prepare() {
-        Object executorTask = new CommandExecutorTask(null, new JDBCConnectionSession(TransactionType.BASE, new DefaultAttributeMap()), null, null);
+        ConnectionSession connectionSession = new ConnectionSession(TransactionType.BASE, new DefaultAttributeMap());
+        JDBCBackendConnection backendConnection = new JDBCBackendConnection(connectionSession);
+        connectionSession.setBackendConnection(backendConnection);
+        Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
         targetObject = (AdviceTargetObject) executorTask;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
@@ -51,7 +51,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param connectionSession connection session
      * @return new instance of database admin backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
@@ -70,7 +70,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return new instance of database admin backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement,
-                                                                   final JDBCConnectionSession connectionSession, final String sql) {
+                                                                   final ConnectionSession connectionSession, final String sql) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
@@ -79,7 +79,7 @@ public final class DatabaseAdminBackendHandlerFactory {
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, connectionSession, optional));
     }
     
-    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         return executor instanceof DatabaseAdminQueryExecutor
                 ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor) : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatement, executor);
     }

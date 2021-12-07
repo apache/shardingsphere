@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ public final class CommonDistSQLBackendHandlerFactory {
      * @return common dist sql backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetDistSQLStatement) {
             return new SetDistSQLBackendHandler((SetDistSQLStatement) sqlStatement, connectionSession);
         }

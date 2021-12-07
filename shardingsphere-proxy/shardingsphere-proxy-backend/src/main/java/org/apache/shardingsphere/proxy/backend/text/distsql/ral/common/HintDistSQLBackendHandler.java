@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutorFactory;
@@ -40,7 +40,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private final HintDistSQLStatement sqlStatement;
     
-    private final JDBCConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
     private HintStatementExecutor hintStatementExecutor;
     

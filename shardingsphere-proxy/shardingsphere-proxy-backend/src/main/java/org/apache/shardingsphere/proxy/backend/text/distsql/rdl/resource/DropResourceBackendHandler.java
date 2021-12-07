@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsed
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
     
-    public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+    public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

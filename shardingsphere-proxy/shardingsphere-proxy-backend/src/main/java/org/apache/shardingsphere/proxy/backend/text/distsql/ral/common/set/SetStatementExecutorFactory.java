@@ -21,7 +21,7 @@ import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
@@ -42,7 +42,7 @@ public final class SetStatementExecutorFactory {
      * @return set command executor
      * @throws SQLException SQL exception
      */
-    public static SetStatementExecutor newInstance(final SetDistSQLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
+    public static SetStatementExecutor newInstance(final SetDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetVariableStatement) {
             return new SetVariableExecutor((SetVariableStatement) sqlStatement, connectionSession);
         }

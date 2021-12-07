@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state.impl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
+import lombok.Getter;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Lock proxy state.
+ * Exception causes by backend connection.
  */
-public final class LockProxyState implements ProxyState {
+@Getter
+public final class BackendConnectionException extends Exception {
     
-    @Override
-    public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        throw new UnsupportedOperationException("LockProxyState");
+    private final Collection<Exception> exceptions = new LinkedList<>();
+    
+    public BackendConnectionException(final Exception ex) {
+        exceptions.add(ex);
+    }
+    
+    public BackendConnectionException(final Collection<Exception> exceptions) {
+        this.exceptions.addAll(exceptions);
     }
 }

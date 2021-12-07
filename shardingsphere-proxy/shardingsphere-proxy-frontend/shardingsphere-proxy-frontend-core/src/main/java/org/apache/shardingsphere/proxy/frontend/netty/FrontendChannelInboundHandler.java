@@ -25,8 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -44,13 +45,15 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
-    private final JDBCConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
     private volatile boolean authenticated;
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        connectionSession = new JDBCConnectionSession(getTransactionRule().getDefaultType(), channel);
+        connectionSession = new ConnectionSession(getTransactionRule().getDefaultType(), channel);
+        // TODO Decouple JDBCBackendConnection from this class.
+        connectionSession.setBackendConnection(new JDBCBackendConnection(connectionSession));
     }
     
     private TransactionRule getTransactionRule() {
@@ -101,16 +104,13 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
-        connectionSession.closeDatabaseCommunicationEngines(true);
-        connectionSession.closeConnections(true);
-        connectionSession.closeFederationExecutor();
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
         if (context.channel().isWritable()) {
-            connectionSession.getResourceLock().doNotify();
+            ((JDBCBackendConnection) connectionSession.getBackendConnection()).getResourceLock().doNotify();
         }
     }
 }

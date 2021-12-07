@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind.OpenGaussComBatchBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecutorFactory;
@@ -52,7 +52,7 @@ public final class OpenGaussCommandExecutorFactory {
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final CommandPacket commandPacket,
-                                              final JDBCConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                              final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindExecutor((OpenGaussComBatchBindPacket) commandPacket, connectionSession)
                 : PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, (PostgreSQLCommandPacket) commandPacket, connectionSession, connectionContext);
     }
