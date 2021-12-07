@@ -36,7 +36,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +48,7 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
 
     @InjectMocks
     private EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator;
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptTest() {
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -56,7 +58,7 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(insertStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void generateSQLTokenWhenPreviousTokenArePresentTest() {
         IdentifierValue idf = new IdentifierValue("table1");
@@ -81,7 +83,6 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
         when(encryptTable.getCipherColumn(anyString())).thenReturn("cCol");
         when(useDefaultInsertColumnsToken.getColumns()).thenReturn(new ArrayList<>(Arrays.asList("col1")));
 
-
         tokenGenerator.setPreviousSQLTokens(new ArrayList<>(Arrays.asList(useDefaultInsertColumnsToken)));
         tokenGenerator.setEncryptRule(encryptRule);
 
@@ -89,7 +90,7 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
         assertNotNull(token);
         assertEquals(3, token.getColumns().size());
     }
-    
+
     @Test
     public void generateSQLTokenWithoutPreviousTokenTest() {
         IdentifierValue idf = new IdentifierValue("table1");
@@ -110,7 +111,6 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
         when(insertStatementContext.getDescendingColumnNames()).thenReturn(Collections.emptyIterator());
         when(insertStatement.getInsertColumns()).thenReturn(Optional.of(insertColumnsSegment));
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("col1"));
-
 
         tokenGenerator.setPreviousSQLTokens(new ArrayList<>());
         tokenGenerator.setEncryptRule(encryptRule);
