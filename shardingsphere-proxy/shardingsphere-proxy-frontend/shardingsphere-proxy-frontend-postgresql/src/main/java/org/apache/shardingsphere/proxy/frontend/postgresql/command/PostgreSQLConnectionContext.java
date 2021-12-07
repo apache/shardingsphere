@@ -57,7 +57,7 @@ public final class PostgreSQLConnectionContext {
      * @param preparedStatement prepared statement
      * @param parameters bind parameters
      * @param resultFormats result formats
-     * @param backendConnection connection session
+     * @param backendConnection backend connection
      * @return a new portal
      * @throws SQLException SQL exception
      */

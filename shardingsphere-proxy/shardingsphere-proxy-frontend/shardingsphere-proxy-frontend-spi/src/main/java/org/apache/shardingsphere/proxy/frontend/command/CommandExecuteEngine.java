@@ -94,7 +94,7 @@ public interface CommandExecuteEngine {
      * Write query data.
      *
      * @param context channel handler context
-     * @param backendConnection connection session
+     * @param backendConnection backend connection
      * @param queryCommandExecutor query command executor
      * @param headerPackagesCount count of header packages
      * @return is need flush

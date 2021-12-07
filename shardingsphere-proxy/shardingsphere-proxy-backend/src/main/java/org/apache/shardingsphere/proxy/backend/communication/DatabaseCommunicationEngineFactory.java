@@ -51,7 +51,7 @@ public final class DatabaseCommunicationEngineFactory {
      *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
-     * @param backendConnection connection session
+     * @param backendConnection backend connection
      * @return text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final JDBCBackendConnection backendConnection) {
@@ -68,7 +68,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
      * @param parameters SQL parameters
-     * @param backendConnection connection session
+     * @param backendConnection backend connection
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, 

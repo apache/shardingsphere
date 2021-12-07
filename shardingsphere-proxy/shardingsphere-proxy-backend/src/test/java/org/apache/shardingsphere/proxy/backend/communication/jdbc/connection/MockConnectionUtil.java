@@ -39,7 +39,7 @@ final class MockConnectionUtil {
     /**
      * Mock set cached connections.
      *
-     * @param backendConnection connection session
+     * @param backendConnection backend connection
      * @param dataSourceName datasource name
      * @param connectionSize connection size
      */
