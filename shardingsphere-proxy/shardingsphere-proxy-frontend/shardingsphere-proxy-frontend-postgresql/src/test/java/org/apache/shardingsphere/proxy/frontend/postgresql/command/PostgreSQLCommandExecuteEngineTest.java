@@ -77,7 +77,9 @@ public final class PostgreSQLCommandExecuteEngineTest {
         PostgreSQLComQueryExecutor comQueryExecutor = mock(PostgreSQLComQueryExecutor.class);
         when(comQueryExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, mock(JDBCBackendConnection.class), comQueryExecutor, 0);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, comQueryExecutor, 0);
         assertTrue(actual);
         verify(channelHandlerContext).write(any(PostgreSQLReadyForQueryPacket.class));
     }
@@ -118,6 +120,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
         ResourceLock resourceLock = mock(ResourceLock.class);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         when(backendConnection.getResourceLock()).thenReturn(resourceLock);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         PostgreSQLPacket packet = mock(PostgreSQLPacket.class);
         when(queryCommandExecutor.getQueryRowPacket()).thenReturn(packet);
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
