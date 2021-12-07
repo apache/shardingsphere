@@ -35,7 +35,9 @@ public final class LoggingListener implements Listener {
     
     @Override
     public void onTransformation(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final DynamicType dynamicType) {
-        log.debug("On transformation class {}", typeDescription.getTypeName());
+        if (log.isDebugEnabled()) {
+            log.debug("On transformation class {}", typeDescription.getTypeName());
+        }
     }
     
     @Override

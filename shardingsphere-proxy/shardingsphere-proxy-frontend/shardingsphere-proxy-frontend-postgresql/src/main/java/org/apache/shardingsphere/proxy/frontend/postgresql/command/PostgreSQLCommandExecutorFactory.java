@@ -62,7 +62,9 @@ public final class PostgreSQLCommandExecutorFactory {
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final JDBCConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
-        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (log.isDebugEnabled()) {
+            log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        }
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);

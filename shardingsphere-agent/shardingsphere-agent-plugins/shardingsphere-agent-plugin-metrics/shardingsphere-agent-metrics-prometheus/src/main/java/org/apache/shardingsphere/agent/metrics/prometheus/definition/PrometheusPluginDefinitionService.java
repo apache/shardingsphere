@@ -46,7 +46,9 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             PluginInterceptorPoint.Builder builder = defineInterceptor(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
-                log.debug("Init construct: {}", each.getConstructAdvice());
+                if (log.isDebugEnabled()) {
+                    log.debug("Init construct: {}", each.getConstructAdvice());
+                }
             }
             if (null == each.getPoints()) {
                 continue;
@@ -67,13 +69,17 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
                         .implement(each.getInstanceAdvice())
                         .build();
-                log.debug("Init instance: {}", each.getInstanceAdvice());
+                if (log.isDebugEnabled()) {
+                    log.debug("Init instance: {}", each.getInstanceAdvice());
+                }
             }
             if (staticPoints.length > 0) {
                 builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
                         .implement(each.getStaticAdvice())
                         .build();
-                log.debug("Init static: {}", each.getStaticAdvice());
+                if (log.isDebugEnabled()) {
+                    log.debug("Init static: {}", each.getStaticAdvice());
+                }
             }
         }
     }

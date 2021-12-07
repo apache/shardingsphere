@@ -61,7 +61,9 @@ public final class MySQLCommandExecutorFactory {
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final JDBCConnectionSession connectionSession) throws SQLException {
-        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (log.isDebugEnabled()) {
+            log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        }
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitExecutor();
