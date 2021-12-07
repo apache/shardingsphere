@@ -90,9 +90,9 @@ rules:
 
   shardingAlgorithms:
     standard-test-db:
-      type: standard-test-db
+      type: STANDARD_TEST_DB
     standard-test-tbl:
-      type: standard-test-tbl
+      type: STANDARD_TEST_TBL
 
   keyGenerators:
     snowflake:
