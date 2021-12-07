@@ -21,13 +21,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
@@ -103,10 +103,13 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         closeAllResources();
     }
     
-    @SneakyThrows
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
-        connectionSession.getBackendConnection().closeAllResources();
+        try {
+            connectionSession.getBackendConnection().closeAllResources();
+        } catch (final BackendConnectionException ex) {
+            log.error("Exception occurred when frontend disconnect", ex);
+        }
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     
