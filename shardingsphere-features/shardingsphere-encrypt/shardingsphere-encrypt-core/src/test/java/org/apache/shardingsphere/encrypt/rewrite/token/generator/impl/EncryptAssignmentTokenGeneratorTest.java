@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -43,7 +42,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -177,7 +177,6 @@ public class EncryptAssignmentTokenGeneratorTest {
         when(encryptRule.findEncryptor(anyString(), anyString(), anyString())).thenReturn(Optional.of(encryptAlgorithm));
         when(assignmentSegment.getValue()).thenReturn(expressionSegment);
 
-
         tokenGenerator.setEncryptRule(encryptRule);
 
         final Collection<EncryptAssignmentToken> tokens = tokenGenerator.generateSQLTokens(insertStatementContext);
@@ -185,7 +184,7 @@ public class EncryptAssignmentTokenGeneratorTest {
     }
 
     @Test
-    public void generateTokenWIthUpdateStatementTest() {
+    public void generateTokenWithUpdateStatementTest() {
         IdentifierValue idf = new IdentifierValue("table1");
         IdentifierValue idfc = new IdentifierValue("col1");
 
@@ -211,7 +210,6 @@ public class EncryptAssignmentTokenGeneratorTest {
         when(columnSegment.getIdentifier()).thenReturn(idfc);
         when(encryptRule.findEncryptor(anyString(), anyString(), anyString())).thenReturn(Optional.of(encryptAlgorithm));
         when(assignmentSegment.getValue()).thenReturn(expressionSegment);
-
 
         tokenGenerator.setEncryptRule(encryptRule);
 
