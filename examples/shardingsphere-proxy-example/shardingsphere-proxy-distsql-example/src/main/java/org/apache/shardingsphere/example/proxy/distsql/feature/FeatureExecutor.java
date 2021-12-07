@@ -41,8 +41,4 @@ public interface FeatureExecutor {
         }
         return result;
     }
-    
-    default void waitingRenew() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(1);
-    }
 }

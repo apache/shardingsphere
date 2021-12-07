@@ -49,12 +49,10 @@ public final class DistSQLFeatureExample {
     }
     
     private static FeatureType selectFeature(){
-        FeatureType feature = FeatureType.RESOURCE;
-//        FeatureType feature = FeatureType.SHADOW;
-//        FeatureType feature = FeatureType.ENCRYPT;
-//        FeatureType feature = FeatureType.SHARDING;
-//        FeatureType feature = FeatureType.DB_DISCOVERY;
-//        FeatureType feature = FeatureType.READWRITE_SPLITTING;
-        return feature;
+//        return FeatureType.RESOURCE;
+//        return FeatureType.SHADOW;
+//        return FeatureType.ENCRYPT;
+//        return FeatureType.SHARDING;
+        return FeatureType.READWRITE_SPLITTING;
     }
 }

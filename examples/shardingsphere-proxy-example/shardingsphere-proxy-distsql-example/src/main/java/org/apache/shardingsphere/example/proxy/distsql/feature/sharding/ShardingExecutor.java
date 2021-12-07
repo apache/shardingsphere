@@ -39,7 +39,7 @@ public final class ShardingExecutor extends StatementHolder implements FeatureEx
     private final static String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
-            "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
+            "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=5)),\n" +
             "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))\n" +
             ");";
     
@@ -84,27 +84,23 @@ public final class ShardingExecutor extends StatementHolder implements FeatureEx
         log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
-    private void executeAddRule() throws SQLException, InterruptedException {
+    private void executeAddRule() throws SQLException {
         log.info("add rule...");
         statement.execute(ADD_RULE);
-        waitingRenew();
     }
     
-    private void executeAlterRule() throws SQLException, InterruptedException {
+    private void executeAlterRule() throws SQLException {
         log.info("alter rule...");
         statement.execute(ALTER_RULE);
-        waitingRenew();
     }
     
-    private void executeDropRule() throws SQLException, InterruptedException {
+    private void executeDropRule() throws SQLException {
         log.info("drop rule...");
         statement.execute(DROP_RULE);
-        waitingRenew();
     }
     
-    private void executeDropAlgorithm() throws SQLException, InterruptedException {
+    private void executeDropAlgorithm() throws SQLException {
         log.info("drop algorithm...");
         statement.execute(DROP_ALGORITHM);
-        waitingRenew();
     }
 }

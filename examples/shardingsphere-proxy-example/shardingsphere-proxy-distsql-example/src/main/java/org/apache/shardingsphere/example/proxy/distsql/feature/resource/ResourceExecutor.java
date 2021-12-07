@@ -51,7 +51,7 @@ public final class ResourceExecutor extends StatementHolder implements FeatureEx
     
     private final static String DROP_RESOURCE = "DROP RESOURCE resource_0, resource_1;";
     
-    private final static String SHOW_RESOURCE = "show resources;";
+    private final static String SHOW_RESOURCE = "show schema resources;";
     
     @Override
     public void init(Statement statement) {
@@ -71,26 +71,23 @@ public final class ResourceExecutor extends StatementHolder implements FeatureEx
     }
     
     private void executeShowResources() throws SQLException {
-        log.info("show resource...");
+        log.info("show schema resources...");
         ResultSet resultSet = statement.executeQuery(SHOW_RESOURCE);
         log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
-    private void executeAddResource() throws SQLException, InterruptedException {
+    private void executeAddResource() throws SQLException {
         log.info("add resource...");
         statement.execute(ADD_RESOURCE);
-        waitingRenew();
     }
     
-    private void executeAlterResource() throws SQLException, InterruptedException {
+    private void executeAlterResource() throws SQLException {
         log.info("alter resource...");
         statement.execute(ALTER_RESOURCE);
-        waitingRenew();
     }
     
-    private void executeDropResource() throws SQLException, InterruptedException {
+    private void executeDropResource() throws SQLException {
         log.info("drop resource...");
         statement.execute(DROP_RESOURCE);
-        waitingRenew();
     }
 }

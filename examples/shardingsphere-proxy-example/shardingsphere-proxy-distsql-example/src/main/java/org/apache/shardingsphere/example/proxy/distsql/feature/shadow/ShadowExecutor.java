@@ -98,33 +98,28 @@ public final class ShadowExecutor extends StatementHolder implements FeatureExec
         log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
-    private void executeAddRule() throws SQLException, InterruptedException {
+    private void executeAddRule() throws SQLException {
         log.info("add rule...");
         statement.execute(ADD_RULE);
-        waitingRenew();
     }
     
-    private void executeAlterRule() throws SQLException, InterruptedException {
+    private void executeAlterRule() throws SQLException {
         log.info("alter rule...");
         statement.execute(ALTER_RULE);
-        waitingRenew();
     }
     
-    private void executeAlterAlgorithm() throws SQLException, InterruptedException {
+    private void executeAlterAlgorithm() throws SQLException {
         log.info("alter algorithm...");
         statement.execute(ALTER_ALGORITHM);
-        waitingRenew();
     }
     
-    private void executeDropRule() throws SQLException, InterruptedException {
+    private void executeDropRule() throws SQLException {
         log.info("drop rule...");
         statement.execute(DROP_RULE);
-        waitingRenew();
     }
     
-    private void executeDropAlgorithm() throws SQLException, InterruptedException {
+    private void executeDropAlgorithm() throws SQLException {
         log.info("drop algorithm...");
         statement.execute(DROP_ALGORITHM);
-        waitingRenew();
     }
 }

@@ -74,21 +74,18 @@ public final class EncryptExecutor extends StatementHolder implements FeatureExe
         log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
-    private void executeAddRule() throws SQLException, InterruptedException {
+    private void executeAddRule() throws SQLException {
         log.info("add rule...");
         statement.execute(ADD_RULE);
-        waitingRenew();
     }
     
-    private void executeAlterRule() throws SQLException, InterruptedException {
+    private void executeAlterRule() throws SQLException {
         log.info("alter rule...");
         statement.execute(ALTER_RULE);
-        waitingRenew();
     }
     
-    private void executeDropRule() throws SQLException, InterruptedException {
+    private void executeDropRule() throws SQLException {
         log.info("drop rule...");
         statement.execute(DROP_RULE);
-        waitingRenew();
     }
 }
