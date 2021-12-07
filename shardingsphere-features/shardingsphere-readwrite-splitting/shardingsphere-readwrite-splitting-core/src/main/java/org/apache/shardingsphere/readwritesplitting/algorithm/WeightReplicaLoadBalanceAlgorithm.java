@@ -32,6 +32,11 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
 
+    /**
+     * Cumulative accuracy loss threshold
+     */
+    private static final double ACCURACY_THRESHOLD = 0.0001;
+
     private Properties props = new Properties();
 
     @Override
@@ -69,7 +74,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
 
     private Double[] initWeight(final List<String> readDataSourceNames) {
         Double[] weights = getWeights(readDataSourceNames);
-        if (weights.length != 0 && Math.abs(weights[weights.length - 1] - 1.0D) >= 0.0001) {
+        if (weights.length != 0 && Math.abs(weights[weights.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {
             throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
         }
         return weights;
