@@ -17,10 +17,39 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+
 /**
  * Backend connection for Proxy.
- * 
- * @see org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection
  */
 public interface BackendConnection {
+    
+    /**
+     * Get connection session of backend connection.
+     * 
+     * @return connection session
+     */
+    ConnectionSession getConnectionSession();
+    
+    /**
+     * Prepare for task execution.
+     *
+     * @throws BackendConnectionException backend connection exception
+     */
+    void prepareForTaskExecution() throws BackendConnectionException;
+    
+    /**
+     * Close resources used in execution.
+     *
+     * @throws BackendConnectionException backend connection exception
+     */
+    void closeExecutionResources() throws BackendConnectionException;
+    
+    /**
+     * Close all resources.
+     * 
+     * @throws BackendConnectionException backend connection exception
+     */
+    void closeAllResources() throws BackendConnectionException;
 }

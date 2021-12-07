@@ -29,6 +29,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -78,7 +79,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
     public boolean writeQueryData(final ChannelHandlerContext context,
-                                  final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
             return true;
         }
@@ -89,7 +90,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceLock().doAwait();
+                ((JDBCBackendConnection) backendConnection).getResourceLock().doAwait();
             }
             DatabasePacket<?> dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);

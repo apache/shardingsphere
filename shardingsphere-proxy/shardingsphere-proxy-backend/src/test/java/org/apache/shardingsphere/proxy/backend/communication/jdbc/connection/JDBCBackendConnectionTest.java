@@ -31,9 +31,10 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -70,6 +71,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -92,7 +94,7 @@ public final class JDBCBackendConnectionTest {
         setContextManager();
         setBackendDataSource();
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        backendConnection = new JDBCBackendConnection(connectionSession);
+        backendConnection = spy(new JDBCBackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
     }
@@ -421,5 +423,29 @@ public final class JDBCBackendConnectionTest {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseDatabaseCommunicationEngines");
         field.setAccessible(true);
         return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
+    }
+    
+    @Test
+    public void assertPrepareForTaskExecution() throws BackendConnectionException {
+        backendConnection.prepareForTaskExecution();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
+        verify(backendConnection).closeConnections(false);
+    }
+    
+    @Test
+    public void assertCloseExecutionResources() throws BackendConnectionException {
+        backendConnection.closeExecutionResources();
+        verify(backendConnection).closeDatabaseCommunicationEngines(false);
+        verify(backendConnection).closeFederationExecutor();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
+        verify(backendConnection).closeConnections(false);
+    }
+    
+    @Test
+    public void assertCloseAllResources() {
+        backendConnection.closeAllResources();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
+        verify(backendConnection).closeConnections(true);
+        verify(backendConnection).closeFederationExecutor();
     }
 }

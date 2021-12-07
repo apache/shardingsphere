@@ -28,6 +28,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerCons
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 
 import java.lang.reflect.Field;
@@ -52,9 +53,9 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     @SneakyThrows
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
-        Field field = CommandExecutorTask.class.getDeclaredField("backendConnection");
+        Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
         field.setAccessible(true);
-        JDBCBackendConnection connection = (JDBCBackendConnection) field.get(target);
+        JDBCBackendConnection connection = (JDBCBackendConnection) ((ConnectionSession) field.get(target)).getBackendConnection();
         Scope scope = GlobalTracer.get().scopeManager().active();
         scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
         scope.close();

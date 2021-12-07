@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -79,7 +79,7 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     
     @Override
     public boolean writeQueryData(final ChannelHandlerContext context,
-                                  final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         return postgreSQLCommandExecuteEngine.writeQueryData(context, backendConnection, queryCommandExecutor, headerPackagesCount);
     }
 }

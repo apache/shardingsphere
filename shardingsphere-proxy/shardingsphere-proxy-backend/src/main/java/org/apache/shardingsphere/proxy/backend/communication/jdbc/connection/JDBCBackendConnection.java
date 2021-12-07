@@ -31,7 +31,9 @@ import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
@@ -221,6 +223,45 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
      */
     public void unmarkResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
         inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
+    }
+    
+    @Override
+    public void prepareForTaskExecution() throws BackendConnectionException {
+        if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+            connectionStatus.waitUntilConnectionRelease();
+            connectionStatus.switchToUsing();
+        }
+        if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
+            BackendTransactionManager transactionManager = new BackendTransactionManager(this);
+            try {
+                transactionManager.begin();
+            } catch (SQLException ex) {
+                throw new BackendConnectionException(ex);
+            }
+        }
+    }
+    
+    @Override
+    public void closeExecutionResources() throws BackendConnectionException {
+        Collection<Exception> result = new LinkedList<>();
+        result.addAll(closeDatabaseCommunicationEngines(false));
+        result.addAll(closeFederationExecutor());
+        if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+            result.addAll(closeDatabaseCommunicationEngines(true));
+            result.addAll(closeConnections(false));
+            connectionStatus.switchToReleased();
+        }
+        if (result.isEmpty()) {
+            return;
+        }
+        throw new BackendConnectionException(result);
+    }
+    
+    @Override
+    public void closeAllResources() {
+        closeDatabaseCommunicationEngines(true);
+        closeConnections(true);
+        closeFederationExecutor();
     }
     
     /**

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
@@ -100,5 +100,5 @@ public interface CommandExecuteEngine {
      * @return is need flush
      * @throws SQLException SQL exception
      */
-    boolean writeQueryData(ChannelHandlerContext context, JDBCBackendConnection backendConnection, QueryCommandExecutor queryCommandExecutor, int headerPackagesCount) throws SQLException;
+    boolean writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor queryCommandExecutor, int headerPackagesCount) throws SQLException;
 }

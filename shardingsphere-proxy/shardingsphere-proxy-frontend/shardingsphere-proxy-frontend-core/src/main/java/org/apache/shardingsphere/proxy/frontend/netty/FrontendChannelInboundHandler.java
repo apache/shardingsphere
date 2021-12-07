@@ -52,6 +52,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
         connectionSession = new ConnectionSession(getTransactionRule().getDefaultType(), channel);
+        // TODO Decouple JDBCBackendConnection from this class.
         connectionSession.setBackendConnection(new JDBCBackendConnection(connectionSession));
     }
     
@@ -103,10 +104,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
-        JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
-        backendConnection.closeDatabaseCommunicationEngines(true);
-        backendConnection.closeConnections(true);
-        backendConnection.closeFederationExecutor();
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     

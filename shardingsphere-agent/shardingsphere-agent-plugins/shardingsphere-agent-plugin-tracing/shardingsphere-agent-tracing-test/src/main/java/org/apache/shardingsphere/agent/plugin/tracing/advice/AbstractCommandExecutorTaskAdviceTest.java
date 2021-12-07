@@ -39,7 +39,7 @@ public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTes
         ConnectionSession connectionSession = new ConnectionSession(TransactionType.BASE, new DefaultAttributeMap());
         JDBCBackendConnection backendConnection = new JDBCBackendConnection(connectionSession);
         connectionSession.setBackendConnection(backendConnection);
-        Object executorTask = new CommandExecutorTask(null, backendConnection, null, null);
+        Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
         targetObject = (AdviceTargetObject) executorTask;
     }
 }

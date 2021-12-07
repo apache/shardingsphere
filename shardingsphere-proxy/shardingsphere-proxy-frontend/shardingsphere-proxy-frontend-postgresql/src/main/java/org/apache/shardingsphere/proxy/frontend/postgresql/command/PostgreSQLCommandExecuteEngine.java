@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -97,7 +98,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public boolean writeQueryData(final ChannelHandlerContext context,
-                                  final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (queryCommandExecutor instanceof PostgreSQLComSyncExecutor) {
             return true;
         }
@@ -106,9 +107,9 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             return true;
         }
         if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
-            return processSimpleQuery(context, backendConnection, (PostgreSQLComQueryExecutor) queryCommandExecutor);
+            return processSimpleQuery(context, (JDBCBackendConnection) backendConnection, (PostgreSQLComQueryExecutor) queryCommandExecutor);
         }
-        writeDataPackets(context, backendConnection, queryCommandExecutor);
+        writeDataPackets(context, (JDBCBackendConnection) backendConnection, queryCommandExecutor);
         return false;
     }
     
