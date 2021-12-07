@@ -37,8 +37,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -79,7 +80,8 @@ public final class SelectInformationExecutorTest {
 
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    private final JDBCConnectionSession connectionSession = mock(JDBCConnectionSession.class);
+    @Mock
+    private ConnectionSession connectionSession;
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
@@ -182,7 +184,7 @@ public final class SelectInformationExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getEmptyMetaData("sharding_db"));
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(JDBCConnectionSession.class));
+        selectSchemataExecutor.execute(connectionSession);
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         while (selectSchemataExecutor.getMergedResult().next()) {
             assertThat(selectSchemataExecutor.getMergedResult().getValue(1, String.class), is("sharding_db"));
@@ -212,7 +214,7 @@ public final class SelectInformationExecutorTest {
         metaDataMap.put("demo_ds_0", getMetaData());
         metaDataMap.put("test", getEmptyMetaData("test"));
         DefaultDatabaseMetadataExecutor selectExecutor = new DefaultDatabaseMetadataExecutor(sql);
-        selectExecutor.execute(mock(JDBCConnectionSession.class));
+        selectExecutor.execute(connectionSession);
         assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
         assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
     }
@@ -226,7 +228,7 @@ public final class SelectInformationExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
         DefaultDatabaseMetadataExecutor defaultSelectMetaDataExecutor = new DefaultDatabaseMetadataExecutor(sql);
-        defaultSelectMetaDataExecutor.execute(mock(JDBCConnectionSession.class));
+        defaultSelectMetaDataExecutor.execute(connectionSession);
         assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
         while (defaultSelectMetaDataExecutor.getMergedResult().next()) {
             assertThat(defaultSelectMetaDataExecutor.getMergedResult().getValue(1, String.class), is("0"));
