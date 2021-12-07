@@ -74,7 +74,7 @@ public final class CommandExecutorTask implements Runnable {
                 BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
                 transactionManager.begin();
             }
-            isNeedFlush = executeCommand(context, payload, backendConnection);
+            isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -95,7 +95,7 @@ public final class CommandExecutorTask implements Runnable {
         }
     }
     
-    private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final JDBCBackendConnection backendConnection) throws SQLException {
+    private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload) throws SQLException {
         CommandExecuteEngine commandExecuteEngine = databaseProtocolFrontendEngine.getCommandExecuteEngine();
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
         CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, backendConnection.getConnectionSession());
