@@ -78,7 +78,7 @@ public final class DatabaseDiscoverySQLRouterTest {
         ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(),
                 Collections.singletonMap("TEST", algorithmConfig));
-        rule = new DatabaseDiscoveryRule(config, "TEST", Collections.singletonMap("ds", mock(DataSource.class)));
+        rule = new DatabaseDiscoveryRule("TEST", Collections.singletonMap("ds", mock(DataSource.class)), config);
         sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     

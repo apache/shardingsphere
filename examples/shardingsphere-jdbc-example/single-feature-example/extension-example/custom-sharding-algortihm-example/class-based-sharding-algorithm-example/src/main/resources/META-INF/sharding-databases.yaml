@@ -49,12 +49,12 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database_classbased
+      shardingAlgorithmName: database-classbased
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database_classbased:
+    database-classbased:
       type: CLASS_BASED
       props:
         strategy: standard

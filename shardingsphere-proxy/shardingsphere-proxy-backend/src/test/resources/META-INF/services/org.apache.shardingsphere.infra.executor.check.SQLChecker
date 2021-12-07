@@ -15,31 +15,4 @@
 # limitations under the License.
 #
 
-dataSources:
-  unique_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password:
-
-rules:
-- !ENCRYPT
-  tables:
-    t_user:
-      columns:
-        user_name:
-          plainColumn: user_name_plain
-          cipherColumn: user_name
-          encryptorName: name-encryptor
-        pwd:
-          cipherColumn: pwd
-          assistedQueryColumn: assisted_query_pwd
-          encryptorName: pwd_encryptor
-  encryptors:
-    name-encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
-    pwd_encryptor:
-      type: assistedTest
+org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.fixture.AuthorityCheckerFixture
