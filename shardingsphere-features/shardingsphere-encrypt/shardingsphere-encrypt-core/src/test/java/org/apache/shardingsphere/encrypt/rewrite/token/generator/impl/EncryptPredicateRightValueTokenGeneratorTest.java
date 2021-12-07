@@ -20,16 +20,12 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
@@ -37,10 +33,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +64,7 @@ public class EncryptPredicateRightValueTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(updateStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void generateSQLTokensWithNoEncryptConditions() {
         final UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class);
@@ -72,7 +76,7 @@ public class EncryptPredicateRightValueTokenGeneratorTest {
         assertNotNull(sqlTokens);
         assertEquals(0, sqlTokens.size());
     }
-    
+
     @Test
     public void generateSQLTokensWithEncryptConditions() {
         Map<String, String> map = new HashMap<>();
@@ -109,7 +113,7 @@ public class EncryptPredicateRightValueTokenGeneratorTest {
         assertNotNull(sqlTokens);
         assertEquals(1, sqlTokens.size());
     }
-    
+
     @Test
     public void generateSQLTokensWithEncryptConditionsAndCipherTest() {
         Map<String, String> map = new HashMap<>();
