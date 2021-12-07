@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -68,9 +67,6 @@ public final class BroadcastDatabaseBackendHandlerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
-    
-    @Mock
     private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
     
     @Mock
@@ -86,13 +82,12 @@ public final class BroadcastDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
     public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        BroadcastDatabaseBackendHandler broadcastBackendHandler = new BroadcastDatabaseBackendHandler(mock(SQLStatementContext.class), "SET timeout = 1000", backendConnection);
+        BroadcastDatabaseBackendHandler broadcastBackendHandler = new BroadcastDatabaseBackendHandler(mock(SQLStatementContext.class), "SET timeout = 1000", connectionSession);
         setBackendHandlerFactory(broadcastBackendHandler);
         ResponseHeader actual = broadcastBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));

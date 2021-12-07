@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
@@ -113,7 +112,7 @@ public final class TextProtocolBackendHandlerFactory {
             return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession);
-        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection()));
+        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {

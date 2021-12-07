@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
@@ -44,23 +45,23 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     private final String sql;
     
-    private final JDBCBackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originSchema = backendConnection.getConnectionSession().getSchemaName();
+        String originSchema = connectionSession.getSchemaName();
         String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
         if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            backendConnection.getConnectionSession().setCurrentSchema(schemaName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
+            connectionSession.setCurrentSchema(schemaName);
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection());
             return databaseCommunicationEngine.execute();
         } finally {
-            backendConnection.getConnectionSession().setCurrentSchema(originSchema);
+            connectionSession.setCurrentSchema(originSchema);
         }
     }
     

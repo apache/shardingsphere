@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
@@ -71,6 +70,6 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
-        return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection());
+        return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
     }
 }

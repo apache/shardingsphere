@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
@@ -44,19 +45,19 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     private final String sql;
     
-    private final JDBCBackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
         List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
-        String originalSchema = backendConnection.getConnectionSession().getSchemaName();
+        String originalSchema = connectionSession.getSchemaName();
         try {
             for (String each : schemaNames) {
-                backendConnection.getConnectionSession().setCurrentSchema(each);
-                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
+                connectionSession.setCurrentSchema(each);
+                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection()).execute();
             }
         } finally {
-            backendConnection.getConnectionSession().setCurrentSchema(originalSchema);
+            connectionSession.setCurrentSchema(originalSchema);
         }
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
