@@ -30,9 +30,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    /**
-     * Cumulative accuracy loss threshold.
-     */
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
     private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
