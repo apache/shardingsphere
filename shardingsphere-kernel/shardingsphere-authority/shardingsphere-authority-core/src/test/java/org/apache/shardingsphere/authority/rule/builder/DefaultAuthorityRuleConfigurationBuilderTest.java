@@ -27,9 +27,6 @@ public class DefaultAuthorityRuleConfigurationBuilderTest {
 
     private DefaultAuthorityRuleConfigurationBuilder builder = new DefaultAuthorityRuleConfigurationBuilder();
 
-    /**
-     * test for build.
-     */
     @Test
     public void buildTest() {
         final AuthorityRuleConfiguration build = builder.build();
@@ -39,18 +36,12 @@ public class DefaultAuthorityRuleConfigurationBuilderTest {
         assertEquals(1, build.getUsers().size());
     }
 
-    /**
-     * test get order.
-     */
     @Test
     public void getOrder() {
         final int order = builder.getOrder();
         assertEquals(500, order);
     }
 
-    /**
-     * test get class type.
-     */
     @Test
     public void getTypeClass() {
         assertEquals(AuthorityRuleBuilder.class, builder.getTypeClass());
