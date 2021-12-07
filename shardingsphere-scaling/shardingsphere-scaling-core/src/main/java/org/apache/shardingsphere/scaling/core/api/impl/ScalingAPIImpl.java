@@ -140,8 +140,10 @@ public final class ScalingAPIImpl implements ScalingAPI {
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d",
+                DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config",
+                DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
