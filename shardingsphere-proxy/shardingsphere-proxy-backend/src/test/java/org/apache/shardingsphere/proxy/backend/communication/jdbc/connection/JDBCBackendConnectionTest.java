@@ -21,7 +21,6 @@ import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -42,6 +41,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -82,7 +82,7 @@ public final class JDBCBackendConnectionTest {
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     private JDBCBackendConnection backendConnection;
@@ -91,8 +91,10 @@ public final class JDBCBackendConnectionTest {
     public void setUp() throws ReflectiveOperationException {
         setContextManager();
         setBackendDataSource();
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         backendConnection = new JDBCBackendConnection(connectionSession);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
     }
     
     private void setContextManager() throws ReflectiveOperationException {
@@ -190,9 +192,9 @@ public final class JDBCBackendConnectionTest {
         ConnectionPostProcessor invocation = mock(ConnectionPostProcessor.class);
         Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(invocation);
-        Field field = connectionSession.getClass().getDeclaredField("connectionPostProcessors");
+        Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        field.set(connectionSession, connectionPostProcessors);
+        field.set(backendConnection, connectionPostProcessors);
     }
     
     @Test
@@ -214,20 +216,6 @@ public final class JDBCBackendConnectionTest {
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
-        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.begin();
-        connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
-        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.begin();
-        connectionSession.setCurrentSchema("newSchema");
     }
     
     @Test
@@ -260,17 +248,17 @@ public final class JDBCBackendConnectionTest {
     @Test
     public void assertSetFetchSizeAsExpected() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
         Statement statement = mock(Statement.class);
-        Method setFetchSizeMethod = connectionSession.getClass().getDeclaredMethod("setFetchSize", Statement.class);
+        Method setFetchSizeMethod = JDBCBackendConnection.class.getDeclaredMethod("setFetchSize", Statement.class);
         setFetchSizeMethod.setAccessible(true);
-        setFetchSizeMethod.invoke(connectionSession, statement);
+        setFetchSizeMethod.invoke(backendConnection, statement);
         verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
     }
     
     @Test
     public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        Field field = connectionSession.getClass().getDeclaredField("cachedConnections");
+        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(connectionSession);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         Connection connection = prepareCachedConnections();
         cachedConnections.put("ignoredDataSourceName", connection);
         ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
@@ -334,9 +322,9 @@ public final class JDBCBackendConnectionTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> connections) {
-        Field field = connectionSession.getClass().getDeclaredField("cachedConnections");
+        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(connectionSession);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         assertTrue(cachedConnections.containsKey(dataSourceName));
         assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
     }
@@ -344,9 +332,9 @@ public final class JDBCBackendConnectionTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Connection prepareCachedConnections() {
-        Field field = connectionSession.getClass().getDeclaredField("cachedConnections");
+        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(connectionSession);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         Connection connection = mock(Connection.class);
         cachedConnections.put("ignoredDataSourceName", connection);
         return connection;
@@ -354,17 +342,17 @@ public final class JDBCBackendConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareConnectionStatus(final ConnectionStatus connectionStatus) {
-        Field field = connectionSession.getClass().getDeclaredField("connectionStatus");
+        Field field = JDBCBackendConnection.class.getDeclaredField("connectionStatus");
         field.setAccessible(true);
-        field.set(connectionSession, connectionStatus);
+        field.set(backendConnection, connectionStatus);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void verifyConnectionPostProcessorsEmpty() {
-        Field field = connectionSession.getClass().getDeclaredField("connectionPostProcessors");
+        Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(connectionSession);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
@@ -424,7 +412,7 @@ public final class JDBCBackendConnectionTest {
     private Collection<DatabaseCommunicationEngine> getDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("databaseCommunicationEngines");
         field.setAccessible(true);
-        return (Collection<DatabaseCommunicationEngine>) field.get(connectionSession);
+        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
     
     @SuppressWarnings("unchecked")
@@ -432,6 +420,6 @@ public final class JDBCBackendConnectionTest {
     private Collection<DatabaseCommunicationEngine> getInUseDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseDatabaseCommunicationEngines");
         field.setAccessible(true);
-        return (Collection<DatabaseCommunicationEngine>) field.get(connectionSession);
+        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
 }

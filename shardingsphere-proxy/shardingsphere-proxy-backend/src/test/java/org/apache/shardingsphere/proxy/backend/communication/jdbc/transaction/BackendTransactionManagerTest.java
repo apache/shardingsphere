@@ -67,7 +67,7 @@ public final class BackendTransactionManagerTest {
         setTransactionContexts();
         when(connectionSession.getSchemaName()).thenReturn("schema");
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

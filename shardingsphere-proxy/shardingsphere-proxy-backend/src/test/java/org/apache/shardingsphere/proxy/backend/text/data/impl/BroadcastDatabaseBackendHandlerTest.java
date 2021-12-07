@@ -86,7 +86,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test

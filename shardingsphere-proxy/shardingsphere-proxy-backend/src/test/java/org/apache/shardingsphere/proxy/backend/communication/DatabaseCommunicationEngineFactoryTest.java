@@ -65,7 +65,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     
     @Test
     public void assertNewTextProtocolInstance() {
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getSchemaName()).thenReturn("schema");
         DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(SQLStatementContext.class), "schemaName", backendConnection);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));

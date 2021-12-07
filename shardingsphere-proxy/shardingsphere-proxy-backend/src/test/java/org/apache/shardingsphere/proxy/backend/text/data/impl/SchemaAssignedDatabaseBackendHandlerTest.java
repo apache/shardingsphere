@@ -89,7 +89,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         schemaAssignedDatabaseBackendHandler = new SchemaAssignedDatabaseBackendHandler(mock(SQLStatementContext.class), EXECUTE_SQL, backendConnection);
         setBackendHandlerFactory(schemaAssignedDatabaseBackendHandler);

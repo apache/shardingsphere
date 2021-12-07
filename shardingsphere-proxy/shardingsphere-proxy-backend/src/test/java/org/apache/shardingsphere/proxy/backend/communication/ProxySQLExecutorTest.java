@@ -62,6 +62,7 @@ public final class ProxySQLExecutorTest {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test(expected = TableModifyInTransactionException.class)

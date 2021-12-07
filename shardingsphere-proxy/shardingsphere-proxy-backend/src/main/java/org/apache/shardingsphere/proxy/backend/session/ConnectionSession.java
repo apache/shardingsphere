@@ -48,6 +48,7 @@ public final class ConnectionSession {
     
     private final AttributeMap attributeMap;
     
+    @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
     
     private volatile BackendConnection backendConnection;
