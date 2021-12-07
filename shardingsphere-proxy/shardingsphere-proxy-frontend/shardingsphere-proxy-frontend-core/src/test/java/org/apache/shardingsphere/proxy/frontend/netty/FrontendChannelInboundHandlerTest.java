@@ -104,9 +104,9 @@ public final class FrontendChannelInboundHandlerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertChannelReadNotAuthenticatedExceptionOccur() throws Exception {
+    public void assertChannelReadNotAuthenticatedAndExceptionOccur() throws Exception {
         channel.register();
-        RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedExceptionOccur");
+        RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedAndExceptionOccur");
         doThrow(cause).when(authenticationEngine).authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class));
         DatabasePacket expectedPacket = mock(DatabasePacket.class);
         when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession)).thenReturn(expectedPacket);
