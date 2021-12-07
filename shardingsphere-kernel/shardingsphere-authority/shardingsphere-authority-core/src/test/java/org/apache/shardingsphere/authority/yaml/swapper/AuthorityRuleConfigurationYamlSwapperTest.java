@@ -28,20 +28,22 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorityRuleConfigurationYamlSwapperTest {
 
-    private AuthorityRuleConfigurationYamlSwapper swapper =  new AuthorityRuleConfigurationYamlSwapper();
+    private AuthorityRuleConfigurationYamlSwapper swapper = new AuthorityRuleConfigurationYamlSwapper();
 
     @Test
     public void swapToYamlConfigurationTest() {
         AuthorityRuleConfiguration authorityRuleConfiguration = mock(AuthorityRuleConfiguration.class);
         ShardingSphereAlgorithmConfiguration configuration = mock(ShardingSphereAlgorithmConfiguration.class);
-
 
         when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
         when(configuration.getType()).thenReturn("type");
