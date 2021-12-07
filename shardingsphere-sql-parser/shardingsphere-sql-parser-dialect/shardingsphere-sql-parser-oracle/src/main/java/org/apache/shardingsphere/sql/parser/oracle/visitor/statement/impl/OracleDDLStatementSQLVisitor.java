@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Column
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintClausesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
@@ -96,6 +97,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
@@ -544,5 +546,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitRename(final RenameContext ctx) {
         return new OracleRenameStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
+        return new OracleCreateDatabaseStatement();
     }
 }

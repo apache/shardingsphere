@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -68,23 +68,23 @@ public final class PostgreSQLPortal {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private final BackendConnection backendConnection;
+    private final JDBCBackendConnection backendConnection;
     
     private ResponseHeader responseHeader;
     
     public PostgreSQLPortal(final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
-                            final BackendConnection backendConnection) throws SQLException {
+                            final JDBCBackendConnection backendConnection) throws SQLException {
         this.sqlStatement = preparedStatement.getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement) {
             databaseCommunicationEngine = null;
             textProtocolBackendHandler =
-                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), preparedStatement.getSql(), backendConnection);
+                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), preparedStatement.getSql(), backendConnection.getConnectionSession());
             return;
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getConnectionSession().getDefaultSchemaName());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, 
                 preparedStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;

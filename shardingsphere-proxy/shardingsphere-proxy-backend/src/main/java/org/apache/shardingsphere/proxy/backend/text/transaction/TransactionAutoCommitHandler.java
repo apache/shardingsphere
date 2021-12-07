@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 
@@ -34,11 +34,11 @@ public final class TransactionAutoCommitHandler implements TextProtocolBackendHa
 
     private final SetAutoCommitStatement sqlStatement;
 
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
 
     @Override
     public ResponseHeader execute() throws SQLException {
-        backendConnection.setAutoCommit(sqlStatement.isAutoCommit());
+        connectionSession.setAutoCommit(sqlStatement.isAutoCommit());
         return new UpdateResponseHeader(sqlStatement);
     }
 }

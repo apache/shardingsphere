@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
@@ -52,8 +52,8 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
-    public void release(final BackendConnection backendConnection) {
-        postgreSQLFrontendEngine.release(backendConnection);
+    public void release(final ConnectionSession connectionSession) {
+        postgreSQLFrontendEngine.release(connectionSession);
     }
     
     @Override

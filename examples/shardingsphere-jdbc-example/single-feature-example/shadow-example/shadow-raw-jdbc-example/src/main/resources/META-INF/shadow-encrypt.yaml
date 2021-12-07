@@ -41,13 +41,13 @@ rules:
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptorName: pwd_encryptor
+          encryptorName: pwd-encryptor
   encryptors:
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    pwd_encryptor:
+    pwd-encryptor:
       type: assistedTest
 
 - !SHADOW

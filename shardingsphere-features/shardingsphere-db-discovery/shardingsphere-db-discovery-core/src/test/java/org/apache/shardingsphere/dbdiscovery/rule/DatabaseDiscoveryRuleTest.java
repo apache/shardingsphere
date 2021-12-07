@@ -43,7 +43,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()), "ha_db", dataSourceMap);
+        new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test
@@ -102,7 +102,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "TEST");
-        return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), Collections.emptyMap(), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))), "ha_db", dataSourceMap);
+        return new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
+                Collections.singleton(config), Collections.emptyMap(), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));
     }
 }
