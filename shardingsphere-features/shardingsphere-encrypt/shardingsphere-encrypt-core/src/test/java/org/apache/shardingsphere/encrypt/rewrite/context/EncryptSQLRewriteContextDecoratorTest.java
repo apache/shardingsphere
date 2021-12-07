@@ -20,13 +20,11 @@ package org.apache.shardingsphere.encrypt.rewrite.context;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -45,8 +43,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,10 +63,6 @@ public class EncryptSQLRewriteContextDecoratorTest {
     @Mock
     private RouteContext routeContext;
 
-    @Mock
-    private SQLTokenGenerators sqlTokenGenerators;
-
-    @Test
     public void decorateWithoutRewritingTest() {
         final ShardingSphereSchema shardingSphereSchema = Mockito.mock(ShardingSphereSchema.class);
         final DeleteStatementContext deleteStatementContext = Mockito.mock(DeleteStatementContext.class);
@@ -78,7 +72,6 @@ public class EncryptSQLRewriteContextDecoratorTest {
         assertEquals(0, rewriteContext.getSqlTokens().size());
     }
 
-    @Test
     public void decorateWithRewritingTest() {
         final ShardingSphereSchema shardingSphereSchema = Mockito.mock(ShardingSphereSchema.class);
         final UpdateStatementContext updateStatementContext = Mockito.mock(UpdateStatementContext.class);
@@ -114,6 +107,9 @@ public class EncryptSQLRewriteContextDecoratorTest {
         assertEquals(10, order);
     }
 
+    /**
+     * test getTypeClass that returns the encrypt rule.
+     */
     @Test
     public void getTypeClassTest() {
         final Class<EncryptRule> typeClass = encryptSQLRewriteContextDecorator.getTypeClass();
