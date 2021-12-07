@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DefaultAuthorityRuleConfigurationBuilderTest {
 
