@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -73,6 +74,9 @@ public final class MySQLComStmtExecuteExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @Mock
+    private JDBCBackendConnection backendConnection;
+    
     @Before
     public void setUp() throws ReflectiveOperationException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
@@ -85,6 +89,8 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     

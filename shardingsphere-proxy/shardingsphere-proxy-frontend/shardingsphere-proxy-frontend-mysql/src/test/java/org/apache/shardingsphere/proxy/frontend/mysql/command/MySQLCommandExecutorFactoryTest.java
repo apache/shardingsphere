@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb.MySQLComInitDbExecutor;
@@ -79,11 +80,16 @@ public final class MySQLCommandExecutorFactoryTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @Mock
+    private JDBCBackendConnection backendConnection;
+    
     @Before
     public void setUp() throws ReflectiveOperationException {
         when(connectionSession.getSchemaName()).thenReturn("logic_db");
         when(connectionSession.getDefaultSchemaName()).thenReturn("logic_db");
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();
