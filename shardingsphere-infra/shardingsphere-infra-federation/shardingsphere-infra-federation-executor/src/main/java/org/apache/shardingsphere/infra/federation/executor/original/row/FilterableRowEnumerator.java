@@ -28,9 +28,9 @@ import java.sql.SQLException;
  */
 public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     
-    private MergedResult result;
+    private final MergedResult result;
     
-    private QueryResultMetaData metaData;
+    private final QueryResultMetaData metaData;
     
     private Object[] currentRow;
     

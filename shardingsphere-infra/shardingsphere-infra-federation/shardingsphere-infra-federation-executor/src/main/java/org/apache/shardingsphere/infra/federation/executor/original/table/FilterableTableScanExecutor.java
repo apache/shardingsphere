@@ -26,7 +26,7 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
-import org.apache.calcite.sql.dialect.MysqlSqlDialect;
+import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -73,22 +75,19 @@ public final class FilterableTableScanExecutor {
     
     private final ConfigurationProperties props;
     
-    private final Map<String, ShardingSphereMetaData> metaDataMap;
+    private final OptimizerContext optimizerContext;
     
-    private final RelOptCluster cluster;
-    
-    private final RelOptSchema relOptSchema;
+    private final String schemaName;
     
     public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                        final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                       final ConfigurationProperties props, final OptimizerContext optimizerContext) {
+                                       final ConfigurationProperties props, final OptimizerContext optimizerContext, final String schemaName) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
         this.prepareEngine = prepareEngine;
         this.props = props;
-        this.metaDataMap = optimizerContext.getMetaDataMap();
-        this.cluster = optimizerContext.getPlannerContexts().get("sharding_db").getConverter().getCluster();
-        this.relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get("sharding_db").getValidator().getCatalogReader();
+        this.optimizerContext = optimizerContext;
+        this.schemaName = schemaName;
     }
     
     /**
@@ -99,21 +98,20 @@ public final class FilterableTableScanExecutor {
      * @return query results
      */
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
-        RelBuilder relBuilder = RelFactories.LOGICAL_BUILDER.create(cluster, relOptSchema);
-        RelNode relNode = relBuilder.scan(tableMetaData.getName()).filter(scanContext.getFilters()).build();
-        RelToSqlConverter relToSqlConverter = new RelToSqlConverter(MysqlSqlDialect.DEFAULT);
-        String sql = relToSqlConverter.visitRoot(relNode).asStatement().toString();
-        SQLStatement sqlStatement = new SQLStatementParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, true);
+        RelToSqlConverter sqlConverter = optimizerContext.getPlannerContexts().get(schemaName).getSqlConverter();
+        String sql = sqlConverter.visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toString();
+        String databaseType = optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName();
+        // TODO replace sql parse with sql convert
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, new ConfigurationProperties(new Properties())).parse(sql, true);
+        Map<String, ShardingSphereMetaData> metaDataMap = optimizerContext.getMetaDataMap();
         LogicSQL logicSQL = createLogicSQL(metaDataMap, sql, sqlStatement);
-        // TODO: 2021/9/29 convert sqlstatement to sqlnode 
-        ShardingSphereMetaData sphereMetaData = metaDataMap.get("sharding_db");
-        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, sphereMetaData, props);
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaDataMap.get(schemaName), props);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            return createAbstractEnumerable(sphereMetaData, context, result);
+            return createEnumerable(result, metaDataMap.get(schemaName), context.getSqlStatementContext());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         } finally {
@@ -121,21 +119,39 @@ public final class FilterableTableScanExecutor {
         }
     }
     
+    private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getRelConverter().getCluster();
+        RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(schemaName).getValidator().getCatalogReader();
+        RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());
+        if (null != scanContext.getProjects()) {
+            builder.project(createProjections(scanContext.getProjects(), builder, tableMetaData.getColumnNames()));
+        }
+        return builder.build();
+    }
+    
+    private List<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
+        List<RexNode> result = new LinkedList<>();
+        for (int each : projects) {
+            result.add(relBuilder.field(columnNames.get(each)));
+        }
+        return result;
+    }
+    
     @SneakyThrows
-    private AbstractEnumerable<Object[]> createAbstractEnumerable(final ShardingSphereMetaData sphereMetaData, final ExecutionContext context, final List<QueryResult> result) {
-        MergedResult mergedResult = mergeQuery(result, sphereMetaData, context.getSqlStatementContext());
+    private AbstractEnumerable<Object[]> createEnumerable(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
+        QueryResultMetaData metaDataSample = queryResults.get(0).getMetaData();
+        MergedResult mergedResult = mergeQuery(queryResults, metaData, sqlStatementContext);
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(mergedResult, result.get(0).getMetaData());
+                return new FilterableRowEnumerator(mergedResult, metaDataSample);
             }
         };
     }
     
-    private MergedResult mergeQuery(final List<QueryResult> queryResults, final ShardingSphereMetaData sphereMetaData, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine("sharding_db", sphereMetaData.getResource().getDatabaseType(), sphereMetaData.getSchema(),
-                props, sphereMetaData.getRuleMetaData().getRules());
+    private MergedResult mergeQuery(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
