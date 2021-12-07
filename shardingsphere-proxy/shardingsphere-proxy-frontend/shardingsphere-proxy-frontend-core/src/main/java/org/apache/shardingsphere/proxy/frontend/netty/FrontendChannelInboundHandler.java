@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -102,8 +103,10 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         closeAllResources();
     }
     
+    @SneakyThrows
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
+        connectionSession.getBackendConnection().closeAllResources();
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     
