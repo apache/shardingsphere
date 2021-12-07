@@ -19,15 +19,17 @@ package org.apache.shardingsphere.example.proxy.distsql.feature.readwritesplitti
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
-import org.apache.shardingsphere.example.proxy.distsql.feature.StatementHolder;
+import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/*
+ * Please make sure that resource ds_0, ds_1 and schema example_db have been added to Proxy
+ */
 @Slf4j
-public final class ReadWriteSplittingExecutor extends StatementHolder implements FeatureExecutor {
+public final class ReadWriteSplittingExecutor extends AbstractFeatureExecutor {
     
     private final static String ADD_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 (\n" +
             "WRITE_RESOURCE=ds_0,\n" +

@@ -19,15 +19,17 @@ package org.apache.shardingsphere.example.proxy.distsql.feature.shadow;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
-import org.apache.shardingsphere.example.proxy.distsql.feature.StatementHolder;
+import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/*
+ * Please make sure that resource ds_0, ds_1 and schema example_db have been added to Proxy
+ */
 @Slf4j
-public final class ShadowExecutor extends StatementHolder implements FeatureExecutor {
+public final class ShadowExecutor extends AbstractFeatureExecutor {
     
     private final static String ADD_RULE = "CREATE SHADOW RULE shadow_rule(\n" +
             "SOURCE=ds_0,\n" +

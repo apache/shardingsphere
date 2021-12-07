@@ -19,15 +19,17 @@ package org.apache.shardingsphere.example.proxy.distsql.feature.resource;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
-import org.apache.shardingsphere.example.proxy.distsql.feature.StatementHolder;
+import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/*
+ * Please ensure that the schema example_db has been added to the Proxy
+ */
 @Slf4j
-public final class ResourceExecutor extends StatementHolder implements FeatureExecutor {
+public final class ResourceExecutor extends AbstractFeatureExecutor {
     
     private final static String ADD_RESOURCE = "ADD RESOURCE resource_0 (\n" +
             "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\",\n" +

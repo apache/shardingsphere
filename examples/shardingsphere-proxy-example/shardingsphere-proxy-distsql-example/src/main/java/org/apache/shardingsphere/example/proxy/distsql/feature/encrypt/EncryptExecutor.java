@@ -19,16 +19,17 @@ package org.apache.shardingsphere.example.proxy.distsql.feature.encrypt;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureExecutor;
-import org.apache.shardingsphere.example.proxy.distsql.feature.StatementHolder;
+import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
+/*
+ * Please ensure that the schema example_db has been added to the Proxy
+ */
 @Slf4j
-public final class EncryptExecutor extends StatementHolder implements FeatureExecutor {
+public final class EncryptExecutor extends AbstractFeatureExecutor {
     
     private final static String ADD_RULE = "CREATE ENCRYPT RULE t_encrypt (\n" +
             "COLUMNS(\n" +
