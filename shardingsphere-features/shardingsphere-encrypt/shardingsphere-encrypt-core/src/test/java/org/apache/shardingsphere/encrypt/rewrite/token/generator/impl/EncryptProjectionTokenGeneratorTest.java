@@ -31,10 +31,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -43,9 +41,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,7 +60,7 @@ public class EncryptProjectionTokenGeneratorTest {
 
     @InjectMocks
     private EncryptProjectionTokenGenerator tokenGenerator;
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptNoEmptyTablesTest() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -66,7 +71,7 @@ public class EncryptProjectionTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(selectStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptWithInsertSelectionContextTest() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -77,10 +82,10 @@ public class EncryptProjectionTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(insertStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void generateSQLTokensWithColumnProjectionsTest() {
-        IdentifierValue idf = new IdentifierValue("idf");
+        final IdentifierValue idf = new IdentifierValue("idf");
 
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         InsertSelectContext insertSelectContext = mock(InsertSelectContext.class);
@@ -112,25 +117,23 @@ public class EncryptProjectionTokenGeneratorTest {
         assertNotNull(tokens);
         assertEquals(1, tokens.size());
     }
-    
-    
+
     @Test
     public void generateSQLTokensWithShorthandProjectionsTest() {
-        IdentifierValue idf = new IdentifierValue("idf");
-        DatabaseType databaseType = new MySQLDatabaseType();
+        final DatabaseType databaseType = new MySQLDatabaseType();
 
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        InsertSelectContext insertSelectContext = mock(InsertSelectContext.class);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        TablesContext tablesContext = mock(TablesContext.class);
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
-        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
-        ShorthandProjection shorthandProjection = mock(ShorthandProjection.class);
-        ColumnProjection columnProjection = mock(ColumnProjection.class);
+        final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
+        final InsertSelectContext insertSelectContext = mock(InsertSelectContext.class);
+        final SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        final SelectStatement selectStatement = mock(SelectStatement.class);
+        final ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        final TablesContext tablesContext = mock(TablesContext.class);
+        final EncryptRule encryptRule = mock(EncryptRule.class);
+        final EncryptTable encryptTable = mock(EncryptTable.class);
+        final ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
+        final ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        final ShorthandProjection shorthandProjection = mock(ShorthandProjection.class);
+        final ColumnProjection columnProjection = mock(ColumnProjection.class);
 
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         when(insertSelectContext.getSelectStatementContext()).thenReturn(selectStatementContext);
