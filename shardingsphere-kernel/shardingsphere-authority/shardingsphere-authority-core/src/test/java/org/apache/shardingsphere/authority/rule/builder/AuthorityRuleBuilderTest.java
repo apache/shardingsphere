@@ -26,18 +26,12 @@ public class AuthorityRuleBuilderTest {
 
     private final AuthorityRuleBuilder ruleBuilder = new AuthorityRuleBuilder();
 
-    /**
-     * test get order.
-     */
     @Test
     public void getOrderTest() {
         final int order = ruleBuilder.getOrder();
         assertEquals(500, order);
     }
 
-    /**
-     * test get class type.
-     */
     @Test
     public void getTypeClassTest() {
         assertEquals(AuthorityRuleConfiguration.class, ruleBuilder.getTypeClass());
