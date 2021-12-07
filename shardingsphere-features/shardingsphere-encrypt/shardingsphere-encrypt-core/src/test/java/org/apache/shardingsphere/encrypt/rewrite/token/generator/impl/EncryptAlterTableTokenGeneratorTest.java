@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +44,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,7 +94,7 @@ public class EncryptAlterTableTokenGeneratorTest {
         assertEquals(8, actualGenerated.size());
     }
 
-    private AlterTableStatementContext getAlterTableStatementContext(DatabaseType dbType) {
+    private AlterTableStatementContext getAlterTableStatementContext(final DatabaseType dbType) {
         IdentifierValue idf = new IdentifierValue("table1");
         IdentifierValue idfc = new IdentifierValue("col1");
 
@@ -109,7 +110,6 @@ public class EncryptAlterTableTokenGeneratorTest {
         final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = mock(ModifyColumnDefinitionSegment.class);
         final DataTypeSegment dataTypeSegment = mock(DataTypeSegment.class);
         final DropColumnDefinitionSegment dropColumnDefinitionSegment = mock(DropColumnDefinitionSegment.class);
-
 
         when(alterTableStatementContext.getSqlStatement()).thenReturn(alterTableStatement);
         when(alterTableStatementContext.getDatabaseType()).thenReturn(dbType);
