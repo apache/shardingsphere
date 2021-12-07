@@ -52,7 +52,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     @SneakyThrows
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
-        Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
+        Field field = CommandExecutorTask.class.getDeclaredField("backendConnection");
         field.setAccessible(true);
         JDBCBackendConnection connection = (JDBCBackendConnection) field.get(target);
         Scope scope = GlobalTracer.get().scopeManager().active();

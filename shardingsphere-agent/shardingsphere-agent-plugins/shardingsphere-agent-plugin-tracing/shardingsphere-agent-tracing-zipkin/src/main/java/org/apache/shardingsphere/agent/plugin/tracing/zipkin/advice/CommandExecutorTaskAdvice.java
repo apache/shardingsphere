@@ -49,7 +49,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     @SneakyThrows
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
+        Field field = CommandExecutorTask.class.getDeclaredField("backendConnection");
         field.setAccessible(true);
         JDBCBackendConnection connection = (JDBCBackendConnection) field.get(target);
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
