@@ -17,28 +17,12 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.feature;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public interface FeatureExecutor {
     
     void init(Statement statement);
     
     void execute() throws SQLException, InterruptedException;
-    
-    default List<List<String>> getResultData(ResultSet resultSet) throws SQLException {
-        List<List<String>> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<String> row = new LinkedList<>();
-            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                row.add(resultSet.getString(i + 1));
-            }
-            result.add(row);
-        }
-        return result;
-    }
 }
