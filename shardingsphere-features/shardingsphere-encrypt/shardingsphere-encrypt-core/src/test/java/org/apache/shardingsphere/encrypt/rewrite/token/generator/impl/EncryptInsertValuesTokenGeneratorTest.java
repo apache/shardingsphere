@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -43,7 +40,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -54,7 +53,7 @@ public class EncryptInsertValuesTokenGeneratorTest {
 
     @InjectMocks
     private EncryptInsertValuesTokenGenerator tokenGenerator;
-    
+
     @Test
     public void isGenerateSQLTokenForEncryptTest() {
         final InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -67,7 +66,7 @@ public class EncryptInsertValuesTokenGeneratorTest {
         final boolean actual = tokenGenerator.isGenerateSQLTokenForEncrypt(insertStatementContext);
         assertTrue(actual);
     }
-    
+
     @Test
     public void generateSQLTokenHavingPreviousTokensTest() {
         IdentifierValue idf = new IdentifierValue("table1");
@@ -109,7 +108,8 @@ public class EncryptInsertValuesTokenGeneratorTest {
         assertNotNull(previousToken.getInsertValues());
         assertEquals(1, previousToken.getInsertValues().size());
     }
-    
+
+
     @Test
     public void generateSQLTokenWithNoPreviousTokensTest() {
         IdentifierValue idf = new IdentifierValue("table1");
@@ -148,6 +148,4 @@ public class EncryptInsertValuesTokenGeneratorTest {
         assertNotNull(previousToken.getInsertValues());
         assertEquals(1, previousToken.getInsertValues().size());
     }
-
-
 }
