@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
@@ -44,26 +44,26 @@ public final class PostgreSQLComSyncExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
-    private BackendConnection backendConnection;
+    private JDBCConnectionSession connectionSession;
     
     @Test
     public void assertNewInstance() {
-        when(backendConnection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, connectionSession);
         assertThat(actual.execute().iterator().next(), is(instanceOf(PostgreSQLReadyForQueryPacket.class)));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     @SneakyThrows(SQLException.class)
     public void assertNextFalse() {
-        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
+        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, connectionSession);
         assertFalse(actual.next());
         actual.getQueryRowPacket();
     }
     
     @Test
     public void assertResponseType() {
-        ResponseType actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection).getResponseType();
+        ResponseType actual = new PostgreSQLComSyncExecutor(connectionContext, connectionSession).getResponseType();
         assertThat(actual, is(ResponseType.UPDATE));
     }
 }

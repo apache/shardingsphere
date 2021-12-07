@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public final class UseDatabaseExecutorTest {
     private static final String SCHEMA_PATTERN = "schema_%s";
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -81,8 +81,8 @@ public final class UseDatabaseExecutorTest {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
-        useSchemaBackendHandler.execute(backendConnection);
-        verify(backendConnection).setCurrentSchema(anyString());
+        useSchemaBackendHandler.execute(connectionSession);
+        verify(connectionSession).setCurrentSchema(anyString());
     }
     
     @Test(expected = UnknownDatabaseException.class)
@@ -90,6 +90,6 @@ public final class UseDatabaseExecutorTest {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 10));
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
-        useSchemaBackendHandler.execute(backendConnection);
+        useSchemaBackendHandler.execute(connectionSession);
     }
 }

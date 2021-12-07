@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -34,8 +34,8 @@ import java.sql.SQLException;
 @Getter
 public final class RefreshTableMetadataHandler extends SchemaRequiredBackendHandler<RefreshTableMetadataStatement> {
     
-    public RefreshTableMetadataHandler(final RefreshTableMetadataStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public RefreshTableMetadataHandler(final RefreshTableMetadataStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession);
     }
     
     @Override

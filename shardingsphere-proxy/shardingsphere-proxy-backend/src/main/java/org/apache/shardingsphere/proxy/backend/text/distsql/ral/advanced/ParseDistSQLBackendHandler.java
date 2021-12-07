@@ -25,11 +25,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.Par
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -53,7 +53,7 @@ public final class ParseDistSQLBackendHandler implements TextProtocolBackendHand
     
     private final ParseStatement previewStatement;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private final List<QueryHeader> queryHeaders = new ArrayList<>(1);
     
@@ -64,7 +64,7 @@ public final class ParseDistSQLBackendHandler implements TextProtocolBackendHand
         Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement;
         try {
-            sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName(), sqlParserRule.orElse(null)).parse(previewStatement.getSql(), false);
+            sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(previewStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have an error in your SQL syntax that you are parsed");
         }
@@ -73,8 +73,8 @@ public final class ParseDistSQLBackendHandler implements TextProtocolBackendHand
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final BackendConnection backendConnection) {
-        String schemaName = backendConnection.getSchemaName();
+    private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+        String schemaName = connectionSession.getSchemaName();
         return Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().schemaExists(schemaName)
                 ? defaultDatabaseType : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
     }

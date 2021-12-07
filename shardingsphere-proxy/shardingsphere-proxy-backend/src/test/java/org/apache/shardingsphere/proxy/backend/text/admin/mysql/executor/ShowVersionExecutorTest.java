@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,7 +36,7 @@ public final class ShowVersionExecutorTest {
     public void assertExecute() throws SQLException {
         MySQLServerInfo.setServerVersion("8.0.26");
         ShowVersionExecutor executor = new ShowVersionExecutor();
-        executor.execute(mock(BackendConnection.class));
+        executor.execute(mock(JDBCConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion()));

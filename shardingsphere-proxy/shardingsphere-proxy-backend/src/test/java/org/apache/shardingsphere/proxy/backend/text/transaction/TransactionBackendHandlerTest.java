@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class TransactionBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
+    private final JDBCConnectionSession connectionSession = new JDBCConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
@@ -57,7 +57,7 @@ public final class TransactionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, backendConnection);
+        TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession);
         ResponseHeader actual = transactionBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }

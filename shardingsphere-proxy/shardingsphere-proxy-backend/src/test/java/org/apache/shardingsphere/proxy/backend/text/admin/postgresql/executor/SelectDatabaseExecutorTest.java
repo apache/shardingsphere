@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -130,7 +130,7 @@ public final class SelectDatabaseExecutorTest {
         metaDataMap.put("sharding_db", getMetaData());
         metaDataMap.put("test", mock(ShardingSphereMetaData.class));
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(mock(JDBCConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         int count = 0;
         while (selectSchemataExecutor.getMergedResult().next()) {
@@ -163,7 +163,7 @@ public final class SelectDatabaseExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(mock(JDBCConnectionSession.class));
         while (selectSchemataExecutor.getMergedResult().next()) {
             assertThat(selectSchemataExecutor.getMergedResult().getValue(1, String.class), is("sharding_db"));
         }
@@ -182,7 +182,7 @@ public final class SelectDatabaseExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(mock(JDBCConnectionSession.class));
         while (selectSchemataExecutor.getMergedResult().next()) {
             assertThat(selectSchemataExecutor.getMergedResult().getValue(1, String.class), is(""));
             assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is("sharding_db"));
@@ -196,7 +196,7 @@ public final class SelectDatabaseExecutorTest {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(mock(JDBCConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
     }
 }

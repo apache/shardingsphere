@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,7 +31,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class LocalTransactionManager implements TransactionManager {
     
-    private final BackendConnection connection;
+    private final JDBCConnectionSession connection;
     
     @Override
     public void begin() {

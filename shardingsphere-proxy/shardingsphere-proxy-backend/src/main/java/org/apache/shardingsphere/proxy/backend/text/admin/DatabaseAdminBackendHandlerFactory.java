@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
@@ -48,16 +48,16 @@ public final class DatabaseAdminBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sqlStatement SQL statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return new instance of database admin backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
         Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement);
-        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
+        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, connectionSession, optional));
     }
     
     /**
@@ -65,22 +65,22 @@ public final class DatabaseAdminBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sqlStatement SQL statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @param sql SQL being executed
      * @return new instance of database admin backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement,
-                                                                   final BackendConnection backendConnection, final String sql) {
+                                                                   final JDBCConnectionSession connectionSession, final String sql) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
         Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatement, sql);
-        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, backendConnection, optional));
+        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatement, connectionSession, optional));
     }
     
-    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection, final DatabaseAdminExecutor executor) {
+    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatement sqlStatement, final JDBCConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         return executor instanceof DatabaseAdminQueryExecutor
-                ? new DatabaseAdminQueryBackendHandler(backendConnection, (DatabaseAdminQueryExecutor) executor) : new DatabaseAdminUpdateBackendHandler(backendConnection, sqlStatement, executor);
+                ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor) : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatement, executor);
     }
 }
