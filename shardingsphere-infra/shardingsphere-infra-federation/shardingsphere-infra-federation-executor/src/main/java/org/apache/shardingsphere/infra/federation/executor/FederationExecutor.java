@@ -38,7 +38,7 @@ public interface FederationExecutor extends AutoCloseable {
      * @param prepareEngine prepare engine
      * @param callback callback
      * @param logicSQL logic SQL
-     * @return query results
+     * @return result set
      * @throws SQLException SQL exception
      */
     ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
