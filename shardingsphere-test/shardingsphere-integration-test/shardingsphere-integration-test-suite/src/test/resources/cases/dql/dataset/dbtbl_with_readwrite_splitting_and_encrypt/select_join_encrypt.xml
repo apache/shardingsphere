@@ -22,8 +22,8 @@
         <column name="pwd" />
         <column name="status" />
         <column name="item_id" />
-        <column name="user_id" />
-        <column name="status" />
+        <column name="user_id0" />
+        <column name="status0" />
         <column name="creation_date" />
     </metadata>
     <row values="0, 10000, a00, init_read, 100000, 0, init_read, 2017-08-08" />

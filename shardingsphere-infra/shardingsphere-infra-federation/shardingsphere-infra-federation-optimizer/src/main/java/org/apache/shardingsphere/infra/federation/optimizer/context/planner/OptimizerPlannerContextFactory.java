@@ -32,7 +32,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.dialect.H2SqlDialect;
 import org.apache.calcite.sql.dialect.MssqlSqlDialect;
 import org.apache.calcite.sql.dialect.MysqlSqlDialect;
 import org.apache.calcite.sql.dialect.OracleSqlDialect;
@@ -72,7 +71,7 @@ public final class OptimizerPlannerContextFactory {
     private static final Map<Class<? extends DatabaseType>, SqlDialect> SQL_DIALECTS = new HashMap<>();
     
     static {
-        SQL_DIALECTS.put(H2DatabaseType.class, H2SqlDialect.DEFAULT);
+        SQL_DIALECTS.put(H2DatabaseType.class, MysqlSqlDialect.DEFAULT);
         SQL_DIALECTS.put(MySQLDatabaseType.class, MysqlSqlDialect.DEFAULT);
         SQL_DIALECTS.put(MariaDBDatabaseType.class, MysqlSqlDialect.DEFAULT);
         SQL_DIALECTS.put(OracleDatabaseType.class, OracleSqlDialect.DEFAULT);
