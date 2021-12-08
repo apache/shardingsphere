@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Data pipeline constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataPipelineConstant {
+public final class DataPipelineConstants {
     
     /**
      * Data pipeline root path.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstant;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
@@ -84,7 +84,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertDeleteJob() {
-        governanceRepositoryAPI.persist(DataPipelineConstant.DATA_PIPELINE_ROOT + "/1", "");
+        governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob(1L);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(0L, 0);
         assertNull(actual);
@@ -92,8 +92,8 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(DataPipelineConstant.DATA_PIPELINE_ROOT + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstant.DATA_PIPELINE_ROOT);
+        governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
+        List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstants.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
     }
     
@@ -101,8 +101,8 @@ public final class GovernanceRepositoryAPIImplTest {
     public void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        String key = DataPipelineConstant.DATA_PIPELINE_ROOT + "/1";
-        governanceRepositoryAPI.watch(DataPipelineConstant.DATA_PIPELINE_ROOT, event -> {
+        String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
+        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             if (event.getKey().equals(key)) {
                 eventReference.set(event);
                 countDownLatch.countDown();

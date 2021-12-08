@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstant;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
@@ -84,7 +84,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private String getCheckResultPath(final long jobId) {
-        return String.format("%s/%d/check/result", DataPipelineConstant.DATA_PIPELINE_ROOT, jobId);
+        return String.format("%s/%d/check/result", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
     
     @Override
@@ -96,13 +96,13 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void deleteJobProgress(final long jobId) {
         log.info("delete job progress {}", jobId);
-        repository.delete(String.format("%s/%d/offset", DataPipelineConstant.DATA_PIPELINE_ROOT, jobId));
+        repository.delete(String.format("%s/%d/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
     }
     
     @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(String.format("%s/%d", DataPipelineConstant.DATA_PIPELINE_ROOT, jobId));
+        repository.delete(String.format("%s/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
     }
     
     @Override
@@ -121,6 +121,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     private String getOffsetPath(final long jobId, final int shardingItem) {
-        return String.format("%s/%d/offset/%d", DataPipelineConstant.DATA_PIPELINE_ROOT, jobId, shardingItem);
+        return String.format("%s/%d/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
     }
 }

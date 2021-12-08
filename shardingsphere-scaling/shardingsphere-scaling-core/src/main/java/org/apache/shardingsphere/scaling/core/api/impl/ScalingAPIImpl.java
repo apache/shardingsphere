@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstant;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
@@ -141,9 +141,9 @@ public final class ScalingAPIImpl implements ScalingAPI {
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d",
-                DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
         ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config",
-                DataPipelineConstant.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     

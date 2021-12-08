@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstant;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
@@ -167,7 +167,7 @@ public final class ScalingAPIFactory {
         private ElasticJobAPIHolder() {
             checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
-            String namespace = repositoryConfig.getNamespace() + DataPipelineConstant.DATA_PIPELINE_ROOT;
+            String namespace = repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
             jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -209,7 +209,7 @@ public final class ScalingAPIFactory {
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) ScalingContext.getInstance().getServerConfig().getModeConfiguration().getRepository();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + DataPipelineConstant.DATA_PIPELINE_ROOT);
+            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT);
             Properties props = repositoryConfig.getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
