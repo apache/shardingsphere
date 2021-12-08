@@ -62,17 +62,20 @@ public class EncryptConditionEngineTest {
     @Mock
     private TablesContext tablesContext;
 
+    @Test
     public void createEncryptConditionsWithEmptyContextTest() {
         final Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(sqlStatementContext);
         assertEquals(0, encryptConditions.size());
     }
 
+    @Test
     public void createEncryptConditionsFromInsertStatementContextTest() {
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         final Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(insertStatementContext);
         assertEquals(0, encryptConditions.size());
     }
 
+    @Test
     public void createEncryptConditionsFromInsertIncludingSelectWithoutWhereTest() {
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         when(insertSelectContext.getSelectStatementContext()).thenReturn(selectStatementContext);
@@ -80,6 +83,7 @@ public class EncryptConditionEngineTest {
         assertEquals(0, encryptConditions.size());
     }
 
+    @Test
     public void createEncryptConditionsFromInsertIncludingSelectWhereTest() {
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         when(insertSelectContext.getSelectStatementContext()).thenReturn(selectStatementContext);
@@ -91,6 +95,7 @@ public class EncryptConditionEngineTest {
         assertEquals(0, encryptConditions.size());
     }
 
+    @Test
     public void createEncryptConditionsFromInsertTest() {
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         when(selectStatementContext.getSchemaName()).thenReturn("schema");
