@@ -557,7 +557,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private boolean isJoinConditionContainsShardingColumns(final ShardingSphereSchema schema, final SelectStatementContext select, final Collection<String> tableNames) {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size());
-        for (WhereSegment each : WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement())) {
+        for (WhereSegment each : getWhereSegments(select)) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
@@ -572,6 +572,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 || databaseJoinConditionTables.containsAll(tableNames);
         boolean containsTableShardingColumns = !(getTableShardingStrategyConfiguration(tableRule) instanceof StandardShardingStrategyConfiguration) || tableJoinConditionTables.containsAll(tableNames);
         return containsDatabaseShardingColumns && containsTableShardingColumns;
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SelectStatementContext select) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        select.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement()));
+        return result;
     }
     
     private Collection<String> getJoinConditionTables(final ShardingSphereSchema schema, final SelectStatementContext select,
