@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Arrays;
@@ -28,23 +30,15 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Weight replica load-balance algorithm.
  */
+@Getter
+@Setter
 public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, Double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
-
-    @Override
-    public Properties getProps() {
-        return this.props;
-    }
-
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
-    }
 
     @Override
     public String getType() {
@@ -53,12 +47,12 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
 
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        Double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
+        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
 
-    private String getDataSourceName(final List<String> readDataSourceNames, final Double[] weight) {
+    private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {
@@ -69,16 +63,16 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
         }
     }
 
-    private Double[] initWeight(final List<String> readDataSourceNames) {
-        Double[] weights = getWeights(readDataSourceNames);
+    private double[] initWeight(final List<String> readDataSourceNames) {
+        double[] weights = getWeights(readDataSourceNames);
         if (weights.length != 0 && Math.abs(weights[weights.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {
             throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
         }
         return weights;
     }
     
-    private Double[] getWeights(final List<String> readDataSourceNames) {
-        Double[] exactWeights = new Double[readDataSourceNames.size()];
+    private double[] getWeights(final List<String> readDataSourceNames) {
+        double[] exactWeights = new double[readDataSourceNames.size()];
         int index = 0;
         double sum = 0D;
         for (String readDataSourceName : readDataSourceNames) {
@@ -95,8 +89,8 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
         return calcWeight(exactWeights);
     }
     
-    private Double[] calcWeight(final Double[] exactWeights) {
-        Double[] weights = new Double[exactWeights.length];
+    private double[] calcWeight(final double[] exactWeights) {
+        double[] weights = new double[exactWeights.length];
         double randomRange = 0D;
         for (int i = 0; i < weights.length; i++) {
             weights[i] = randomRange + exactWeights[i];
