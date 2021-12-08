@@ -82,7 +82,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -200,10 +199,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         replaySetParameter();
     }
     
-    private List<ResultSet> getShardingSphereResultSet() throws SQLException {
-        if (executionContext.getRouteContext().isFederated()) {
-            return Collections.singletonList(executor.getFederationExecutor().getResultSet());
-        }
+    private List<ResultSet> getShardingSphereResultSet() {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (PreparedStatement each : statements) {
             ResultSet resultSet = getResultSet(each);
@@ -342,6 +338,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null != currentResultSet) {
             return currentResultSet;
         }
+        if (executionContext.getRouteContext().isFederated()) {
+            return executor.getFederationExecutor().getResultSet();
+        }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
@@ -362,9 +361,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
             result.add(each.getResultSet());
-        }
-        if (executionContext.getRouteContext().isFederated()) {
-            result.add(executor.getFederationExecutor().getResultSet());
         }
         return result;
     }

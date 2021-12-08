@@ -149,9 +149,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private List<ResultSet> getShardingSphereResultSets() throws SQLException {
-        return executionContext.getRouteContext().isFederated()
-                ? Collections.singletonList(executor.getFederationExecutor().getResultSet()) : statements.stream().map(this::getResultSet).collect(Collectors.toList());
+    private List<ResultSet> getShardingSphereResultSets() {
+        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
@@ -397,6 +396,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
+        if (executionContext.getRouteContext().isFederated()) {
+            return executor.getFederationExecutor().getResultSet();
+        }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
@@ -417,9 +419,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
             result.add(each.getResultSet());
-        }
-        if (executionContext.getRouteContext().isFederated()) {
-            result.add(executor.getFederationExecutor().getResultSet());
         }
         return result;
     }
