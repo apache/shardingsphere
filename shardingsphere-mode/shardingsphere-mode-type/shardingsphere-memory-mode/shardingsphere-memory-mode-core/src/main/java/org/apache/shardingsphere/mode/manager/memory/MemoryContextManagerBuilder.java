@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -55,7 +56,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, schemas, rules, props).build(null);
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts);
+        result.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
         return result;
     }
     
