@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,6 +115,7 @@ public final class FilterableTableScanExecutor {
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
+            setParameters(executionGroupContext.getInputGroups(), logicSQL.getParameters());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
@@ -121,6 +124,26 @@ public final class FilterableTableScanExecutor {
             throw new ShardingSphereException(ex);
         } finally {
             ExecuteProcessEngine.clean();
+        }
+    }
+    
+    @SneakyThrows
+    private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups, final List<Object> parameters) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
+            for (JDBCExecutionUnit executionUnit : each.getInputs()) {
+                if (!(executionUnit.getStorageResource() instanceof PreparedStatement)) {
+                    continue;
+                }
+                setParameters((PreparedStatement) executionUnit.getStorageResource(), parameters);
+            }
+        }
+    }
+    
+    @SneakyThrows
+    private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) {
+        for (int i = 0; i < parameters.size(); i++) {
+            Object parameter = parameters.get(i);
+            preparedStatement.setObject(i + 1, parameter);
         }
     }
     
