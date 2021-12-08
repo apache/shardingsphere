@@ -50,6 +50,9 @@ public final class ModeScheduleContext {
     }
     
     private CoordinatorRegistryCenter initRegistryCenter(final ModeConfiguration modeConfig) {
+        if (null == modeConfig) {
+            return null;
+        }
         String modeType = modeConfig.getType();
         switch (modeType) {
             // TODO do not hard-code mode type, refactor later
