@@ -140,7 +140,8 @@ public final class FilterableTableScanExecutor {
     @SneakyThrows
     private AbstractEnumerable<Object[]> createEnumerable(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
         QueryResultMetaData metaDataSample = queryResults.get(0).getMetaData();
-        MergedResult result = mergeQuery(queryResults, metaData, sqlStatementContext);
+        MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
+        MergedResult result = mergeEngine.merge(queryResults, sqlStatementContext);
         return new AbstractEnumerable<Object[]>() {
             
             @Override
@@ -148,11 +149,6 @@ public final class FilterableTableScanExecutor {
                 return new FilterableRowEnumerator(result, metaDataSample);
             }
         };
-    }
-    
-    private MergedResult mergeQuery(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
-        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final SQLStatement sqlStatement) {
