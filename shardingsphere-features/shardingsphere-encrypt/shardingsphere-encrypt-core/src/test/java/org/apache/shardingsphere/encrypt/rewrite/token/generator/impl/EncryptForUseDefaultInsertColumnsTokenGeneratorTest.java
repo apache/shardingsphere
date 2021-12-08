@@ -114,7 +114,7 @@ public class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
 
         tokenGenerator.setPreviousSQLTokens(new ArrayList<>());
         tokenGenerator.setEncryptRule(encryptRule);
-
+        
         final UseDefaultInsertColumnsToken token = tokenGenerator.generateSQLToken(insertStatementContext);
         assertNotNull(token);
         assertEquals(1, token.getColumns().size());
