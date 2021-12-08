@@ -34,9 +34,9 @@ import java.util.Map;
 @Getter
 public final class OptimizerContext {
     
-    private final FederationMetaData metaData;
-    
     private final SQLParserRule sqlParserRule;
+    
+    private final FederationMetaData federationMetaData;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     

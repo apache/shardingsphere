@@ -86,7 +86,7 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, optimizerContext, schemaName);
-        FilterableSchema schema = new FilterableSchema(optimizerContext.getMetaData().getSchemas().get(schemaName), executor);
+        FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getSchemas().get(schemaName), executor);
         connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);
     }

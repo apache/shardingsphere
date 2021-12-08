@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,15 +103,15 @@ public final class FilterableTableScanExecutor {
         String databaseType = optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName();
         // TODO replace sql parse with sql convert
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, optimizerContext.getSqlParserRule()).parse(sql, false);
-        Map<String, ShardingSphereMetaData> metaDataMap = optimizerContext.getMetaDataMap();
-        LogicSQL logicSQL = createLogicSQL(metaDataMap, sql, sqlStatement);
-        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaDataMap.get(schemaName), props);
+        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, sqlStatement);
+        ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            return createEnumerable(result, metaDataMap.get(schemaName), context.getSqlStatementContext());
+            return createEnumerable(result, metaData, context.getSqlStatementContext());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         } finally {
@@ -128,8 +129,8 @@ public final class FilterableTableScanExecutor {
         return builder.build();
     }
     
-    private List<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
-        List<RexNode> result = new LinkedList<>();
+    private Collection<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
+        Collection<RexNode> result = new LinkedList<>();
         for (int each : projects) {
             result.add(relBuilder.field(columnNames.get(each)));
         }
@@ -139,12 +140,12 @@ public final class FilterableTableScanExecutor {
     @SneakyThrows
     private AbstractEnumerable<Object[]> createEnumerable(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
         QueryResultMetaData metaDataSample = queryResults.get(0).getMetaData();
-        MergedResult mergedResult = mergeQuery(queryResults, metaData, sqlStatementContext);
+        MergedResult result = mergeQuery(queryResults, metaData, sqlStatementContext);
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(mergedResult, metaDataSample);
+                return new FilterableRowEnumerator(result, metaDataSample);
             }
         };
     }
