@@ -63,7 +63,9 @@ public final class ModeScheduleContext {
             case "Memory":
                 return null;
             default:
-                throw new IllegalArgumentException("Unknown mode type '" + modeType + "'");
+                // TODO ModeConfiguration.type is not limited, it could be any value
+                log.warn("Unknown mode type '{}'", modeType);
+                return null;
         }
     }
     
