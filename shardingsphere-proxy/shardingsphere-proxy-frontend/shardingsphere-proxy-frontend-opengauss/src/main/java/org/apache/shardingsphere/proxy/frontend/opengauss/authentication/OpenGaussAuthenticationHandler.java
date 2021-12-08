@@ -103,8 +103,8 @@ public final class OpenGaussAuthenticationHandler {
     }
     
     private static byte[] doRFC5802Algorithm(final String password, final String random64code, final String token, final int serverIteration) {
-        byte[] K = generateKFromPBKDF2(password, random64code, serverIteration);
-        byte[] clientKey = getKeyFromHmac(K, "Client Key".getBytes(StandardCharsets.UTF_8));
+        byte[] k = generateKFromPBKDF2(password, random64code, serverIteration);
+        byte[] clientKey = getKeyFromHmac(k, "Client Key".getBytes(StandardCharsets.UTF_8));
         byte[] storedKey = sha256(clientKey);
         byte[] tokenBytes = hexStringToBytes(token);
         byte[] hmacResult = getKeyFromHmac(storedKey, tokenBytes);
@@ -180,13 +180,12 @@ public final class OpenGaussAuthenticationHandler {
     
     private static void bytesToHex(final byte[] bytes, final byte[] hex, final int offset, final int length) {
         final char[] lookup = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        int i, c, j;
         int pos = offset;
-        for (i = 0; i < length; i++) {
-            c = bytes[i] & 0xFF;
-            j = c >> 4;
+        for (int i = 0; i < length; i++) {
+            int c = bytes[i] & 0xFF;
+            int j = c >> 4;
             hex[pos++] = (byte) lookup[j];
-            j = (c & 0xF);
+            j = c & 0xF;
             hex[pos++] = (byte) lookup[j];
         }
     }
