@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.aware;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public final class DatabaseDiscoveryDataSourceNameAware implements DataSourceNam
     private DatabaseDiscoveryRule rule;
     
     @Override
-    public Optional<SchemaRule> getRule() {
+    public Optional<ShardingSphereRule> getRule() {
         return Optional.ofNullable(rule);
     }
     

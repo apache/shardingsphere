@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.aware;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.spi.optional.OptionalSPI;
 
 import java.util.Collection;
@@ -31,9 +30,11 @@ public interface DataSourceNameAware extends OptionalSPI {
     
     /**
      * Get rule.
-     *
+     * 
+     * @return ShardingSphere rule
      */
-    Optional<SchemaRule> getRule();
+    Optional<ShardingSphereRule> getRule();
+    
     /**
      * Set rule.
      *
