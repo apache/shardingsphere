@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 public final class JobInfo {
     
-    private final long jobId;
+    private final String jobId;
     
     private boolean active;
     

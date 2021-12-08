@@ -59,27 +59,27 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
-        return new ShowScalingStatusStatement(Long.parseLong(ctx.jobId().getText()));
+        return new ShowScalingStatusStatement(ctx.jobId().getText());
     }
     
     @Override
     public ASTNode visitStartScaling(final StartScalingContext ctx) {
-        return new StartScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new StartScalingStatement(ctx.jobId().getText());
     }
     
     @Override
     public ASTNode visitStopScaling(final StopScalingContext ctx) {
-        return new StopScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new StopScalingStatement(ctx.jobId().getText());
     }
     
     @Override
     public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new DropScalingStatement(ctx.jobId().getText());
     }
     
     @Override
     public ASTNode visitResetScaling(final ResetScalingContext ctx) {
-        return new ResetScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new ResetScalingStatement(ctx.jobId().getText());
     }
     
     @Override
@@ -88,7 +88,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
         if (null != ctx.algorithmDefinition()) {
             typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
         }
-        return new CheckScalingStatement(Long.parseLong(ctx.jobId().getText()), typeStrategy);
+        return new CheckScalingStatement(ctx.jobId().getText(), typeStrategy);
     }
     
     @Override
@@ -98,12 +98,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
-        return new StopScalingSourceWritingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new StopScalingSourceWritingStatement(ctx.jobId().getText());
     }
     
     @Override
     public ASTNode visitCheckoutScaling(final CheckoutScalingContext ctx) {
-        return new CheckoutScalingStatement(Long.parseLong(ctx.jobId().getText()));
+        return new CheckoutScalingStatement(ctx.jobId().getText());
     }
     
     @Override

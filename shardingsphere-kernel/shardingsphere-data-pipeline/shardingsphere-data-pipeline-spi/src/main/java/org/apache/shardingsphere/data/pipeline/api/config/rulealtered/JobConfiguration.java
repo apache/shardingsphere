@@ -71,7 +71,8 @@ public final class JobConfiguration {
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
-            handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
+            // TODO use uuid; update pattern
+            handleConfig.setJobId(String.valueOf(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000)));
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
