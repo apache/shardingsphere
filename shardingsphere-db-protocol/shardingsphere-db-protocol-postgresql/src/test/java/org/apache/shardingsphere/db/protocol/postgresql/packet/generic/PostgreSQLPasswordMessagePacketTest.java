@@ -41,7 +41,7 @@ public final class PostgreSQLPasswordMessagePacketTest {
         payload.writeStringNul(md5Digest);
         PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PASSWORD_MESSAGE));
-        assertThat(packet.getMd5Digest(), is(md5Digest));
+        assertThat(packet.getDigest(), is(md5Digest));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
     }
