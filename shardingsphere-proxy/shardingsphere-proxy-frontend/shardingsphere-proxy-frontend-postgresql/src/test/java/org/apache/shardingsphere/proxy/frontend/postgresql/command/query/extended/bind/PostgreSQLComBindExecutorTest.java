@@ -22,7 +22,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
@@ -44,6 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +62,7 @@ public final class PostgreSQLComBindExecutorTest {
     private PostgreSQLComBindPacket bindPacket;
     
     @Mock
-    private JDBCConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Before
     @SuppressWarnings("unchecked")
@@ -72,7 +74,9 @@ public final class PostgreSQLComBindExecutorTest {
         when(bindPacket.getParameters()).thenReturn(Collections.emptyList());
         when(bindPacket.getResultFormats()).thenReturn(Collections.emptyList());
         when(connectionSession.getConnectionId()).thenReturn(1);
-        when(connectionContext.createPortal(anyString(), any(PostgreSQLPreparedStatement.class), any(List.class), any(List.class), eq(connectionSession))).thenReturn(portal);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(connectionContext.createPortal(anyString(), any(PostgreSQLPreparedStatement.class), any(List.class), any(List.class), eq(backendConnection))).thenReturn(portal);
     }
     
     @Test

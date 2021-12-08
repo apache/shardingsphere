@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
-<#if feature=="encrypt">
+<#if feature=="encrypt" || feature=="shadow">
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.UserRepository;
 <#else>
@@ -44,7 +44,7 @@ import java.util.List;
 @Service
 public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
 
-<#if feature=="encrypt">
+<#if feature=="encrypt" || feature=="shadow">
     @Resource
     private UserRepository userRepository;
 <#else>
@@ -68,9 +68,9 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
             this.cleanEnvironment();
         }
     }
-<#if feature=="encrypt">
-    <#include "encryptExampleService.ftl">
+<#if feature=="encrypt" || feature=="shadow">
+    <#include "userExampleService.ftl">
 <#else>
-    <#include "otherExampleService.ftl">
+    <#include "orderExampleService.ftl">
 </#if>
 }

@@ -60,7 +60,6 @@ public final class MemoryLocalShadowJdbcConfiguration {
     private Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        result.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), "true");
         return result;
     }
 

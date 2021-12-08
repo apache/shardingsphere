@@ -23,8 +23,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Getter
 @Setter
-public abstract class ConnectionSession {
+public final class ConnectionSession {
     
     @Setter(AccessLevel.NONE)
     private volatile String schemaName;
@@ -47,7 +48,10 @@ public abstract class ConnectionSession {
     
     private final AttributeMap attributeMap;
     
+    @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
+    
+    private volatile BackendConnection backendConnection;
     
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);

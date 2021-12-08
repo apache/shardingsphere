@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -70,6 +71,8 @@ public final class ContextManager implements AutoCloseable {
     
     private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
+    private volatile ModeScheduleContext modeScheduleContext;
+    
     private final StateContext stateContext = new StateContext();
     
     /**
@@ -77,10 +80,12 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
+     * @param modeScheduleContext mode schedule context
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final ModeScheduleContext modeScheduleContext) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
+        this.modeScheduleContext = modeScheduleContext;
     }
     
     /**
@@ -454,8 +459,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
-        closeTransactionEngine(changedStaleEngine);
+        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().get(schemaName);
+        if (null != changedStaleEngine) {
+            closeTransactionEngine(changedStaleEngine);
+        }
+        transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {

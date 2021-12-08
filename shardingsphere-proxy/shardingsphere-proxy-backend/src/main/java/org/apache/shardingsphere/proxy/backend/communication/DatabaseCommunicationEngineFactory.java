@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
@@ -51,14 +51,14 @@ public final class DatabaseCommunicationEngineFactory {
      *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
-     * @param connectionSession connection session
+     * @param backendConnection backend connection
      * @return text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final JDBCConnectionSession connectionSession) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+    public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final JDBCBackendConnection backendConnection) {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
-        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.STATEMENT, metaData, logicSQL, connectionSession);
-        connectionSession.add(result);
+        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.STATEMENT, metaData, logicSQL, backendConnection);
+        backendConnection.add(result);
         return result;
     }
     
@@ -68,15 +68,15 @@ public final class DatabaseCommunicationEngineFactory {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
      * @param parameters SQL parameters
-     * @param connectionSession connection session
+     * @param backendConnection backend connection
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, 
-                                                                 final List<Object> parameters, final JDBCConnectionSession connectionSession) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+                                                                 final List<Object> parameters, final JDBCBackendConnection backendConnection) {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
-        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, connectionSession);
-        connectionSession.add(result);
+        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, backendConnection);
+        backendConnection.add(result);
         return result;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.migration.common.constant.MigrationConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobCreationException;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
@@ -140,8 +140,10 @@ public final class ScalingAPIImpl implements ScalingAPI {
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", MigrationConstant.MIGRATION_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", MigrationConstant.MIGRATION_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d",
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config",
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
-import org.apache.shardingsphere.cdc.core.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
 

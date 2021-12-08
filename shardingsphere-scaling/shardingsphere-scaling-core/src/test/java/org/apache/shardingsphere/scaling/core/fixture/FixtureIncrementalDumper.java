@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.cdc.core.channel.Channel;
-import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
-import org.apache.shardingsphere.cdc.core.dumper.IncrementalDumper;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 public final class FixtureIncrementalDumper implements IncrementalDumper {
     
-    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final CDCPosition<?> position) {
+    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
     }
     
     @Override

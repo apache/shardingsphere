@@ -32,10 +32,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
@@ -56,7 +57,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     private final OpenGaussComBatchBindPacket packet;
     
-    private final JDBCConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
     private SQLStatement sqlStatement;
     
@@ -76,14 +77,15 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
                     updateCount += ((UpdateResponseHeader) responseHeader).getUpdateCount();
                 }
             } finally {
-                connectionSession.closeDatabaseCommunicationEngines(false);
+                ((JDBCBackendConnection) connectionSession.getBackendConnection()).closeDatabaseCommunicationEngines(false);
             }
         }
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
     
     private DatabaseCommunicationEngine newEngine(final List<Object> parameter) {
-        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, connectionSession);
+        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter,
+                (JDBCBackendConnection) connectionSession.getBackendConnection());
     }
     
     private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {

@@ -25,7 +25,6 @@
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
     <artifactId>shardingsphere-jdbc-memory-local-shadow-jdbc-example</artifactId>
     <name>${project.artifactId}</name>
     

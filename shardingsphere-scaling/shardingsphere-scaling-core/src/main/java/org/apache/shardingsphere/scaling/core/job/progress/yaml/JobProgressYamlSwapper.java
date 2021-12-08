@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.core.job.progress.yaml;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
-import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
-import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;

@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
 
@@ -57,13 +57,13 @@ public final class PostgreSQLConnectionContext {
      * @param preparedStatement prepared statement
      * @param parameters bind parameters
      * @param resultFormats result formats
-     * @param connectionSession connection session
+     * @param backendConnection backend connection
      * @return a new portal
      * @throws SQLException SQL exception
      */
     public PostgreSQLPortal createPortal(final String portal, final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
-                                         final JDBCConnectionSession connectionSession) throws SQLException {
-        PostgreSQLPortal result = new PostgreSQLPortal(preparedStatement, parameters, resultFormats, connectionSession);
+                                         final JDBCBackendConnection backendConnection) throws SQLException {
+        PostgreSQLPortal result = new PostgreSQLPortal(preparedStatement, parameters, resultFormats, backendConnection);
         portals.put(portal, result);
         return result;
     }

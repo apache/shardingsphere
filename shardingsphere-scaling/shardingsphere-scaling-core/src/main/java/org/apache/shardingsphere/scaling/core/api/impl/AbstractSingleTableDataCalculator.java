@@ -20,10 +20,10 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
 
 /**
  * Abstract single table data calculator.

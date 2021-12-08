@@ -20,11 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
@@ -44,7 +45,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     private final String sql;
     
-    private final JDBCConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
     @Override
     public ResponseHeader execute() throws SQLException {
@@ -53,7 +54,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
         try {
             for (String each : schemaNames) {
                 connectionSession.setCurrentSchema(each);
-                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession).execute();
+                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection()).execute();
             }
         } finally {
             connectionSession.setCurrentSchema(originalSchema);

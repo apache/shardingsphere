@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -53,7 +53,7 @@ public final class MySQLComQueryPacketExecutorTest {
     private MySQLComQueryPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private JDBCConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Before
     public void setUp() {
