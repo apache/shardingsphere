@@ -120,7 +120,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ### Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
 
 ## How to Build Apache ShardingSphere:
 

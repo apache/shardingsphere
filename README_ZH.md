@@ -110,7 +110,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 线路规划
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
 
 ## 如何构建 Apache ShardingSphere:
 
