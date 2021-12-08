@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -111,6 +110,7 @@ public final class DatabaseCommunicationEngine {
         this.driverType = driverType;
         this.metaData = metaData;
         this.logicSQL = logicSQL;
+        this.backendConnection = backendConnection;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         kernelProcessor = new KernelProcessor();
         String schemaName = backendConnection.getConnectionSession().getSchemaName();
@@ -118,10 +118,8 @@ public final class DatabaseCommunicationEngine {
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
-        boolean isSerialExecute = backendConnection.isSerialExecute();
-        federationExecutor = FederationExecutorFactory.newInstance(schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), new JDBCExecutor(executorEngine, isSerialExecute));
-        this.backendConnection = backendConnection;
+        federationExecutor = FederationExecutorFactory.newInstance(schemaName, metaDataContexts.getOptimizerContext(), 
+                metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
     
     /**

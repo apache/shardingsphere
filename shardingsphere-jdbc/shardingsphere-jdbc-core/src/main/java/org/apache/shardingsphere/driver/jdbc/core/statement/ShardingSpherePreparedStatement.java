@@ -184,7 +184,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // TODO move federation route logic to binder
             executionContext = createExecutionContext(logicSQL);
             if (executionContext.getRouteContext().isFederated()) {
-                return executeFederatedQuery(logicSQL);
+                return executeFederationQuery(logicSQL);
             }
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
@@ -224,7 +224,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                         SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
-    private ResultSet executeFederatedQuery(final LogicSQL logicSQL) throws SQLException {
+    private ResultSet executeFederationQuery(final LogicSQL logicSQL) throws SQLException {
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType(),
                  sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
         return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, logicSQL);
@@ -298,7 +298,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return executeResults.iterator().next() instanceof QueryResult;
             }
             if (executionContext.getRouteContext().isFederated()) {
-                ResultSet resultSet = executeFederatedQuery(logicSQL);
+                ResultSet resultSet = executeFederationQuery(logicSQL);
                 return null != resultSet;
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
