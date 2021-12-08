@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -107,10 +109,10 @@ public final class FilterableTableScanExecutor {
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
         RelToSqlConverter sqlConverter = optimizerContext.getPlannerContexts().get(schemaName).getSqlConverter();
         String sql = sqlConverter.visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toString();
-        String databaseType = optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName();
+        DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, optimizerContext.getSqlParserRule()).parse(sql, false);
-        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, createParameters(scanContext.getFilters()), sqlStatement);
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
+        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, getParameters(scanContext.getFilters()), sqlStatement);
         ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
@@ -119,7 +121,9 @@ public final class FilterableTableScanExecutor {
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            return createEnumerable(result, metaData, context.getSqlStatementContext());
+            MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
+            MergedResult mergedResult = mergeEngine.merge(result, logicSQL.getSqlStatementContext());
+            return createEnumerable(mergedResult, result.get(0).getMetaData());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         } finally {
@@ -147,11 +151,11 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    private List<Object> createParameters(final List<RexNode> filters) {
+    private List<Object> getParameters(final List<RexNode> filters) {
         List<Object> result = new ArrayList<>();
         for (RexNode each : filters) {
             if (each instanceof RexCall) {
-                result.addAll(createParameters(((RexCall) each).getOperands()));
+                result.addAll(getParameters(((RexCall) each).getOperands()));
             } else if (each instanceof RexDynamicParam) {
                 int index = ((RexDynamicParam) each).getIndex();
                 if (index < 0 || index >= parameters.size()) {
@@ -181,16 +185,12 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    @SneakyThrows
-    private AbstractEnumerable<Object[]> createEnumerable(final List<QueryResult> queryResults, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
-        QueryResultMetaData metaDataSample = queryResults.get(0).getMetaData();
-        MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
-        MergedResult result = mergeEngine.merge(queryResults, sqlStatementContext);
+    private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData) {
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(result, metaDataSample);
+                return new FilterableRowEnumerator(mergedResult, metaData);
             }
         };
     }
