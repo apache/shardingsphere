@@ -109,7 +109,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
             throw new PostgreSQLProtocolViolationException("password", Character.toString(messageType));
         }
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        PostgreSQLLoginResult loginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult loginResult =
+                OpenGaussAuthenticationHandler.loginWithSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), random64Code, token, serverIteration, passwordMessagePacket);
         if (PostgreSQLErrorCode.SUCCESSFUL_COMPLETION != loginResult.getErrorCode()) {
             throw new PostgreSQLAuthenticationException(loginResult.getErrorCode(), loginResult.getErrorMessage());
         }
