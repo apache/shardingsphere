@@ -69,7 +69,7 @@ public final class ModeScheduleContext {
         Properties props = modeConfig.getRepository().getProps();
         // TODO do not hard-code cluster type and property key, refactor later
         if ("ZooKeeper".equals(clusterType)) {
-            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), "namespace");
+            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), props.getProperty("namespace"));
             CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
             result.init();
             return result;
