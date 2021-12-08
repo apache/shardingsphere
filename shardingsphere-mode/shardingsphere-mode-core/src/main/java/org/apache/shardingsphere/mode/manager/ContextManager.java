@@ -454,8 +454,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
-        closeTransactionEngine(changedStaleEngine);
+        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().get(schemaName);
+        if (null != changedStaleEngine) {
+            closeTransactionEngine(changedStaleEngine);
+        }
+        transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {

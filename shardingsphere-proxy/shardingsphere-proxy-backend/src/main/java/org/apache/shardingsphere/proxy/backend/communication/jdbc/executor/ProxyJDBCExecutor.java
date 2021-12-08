@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class ProxyJDBCExecutor {
     
     private final String type;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
@@ -65,7 +65,7 @@ public final class ProxyJDBCExecutor {
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-            DatabaseType databaseType = metaDataContexts.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
+            DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
             Collection<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,

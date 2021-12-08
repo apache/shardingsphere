@@ -48,6 +48,7 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations()));
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     

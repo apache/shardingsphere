@@ -58,13 +58,13 @@ rules:
     - t_address
   defaultDatabaseStrategy:
     standard:
-      shardingAlgorithmName: standard_test_db
+      shardingAlgorithmName: standard-test-db
   defaultTableStrategy:
     none:
   defaultShardingColumn: user_id
-  
+
   shardingAlgorithms:
-    standard_test_db:
+    standard-test-db:
       type: STANDARD_TEST_DB
   
   keyGenerators:

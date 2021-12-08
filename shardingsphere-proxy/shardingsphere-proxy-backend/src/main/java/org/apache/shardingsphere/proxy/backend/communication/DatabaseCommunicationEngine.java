@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallback;
@@ -102,6 +103,7 @@ public final class DatabaseCommunicationEngine {
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
+    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereMetaData metaData, final LogicSQL logicSQL, final JDBCBackendConnection backendConnection) {
     private final FederationExecutor federationExecutor;
     
     private final BackendConnection backendConnection;
@@ -112,6 +114,9 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         kernelProcessor = new KernelProcessor();
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getMetaData().getSchemas().get(backendConnection.getConnectionSession().getSchemaName()),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metadataRefreshEngine = new MetaDataRefreshEngine(metaData, 
                 metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(backendConnection.getSchemaName()), metaDataContexts.getProps());

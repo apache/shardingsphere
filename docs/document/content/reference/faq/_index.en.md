@@ -77,7 +77,7 @@ Answer:
 
 1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `schema` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
 2. It is recommended to create `schema` and `resource` first, and then use third-party database tools to connect.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/) the details about `resource`.
+3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) the details about `resource`.
 
 ## 8. [Sharding] How to solve `Cloud not resolve placeholder … in string value …` error?
 
@@ -161,7 +161,7 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/resource-definition/) for above rules.
+3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for above rules.
 
 ## 18. [DistSQL] How to solve ` Resource [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
 

@@ -25,8 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -51,12 +52,17 @@ import static org.mockito.Mockito.when;
 public final class ProxySQLExecutorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
+    
+    @Mock
+    private JDBCBackendConnection backendConnection;
     
     @Before
     public void setUp() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test(expected = TableModifyInTransactionException.class)
@@ -75,7 +81,7 @@ public final class ProxySQLExecutorTest {
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInBaseTransaction() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.BASE);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.BASE);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
@@ -83,7 +89,7 @@ public final class ProxySQLExecutorTest {
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLNotInXATransaction() {
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(false);
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(false);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
@@ -91,7 +97,7 @@ public final class ProxySQLExecutorTest {
     
     @Test(expected = TableModifyInTransactionException.class)
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInPostgreSQLTransaction() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
@@ -99,7 +105,7 @@ public final class ProxySQLExecutorTest {
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDMLInPostgreSQLTransaction() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createPostgreSQLInsertStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
@@ -107,7 +113,7 @@ public final class ProxySQLExecutorTest {
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInMySQLTransaction() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
@@ -115,8 +121,8 @@ public final class ProxySQLExecutorTest {
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLNotInPostgreSQLTransaction() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
-        when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(false);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(false);
         ExecutionContext executionContext = new ExecutionContext(
                 new LogicSQL(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);

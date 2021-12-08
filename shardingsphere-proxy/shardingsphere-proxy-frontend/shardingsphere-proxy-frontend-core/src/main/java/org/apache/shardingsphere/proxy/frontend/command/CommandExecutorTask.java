@@ -27,9 +27,8 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
@@ -37,8 +36,9 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Command executor task.
@@ -49,7 +49,7 @@ public final class CommandExecutorTask implements Runnable {
     
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private final ChannelHandlerContext context;
     
@@ -65,16 +65,8 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         boolean isNeedFlush = false;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
-            ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
-            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
-                connectionStatus.waitUntilConnectionRelease();
-                connectionStatus.switchToUsing();
-            }
-            if (!backendConnection.isAutoCommit() && !backendConnection.getTransactionStatus().isInTransaction()) {
-                BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-                transactionManager.begin();
-            }
-            isNeedFlush = executeCommand(context, payload, backendConnection);
+            connectionSession.getBackendConnection().prepareForTaskExecution();
+            isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -82,11 +74,11 @@ public final class CommandExecutorTask implements Runnable {
         } finally {
             // TODO optimize SQLStatementSchemaHolder
             SQLStatementSchemaHolder.remove();
-            Collection<SQLException> exceptions = closeExecutionResources();
-            if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
-                exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
-                exceptions.addAll(backendConnection.closeConnections(false));
-                backendConnection.getConnectionStatus().switchToReleased();
+            Collection<SQLException> exceptions = Collections.emptyList(); 
+            try {
+                connectionSession.getBackendConnection().closeExecutionResources();
+            } catch (final BackendConnectionException ex) {
+                exceptions = ex.getExceptions().stream().filter(SQLException.class::isInstance).map(SQLException.class::cast).collect(Collectors.toList());
             }
             if (isNeedFlush) {
                 context.flush();
@@ -95,11 +87,11 @@ public final class CommandExecutorTask implements Runnable {
         }
     }
     
-    private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload) throws SQLException {
         CommandExecuteEngine commandExecuteEngine = databaseProtocolFrontendEngine.getCommandExecuteEngine();
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
-        CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, backendConnection);
-        CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, backendConnection);
+        CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, connectionSession);
+        CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, connectionSession);
         try {
             Collection<DatabasePacket<?>> responsePackets = commandExecutor.execute();
             if (responsePackets.isEmpty()) {
@@ -107,7 +99,7 @@ public final class CommandExecutorTask implements Runnable {
             }
             responsePackets.forEach(context::write);
             if (commandExecutor instanceof QueryCommandExecutor) {
-                return commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+                return commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
         } finally {
             commandExecutor.close();
@@ -119,17 +111,10 @@ public final class CommandExecutorTask implements Runnable {
         if (!ExpectedExceptions.isExpected(cause.getClass())) {
             log.error("Exception occur: ", cause);
         }
-        context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, backendConnection));
-        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(backendConnection);
+        context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession));
+        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession);
         databasePacket.ifPresent(context::write);
         context.flush();
-    }
-    
-    private Collection<SQLException> closeExecutionResources() {
-        Collection<SQLException> result = new LinkedList<>();
-        result.addAll(backendConnection.closeDatabaseCommunicationEngines(false));
-        result.addAll(backendConnection.closeFederationExecutor());
-        return result;
     }
     
     private void processClosedExceptions(final Collection<SQLException> exceptions) {

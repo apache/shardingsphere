@@ -28,12 +28,15 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
@@ -54,7 +57,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     private final OpenGaussComBatchBindPacket packet;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private SQLStatement sqlStatement;
     
@@ -64,7 +67,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        sqlStatement = parseSql(packet.getSql(), backendConnection.getSchemaName());
+        sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
         while (packet.hasNextParameters()) {
             List<Object> parameters = packet.readOneGroupOfParameters();
             DatabaseCommunicationEngine databaseCommunicationEngine = newEngine(parameters);
@@ -74,28 +77,30 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
                     updateCount += ((UpdateResponseHeader) responseHeader).getUpdateCount();
                 }
             } finally {
-                backendConnection.closeDatabaseCommunicationEngines(false);
+                ((JDBCBackendConnection) connectionSession.getBackendConnection()).closeDatabaseCommunicationEngines(false);
             }
         }
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
     
     private DatabaseCommunicationEngine newEngine(final List<Object> parameter) {
-        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection);
+        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter,
+                (JDBCBackendConnection) connectionSession.getBackendConnection());
     }
     
     private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        return SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, backendConnection.getDefaultSchemaName());
+        return SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, connectionSession.getDefaultSchemaName());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
         if (sql.isEmpty()) {
             return new EmptyStatement();
         }
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
+                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
         return sqlStatementParserEngine.parse(sql, true);
     }
     
