@@ -109,7 +109,6 @@ public class EncryptInsertValuesTokenGeneratorTest {
         assertEquals(1, previousToken.getInsertValues().size());
     }
 
-
     @Test
     public void generateSQLTokenWithNoPreviousTokensTest() {
         IdentifierValue idf = new IdentifierValue("table1");
