@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
@@ -31,5 +31,5 @@ import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 @ToString
 public final class InventoryTaskProgress implements Progress {
     
-    private final CDCPosition<?> position;
+    private final IngestPosition<?> position;
 }

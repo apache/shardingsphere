@@ -23,8 +23,8 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobB
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.api.ScalingClusterAutoSwitchAlgorithm;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
+import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 
 /**
  * Finished check job executor.

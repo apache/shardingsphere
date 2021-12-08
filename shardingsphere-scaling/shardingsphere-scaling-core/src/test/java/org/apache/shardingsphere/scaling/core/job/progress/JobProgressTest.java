@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.job.progress;
 
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
-import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
-import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
@@ -50,7 +50,7 @@ public final class JobProgressTest {
     @Test
     public void assertGetIncrementalPosition() {
         JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
-        Optional<CDCPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
+        Optional<IngestPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
         assertTrue(positionOptional.isPresent());
         assertTrue(positionOptional.get() instanceof PlaceholderPosition);
     }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.cdc.postgresql.wal.WalPosition;
-import org.apache.shardingsphere.cdc.postgresql.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

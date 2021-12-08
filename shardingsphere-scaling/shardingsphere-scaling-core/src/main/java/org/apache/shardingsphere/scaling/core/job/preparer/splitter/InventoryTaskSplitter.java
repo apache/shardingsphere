@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilderFactory;
-import org.apache.shardingsphere.cdc.core.config.DumperConfiguration;
-import org.apache.shardingsphere.cdc.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
-import org.apache.shardingsphere.cdc.core.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
@@ -95,9 +95,9 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
             final JobContext jobContext, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        Collection<CDCPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataManager);
+        Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataManager);
         int i = 0;
-        for (CDCPosition<?> inventoryPosition : inventoryPositions) {
+        for (IngestPosition<?> inventoryPosition : inventoryPositions) {
             InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfig);
             splitDumperConfig.setPosition(inventoryPosition);
             splitDumperConfig.setShardingItem(i++);
@@ -108,12 +108,12 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<CDCPosition<?>> getInventoryPositions(
+    private Collection<IngestPosition<?>> getInventoryPositions(
             final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         JobProgress initProgress = jobContext.getInitProgress();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
-            Collection<CDCPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
+            Collection<IngestPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
             result.stream().findFirst().ifPresent(position -> {
                 if (position instanceof PrimaryKeyPosition) {
                     String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName(), databaseType).getPrimaryKeyColumns().get(0);
@@ -157,8 +157,8 @@ public final class InventoryTaskSplitter {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<CDCPosition<?>> getPositionByPrimaryKeyRange(final JobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
-        Collection<CDCPosition<?>> result = new ArrayList<>();
+    private Collection<IngestPosition<?>> getPositionByPrimaryKeyRange(final JobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+        Collection<IngestPosition<?>> result = new ArrayList<>();
         String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
         try (Connection connection = dataSource.getConnection();
