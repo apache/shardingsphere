@@ -26,6 +26,8 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -55,8 +57,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -79,15 +81,18 @@ public final class FilterableTableScanExecutor {
     
     private final String schemaName;
     
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                       final ConfigurationProperties props, final OptimizerContext optimizerContext, final String schemaName) {
+    private final List<Object> parameters;
+    
+    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutor jdbcExecutor, 
+                                       final JDBCExecutorCallback<? extends ExecuteResult> callback, final ConfigurationProperties props, 
+                                       final OptimizerContext optimizerContext, final String schemaName, final List<Object> parameters) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
         this.prepareEngine = prepareEngine;
         this.props = props;
         this.optimizerContext = optimizerContext;
         this.schemaName = schemaName;
+        this.parameters = parameters;
     }
     
     /**
@@ -103,7 +108,7 @@ public final class FilterableTableScanExecutor {
         String databaseType = optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName();
         // TODO replace sql parse with sql convert
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, optimizerContext.getSqlParserRule()).parse(sql, false);
-        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, sqlStatement);
+        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, createParameters(scanContext.getFilters()), sqlStatement);
         ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
@@ -117,6 +122,22 @@ public final class FilterableTableScanExecutor {
         } finally {
             ExecuteProcessEngine.clean();
         }
+    }
+    
+    private List<Object> createParameters(final List<RexNode> filters) {
+        List<Object> result = new ArrayList<>();
+        for (RexNode each : filters) {
+            if (each instanceof RexCall) {
+                result.addAll(createParameters(((RexCall) each).getOperands()));
+            } else if (each instanceof RexDynamicParam) {
+                int index = ((RexDynamicParam) each).getIndex();
+                if (index < 0 || index >= parameters.size()) {
+                    continue;
+                }
+                result.add(parameters.get(index));
+            }
+        }
+        return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
@@ -151,8 +172,8 @@ public final class FilterableTableScanExecutor {
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final SQLStatement sqlStatement) {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, sql);
-        return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, sql);
+        return new LogicSQL(sqlStatementContext, sql, parameters);
     }
 }

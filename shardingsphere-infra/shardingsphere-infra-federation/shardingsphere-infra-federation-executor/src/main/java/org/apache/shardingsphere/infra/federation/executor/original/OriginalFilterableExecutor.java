@@ -70,22 +70,22 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final LogicSQL logicSQL) throws SQLException {
-        PreparedStatement preparedStatement = createConnection(prepareEngine, callback).prepareStatement(SQLUtil.trimSemicolon(logicSQL.getSql()));
+        PreparedStatement preparedStatement = createConnection(prepareEngine, callback, logicSQL.getParameters()).prepareStatement(SQLUtil.trimSemicolon(logicSQL.getSql()));
         setParameters(preparedStatement, logicSQL.getParameters());
         this.statement = preparedStatement;
         return preparedStatement.executeQuery();
     }
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                                        final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
+                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final List<Object> parameters) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(schemaName).getDialectProps());
-        addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback);
+        addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, parameters);
         return result;
     }
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                           final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
-        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, optimizerContext, schemaName);
+                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final List<Object> parameters) throws SQLException {
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, optimizerContext, schemaName, parameters);
         FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getSchemas().get(schemaName), executor);
         connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);
