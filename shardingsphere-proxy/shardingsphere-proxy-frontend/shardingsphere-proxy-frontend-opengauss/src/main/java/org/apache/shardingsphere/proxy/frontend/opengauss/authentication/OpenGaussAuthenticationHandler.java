@@ -89,7 +89,7 @@ public final class OpenGaussAuthenticationHandler {
         String random64Code = (String) args[1];
         String token = (String) args[2];
         int serverIteration = (int) args[3];
-        String expectedDigest = new String(doRFC5802Algorithm(user.getPassword(), random64Code, token, null, serverIteration));
+        String expectedDigest = new String(doRFC5802Algorithm(user.getPassword(), random64Code, token, serverIteration));
         return expectedDigest.equals(clientDigest);
     }
     
@@ -102,15 +102,11 @@ public final class OpenGaussAuthenticationHandler {
         return result;
     }
     
-    public static byte[] doRFC5802Algorithm(final String password, final String random64code, final String token, final String serverSignature, final int serverIteration) {
+    private static byte[] doRFC5802Algorithm(final String password, final String random64code, final String token, final int serverIteration) {
         byte[] K = generateKFromPBKDF2(password, random64code, serverIteration);
-        byte[] serverKey = getKeyFromHmac(K, "Sever Key".getBytes(StandardCharsets.UTF_8));
         byte[] clientKey = getKeyFromHmac(K, "Client Key".getBytes(StandardCharsets.UTF_8));
         byte[] storedKey = sha256(clientKey);
         byte[] tokenBytes = hexStringToBytes(token);
-        byte[] clientSignature = getKeyFromHmac(serverKey, tokenBytes);
-        if (serverSignature != null && !serverSignature.equals(bytesToHexString(clientSignature)))
-            return new byte[0];
         byte[] hmacResult = getKeyFromHmac(storedKey, tokenBytes);
         byte[] h = xorBetweenPassword(hmacResult, clientKey, clientKey.length);
         byte[] result = new byte[h.length * 2];
