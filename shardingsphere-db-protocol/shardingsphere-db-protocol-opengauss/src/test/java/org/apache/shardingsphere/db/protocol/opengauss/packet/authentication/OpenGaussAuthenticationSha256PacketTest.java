@@ -15,34 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
+package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
-import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-public final class PostgreSQLPasswordMessagePacketTest {
+public final class OpenGaussAuthenticationSha256PacketTest {
+    
+    private static final byte[] RANDOM_64_CODE = new byte[64];
+    
+    private static final byte[] TOKEN = new byte[8];
+    
+    private static final int SERVER_ITERATION = 2048;
+    
+    private final OpenGaussAuthenticationSha256Packet packet = new OpenGaussAuthenticationSha256Packet(RANDOM_64_CODE, TOKEN, SERVER_ITERATION);
     
     @Test
-    public void assertReadWrite() {
-        String md5Digest = "ce98bac7fc97f20584ea9536e744dabb";
-        int expectedLength = 4 + md5Digest.length() + 1;
-        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        payload.writeInt4(expectedLength);
-        payload.writeStringNul(md5Digest);
-        PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PASSWORD_MESSAGE));
-        assertThat(packet.getDigest(), is(md5Digest));
+    public void assertWrite() {
+        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         packet.write(payload);
-        assertThat(byteBuf.writerIndex(), is(expectedLength));
+        verify(payload).writeInt4(10);
+        verify(payload).writeInt4(2);
+        verify(payload).writeBytes(RANDOM_64_CODE);
+        verify(payload).writeBytes(TOKEN);
+        verify(payload).writeInt4(SERVER_ITERATION);
+    }
+    
+    @Test
+    public void assertIdentifierTag() {
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
 }
