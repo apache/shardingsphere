@@ -121,7 +121,7 @@ public final class FilterableTableScanExecutor {
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            MergeEngine mergeEngine = new MergeEngine(schemaName, metaData.getResource().getDatabaseType(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
+            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
             MergedResult mergedResult = mergeEngine.merge(result, logicSQL.getSqlStatementContext());
             return createEnumerable(mergedResult, result.get(0).getMetaData());
         } catch (final SQLException ex) {
