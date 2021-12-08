@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.federation.optimizer.context.planner;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
@@ -32,9 +31,7 @@ public final class OptimizerPlannerContext {
     
     private final SqlValidator validator;
     
-    private final SqlToRelConverter relConverter;
-    
-    private final RelToSqlConverter sqlConverter;
+    private final SqlToRelConverter converter;
     
     // TODO refresh validator and converter after federation schema changed
 }

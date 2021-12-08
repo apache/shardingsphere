@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.executor.original.table;
 
+import com.google.common.collect.ImmutableList;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
@@ -26,9 +27,13 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.dialect.MssqlSqlDialect;
+import org.apache.calcite.sql.dialect.MysqlSqlDialect;
+import org.apache.calcite.sql.dialect.OracleSqlDialect;
+import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
+import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -37,6 +42,13 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -63,6 +75,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +86,18 @@ import java.util.stream.Collectors;
  * Filterable table scan executor.
  */
 public final class FilterableTableScanExecutor {
+    
+    private static final Map<Class<? extends DatabaseType>, SqlDialect> SQL_DIALECTS = new HashMap<>();
+    
+    static {
+        SQL_DIALECTS.put(H2DatabaseType.class, MysqlSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(MySQLDatabaseType.class, MysqlSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(MariaDBDatabaseType.class, MysqlSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(OracleDatabaseType.class, OracleSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(SQLServerDatabaseType.class, MssqlSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(PostgreSQLDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
+        SQL_DIALECTS.put(OpenGaussDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
+    }
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -107,12 +133,11 @@ public final class FilterableTableScanExecutor {
      * @return query results
      */
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
-        RelToSqlConverter sqlConverter = optimizerContext.getPlannerContexts().get(schemaName).getSqlConverter();
-        String sql = sqlConverter.visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toString();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
+        SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
-        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sql, getParameters(scanContext.getFilters()), sqlStatement);
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sqlString.getSql(), false);
+        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
         ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
@@ -129,6 +154,11 @@ public final class FilterableTableScanExecutor {
         } finally {
             ExecuteProcessEngine.clean();
         }
+    }
+    
+    private SqlString createSQLString(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final DatabaseType databaseType) {
+        SqlDialect sqlDialect = SQL_DIALECTS.getOrDefault(databaseType.getClass(), MysqlSqlDialect.DEFAULT);
+        return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
     @SneakyThrows
@@ -151,24 +181,19 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    private List<Object> getParameters(final List<RexNode> filters) {
+    private List<Object> getParameters(final ImmutableList<Integer> parameterIndices) {
+        if (null == parameterIndices) {
+            return Collections.emptyList();
+        }
         List<Object> result = new ArrayList<>();
-        for (RexNode each : filters) {
-            if (each instanceof RexCall) {
-                result.addAll(getParameters(((RexCall) each).getOperands()));
-            } else if (each instanceof RexDynamicParam) {
-                int index = ((RexDynamicParam) each).getIndex();
-                if (index < 0 || index >= parameters.size()) {
-                    continue;
-                }
-                result.add(parameters.get(index));
-            }
+        for (Integer each : parameterIndices) {
+            result.add(parameters.get(each));
         }
         return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
-        RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getRelConverter().getCluster();
+        RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getConverter().getCluster();
         RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(schemaName).getValidator().getCatalogReader();
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());
         if (null != scanContext.getProjects()) {

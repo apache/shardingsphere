@@ -46,7 +46,7 @@ public final class OptimizerContextFactory {
     public static OptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData) {
         FederationMetaData federationMetaData = new FederationMetaData(metaDataMap);
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(metaDataMap);
-        Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(metaDataMap, federationMetaData);
+        Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(federationMetaData);
         SQLParserRule sqlParserRule = globalRuleMetaData.findSingleRule(SQLParserRule.class).orElse(null);
         return new OptimizerContext(sqlParserRule, federationMetaData, metaDataMap, parserContexts, plannerContexts);
     }

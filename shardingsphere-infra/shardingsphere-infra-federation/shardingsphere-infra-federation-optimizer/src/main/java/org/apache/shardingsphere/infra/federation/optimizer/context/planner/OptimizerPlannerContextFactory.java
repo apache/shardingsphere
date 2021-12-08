@@ -27,34 +27,19 @@ import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
-import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.dialect.MssqlSqlDialect;
-import org.apache.calcite.sql.dialect.MysqlSqlDialect;
-import org.apache.calcite.sql.dialect.OracleSqlDialect;
-import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,26 +53,13 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OptimizerPlannerContextFactory {
     
-    private static final Map<Class<? extends DatabaseType>, SqlDialect> SQL_DIALECTS = new HashMap<>();
-    
-    static {
-        SQL_DIALECTS.put(H2DatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(MySQLDatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(MariaDBDatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(OracleDatabaseType.class, OracleSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(SQLServerDatabaseType.class, MssqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(PostgreSQLDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(OpenGaussDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
-    }
-    
     /**
      * Create optimizer planner context map.
      *
-     * @param metaDataMap meta data map
      * @param metaData federation meta data
      * @return created optimizer planner context map
      */
-    public static Map<String, OptimizerPlannerContext> create(final Map<String, ShardingSphereMetaData> metaDataMap, final FederationMetaData metaData) {
+    public static Map<String, OptimizerPlannerContext> create(final FederationMetaData metaData) {
         Map<String, OptimizerPlannerContext> result = new HashMap<>(metaData.getSchemas().size(), 1);
         for (Entry<String, FederationSchemaMetaData> entry : metaData.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
@@ -96,10 +68,8 @@ public final class OptimizerPlannerContextFactory {
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
             CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-            SqlToRelConverter relConverter = createRelConverter(catalogReader, validator, relDataTypeFactory);
-            DatabaseType databaseType = metaDataMap.get(schemaName).getResource().getDatabaseType();
-            RelToSqlConverter sqlConverter = new RelToSqlConverter(SQL_DIALECTS.getOrDefault(databaseType.getClass(), MysqlSqlDialect.DEFAULT));
-            result.put(schemaName, new OptimizerPlannerContext(validator, relConverter, sqlConverter));
+            SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
+            result.put(schemaName, new OptimizerPlannerContext(validator, converter));
         }
         return result;
     }
@@ -126,7 +96,7 @@ public final class OptimizerPlannerContextFactory {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
     }
     
-    private static SqlToRelConverter createRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
+    private static SqlToRelConverter createConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
         ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
         Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
         RelOptCluster cluster = RelOptCluster.create(QueryOptimizePlannerFactory.newInstance(), new RexBuilder(relDataTypeFactory));

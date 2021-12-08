@@ -36,7 +36,7 @@ public final class CustomizedFilterableExecuteDataContext implements DataContext
     
     public CustomizedFilterableExecuteDataContext(final String schemaName, final OptimizerContext context) {
         validator = context.getPlannerContexts().get(schemaName).getValidator();
-        converter = context.getPlannerContexts().get(schemaName).getRelConverter();
+        converter = context.getPlannerContexts().get(schemaName).getConverter();
     }
     
     @Override
