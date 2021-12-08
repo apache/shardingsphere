@@ -17,6 +17,6 @@
 
 mode: memory
 transaction: local
-feature: encrypt
+feature: shadow
 framework: spring-namespace-jdbc
 
