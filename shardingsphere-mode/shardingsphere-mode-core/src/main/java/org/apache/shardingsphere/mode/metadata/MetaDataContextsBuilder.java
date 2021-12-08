@@ -30,8 +30,6 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
@@ -96,9 +94,8 @@ public final class MetaDataContextsBuilder {
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules.get(each));
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            Collection<TableMetaData> tableMetaDataList = schemas.get(each).getTables().values();
-            federationMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederationSchema(tableMetaDataList, rules.get(each))));
-            kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules.get(each))));
+            federationMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, new ShardingSphereSchema(schemas.get(each).getTables())));
+            kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, new ShardingSphereSchema(schemas.get(each).getTables())));
         }
         return new MetaDataContexts(metaDataPersistService, kernelMetaData, 
                 buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, OptimizerContextFactory.create(federationMetaData));

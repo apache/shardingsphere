@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
@@ -221,15 +220,11 @@ public final class ContextManager implements AutoCloseable {
      * @param schema schema
      */
     public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
-        Collection<TableMetaData> tableMetaDataList = schema.getTables().values();
         ShardingSphereMetaData kernelMetaData = new ShardingSphereMetaData(schemaName, metaDataContexts.getMetaData(schemaName).getResource(),
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), SchemaBuilder.buildKernelSchema(tableMetaDataList,
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()));
+                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), new ShardingSphereSchema(schema.getTables()));
         Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         kernelMetaDataMap.put(schemaName, kernelMetaData);
-        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName,
-                new FederationSchemaMetaData(schemaName, SchemaBuilder.buildFederationSchema(tableMetaDataList,
-                        metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()).getTables()));
+        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName, new FederationSchemaMetaData(schemaName, schema.getTables()));
         renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
     }
     
@@ -323,8 +318,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void loadTableMetaData(final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
-                .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
+        TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(tableName, new TableMetaData());
         if (!tableMetaData.getColumns().isEmpty()) {
             metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
             metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
