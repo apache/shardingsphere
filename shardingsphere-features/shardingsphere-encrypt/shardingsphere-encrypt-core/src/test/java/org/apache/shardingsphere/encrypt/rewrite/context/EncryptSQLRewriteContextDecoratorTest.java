@@ -63,6 +63,7 @@ public class EncryptSQLRewriteContextDecoratorTest {
     @Mock
     private RouteContext routeContext;
 
+    @Test
     public void decorateWithoutRewritingTest() {
         final ShardingSphereSchema shardingSphereSchema = Mockito.mock(ShardingSphereSchema.class);
         final DeleteStatementContext deleteStatementContext = Mockito.mock(DeleteStatementContext.class);
@@ -72,6 +73,7 @@ public class EncryptSQLRewriteContextDecoratorTest {
         assertEquals(0, rewriteContext.getSqlTokens().size());
     }
 
+    @Test
     public void decorateWithRewritingTest() {
         final ShardingSphereSchema shardingSphereSchema = Mockito.mock(ShardingSphereSchema.class);
         final UpdateStatementContext updateStatementContext = Mockito.mock(UpdateStatementContext.class);
@@ -107,9 +109,6 @@ public class EncryptSQLRewriteContextDecoratorTest {
         assertEquals(10, order);
     }
 
-    /**
-     * test getTypeClass that returns the encrypt rule.
-     */
     @Test
     public void getTypeClassTest() {
         final Class<EncryptRule> typeClass = encryptSQLRewriteContextDecorator.getTypeClass();
