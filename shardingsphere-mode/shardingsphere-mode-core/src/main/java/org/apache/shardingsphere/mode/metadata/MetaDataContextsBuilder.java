@@ -98,8 +98,8 @@ public final class MetaDataContextsBuilder {
             Collection<TableMetaData> tableMetaDataList = schemas.get(each).getTables().values();
             metaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules.get(each))));
         }
-        return new MetaDataContexts(metaDataPersistService, metaData, 
-                buildGlobalSchemaMetaData(metaData), executorEngine, props, OptimizerContextFactory.create(metaData));
+        ShardingSphereRuleMetaData globalMetaData = buildGlobalSchemaMetaData(metaData);
+        return new MetaDataContexts(metaDataPersistService, metaData, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaData, globalMetaData));
     }
     
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {

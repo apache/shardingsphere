@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +101,7 @@ public final class FilterableTableScanExecutor {
         String sql = sqlConverter.visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toString();
         String databaseType = optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName();
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, new ConfigurationProperties(new Properties())).parse(sql, true);
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, optimizerContext.getSqlParserRule()).parse(sql, false);
         Map<String, ShardingSphereMetaData> metaDataMap = optimizerContext.getMetaDataMap();
         LogicSQL logicSQL = createLogicSQL(metaDataMap, sql, sqlStatement);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaDataMap.get(schemaName), props);
