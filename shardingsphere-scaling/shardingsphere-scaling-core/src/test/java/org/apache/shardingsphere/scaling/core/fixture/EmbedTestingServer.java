@@ -20,6 +20,11 @@ package org.apache.shardingsphere.scaling.core.fixture;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
@@ -27,6 +32,8 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -53,6 +60,7 @@ public final class EmbedTestingServer {
                 return;
             }
             start0();
+            waitTestingServerReady();
         }
     }
     
@@ -76,6 +84,44 @@ public final class EmbedTestingServer {
                 log.info("Close embed zookeeper server done");
             }));
         }
+    }
+    
+    private static void waitTestingServerReady() {
+        int maxRetries = 60;
+        try (CuratorFramework client = buildCuratorClient()) {
+            client.start();
+            int round = 0;
+            while (round < maxRetries) {
+                try {
+                    if (client.getZookeeperClient().isConnected()) {
+                        log.info("client is connected");
+                        break;
+                    }
+                    if (client.blockUntilConnected(500, TimeUnit.MILLISECONDS)) {
+                        CuratorFrameworkState state = client.getState();
+                        Collection<String> childrenKeys = client.getChildren().forPath("/");
+                        log.info("TestingServer connected, state={}, childrenKeys={}", state, childrenKeys);
+                        break;
+                    }
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ignored) {
+                    // CHECKSTYLE:ON
+                }
+                ++round;
+            }
+        }
+    }
+    
+    private static CuratorFramework buildCuratorClient() {
+        Builder builder = CuratorFrameworkFactory.builder();
+        int retryIntervalMilliseconds = 500;
+        int maxRetries = 3;
+        builder.connectString(getConnectionString())
+                .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
+                .namespace("test");
+        builder.sessionTimeoutMs(60 * 1000);
+        builder.connectionTimeoutMs(500);
+        return builder.build();
     }
     
     private static boolean isIgnoredException(final Throwable cause) {
