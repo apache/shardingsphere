@@ -25,4 +25,5 @@ Attributes:
 
 | *Name*                 | *DataType* | *Description*                              |
 | ---------------------------------- | ---------- | ---------------------------------------------- |
-| \- <read-data_source-name> (+) | double     | The attribute name uses the read database name, and the parameter fills in the weight value corresponding to the read database |
+| \- <read-data_source-name> (+) | double     | The attribute name uses the read database name, and the parameter fills in the weight value corresponding to the read database.The minimum value of the weight parameter range>0,the total <=Double.MAX_VALUE. |
+
