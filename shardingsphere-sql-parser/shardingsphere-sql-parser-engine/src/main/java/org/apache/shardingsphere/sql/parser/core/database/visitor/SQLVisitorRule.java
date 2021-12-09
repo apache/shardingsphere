@@ -40,6 +40,8 @@ public enum SQLVisitorRule {
     
     REPLACE("Replace", SQLStatementType.DML),
     
+    COPY("Copy", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
