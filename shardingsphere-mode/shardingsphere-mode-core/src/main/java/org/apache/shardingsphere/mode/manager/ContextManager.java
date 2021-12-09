@@ -226,7 +226,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
         ShardingSphereMetaData kernelMetaData = new ShardingSphereMetaData(schemaName, metaDataContexts.getMetaData(schemaName).getResource(),
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), new ShardingSphereSchema(schema.getTables()));
+                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
         Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         kernelMetaDataMap.put(schemaName, kernelMetaData);
         metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,

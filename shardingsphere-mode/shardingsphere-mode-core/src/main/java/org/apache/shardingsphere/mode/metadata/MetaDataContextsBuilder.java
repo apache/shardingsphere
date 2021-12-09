@@ -93,7 +93,7 @@ public final class MetaDataContextsBuilder {
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules.get(each));
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            metaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, new ShardingSphereSchema(schemas.get(each).getTables())));
+            metaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, schemas.get(each)));
         }
         ShardingSphereRuleMetaData globalMetaData = buildGlobalSchemaMetaData(metaData);
         return new MetaDataContexts(metaDataPersistService, metaData, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaData, globalMetaData));
