@@ -150,6 +150,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
+     * Judge whether contains union or not.
+     *
+     * @return whether contains union or not
+     */
+    public boolean isContainsUnion() {
+        return !getSqlStatement().getUnionSegments().isEmpty();
+    }
+    
+    /**
      * Judge whether contains partial distinct aggregation.
      * 
      * @return whether contains partial distinct aggregation
