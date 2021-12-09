@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.util.Map;
 
@@ -38,12 +40,14 @@ public final class OptimizerContextFactory {
      * Create optimize context.
      *
      * @param metaDataMap meta data map
+     * @param globalRuleMetaData global rule meta data
      * @return created optimizer context
      */
-    public static OptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static OptimizerContext create(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData) {
         FederationMetaData federationMetaData = new FederationMetaData(metaDataMap);
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(metaDataMap);
         Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(federationMetaData);
-        return new OptimizerContext(federationMetaData, parserContexts, plannerContexts);
+        SQLParserRule sqlParserRule = globalRuleMetaData.findSingleRule(SQLParserRule.class).orElse(null);
+        return new OptimizerContext(sqlParserRule, federationMetaData, metaDataMap, parserContexts, plannerContexts);
     }
 }

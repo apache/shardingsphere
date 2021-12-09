@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,17 +16,19 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="user_id" />
-        <column name="address_id"/>
-        <column name="pwd" />
-        <column name="status" />
-        <column name="item_id" />
-        <column name="user_id0" />
-        <column name="status0" />
-        <column name="creation_date" />
-    </metadata>
-    <row values="0, 10000, a00, init_read, 100000, 0, init_read, 2017-08-08" />
-    <row values="11, 11001, b11, init_read, 110001, 11, init_read, 2017-08-08" />
-</dataset>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="io.netty" level="warn" additivity="false" />
+    
+    <root>
+        <level value="warn" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 

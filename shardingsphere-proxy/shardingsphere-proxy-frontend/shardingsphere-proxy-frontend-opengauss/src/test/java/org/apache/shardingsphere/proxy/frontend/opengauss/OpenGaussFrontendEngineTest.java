@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine;
 import org.junit.Before;
@@ -79,8 +80,7 @@ public final class OpenGaussFrontendEngineTest {
     
     @Test
     public void assertGetAuthenticationEngine() {
-        openGaussFrontendEngine.getAuthenticationEngine();
-        verify(mockPostgreSQLFrontendEngine).getAuthenticationEngine();
+        assertThat(openGaussFrontendEngine.getAuthenticationEngine(), instanceOf(OpenGaussAuthenticationEngine.class));
     }
     
     @Test

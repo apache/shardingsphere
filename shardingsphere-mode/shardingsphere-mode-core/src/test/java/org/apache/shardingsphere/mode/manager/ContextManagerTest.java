@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,13 +58,16 @@ public final class ContextManagerTest {
 
     @Mock
     private TransactionContexts transactionContexts;
+    
+    @Mock
+    private ModeScheduleContext modeScheduleContext;
 
     private ContextManager contextManager;
 
     @Before
     public void setUp() throws SQLException {
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        contextManager.init(metaDataContexts, transactionContexts, modeScheduleContext);
         dataSourceMap = new HashMap<>(2, 1);
         DataSource primaryDataSource = mock(DataSource.class);
         DataSource replicaDataSource = mock(DataSource.class);

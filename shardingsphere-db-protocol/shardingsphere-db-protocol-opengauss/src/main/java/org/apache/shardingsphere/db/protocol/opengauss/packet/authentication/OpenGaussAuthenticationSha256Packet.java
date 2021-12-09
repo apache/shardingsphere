@@ -15,33 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
+package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PasswordMessage (frontend) packet for PostgreSQL.
+ * Authentication request sha256 for openGauss.
  */
-@Getter
-public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifierPacket {
+@RequiredArgsConstructor
+public final class OpenGaussAuthenticationSha256Packet implements PostgreSQLIdentifierPacket {
     
-    private final String digest;
+    private static final int AUTH_REQ_SHA256 = 10;
     
-    public PostgreSQLPasswordMessagePacket(final PostgreSQLPacketPayload payload) {
-        payload.readInt4();
-        digest = payload.readStringNul();
-    }
+    private static final int PASSWORD_STORED_METHOD_SHA256 = 2;
+    
+    private final byte[] random64Code;
+    
+    private final byte[] token;
+    
+    private final int serverIteration;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
+        payload.writeInt4(AUTH_REQ_SHA256);
+        payload.writeInt4(PASSWORD_STORED_METHOD_SHA256);
+        payload.writeBytes(random64Code);
+        payload.writeBytes(token);
+        payload.writeInt4(serverIteration);
     }
     
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.PASSWORD_MESSAGE;
+        return PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST;
     }
 }
