@@ -76,7 +76,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                 result.addAll(generateSQLTokensWithExpressionSegments(predicate.getPredicates(), columnTableNames));
             }
         }
-        for(OrderByItemSegment each : getColumnSegments(sqlStatementContext)) {
+        for (OrderByItemSegment each : getColumnSegments(sqlStatementContext)) {
             if (each instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each).getColumn();
                 Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableName(Collections.singletonList(buildColumnProjection(columnSegment)), schema);
