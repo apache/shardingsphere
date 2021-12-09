@@ -47,7 +47,7 @@ public class SQLParserSpringBootStarterTest {
         assertCacheOption(sqlParserRuleConfiguration.getParseTreeCacheOption());
     }
 
-    private void assertCacheOption(CacheOption cacheOption) {
+    private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));
         assertThat(cacheOption.getConcurrencyLevel(), is(4));
