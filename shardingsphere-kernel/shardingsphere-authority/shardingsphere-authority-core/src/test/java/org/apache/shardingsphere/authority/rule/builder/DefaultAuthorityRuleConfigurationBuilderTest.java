@@ -49,3 +49,4 @@ public final class DefaultAuthorityRuleConfigurationBuilderTest {
         assertThat(AuthorityRuleBuilder.class, equalTo(builder.getTypeClass()));
     }
 }
+
