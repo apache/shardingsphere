@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -288,7 +289,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {
             return isAllBindingTables(logicTableNames);
         }
-        return isAllBindingTables(logicTableNames) && isJoinConditionContainsShardingColumns(schema, (SelectStatementContext) sqlStatementContext, logicTableNames);
+        if (!isAllBindingTables(logicTableNames)) {
+            return false;
+        }
+        SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
+        Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
+        Collection<WhereSegment> whereSegments = select.getWhere().isPresent() ? Collections.singletonList(select.getWhere().get()) : Collections.emptyList();
+        return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments) || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, whereSegments);
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
@@ -554,10 +561,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return ShardingRule.class.getSimpleName();
     }
     
-    private boolean isJoinConditionContainsShardingColumns(final ShardingSphereSchema schema, final SelectStatementContext select, final Collection<String> tableNames) {
+    private boolean isJoinConditionContainsShardingColumns(final ShardingSphereSchema schema, final SelectStatementContext select, 
+                                                           final Collection<String> tableNames, final Collection<WhereSegment> whereSegments) {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size());
-        for (WhereSegment each : WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement())) {
+        for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
@@ -568,9 +576,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             }
         }
         TableRule tableRule = getTableRule(tableNames.iterator().next());
-        boolean containsDatabaseShardingColumns = !(tableRule.getDatabaseShardingStrategyConfig() instanceof StandardShardingStrategyConfiguration)
+        boolean containsDatabaseShardingColumns = !(getDatabaseShardingStrategyConfiguration(tableRule) instanceof StandardShardingStrategyConfiguration) 
                 || databaseJoinConditionTables.containsAll(tableNames);
-        boolean containsTableShardingColumns = !(tableRule.getTableShardingStrategyConfig() instanceof StandardShardingStrategyConfiguration) || tableJoinConditionTables.containsAll(tableNames);
+        boolean containsTableShardingColumns = !(getTableShardingStrategyConfiguration(tableRule) instanceof StandardShardingStrategyConfiguration) || tableJoinConditionTables.containsAll(tableNames);
         return containsDatabaseShardingColumns && containsTableShardingColumns;
     }
     

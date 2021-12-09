@@ -18,31 +18,25 @@
 package org.apache.shardingsphere.infra.federation.executor.original.row;
 
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Filterable row enumerator.
  */
 public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     
-    private final Collection<QueryResult> queryResults = new LinkedList<>();
+    private final MergedResult result;
     
-    private final Iterator<QueryResult> iterator;
-    
-    private QueryResult currentResultSet;
+    private final QueryResultMetaData metaData;
     
     private Object[] currentRow;
     
-    public FilterableRowEnumerator(final Collection<QueryResult> queryResults) {
-        this.queryResults.addAll(queryResults);
-        iterator = this.queryResults.iterator();
-        currentResultSet = iterator.next();
+    public FilterableRowEnumerator(final MergedResult queryResult, final QueryResultMetaData metaData) {
+        this.result = queryResult;
+        this.metaData = metaData;
     }
     
     @Override
@@ -60,23 +54,17 @@ public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     }
     
     private boolean moveNext0() throws SQLException {
-        if (currentResultSet.next()) {
+        if (result.next()) {
             setCurrentRow();
             return true;
         }
-        if (!iterator.hasNext()) {
-            currentRow = null;
-            return false;
-        }
-        currentResultSet = iterator.next();
-        return moveNext0();
+        return false;
     }
     
     private void setCurrentRow() throws SQLException {
-        int columnCount = currentResultSet.getMetaData().getColumnCount();
-        currentRow = new Object[columnCount];
-        for (int i = 0; i < columnCount; i++) {
-            currentRow[i] = currentResultSet.getValue(i + 1, Object.class);
+        currentRow = new Object[metaData.getColumnCount()];
+        for (int i = 0; i < metaData.getColumnCount(); i++) {
+            currentRow[i] = result.getValue(i + 1, Object.class);
         }
     }
     
@@ -86,13 +74,6 @@ public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     
     @Override
     public void close() {
-        try {
-            for (QueryResult each : queryResults) {
-                each.close();
-            }
-            currentRow = null;
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        currentRow = null;
     }
 }

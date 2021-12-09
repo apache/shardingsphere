@@ -58,7 +58,7 @@ public final class DriverJDBCExecutor {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(schemaName), metaDataContexts.getProps());
+                metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName), metaDataContexts.getProps());
     }
     
     /**
