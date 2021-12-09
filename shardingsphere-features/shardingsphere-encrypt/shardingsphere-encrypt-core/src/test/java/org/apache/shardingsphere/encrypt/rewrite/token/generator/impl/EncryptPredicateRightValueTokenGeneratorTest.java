@@ -154,3 +154,4 @@ public class EncryptPredicateRightValueTokenGeneratorTest {
         assertEquals(1, sqlTokens.size());
     }
 }
+
