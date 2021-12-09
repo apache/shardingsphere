@@ -20,20 +20,23 @@ package org.apache.shardingsphere.authority.rule.builder;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-public class AuthorityRuleBuilderTest {
+public final class AuthorityRuleBuilderTest {
 
     private final AuthorityRuleBuilder ruleBuilder = new AuthorityRuleBuilder();
 
     @Test
     public void getOrderTest() {
-        final int order = ruleBuilder.getOrder();
-        assertEquals(500, order);
+        int order = ruleBuilder.getOrder();
+        assertThat(500, is(order));
     }
-
+    
     @Test
     public void getTypeClassTest() {
-        assertEquals(AuthorityRuleConfiguration.class, ruleBuilder.getTypeClass());
+        assertThat(AuthorityRuleConfiguration.class, equalTo(ruleBuilder.getTypeClass()));
     }
 }
+
