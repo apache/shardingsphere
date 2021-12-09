@@ -15,3 +15,4 @@ chapter = true
 | ----------------------------------------- | ----------------------- |
 | RoundRobinReplicaLoadBalanceAlgorithm     | 基于轮询的读库负载均衡算法 |
 | RandomReplicaLoadBalanceAlgorithm         | 基于随机的读库负载均衡算法 |
+| WeightReplicaLoadBalanceAlgorithm         | 基于权重的读库负载均衡算法 |
