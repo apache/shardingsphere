@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
-<#if framework?contains("springboot")>
-<#if framework=="springboot-starter-mybatis">
+<#if framework?contains("spring-boot")>
+<#if framework=="spring-boot-starter-mybatis">
 import org.mybatis.spring.annotation.MapperScan;
-<#elseif framework=="springboot-starter-jpa">
+<#elseif framework=="spring-boot-starter-jpa">
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 </#if>
 import org.springframework.boot.SpringApplication;
@@ -43,13 +43,13 @@ import java.sql.SQLException;
 <#list feature?split("-") as feature1>
     <#assign featureName=featureName + feature1?cap_first>
 </#list>
-<#if framework=="springboot-starter-mybatis">
-@MapperScan("org.apache.shardingsphere.example.${feature?replace('-', '.')}.springboot.starter.mybatis.repository")
+<#if framework=="spring-boot-starter-mybatis">
+@MapperScan("org.apache.shardingsphere.example.${feature?replace('-', '.')}.spring.boot.starter.mybatis.repository")
 </#if>
-<#if framework=="springboot-starter-jpa">
-@EntityScan(basePackages = "org.apache.shardingsphere.example.${feature?replace('-', '.')}.springboot.starter.jpa.entity")
+<#if framework=="spring-boot-starter-jpa">
+@EntityScan(basePackages = "org.apache.shardingsphere.example.${feature?replace('-', '.')}.spring.boot.starter.jpa.entity")
 </#if>
-<#if framework?contains("springboot")>
+<#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
 public class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Example {

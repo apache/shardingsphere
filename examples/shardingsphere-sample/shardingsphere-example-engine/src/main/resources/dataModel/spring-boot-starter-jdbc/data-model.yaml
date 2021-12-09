@@ -17,6 +17,6 @@
 
 mode: memory
 transaction: local
-feature: encrypt
-framework: springboot-starter-mybatis
+feature: shadow
+framework: spring-boot-starter-jdbc
 

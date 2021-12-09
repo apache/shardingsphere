@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * springboot starter jdbc generator.
  */
-public final class SpringbootStarterJDBCGenerator extends ExampleGenerateEngine {
+public final class SpringBootStarterJDBCGenerator extends ExampleGenerateEngine {
     
     private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap<>();
     private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>();
@@ -33,27 +33,27 @@ public final class SpringbootStarterJDBCGenerator extends ExampleGenerateEngine 
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
         RENAME_TEMPLATE_MAP.put("ExampleService", "jdbc/ExampleService.ftl");
         
-        UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
-        UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        //UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
+        //UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
         UN_NAME_TEMPLATE_MAP.put("entity/User", "entity/User.java");
-        UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
+        //UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
         
         RESOURCE_TEMPLATE_MAP.put("log/logback", "logback.xml");
-        RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+        //RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
     }
 
-    public SpringbootStarterJDBCGenerator() {
+    public SpringBootStarterJDBCGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
     
     @Override
     protected String getGenerator() {
-        return "springboot-starter-jdbc";
+        return "spring-boot-starter-jdbc";
     }
     
     public static void main(String[] args) {
-        SpringbootStarterJDBCGenerator generator = new SpringbootStarterJDBCGenerator();
+        SpringBootStarterJDBCGenerator generator = new SpringBootStarterJDBCGenerator();
         generator.exec();
     }
 }

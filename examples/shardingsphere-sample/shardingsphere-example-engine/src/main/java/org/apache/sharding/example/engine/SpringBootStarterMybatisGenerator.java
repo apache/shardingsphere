@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * spring boot starter jpa generator.
+ * spring boot starter mybatis generator.
  */
-public final class SpringbootStarterJpaGenerator extends ExampleGenerateEngine {
+public final class SpringBootStarterMybatisGenerator extends ExampleGenerateEngine {
     
     private static final Map<String, String> RENAME_TEMPLATE_MAP = new HashMap<>();
     private static final Map<String, String> UN_NAME_TEMPLATE_MAP = new HashMap<>();
@@ -31,31 +31,35 @@ public final class SpringbootStarterJpaGenerator extends ExampleGenerateEngine {
 
     static {
         RENAME_TEMPLATE_MAP.put("Example", "Example.ftl");
-        RENAME_TEMPLATE_MAP.put("ExampleService", "jpa/ExampleService.ftl");
-        RENAME_TEMPLATE_MAP.put("Repository", "jpa/Repository.ftl");
+        RENAME_TEMPLATE_MAP.put("ExampleService", "ExampleService.ftl");
         
-        UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
-        UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        //UN_NAME_TEMPLATE_MAP.put("entity/Order", "entity/Order.java");
+        //UN_NAME_TEMPLATE_MAP.put("entity/OrderItem", "entity/OrderItem.java");
+        //UN_NAME_TEMPLATE_MAP.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+        //UN_NAME_TEMPLATE_MAP.put("mybatis/OrderRepository", "repository/OrderRepository.java");
+        UN_NAME_TEMPLATE_MAP.put("mybatis/UserRepository", "repository/UserRepository.java");
         UN_NAME_TEMPLATE_MAP.put("entity/User", "entity/User.java");
-        UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
+        //UN_NAME_TEMPLATE_MAP.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
 
         RESOURCE_TEMPLATE_MAP.put("log/logback", "logback.xml");
-        RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
-
+        //RESOURCE_TEMPLATE_MAP.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+        //RESOURCE_TEMPLATE_MAP.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+        //RESOURCE_TEMPLATE_MAP.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+        RESOURCE_TEMPLATE_MAP.put("mappers/UserMapper", "mappers/UserMapper.xml");
         RESOURCE_TEMPLATE_MAP.put("properties/application", "application.properties");
     }
 
-    public SpringbootStarterJpaGenerator() {
+    public SpringBootStarterMybatisGenerator() {
         super(RENAME_TEMPLATE_MAP, UN_NAME_TEMPLATE_MAP, RESOURCE_TEMPLATE_MAP);
     }
     
     @Override
     protected String getGenerator() {
-        return "springboot-starter-jpa";
+        return "spring-boot-starter-mybatis";
     }
     
     public static void main(String[] args) {
-        SpringbootStarterJpaGenerator generator = new SpringbootStarterJpaGenerator();
+        SpringBootStarterMybatisGenerator generator = new SpringBootStarterMybatisGenerator();
         generator.exec();
     }
 }
