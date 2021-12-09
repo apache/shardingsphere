@@ -42,6 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 @Setter
 @Slf4j
+// TODO share for totally new scenario
 public final class JobConfiguration {
     
     static {

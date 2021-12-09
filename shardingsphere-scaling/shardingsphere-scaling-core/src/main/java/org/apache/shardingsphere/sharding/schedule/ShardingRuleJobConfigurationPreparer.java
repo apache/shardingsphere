@@ -110,6 +110,7 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
                 .orElse("");
     }
     
+    // TODO handle several rules changed or dataSources changed
     @Override
     public List<TaskConfiguration> convertToTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
