@@ -28,8 +28,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +51,7 @@ public final class AuthorityRuleConfigurationYamlSwapperTest {
 
         YamlAuthorityRuleConfiguration result = swapper.swapToYamlConfiguration(authorityRuleConfiguration);
         assertNotNull(result);
-        assertEquals(0, result.getUsers().size());
+        assertThat(0, is(result.getUsers().size()));
         assertNotNull(result.getProvider());
     }
 
@@ -64,26 +66,27 @@ public final class AuthorityRuleConfigurationYamlSwapperTest {
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
 
-        final AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
+        AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
 
         assertNotNull(resultConfig);
         assertNotNull(resultConfig.getUsers());
-        assertEquals(1, resultConfig.getUsers().size());
+        assertThat(1, is(resultConfig.getUsers().size()));
         assertNotNull(resultConfig.getProvider());
     }
 
     @Test
     public void getTypeClass() {
-        assertEquals(AuthorityRuleConfiguration.class, swapper.getTypeClass());
+        assertThat(AuthorityRuleConfiguration.class, equalTo(swapper.getTypeClass()));
     }
 
     @Test
     public void getRuleTagName() {
-        assertEquals("AUTHORITY", swapper.getRuleTagName());
+        assertThat("AUTHORITY", equalTo(swapper.getRuleTagName()));
     }
 
     @Test
     public void getOrder() {
-        assertEquals(500, swapper.getOrder());
+        assertThat(500, is(swapper.getOrder()));
     }
 }
+
