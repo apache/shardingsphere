@@ -21,51 +21,6 @@
         <input sql="ALTER TABLE t_account_bak ADD COLUMN id int not null  ,  ADD COLUMN password varchar(255) not null default ''" />
         <output sql="ALTER TABLE t_account_bak ADD COLUMN id int not null  ,  ADD COLUMN cipher_password varchar(255) not null default '' , ADD COLUMN assisted_query_password varchar(255) not null default '' , ADD COLUMN plain_password varchar(255) not null default ''" />
     </rewrite-assertion>
-
-    <rewrite-assertion id="add_column_for_plain1" db-types="Postgre">
-        <input sql="ALTER TABLE t_account ADD COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account ADD COLUMN id int not null after assisted_query_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="add_column_for_plain2" db-types="Postgre">
-        <input sql="ALTER TABLE t_account ADD COLUMN id int not null after amount" />
-        <output sql="ALTER TABLE t_account ADD COLUMN id int not null after cipher_amount" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="add_column_for_plain3" db-types="Postgre">
-        <input sql="ALTER TABLE t_account_bak ADD COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account_bak ADD COLUMN id int not null after plain_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="modify_column_for_plain1" db-types="Postgre">
-        <input sql="ALTER TABLE t_account MODIFY COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account MODIFY COLUMN id int not null after assisted_query_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="modify_column_for_plain2" db-types="Postgre">
-        <input sql="ALTER TABLE t_account MODIFY COLUMN id int not null after amount" />
-        <output sql="ALTER TABLE t_account MODIFY COLUMN id int not null after cipher_amount" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="modify_column_for_plain3" db-types="Postgre">
-        <input sql="ALTER TABLE t_account_bak MODIFY COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account_bak MODIFY COLUMN id int not null after plain_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="change_column_for_plain1" db-types="Postgre">
-        <input sql="ALTER TABLE t_account CHANGE COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account CHANGE COLUMN id int not null after assisted_query_password" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="change_column_for_plain2" db-types="Postgre">
-        <input sql="ALTER TABLE t_account CHANGE COLUMN id int not null after amount" />
-        <output sql="ALTER TABLE t_account CHANGE COLUMN id int not null after cipher_amount" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="change_column_for_plain3" db-types="Postgre">
-        <input sql="ALTER TABLE t_account_bak CHANGE COLUMN id int not null after password" />
-        <output sql="ALTER TABLE t_account_bak CHANGE COLUMN id int not null after plain_password" />
-    </rewrite-assertion>
     
     <rewrite-assertion id="modify_column_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak MODIFY COLUMN password varchar(255) not null default ''" />
