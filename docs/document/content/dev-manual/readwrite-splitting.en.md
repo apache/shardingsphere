@@ -15,3 +15,4 @@ chapter = true
 | ------------------------------------- | ------------------------------------------------------- |
 | RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
 | RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
+| WeightReplicaLoadBalanceAlgorithm     | Weight load balance algorithm of replica databases      |

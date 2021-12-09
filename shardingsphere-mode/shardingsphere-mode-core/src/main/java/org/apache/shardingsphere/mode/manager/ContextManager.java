@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
@@ -42,6 +41,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -70,6 +70,8 @@ public final class ContextManager implements AutoCloseable {
     
     private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
+    private volatile ModeScheduleContext modeScheduleContext;
+    
     private final StateContext stateContext = new StateContext();
     
     /**
@@ -77,10 +79,12 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
+     * @param modeScheduleContext mode schedule context
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final ModeScheduleContext modeScheduleContext) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
+        this.modeScheduleContext = modeScheduleContext;
     }
     
     /**
@@ -122,8 +126,8 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         MetaDataContexts newMetaDataContexts = buildNewMetaDataContext(schemaName);
-        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName,
-                newMetaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(schemaName));
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
+                newMetaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName));
         metaDataContexts.getMetaDataMap().put(schemaName, newMetaDataContexts.getMetaData(schemaName));
     }
     
@@ -134,7 +138,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void deleteSchema(final String schemaName) {
         if (metaDataContexts.getMetaDataMap().containsKey(schemaName)) {
-            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().remove(schemaName);
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().remove(schemaName);
             metaDataContexts.getOptimizerContext().getParserContexts().remove(schemaName);
             metaDataContexts.getOptimizerContext().getPlannerContexts().remove(schemaName);
             ShardingSphereMetaData removeMetaData = metaDataContexts.getMetaDataMap().remove(schemaName);
@@ -184,7 +188,7 @@ public final class ContextManager implements AutoCloseable {
     public void alterRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
         try {
             MetaDataContexts changedMetaDataContexts = buildChangedMetaDataContext(metaDataContexts.getMetaDataMap().get(schemaName), ruleConfigs);
-            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getMetaData().getSchemas());
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas());
             Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
             metaDataMap.putAll(changedMetaDataContexts.getMetaDataMap());
             renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
@@ -202,7 +206,7 @@ public final class ContextManager implements AutoCloseable {
     public void alterDataSourceConfiguration(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         try {
             MetaDataContexts changedMetaDataContext = buildChangedMetaDataContextWithChangedDataSource(metaDataContexts.getMetaDataMap().get(schemaName), dataSourceConfigurations);
-            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getFederationMetaData().getSchemas());
             Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
             metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
             Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, dataSourceConfigurations);
@@ -221,15 +225,12 @@ public final class ContextManager implements AutoCloseable {
      * @param schema schema
      */
     public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
-        Collection<TableMetaData> tableMetaDataList = schema.getTables().values();
         ShardingSphereMetaData kernelMetaData = new ShardingSphereMetaData(schemaName, metaDataContexts.getMetaData(schemaName).getResource(),
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), SchemaBuilder.buildKernelSchema(tableMetaDataList,
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()));
+                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
         Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         kernelMetaDataMap.put(schemaName, kernelMetaData);
-        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().put(schemaName,
-                new FederationSchemaMetaData(schemaName, SchemaBuilder.buildFederationSchema(tableMetaDataList,
-                        metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()).getTables()));
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
+                new FederationSchemaMetaData(schemaName, schema.getTables()));
         renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
     }
     
@@ -316,15 +317,14 @@ public final class ContextManager implements AutoCloseable {
         Collection<MutableDataNodeRule> rules = metaDataContexts.getMetaData(schemaName).getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (String table : tables) {
             metaDataContexts.getMetaData(schemaName).getSchema().remove(table);
-            metaDataContexts.getOptimizerContext().getMetaData().getSchemas().get(schemaName).remove(table);
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).remove(table);
             rules.forEach(rule -> rule.remove(table));
         }
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
     }
     
     private void loadTableMetaData(final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        TableMetaData tableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName))
-                .map(each -> TableMetaDataBuilder.decorateKernelTableMetaData(each, materials.getRules())).orElseGet(TableMetaData::new);
+        TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(tableName, new TableMetaData());
         if (!tableMetaData.getColumns().isEmpty()) {
             metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
             metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
@@ -390,7 +390,7 @@ public final class ContextManager implements AutoCloseable {
     private void refreshMetaDataContext(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) throws SQLException {
         MetaDataContexts changedMetaDataContext = buildChangedMetaDataContextWithAddedDataSource(metaDataContexts.getMetaDataMap().get(schemaName), dataSourceConfigs);
         metaDataContexts.getMetaDataMap().putAll(changedMetaDataContext.getMetaDataMap());
-        metaDataContexts.getOptimizerContext().getMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getMetaData().getSchemas());
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getFederationMetaData().getSchemas());
         metaDataContexts.getOptimizerContext().getParserContexts().putAll(changedMetaDataContext.getOptimizerContext().getParserContexts());
         metaDataContexts.getOptimizerContext().getPlannerContexts().putAll(changedMetaDataContext.getOptimizerContext().getPlannerContexts());
         renewTransactionContext(schemaName, metaDataContexts.getMetaData(schemaName).getResource());
@@ -454,8 +454,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
-        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
-        closeTransactionEngine(changedStaleEngine);
+        ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().get(schemaName);
+        if (null != changedStaleEngine) {
+            closeTransactionEngine(changedStaleEngine);
+        }
+        transactionContexts.getEngines().put(schemaName, createNewEngine(resource.getDatabaseType(), resource.getDataSources()));
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {

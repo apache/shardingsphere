@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
 import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;

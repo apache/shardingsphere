@@ -19,10 +19,10 @@ package org.apache.shardingsphere.scaling.core.job.progress;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
-import org.apache.shardingsphere.cdc.core.position.FinishedPosition;
-import org.apache.shardingsphere.cdc.core.position.CDCPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
@@ -68,7 +68,7 @@ public final class JobProgress {
      * @param dataSourceName data source name
      * @return incremental position
      */
-    public Optional<CDCPosition<?>> getIncrementalPosition(final String dataSourceName) {
+    public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
         IncrementalTaskProgress progress = incrementalTaskProgressMap.get(dataSourceName);
         return Optional.ofNullable(null != progress ? progress.getPosition() : null);
     }
@@ -79,7 +79,7 @@ public final class JobProgress {
      * @param tableName table name
      * @return inventory position
      */
-    public Map<String, CDCPosition<?>> getInventoryPosition(final String tableName) {
+    public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
         Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
         return inventoryTaskProgressMap.entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())

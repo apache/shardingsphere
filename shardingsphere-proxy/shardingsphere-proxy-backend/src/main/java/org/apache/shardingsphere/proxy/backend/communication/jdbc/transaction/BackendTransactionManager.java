@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import org.apache.shardingsphere.transaction.TransactionHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -31,7 +31,7 @@ import java.sql.SQLException;
  */
 public final class BackendTransactionManager implements TransactionManager {
     
-    private final JDBCConnectionSession connection;
+    private final JDBCBackendConnection connection;
     
     private final TransactionType transactionType;
     
@@ -39,18 +39,18 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final ShardingSphereTransactionManager shardingSphereTransactionManager;
     
-    public BackendTransactionManager(final JDBCConnectionSession connectionSession) {
-        connection = connectionSession;
-        transactionType = connection.getTransactionStatus().getTransactionType();
-        localTransactionManager = new LocalTransactionManager(connectionSession);
-        ShardingSphereTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getSchemaName());
+    public BackendTransactionManager(final JDBCBackendConnection backendConnection) {
+        connection = backendConnection;
+        transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
+        localTransactionManager = new LocalTransactionManager(backendConnection);
+        ShardingSphereTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getConnectionSession().getSchemaName());
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
     }
     
     @Override
     public void begin() throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
-            connection.getTransactionStatus().setInTransaction(true);
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
             TransactionHolder.setInTransaction();
             connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
@@ -64,7 +64,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
+        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
@@ -72,7 +72,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingSphereTransactionManager.commit();
                 }
             } finally {
-                connection.getTransactionStatus().setInTransaction(false);
+                connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 TransactionHolder.clear();
             }
         }
@@ -80,7 +80,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
+        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.rollback();
@@ -88,7 +88,7 @@ public final class BackendTransactionManager implements TransactionManager {
                     shardingSphereTransactionManager.rollback();
                 }
             } finally {
-                connection.getTransactionStatus().setInTransaction(false);
+                connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 TransactionHolder.clear();
             }
         }
@@ -96,7 +96,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void setSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
@@ -107,7 +107,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void rollbackTo(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
@@ -118,7 +118,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void releaseSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {

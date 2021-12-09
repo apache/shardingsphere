@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,7 +31,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class LocalTransactionManager implements TransactionManager {
     
-    private final JDBCConnectionSession connection;
+    private final JDBCBackendConnection connection;
     
     @Override
     public void begin() {
@@ -46,7 +46,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
+        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(commitConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
@@ -68,7 +68,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void rollback() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
+        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(rollbackConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
@@ -90,7 +90,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void setSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         for (Connection each : connection.getCachedConnections().values()) {
@@ -107,7 +107,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void rollbackTo(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         Collection<SQLException> result = new LinkedList<>();
@@ -123,7 +123,7 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void releaseSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
         Collection<SQLException> result = new LinkedList<>();

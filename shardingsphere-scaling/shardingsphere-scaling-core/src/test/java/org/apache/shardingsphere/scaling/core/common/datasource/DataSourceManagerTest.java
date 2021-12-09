@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.common.datasource;
 
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.cdc.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.Before;
 import org.junit.Test;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -44,7 +44,7 @@ public final class PostgreSQLComSyncExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
-    private JDBCConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Test
     public void assertNewInstance() {

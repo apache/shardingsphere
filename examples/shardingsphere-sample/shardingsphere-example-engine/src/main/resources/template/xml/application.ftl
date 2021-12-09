@@ -25,6 +25,7 @@
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -39,6 +40,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/shadow
+                           http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}"/>
@@ -80,6 +83,8 @@
     <#include "readwriteSplittingApplication.ftl">
 <#elseif feature=="encrypt">
     <#include "encryptApplication.ftl">
+<#elseif feature=="shadow">
+    <#include "shadowApplication.ftl">
 </#if>
     
 <#if framework=="spring-namespace-mybatis">

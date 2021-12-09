@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -46,11 +46,11 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
 
     private final ConnectionSession connectionSession;
     
-    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final JDBCConnectionSession connectionSession) {
+    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        backendTransactionManager = new BackendTransactionManager(connectionSession);
+        backendTransactionManager = new BackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
     }
     
     @Override

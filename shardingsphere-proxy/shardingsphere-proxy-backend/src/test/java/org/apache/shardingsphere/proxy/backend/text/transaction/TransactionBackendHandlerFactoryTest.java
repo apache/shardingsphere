@@ -20,9 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -59,33 +60,39 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
-        JDBCConnectionSession connectionSession = mock(JDBCConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(connectionSession));
+        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
-        JDBCConnectionSession connectionSession = mock(JDBCConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(connectionSession));
+        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
     
     @Test
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, null), instanceOf(BroadcastDatabaseBackendHandler.class));
+        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(BroadcastDatabaseBackendHandler.class));
     }
     
     @SuppressWarnings("unchecked")

@@ -62,17 +62,17 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        this(config.getDataSources(), getDiscoveryTypes(config.getDiscoveryTypes()), schemaName, dataSourceMap);
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), getDiscoveryTypes(config.getDiscoveryTypes()));
     }
     
-    public DatabaseDiscoveryRule(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        this(config.getDataSources(), config.getDiscoveryTypes(), schemaName, dataSourceMap);
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryTypes());
     }
     
-    private DatabaseDiscoveryRule(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs, final Map<String, DatabaseDiscoveryType> discoveryTypes,
-                                  final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        checkDataSourcesArguments(dataSourceRuleConfigs, dataSourceMap);
+    private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
+                                  final Map<String, DatabaseDiscoveryType> discoveryTypes) {
+        checkDataSourcesArguments(dataSourceMap, dataSourceRuleConfigs);
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs);
         startMonitor(schemaName, dataSourceMap);
@@ -87,9 +87,9 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void checkDataSourcesArguments(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
+    private void checkDataSourcesArguments(final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources) {
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
+        Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
     }
     
     private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources) {

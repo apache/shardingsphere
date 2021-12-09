@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.state;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -28,11 +28,10 @@ public interface ProxyState {
     
     /**
      * Execute command.
-     * 
-     * @param context channel handler context
+     *  @param context channel handler context
      * @param message message
      * @param databaseProtocolFrontendEngine database protocol frontend engine
      * @param connectionSession connection session
      */
-    void execute(ChannelHandlerContext context, Object message, DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, JDBCConnectionSession connectionSession);
+    void execute(ChannelHandlerContext context, Object message, DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, ConnectionSession connectionSession);
 }

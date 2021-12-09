@@ -24,15 +24,13 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -88,20 +86,17 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
-        Map<String, ShardingSphereMetaData> kernelMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
-        Map<String, ShardingSphereMetaData> federationMetaData = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, ShardingSphereMetaData> metaData = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules.get(each));
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            Collection<TableMetaData> tableMetaDataList = schemas.get(each).getTables().values();
-            federationMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildFederationSchema(tableMetaDataList, rules.get(each))));
-            kernelMetaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, SchemaBuilder.buildKernelSchema(tableMetaDataList, rules.get(each))));
+            metaData.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, schemas.get(each)));
         }
-        return new MetaDataContexts(metaDataPersistService, kernelMetaData, 
-                buildGlobalSchemaMetaData(kernelMetaData), executorEngine, props, OptimizerContextFactory.create(federationMetaData));
+        ShardingSphereRuleMetaData globalMetaData = buildGlobalSchemaMetaData(metaData);
+        return new MetaDataContexts(metaDataPersistService, metaData, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaData, globalMetaData));
     }
     
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {

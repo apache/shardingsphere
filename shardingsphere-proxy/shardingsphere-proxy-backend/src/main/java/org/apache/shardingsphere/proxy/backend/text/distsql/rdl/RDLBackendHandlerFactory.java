@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourc
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AlterResourceBackendHandler;
@@ -49,11 +49,11 @@ public final class RDLBackendHandlerFactory {
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final JDBCConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         return createBackendHandler(databaseType, sqlStatement, connectionSession);
     }
     
-    private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final JDBCConnectionSession connectionSession) {
+    private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, connectionSession);
         }

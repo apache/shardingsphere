@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.cdc.mysql.MySQLIncrementalDumper;
-import org.apache.shardingsphere.cdc.mysql.MySQLInventoryDumper;
-import org.apache.shardingsphere.cdc.mysql.MySQLPositionInitializer;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLPositionInitializer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;

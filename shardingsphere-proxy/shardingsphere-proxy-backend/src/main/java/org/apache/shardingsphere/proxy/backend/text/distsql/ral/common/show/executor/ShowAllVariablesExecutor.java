@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCConnectionSession;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
@@ -39,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
     
-    private final JDBCConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
@@ -58,7 +59,9 @@ public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
             rows.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
         rows.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString())));
-        rows.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getConnectionSize()));
+        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
+            rows.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+        }
         rows.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
         return new MultipleLocalDataMergedResult(rows);
     }

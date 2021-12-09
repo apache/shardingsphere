@@ -128,4 +128,4 @@ Architects can adjust the system architecture to the most applicable one to thei
 
 ## Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)

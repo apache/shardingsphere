@@ -40,6 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -83,7 +84,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port);
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        contextManager.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
         afterBuildContextManager();
         return contextManager;
     }

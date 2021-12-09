@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm
 org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm
+org.apache.shardingsphere.readwritesplitting.algorithm.WeightReplicaLoadBalanceAlgorithm

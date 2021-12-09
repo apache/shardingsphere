@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.cdc.postgresql.PostgreSQLWalDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLPositionInitializer;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
-import org.apache.shardingsphere.cdc.postgresql.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.cdc.postgresql.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 import org.junit.Test;
