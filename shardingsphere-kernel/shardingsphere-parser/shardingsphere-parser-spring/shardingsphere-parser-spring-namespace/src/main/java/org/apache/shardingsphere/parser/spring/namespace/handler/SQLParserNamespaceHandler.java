@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.config;
+package org.apache.shardingsphere.parser.spring.namespace.handler;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.parser.spring.namespace.parser.SQLParserRuleBeanDefinitionParser;
+import org.apache.shardingsphere.parser.spring.namespace.tag.SQLParserRuleBeanDefinitionTag;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * SQL parser rule configuration.
+ * SQL parser rule namespace handler.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
+public final class SQLParserNamespaceHandler extends NamespaceHandlerSupport {
     
-    private boolean sqlCommentParseEnabled;
-    
-    private CacheOption parseTreeCacheOption;
-    
-    private CacheOption sqlStatementCacheOption;
+    @Override
+    public void init() {
+        registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.ROOT_TAG, new SQLParserRuleBeanDefinitionParser());
+    }
 }
