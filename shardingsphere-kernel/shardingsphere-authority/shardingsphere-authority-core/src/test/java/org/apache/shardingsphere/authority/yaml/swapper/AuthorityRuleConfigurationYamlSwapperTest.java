@@ -34,9 +34,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthorityRuleConfigurationYamlSwapperTest {
+public final class AuthorityRuleConfigurationYamlSwapperTest {
 
-    private AuthorityRuleConfigurationYamlSwapper swapper = new AuthorityRuleConfigurationYamlSwapper();
+    private final AuthorityRuleConfigurationYamlSwapper swapper = new AuthorityRuleConfigurationYamlSwapper();
 
     @Test
     public void swapToYamlConfigurationTest() {
@@ -47,7 +47,7 @@ public class AuthorityRuleConfigurationYamlSwapperTest {
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
 
-        final YamlAuthorityRuleConfiguration result = swapper.swapToYamlConfiguration(authorityRuleConfiguration);
+        YamlAuthorityRuleConfiguration result = swapper.swapToYamlConfiguration(authorityRuleConfiguration);
         assertNotNull(result);
         assertEquals(0, result.getUsers().size());
         assertNotNull(result.getProvider());
