@@ -149,6 +149,11 @@
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?)=(SELECT assisted_query_certificate_number FROM t_account_bak WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2, assisted_query_3" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_join_table_ref1" db-types="MySQL">
+        <input sql="select t_account.certificate_number, t_account.amount, t_account_bak.certificate_number from t_account, t_account_bak where t_account.certificate_number = t_account_bak.certificate_number and t_account.amount > ? " parameters="1" />
+        <output sql="select t_account.cipher_certificate_number AS certificate_number, t_account.cipher_amount AS amount, t_account_bak.cipher_certificate_number AS certificate_number from t_account, t_account_bak where t_account.assisted_query_certificate_number = t_account_bak.assisted_query_certificate_number and t_account.cipher_amount > ? " parameters="1" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_not_nested_subquery_in_predicate_in_condition" db-types="MySQL">
         <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE u.certificate_number IN (SELECT certificate_number FROM t_account WHERE password=?) AND u.password=?" parameters="1, 2" />
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE u.assisted_query_certificate_number IN (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />

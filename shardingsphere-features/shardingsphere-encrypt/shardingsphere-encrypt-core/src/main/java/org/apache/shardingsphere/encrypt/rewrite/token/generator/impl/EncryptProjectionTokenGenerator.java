@@ -97,9 +97,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private SubstitutableColumnNameToken generateSQLTokens(final String tableName, final ColumnProjectionSegment columnSegment, 
                                                            final ColumnProjection columnProjection, final SubqueryType subqueryType) {
-        Collection<ColumnProjection> projections = generateProjections(tableName, columnProjection, subqueryType, false);
-        int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStartIndex() : columnSegment.getColumn().getStartIndex();
+        List<ColumnProjection> projections = generateProjections(tableName, columnProjection, subqueryType, false);
+        int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStopIndex() + 2 : columnSegment.getColumn().getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
+        processWithFirstColumnProjection(columnSegment, projections);
         return new SubstitutableColumnNameToken(startIndex, stopIndex, projections);
     }
     
@@ -116,6 +117,17 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         }
         previousSQLTokens.removeIf(each -> each.getStartIndex() == segment.getStartIndex());
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
+    }
+    
+    private void processWithFirstColumnProjection(final ColumnProjectionSegment columnSegment, final List<ColumnProjection> projections) {
+        columnSegment.getColumn().getOwner().ifPresent(optional -> {
+            ColumnProjection firstColumnProjection = projections.get(0);
+            String owner = columnSegment.getColumn().getOwner().get().getIdentifier().getValue();
+            if (owner.equalsIgnoreCase(firstColumnProjection.getOwner())) {
+                String alias = firstColumnProjection.getAlias().isPresent() ? firstColumnProjection.getAlias().get() : null;
+                projections.set(0, new ColumnProjection(null, firstColumnProjection.getName(), alias));
+            }
+        });
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
@@ -143,8 +155,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand) {
-        Collection<ColumnProjection> result = new LinkedList<>();
+    private List<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand) {
+        List<ColumnProjection> result = new LinkedList<>();
         if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
             result.add(generatePredicateSubqueryProjection(tableName, column));
         } else if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType)) {
