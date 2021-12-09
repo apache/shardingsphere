@@ -20,30 +20,32 @@ package org.apache.shardingsphere.authority.rule.builder;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
-public class DefaultAuthorityRuleConfigurationBuilderTest {
+public final class DefaultAuthorityRuleConfigurationBuilderTest {
 
-    private DefaultAuthorityRuleConfigurationBuilder builder = new DefaultAuthorityRuleConfigurationBuilder();
+    private final DefaultAuthorityRuleConfigurationBuilder builder = new DefaultAuthorityRuleConfigurationBuilder();
 
     @Test
     public void buildTest() {
-        final AuthorityRuleConfiguration build = builder.build();
+        AuthorityRuleConfiguration build = builder.build();
         assertNotNull(build);
         assertNotNull(build.getProvider());
-        assertEquals("ALL_PRIVILEGES_PERMITTED", build.getProvider().getType());
-        assertEquals(1, build.getUsers().size());
+        assertThat("ALL_PRIVILEGES_PERMITTED", equalTo(build.getProvider().getType()));
+        assertThat(1, is(build.getUsers().size()));
     }
 
     @Test
     public void getOrder() {
-        final int order = builder.getOrder();
-        assertEquals(500, order);
+        int order = builder.getOrder();
+        assertThat(500, is(order));
     }
 
     @Test
     public void getTypeClass() {
-        assertEquals(AuthorityRuleBuilder.class, builder.getTypeClass());
+        assertThat(AuthorityRuleBuilder.class, equalTo(builder.getTypeClass()));
     }
 }
