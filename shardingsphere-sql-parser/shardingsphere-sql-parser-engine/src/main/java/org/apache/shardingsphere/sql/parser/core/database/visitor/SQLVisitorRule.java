@@ -350,7 +350,9 @@ public enum SQLVisitorRule {
 
     ALTER_SERVICE("AlterService", SQLStatementType.DDL),
 
-    DROP_SERVICE("DropService", SQLStatementType.DDL);
+    DROP_SERVICE("DropService", SQLStatementType.DDL),
+    
+    COPY("Copy", SQLStatementType.DML);
 
     private final String name;
     
