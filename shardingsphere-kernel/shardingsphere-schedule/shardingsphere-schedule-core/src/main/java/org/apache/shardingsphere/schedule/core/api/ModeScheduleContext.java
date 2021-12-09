@@ -53,14 +53,14 @@ public final class ModeScheduleContext {
         if (null == modeConfig) {
             return null;
         }
-        String modeType = modeConfig.getType();
+        String modeType = modeConfig.getType().toUpperCase();
         switch (modeType) {
             // TODO do not hard-code mode type, refactor later
-            case "Cluster":
+            case "CLUSTER":
                 return initRegistryCenterForClusterMode(modeConfig);
-            case "Standalone":
+            case "STANDALONE":
                 return null;
-            case "Memory":
+            case "MEMORY":
                 return null;
             default:
                 // TODO ModeConfiguration.type is not limited, it could be any value
@@ -73,7 +73,7 @@ public final class ModeScheduleContext {
         String clusterType = modeConfig.getRepository().getType();
         Properties props = modeConfig.getRepository().getProps();
         // TODO do not hard-code cluster type and property key, refactor later
-        if ("ZooKeeper".equals(clusterType)) {
+        if ("ZooKeeper".equalsIgnoreCase(clusterType)) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), props.getProperty("namespace"));
             CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
             result.init();
