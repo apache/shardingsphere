@@ -114,3 +114,4 @@ public class EncryptPredicateParameterRewriterTest {
         assertEquals(1, parameterBuilder.getParameters().size());
     }
 }
+
