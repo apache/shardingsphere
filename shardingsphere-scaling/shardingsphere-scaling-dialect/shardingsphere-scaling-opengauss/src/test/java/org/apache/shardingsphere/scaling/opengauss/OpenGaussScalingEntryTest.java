@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.opengauss;
 
-import org.apache.shardingsphere.cdc.opengauss.OpenGaussPositionInitializer;
-import org.apache.shardingsphere.cdc.opengauss.OpenGaussWalDumper;
-import org.apache.shardingsphere.cdc.postgresql.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussPositionInitializer;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;

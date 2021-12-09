@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.cdc.core.CDCDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.common.exception.UnexpectedDataRecordOrderException;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
-import org.apache.shardingsphere.cdc.core.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 
 import java.util.ArrayList;
@@ -56,11 +56,11 @@ public final class DataRecordMerger {
     public List<DataRecord> merge(final List<DataRecord> dataRecords) {
         Map<DataRecord.Key, DataRecord> result = new HashMap<>();
         dataRecords.forEach(dataRecord -> {
-            if (CDCDataChangeType.INSERT.equals(dataRecord.getType())) {
+            if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
                 mergeInsert(dataRecord, result);
-            } else if (CDCDataChangeType.UPDATE.equals(dataRecord.getType())) {
+            } else if (IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
                 mergeUpdate(dataRecord, result);
-            } else if (CDCDataChangeType.DELETE.equals(dataRecord.getType())) {
+            } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
                 mergeDelete(dataRecord, result);
             }
         });
@@ -80,16 +80,16 @@ public final class DataRecordMerger {
         for (Entry<String, List<DataRecord>> each : tableGroup.entrySet()) {
             Map<String, List<DataRecord>> typeGroup = each.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
             result.add(new GroupedDataRecord(each.getKey(),
-                    typeGroup.get(CDCDataChangeType.INSERT),
-                    typeGroup.get(CDCDataChangeType.UPDATE),
-                    typeGroup.get(CDCDataChangeType.DELETE)));
+                    typeGroup.get(IngestDataChangeType.INSERT),
+                    typeGroup.get(IngestDataChangeType.UPDATE),
+                    typeGroup.get(IngestDataChangeType.DELETE)));
         }
         return result;
     }
     
     private void mergeInsert(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
-        if (null != beforeDataRecord && !CDCDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
+        if (null != beforeDataRecord && !IngestDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
             throw new UnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
         }
         dataRecords.put(dataRecord.getKey(), dataRecord);
@@ -103,33 +103,33 @@ public final class DataRecordMerger {
             dataRecords.put(dataRecord.getKey(), dataRecord);
             return;
         }
-        if (CDCDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
+        if (IngestDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
             throw new UnsupportedOperationException();
         }
         if (checkUpdatedPrimaryKey(dataRecord)) {
             dataRecords.remove(dataRecord.getOldKey());
         }
-        if (CDCDataChangeType.INSERT.equals(beforeDataRecord.getType())) {
+        if (IngestDataChangeType.INSERT.equals(beforeDataRecord.getType())) {
             DataRecord mergedDataRecord = mergeColumn(beforeDataRecord, dataRecord);
             mergedDataRecord.setTableName(dataRecord.getTableName());
-            mergedDataRecord.setType(CDCDataChangeType.INSERT);
+            mergedDataRecord.setType(IngestDataChangeType.INSERT);
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
             return;
         }
-        if (CDCDataChangeType.UPDATE.equals(beforeDataRecord.getType())) {
+        if (IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType())) {
             DataRecord mergedDataRecord = mergeColumn(beforeDataRecord, dataRecord);
             mergedDataRecord.setTableName(dataRecord.getTableName());
-            mergedDataRecord.setType(CDCDataChangeType.UPDATE);
+            mergedDataRecord.setType(IngestDataChangeType.UPDATE);
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
         }
     }
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
-        if (null != beforeDataRecord && (CDCDataChangeType.DELETE.equals(beforeDataRecord.getType()))) {
+        if (null != beforeDataRecord && (IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()))) {
             throw new UnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
         }
-        if (null != beforeDataRecord && CDCDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
+        if (null != beforeDataRecord && IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(
@@ -142,7 +142,7 @@ public final class DataRecordMerger {
                 ));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());
-            mergedDataRecord.setType(CDCDataChangeType.DELETE);
+            mergedDataRecord.setType(IngestDataChangeType.DELETE);
             dataRecords.remove(beforeDataRecord.getKey());
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
         } else {

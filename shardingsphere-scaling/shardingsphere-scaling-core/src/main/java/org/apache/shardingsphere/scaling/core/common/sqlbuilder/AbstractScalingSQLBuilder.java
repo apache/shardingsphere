@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.common.sqlbuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
 import java.util.Collection;
 import java.util.List;

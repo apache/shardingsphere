@@ -125,7 +125,7 @@ public final class ReadwriteSplittingDataSourceRule {
      */
     public Map<String, String> getAutoAwareDataSources() {
         Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        if (dataSourceNameAware.isPresent()) {
+        if (dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
             Map<String, String> result = new HashMap<>(2, 1);
             result.put(ReadwriteSplittingRuleConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
             result.put(ReadwriteSplittingRuleConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));

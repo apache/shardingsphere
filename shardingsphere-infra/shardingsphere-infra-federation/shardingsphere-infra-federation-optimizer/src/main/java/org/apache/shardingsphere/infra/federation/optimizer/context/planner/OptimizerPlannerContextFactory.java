@@ -68,7 +68,8 @@ public final class OptimizerPlannerContextFactory {
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
             CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-            result.put(schemaName, new OptimizerPlannerContext(validator, createConverter(catalogReader, validator, relDataTypeFactory)));
+            SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
+            result.put(schemaName, new OptimizerPlannerContext(validator, converter));
         }
         return result;
     }

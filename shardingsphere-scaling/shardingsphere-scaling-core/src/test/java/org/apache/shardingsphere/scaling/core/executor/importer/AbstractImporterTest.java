@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
-import org.apache.shardingsphere.cdc.core.channel.Channel;
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
-import org.apache.shardingsphere.cdc.core.record.FinishedRecord;
-import org.apache.shardingsphere.cdc.core.record.Record;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.cdc.core.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

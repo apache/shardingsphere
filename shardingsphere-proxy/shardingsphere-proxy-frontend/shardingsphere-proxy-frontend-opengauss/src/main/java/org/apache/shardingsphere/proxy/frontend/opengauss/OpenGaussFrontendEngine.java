@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -36,6 +36,9 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     @Getter
     private final OpenGaussCommandExecuteEngine commandExecuteEngine = new OpenGaussCommandExecuteEngine();
     
+    @Getter
+    private final OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
+    
     @Override
     public FrontendContext getFrontendContext() {
         return postgreSQLFrontendEngine.getFrontendContext();
@@ -44,11 +47,6 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     @Override
     public DatabasePacketCodecEngine<?> getCodecEngine() {
         return postgreSQLFrontendEngine.getCodecEngine();
-    }
-    
-    @Override
-    public AuthenticationEngine getAuthenticationEngine() {
-        return postgreSQLFrontendEngine.getAuthenticationEngine();
     }
     
     @Override

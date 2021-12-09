@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.common.exception;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
 @RequiredArgsConstructor
 public final class UnexpectedDataRecordOrderException extends RuntimeException {

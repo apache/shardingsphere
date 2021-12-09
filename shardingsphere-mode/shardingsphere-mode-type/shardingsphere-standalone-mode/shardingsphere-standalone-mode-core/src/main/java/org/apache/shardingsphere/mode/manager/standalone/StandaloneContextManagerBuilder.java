@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -79,7 +80,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 rules, standaloneProps).build(metaDataPersistService);
         TransactionContexts transactionContexts = createTransactionContexts(metaDataContexts);
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts);
+        result.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
         return result;
     }
     

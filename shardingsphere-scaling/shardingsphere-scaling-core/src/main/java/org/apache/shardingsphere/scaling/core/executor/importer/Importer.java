@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import org.apache.shardingsphere.cdc.core.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
 import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 /**

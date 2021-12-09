@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
+import org.apache.shardingsphere.schedule.core.executor.LifecycleExecutor;
 
 /**
  * Scaling task interface.

@@ -144,7 +144,7 @@
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        
+        <bcprov-jdk15on.version>1.64</bcprov-jdk15on.version>
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
     
@@ -998,6 +998,11 @@
                     <groupId>javax.activation</groupId>
                     <artifactId>javax.activation-api</artifactId>
                     <version>${activation-api.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <version>${bcprov-jdk15on.version}</version>
                 </dependency>
             </dependencies>
         </profile>

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.cdc.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.cdc.core.record.Column;
-import org.apache.shardingsphere.cdc.core.record.DataRecord;
-import org.apache.shardingsphere.cdc.mysql.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.junit.Test;

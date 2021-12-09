@@ -513,7 +513,7 @@
         <assertion expected-data-file="select_in_or_encrypt.xml"/>
     </test-case>
     
-    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11, 22, 33, 44, 55, 66, 77, 88, 99)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_join_encrypt.xml"/>
     </test-case>
 
