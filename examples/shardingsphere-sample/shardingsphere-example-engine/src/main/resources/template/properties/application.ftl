@@ -52,4 +52,8 @@ spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
 spring.shardingsphere.datasource.names=ds-0
     
     <#include "encryptApplication.ftl">
+<#elseif feature=="shadow">
+spring.shardingsphere.datasource.names=ds-0,ds-1
+    
+    <#include "shadowApplication.ftl">
 </#if>
