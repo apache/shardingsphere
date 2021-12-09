@@ -40,6 +40,8 @@ public enum SQLVisitorRule {
     
     REPLACE("Replace", SQLStatementType.DML),
     
+    COPY("Copy", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
@@ -350,9 +352,7 @@ public enum SQLVisitorRule {
 
     ALTER_SERVICE("AlterService", SQLStatementType.DDL),
 
-    DROP_SERVICE("DropService", SQLStatementType.DDL),
-    
-    COPY("Copy", SQLStatementType.DML);
+    DROP_SERVICE("DropService", SQLStatementType.DDL);
 
     private final String name;
     
