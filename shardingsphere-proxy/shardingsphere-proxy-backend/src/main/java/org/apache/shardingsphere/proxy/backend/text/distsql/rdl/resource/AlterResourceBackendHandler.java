@@ -66,8 +66,6 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
             log.error("Alter resource failed", ex);
             DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourceConfigs.keySet()));
         }
-        ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDataSourceService().append(schemaName, dataSourceConfigs));
         return new UpdateResponseHeader(sqlStatement);
     }
     
