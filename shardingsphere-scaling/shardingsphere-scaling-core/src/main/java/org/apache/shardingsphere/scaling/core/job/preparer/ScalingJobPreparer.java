@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceCo
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -74,7 +75,9 @@ public final class ScalingJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        dataSourcePreparer.prepareTargetTables(jobConfig);
+        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getRuleConfig());
+        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
     }
     
     private void initDataSourceManager(final DataSourceManager dataSourceManager, final List<TaskConfiguration> taskConfigs) {

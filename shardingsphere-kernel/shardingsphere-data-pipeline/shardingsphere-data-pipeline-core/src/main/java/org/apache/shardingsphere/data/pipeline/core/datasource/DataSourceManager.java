@@ -71,7 +71,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public DataSource getDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+    public DataSourceWrapper getDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
         if (cachedDataSources.containsKey(dataSourceConfig)) {
             return cachedDataSources.get(dataSourceConfig);
         }

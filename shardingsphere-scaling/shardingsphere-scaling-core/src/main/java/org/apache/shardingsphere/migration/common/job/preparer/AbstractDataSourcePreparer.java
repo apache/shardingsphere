@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDB
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
@@ -67,12 +67,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    protected DataSourceWrapper getSourceDataSource(final JobConfiguration jobConfig) {
-        return dataSourceFactory.newInstance(jobConfig.getRuleConfig().getSource().unwrap());
+    protected DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(ruleConfig.getSource().unwrap());
     }
     
-    protected DataSourceWrapper getTargetDataSource(final JobConfiguration jobConfig) {
-        return dataSourceFactory.newInstance(jobConfig.getRuleConfig().getTarget().unwrap());
+    protected DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(ruleConfig.getTarget().unwrap());
     }
     
     protected Collection<String> getLogicTableNames(final TypedDataSourceConfiguration sourceConfig) {
