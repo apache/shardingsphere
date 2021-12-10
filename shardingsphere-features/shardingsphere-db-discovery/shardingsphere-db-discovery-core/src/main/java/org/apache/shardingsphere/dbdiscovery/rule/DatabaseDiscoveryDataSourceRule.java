@@ -42,7 +42,7 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final List<String> dataSourceNames;
     
-    private Properties heartbeatProps;
+    private final Properties heartbeatProps;
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
