@@ -37,6 +37,28 @@ chapter = true
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 | OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
+## DataSourceCreator
+
+| *SPI 名称*                | *详细说明*         |
+| ------------------------ | ----------------- |
+| DataSourceCreator        | 数据源创建器        |
+
+| *已知实现类*               | *详细说明*         |
+| ------------------------ | ----------------- |
+| DefaultDataSourceCreator | 默认数据源创建器     |
+| HikariDataSourceCreator  | Hikari 数据源创建器 |
+
+## DataSourceKiller
+
+| *SPI 名称*               | *详细说明*         |
+| ----------------------- | ----------------- |
+| DataSourceKiller        | 数据源销毁器        |
+
+| *已知实现类*              | *详细说明*         |
+| ----------------------- | ----------------- |
+| DefaultDataSourceKiller | 默认数据源销毁器     |
+| HikariDataSourceKiller  | Hikari 数据源销毁器 |
+
 ## SQLRouter
 
 | *SPI 名称*                           | *详细说明*                 |

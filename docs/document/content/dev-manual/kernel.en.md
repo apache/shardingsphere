@@ -37,6 +37,28 @@ chapter = true
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 | OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
+## DataSourceCreator
+
+| *SPI Name*               | *Description*               |
+| ------------------------ | --------------------------- |
+| DataSourceCreator        | Data source creator         |
+
+| *Implementation Class*   | *Description*               |
+| ------------------------ | --------------------------- |
+| DefaultDataSourceCreator | Default data source creator |
+| HikariDataSourceCreator  | Hikari data source creator  |
+
+## DataSourceKiller
+
+| *SPI Name*              | *Description*                |
+| ----------------------- | ---------------------------- |
+| DataSourceKiller        | Default data source killer   |
+
+| *Implementation Class*  | *Description*                |
+| ----------------------- | ---------------------------- |
+| DefaultDataSourceKiller | Default data source killer   |
+| HikariDataSourceKiller  | Hikari data source killer    |
+
 ## SQLRouter
 
 | *SPI Name*                          | *Description*                                         |
