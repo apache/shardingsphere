@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import org.apache.shardingsphere.infra.config.schedule.CronJobScheduler;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 
 /**
- * scheduler rule.
+ * Scheduler rule.
  */
 public interface SchedulerRule extends ShardingSphereRule {
     
     /**
-     *  get heartbeat jobs.
+     *  Get cron jobs.
      *
      * @param schemaName schema name.
      * @param dataSources datasource.
-     * @return cron job schedulers
+     * @return cron jobs
      */
-    List<CronJobScheduler> getCronJobs(String schemaName, Map<String, DataSource> dataSources);
+    List<CronJob> getCronJobs(String schemaName, Map<String, DataSource> dataSources);
 }

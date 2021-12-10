@@ -29,7 +29,7 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.schedule.CronJobScheduler;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 
 import java.util.Properties;
 import java.util.function.Consumer;
@@ -85,12 +85,12 @@ public final class ModeScheduleContext {
     }
     
     /**
-     * Schedule with cron.
+     * Start cron job.
      *
-     * @param job cron job scheduler
+     * @param job cron job
      */
     @SuppressWarnings("all")
-    public void cronJobScheduler(final CronJobScheduler job) {
+    public void startCronJob(final CronJob job) {
         if (null == registryCenter) {
             log.warn("registryCenter is null, ignore, jobName={}, cron={}", job.getJobName(), job.getCron());
             return;

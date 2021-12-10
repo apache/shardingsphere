@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.schedule.CronJobScheduler;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.SchedulerRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
@@ -206,12 +206,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     @Override
-    public List<CronJobScheduler> getCronJobs(final String schemaName, final Map<String, DataSource> dataSources) {
-        List<CronJobScheduler> result = new ArrayList<>(dataSourceRules.size());
+    public List<CronJob> getCronJobs(final String schemaName, final Map<String, DataSource> dataSources) {
+        List<CronJob> result = new ArrayList<>(dataSourceRules.size());
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.add(new CronJobScheduler(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
-                each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(),
-                        entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames()).execute(null),
+            result.add(new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
+                each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(), entry.getValue().getDatabaseDiscoveryType(),
+                        entry.getValue().getDisabledDataSourceNames()).execute(null),
                 entry.getValue().getHeartbeatProps().getProperty("keepAliveCron")));
         }
         return result;

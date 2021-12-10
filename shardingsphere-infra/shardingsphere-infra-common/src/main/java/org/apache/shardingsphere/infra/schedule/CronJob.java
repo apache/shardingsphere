@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schedule;
+package org.apache.shardingsphere.infra.schedule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 @Getter
-public final class CronJobScheduler {
+public final class CronJob {
     
     private final String jobName;
 
