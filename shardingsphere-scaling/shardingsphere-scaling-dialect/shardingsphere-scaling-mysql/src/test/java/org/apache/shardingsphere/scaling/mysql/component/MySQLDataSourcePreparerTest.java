@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDB
 import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
 import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourcePreparer;
 import org.junit.Before;
@@ -31,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,6 +67,7 @@ public final class MySQLDataSourcePreparerTest {
     @Before
     public void setUp() throws SQLException {
         when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfiguration);
+        when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
         when(ruleConfiguration.getSource()).thenReturn(sourceDataSourceConfigurationWrap);
         when(sourceDataSourceConfigurationWrap.unwrap()).thenReturn(sourceScalingDataSourceConfiguration);
         when(sourceScalingDataSourceConfiguration.toDataSource()).thenReturn(sourceDataSource);
