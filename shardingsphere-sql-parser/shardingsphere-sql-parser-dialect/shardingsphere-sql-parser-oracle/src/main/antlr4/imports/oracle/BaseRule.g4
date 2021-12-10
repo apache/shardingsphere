@@ -204,7 +204,7 @@ functionName
     ;
 
 dbLink
-    : identifier
+    : identifier (DOT_ identifier)*
     ;
 
 parameterValue
@@ -1198,5 +1198,9 @@ nationalCharset
     ;
 
 filenamePattern
+    : STRING_
+    ;
+
+connectString
     : STRING_
     ;

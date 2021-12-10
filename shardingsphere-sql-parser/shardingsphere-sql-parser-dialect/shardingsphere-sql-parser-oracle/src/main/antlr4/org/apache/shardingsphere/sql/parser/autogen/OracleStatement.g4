@@ -62,5 +62,6 @@ execute
     | purge
     | rename
     | createDatabase
+    | createDatabaseLink
     ) SEMI_?
     ;

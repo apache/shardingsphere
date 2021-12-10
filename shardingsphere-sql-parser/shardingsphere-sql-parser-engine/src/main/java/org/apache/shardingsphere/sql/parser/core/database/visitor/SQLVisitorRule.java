@@ -72,6 +72,8 @@ public enum SQLVisitorRule {
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
 
+    CREATE_DATABASE_LINK("CreateDatabaseLink", SQLStatementType.DDL),
+    
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
