@@ -36,6 +36,8 @@ import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -117,11 +119,11 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
     }
     
     private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
-        List<String> result = new LinkedList<>();
+        List<JobDataNodeEntry> dataNodeEntries = new ArrayList<>(actualDataNodes.size());
         for (Entry<String, List<DataNode>> entry : actualDataNodes.entrySet()) {
-            result.add(entry.getValue().get(0).format());
+            dataNodeEntries.add(new JobDataNodeEntry(entry.getKey(), entry.getValue()));
         }
-        return Joiner.on(',').join(result);
+        return new JobDataNodeLine(dataNodeEntries).marshal();
     }
     
     // TODO handle several rules changed or dataSources changed
@@ -165,7 +167,7 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
             log.info("jobShardingDataNodes null");
             return;
         }
-        // TODO simplify data source and table name converting, include tablesFirstDataNodes and jobShardingDataNodes format
+        // TODO simplify data source and table name converting, and jobShardingDataNodes format
         Map<String, Set<String>> jobDataSourceTableNameMap = toDataSourceTableNameMap(getJobShardingDataNodesEntry(handleConfig));
         totalDataSourceTableNameMap.entrySet().removeIf(entry -> !jobDataSourceTableNameMap.containsKey(entry.getKey()));
         for (Entry<String, Map<String, String>> entry : totalDataSourceTableNameMap.entrySet()) {
