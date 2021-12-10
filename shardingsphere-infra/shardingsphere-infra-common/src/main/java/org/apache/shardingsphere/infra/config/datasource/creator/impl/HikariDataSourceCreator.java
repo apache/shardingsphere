@@ -18,52 +18,34 @@
 package org.apache.shardingsphere.infra.config.datasource.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import lombok.Getter;
 
-import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Hikari data source creator.
  */
+@Getter
 public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
-    private final Map<String, Object> skippedProperties = new HashMap<>(2, 1);
+    private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
+    
+    private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
     public HikariDataSourceCreator() {
-        skippedProperties.put("minimumIdle", -1);
-        skippedProperties.put("maximumPoolSize", -1);
+        buildPropertySynonyms();
+        buildInvalidProperties();
     }
     
-    @Override
-    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
-        addPropertySynonyms(dataSourceConfig);
-        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
-        Method[] methods = result.getClass().getMethods();
-        for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
-            if (isInvalidProperty(entry.getKey(), entry.getValue())) {
-                continue;
-            }
-            setField(result, methods, entry.getKey(), entry.getValue());
-        }
-        return result;
+    private void buildPropertySynonyms() {
+        propertySynonyms.put("maxPoolSize", "maximumPoolSize");
+        propertySynonyms.put("minPoolSize", "minimumIdle");
     }
     
-    private void addPropertySynonyms(final DataSourceConfiguration dataSourceConfig) {
-        dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
-        dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
-    }
-    
-    private boolean isInvalidProperty(final String property, final Object value) {
-        return skippedProperties.containsKey(property) && null != value && value.equals(skippedProperties.get(property));
-    }
-    
-    @Override
-    public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfig(dataSource);
+    private void buildInvalidProperties() {
+        invalidProperties.put("minimumIdle", -1);
+        invalidProperties.put("maximumPoolSize", -1);
     }
     
     @Override

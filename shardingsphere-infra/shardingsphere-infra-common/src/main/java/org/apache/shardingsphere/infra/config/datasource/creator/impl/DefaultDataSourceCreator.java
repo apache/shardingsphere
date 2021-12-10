@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource.creator.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-
-import javax.sql.DataSource;
-import java.lang.reflect.Method;
-import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Default data source creator.
@@ -29,18 +26,13 @@ import java.util.Map.Entry;
 public final class DefaultDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
-    public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfig(dataSource);
+    protected Map<String, String> getPropertySynonyms() {
+        return Collections.emptyMap();
     }
     
     @Override
-    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
-        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
-        Method[] methods = result.getClass().getMethods();
-        for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
-            setField(result, methods, entry.getKey(), entry.getValue());
-        }
-        return result;
+    protected Map<String, Object> getInvalidProperties() {
+        return Collections.emptyMap();
     }
     
     @Override
