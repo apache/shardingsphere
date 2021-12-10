@@ -39,6 +39,11 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     }
     
     @Override
+    public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
+        return buildDataSourceConfiguration(dataSource);
+    }
+    
+    @Override
     public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
         addPropertySynonyms(dataSourceConfig);
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
@@ -59,11 +64,6 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
     private boolean isInvalidProperty(final String property, final Object value) {
         return skippedProperties.containsKey(property) && null != value && value.equals(skippedProperties.get(property));
-    }
-    
-    @Override
-    public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfig(dataSource);
     }
     
     @Override

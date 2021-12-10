@@ -30,7 +30,7 @@ public final class DefaultDataSourceCreator extends AbstractDataSourceCreator {
     
     @Override
     public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return buildDataSourceConfig(dataSource);
+        return buildDataSourceConfiguration(dataSource);
     }
     
     @Override
