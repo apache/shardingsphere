@@ -20,25 +20,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Expected database discovery rule.
+ * Expected database discovery definition rule.
  */
 @Getter
 @Setter
-public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedDatabaseDiscoveryDefinitionRule extends AbstractExpectedIdentifierSQLSegment {
+    
+    @XmlAttribute(name = "rule-name")
+    private String name;
     
     @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    private Collection<String> dataSources;
     
-    @XmlAttribute(name = "type")
-    private String discoveryTypeName;
+    @XmlElement(name = "discovery-type")
+    private ExpectedAlgorithm discoveryType;
     
-    @XmlElement(name = "properties")
-    private ExpectedProperties props;
+    @XmlElement(name = "heartbeat")
+    private ExpectedProperties discoveryHeartbeat;
 }

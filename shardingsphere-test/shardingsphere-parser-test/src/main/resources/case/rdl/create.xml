@@ -172,43 +172,66 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
-        <rule name="ha_group_0" type="mgr">
+    <create-database-discovery-definition-rule sql-case-id="create-database-discovery-definition-rule">
+        <rule rule-name="ha_group_0" type="mgr">
             <data-source>resource0</data-source>
             <data-source>resource1</data-source>
-            <properties>
-                <property key="keepAliveCron" value=""/>
-                <property key="groupName" value="92504d5b-6dec"/>
-            </properties>
+            <discovery-type algorithm-name="mgr">
+                <properties>
+                    <property key="groupName" value="92504d5b-6dec"/>
+                </properties>
+            </discovery-type>
+            <heartbeat>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </heartbeat>
         </rule>
-        <rule name="ha_group_1" type="mgr2">
+        <rule rule-name="ha_group_1" type="mgr2">
             <data-source>resource2</data-source>
             <data-source>resource3</data-source>
-            <properties>
-                <property key="keepAliveCron" value=""/>
-                <property key="groupName" value="92504d5b-6dec-2"/>
-            </properties>
+            <discovery-type algorithm-name="mgr2">
+                <properties>
+                    <property key="groupName" value="92504d5b-6dec-2"/>
+                </properties>
+            </discovery-type>
+            <heartbeat>
+                <property key="keepAliveCron" value="0/6 * * * * ?"/>
+            </heartbeat>
         </rule>
-    </create-database-discovery-rule>
+    </create-database-discovery-definition-rule>
 
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-with-quota">
-        <rule name="ha_group_0" type="mgr">
+    <create-database-discovery-construction-rule sql-case-id="create-database-discovery-construction-rule">
+        <rule rule-name="ha_group_0" type="ha_group_0_mgr" heartbeat="ha_group_0_heartbeat">
             <data-source>resource0</data-source>
             <data-source>resource1</data-source>
-            <properties>
-                <property key="keepAliveCron" value=""/>
-                <property key="groupName" value="92504d5b-6dec"/>
-            </properties>
         </rule>
-        <rule name="ha_group_1" type="mgr2">
+    </create-database-discovery-construction-rule>
+    
+    <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
+        <rule rule-name="ha_group_0" type="mgr">
+            <data-source>resource0</data-source>
+            <data-source>resource1</data-source>
+            <discovery-type algorithm-name="mgr">
+                <properties>
+                    <property key="groupName" value="92504d5b-6dec"/>
+                </properties>
+            </discovery-type>
+            <heartbeat>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </heartbeat>
+        </rule>
+        <rule rule-name="ha_group_1" type="mgr2">
             <data-source>resource2</data-source>
             <data-source>resource3</data-source>
-            <properties>
-                <property key="keepAliveCron" value=""/>
-                <property key="groupName" value="92504d5b-6dec-2"/>
-            </properties>
+            <discovery-type algorithm-name="mgr2">
+                <properties>
+                    <property key="groupName" value="92504d5b-6dec-2"/>
+                </properties>
+            </discovery-type>
+            <heartbeat>
+                <property key="keepAliveCron" value="0/6 * * * * ?"/>
+            </heartbeat>
         </rule>
-    </create-database-discovery-rule>
+    </create-database-discovery-definition-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <rule name="t_encrypt">

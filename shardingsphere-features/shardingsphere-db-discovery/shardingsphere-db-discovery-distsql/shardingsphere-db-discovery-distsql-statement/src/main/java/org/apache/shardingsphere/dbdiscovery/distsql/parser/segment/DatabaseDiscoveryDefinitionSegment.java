@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Create database discovery rule statement test case.
+ * Database discovery rule definition segment.
  */
 @Getter
-@Setter
-public final class CreateDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
+public final class DatabaseDiscoveryDefinitionSegment extends AbstractDatabaseDiscoverySegment {
     
-    @XmlElement(name = "rule")
-    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
+    private final AlgorithmSegment discoveryType;
+    
+    private final Properties discoveryHeartbeat;
+    
+    public DatabaseDiscoveryDefinitionSegment(final String name, final Collection<String> dataSources, final AlgorithmSegment discoveryType, final Properties discoveryHeartbeat) {
+        super(name, dataSources);
+        this.discoveryType = discoveryType;
+        this.discoveryHeartbeat = discoveryHeartbeat;
+    }
 }
