@@ -54,7 +54,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Collection<String> dataSourceNames;
     
-    private final Map<String, Collection<DataNode>> singleTableDataNodes;
+    private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
     public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
@@ -95,7 +95,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      */
     public boolean isSingleTablesInSameDataSource(final Collection<String> singleTableNames) {
         Set<String> dataSourceNames = singleTableNames.stream().map(each -> singleTableDataNodes.get(each.toLowerCase()))
-                .filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getDataSourceName)).collect(Collectors.toSet());
+                .filter(Objects::nonNull).map(SingleTableDataNode::getDataSourceName).collect(Collectors.toSet());
         return dataSourceNames.size() <= 1;
     }
     
@@ -107,16 +107,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<String> singleTableNames) {
-        Set<String> dataSourceNames = singleTableNames.stream().map(each -> singleTableDataNodes.get(each.toLowerCase()))
-                .filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getDataSourceName)).collect(Collectors.toSet());
-        if (dataSourceNames.size() > 1) {
+        if (!isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
-        if (dataSourceNames.isEmpty()) {
-            return true;
-        }
+        SingleTableDataNode dataNode = singleTableDataNodes.get(singleTableNames.iterator().next().toLowerCase());
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            if (!each.getDataSourceMapper().getLogicName().equals(dataSourceNames.iterator().next())) {
+            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
                 return false;
             }
         }
@@ -151,7 +147,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     @Override
     public void put(final String tableName, final String dataSourceName) {
         if (dataSourceNames.contains(dataSourceName)) {
-            singleTableDataNodes.put(tableName.toLowerCase(), Collections.singletonList(new DataNode(dataSourceName, tableName)));
+            singleTableDataNodes.put(tableName.toLowerCase(), new SingleTableDataNode(tableName, dataSourceName));
         }
     }
     
@@ -167,7 +163,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return singleTableDataNodes;
+        return singleTableDataNodes.values().stream().map(each -> new DataNode(each.getDataSourceName(), each.getTableName()))
+                .collect(Collectors.groupingBy(DataNode::getTableName, LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
     }
     
     @Override
@@ -197,12 +194,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return singleTableDataNodes.values().stream().filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getTableName)).collect(Collectors.toList());
+        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getTables() {
-        return singleTableDataNodes.values().stream().filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getTableName)).collect(Collectors.toList());
+        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
     }
     
     @Override

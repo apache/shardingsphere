@@ -24,13 +24,11 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,14 +49,14 @@ public final class SingleTableDataNodeLoader {
      * @param props configuration properties
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
-        Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
+    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                        final Collection<String> excludedTables, final ConfigurationProperties props) {
+        Map<String, SingleTableDataNode> result = new ConcurrentHashMap<>();
         boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, DataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, SingleTableDataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
-                Collection<DataNode> existDataNode = result.putIfAbsent(each.toLowerCase(), Collections.singletonList(dataNodeMap.get(each)));
+                SingleTableDataNode existDataNode = result.putIfAbsent(each.toLowerCase(), dataNodeMap.get(each));
                 if (checkDuplicateTable) {
                     Preconditions.checkState(null == existDataNode, "Single table conflict, there are multiple tables `%s` existed.", each);
                 }
@@ -67,12 +65,12 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, DataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
         Collection<String> tables = loadAllTableNames(databaseType, dataSource);
-        Map<String, DataNode> result = new HashMap<>(tables.size(), 1);
+        Map<String, SingleTableDataNode> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
             if (!excludedTables.contains(each)) {
-                result.put(each, new DataNode(dataSourceName, each));
+                result.put(each, new SingleTableDataNode(each, dataSourceName));
             }
         }
         return result;
