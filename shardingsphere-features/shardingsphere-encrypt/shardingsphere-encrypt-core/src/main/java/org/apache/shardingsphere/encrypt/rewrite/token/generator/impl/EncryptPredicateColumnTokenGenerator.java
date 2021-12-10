@@ -95,7 +95,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                     }
                 }
                 Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
-                SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName 
+                SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName
                     -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(()
                         -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
                 result.add(encryptColumnNameToken);
