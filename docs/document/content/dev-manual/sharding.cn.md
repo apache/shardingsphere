@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.6. </b>"
+pre = "<b>6.7. </b>"
 title = "数据分片"
-weight = 6
+weight = 7
 chapter = true
 +++
 

@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.7. </b>"
+pre = "<b>6.8. </b>"
 title = "读写分离"
-weight = 7
+weight = 8
 chapter = true
 +++
 
