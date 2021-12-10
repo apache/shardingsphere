@@ -130,7 +130,6 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
-                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -210,7 +209,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     public List<CronJobScheduler> getCronJobs(final String schemaName, final Map<String, DataSource> dataSources) {
         List<CronJobScheduler> result = new ArrayList<>(dataSourceRules.size());
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.add(new CronJobScheduler(entry.getValue().getDatabaseDiscoveryType().getType() + entry.getValue().getName(),
+            result.add(new CronJobScheduler(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
                 each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(),
                         entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames()).execute(null),
                 entry.getValue().getDatabaseDiscoveryType().getProps().getProperty("keepAliveCron")));
