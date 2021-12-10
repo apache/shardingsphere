@@ -106,8 +106,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : dataSources) {
             checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each);
             //TODO heartBeatConfig not empty when job finished.
-            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each,  null == heartBeatConfig.get(each.getDiscoveryHeartbeatName()) ? new Properties() :
-                    heartBeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
+            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, null == heartBeatConfig.get(each.getDiscoveryHeartbeatName())
+                    ? new Properties() : heartBeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         return result;
     }
