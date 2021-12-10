@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * create database discovery rule statement assert.
+ * Create database discovery rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateDatabaseDiscoveryRuleStatementAssert {
