@@ -28,10 +28,10 @@ import java.sql.SQLException;
 public interface DataSourceKiller extends TypedSPI, RequiredSPI {
     
     /**
-     * Gracefully kill the data source.
+     * Kill data source gracefully.
      * 
      * @param dataSource data source
      * @throws SQLException SQL exception
      */
-    void closeDataSource(DataSource dataSource) throws SQLException;
+    void kill(DataSource dataSource) throws SQLException;
 }

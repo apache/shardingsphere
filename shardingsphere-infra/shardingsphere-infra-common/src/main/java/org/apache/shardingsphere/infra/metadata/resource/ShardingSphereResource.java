@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.resource;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKillerFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import javax.sql.DataSource;
-
-import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
-import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKillerFactory;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * ShardingSphere resource.
@@ -85,7 +82,6 @@ public final class ShardingSphereResource {
      * @throws SQLException SQL exception
      */
     public void close(final DataSource dataSource) throws SQLException {
-        DataSourceKiller dataSourceKiller = DataSourceKillerFactory.getDataSourceKiller(dataSource.getClass().getName());
-        dataSourceKiller.closeDataSource(dataSource);
+        DataSourceKillerFactory.getInstance(dataSource.getClass().getName()).kill(dataSource);
     }
 }

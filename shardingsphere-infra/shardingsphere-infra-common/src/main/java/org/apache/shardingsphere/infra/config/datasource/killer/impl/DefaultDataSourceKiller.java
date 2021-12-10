@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.config.datasource.killer.impl;
 
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
 
 import javax.sql.DataSource;
-
-import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller;
+import java.sql.SQLException;
 
 /**
  * Default data source killer.
@@ -29,12 +28,7 @@ import org.apache.shardingsphere.infra.config.datasource.killer.DataSourceKiller
 public final class DefaultDataSourceKiller implements DataSourceKiller {
     
     @Override
-    public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public void closeDataSource(final DataSource dataSource) throws SQLException {
+    public void kill(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();
@@ -44,6 +38,11 @@ public final class DefaultDataSourceKiller implements DataSourceKiller {
                 throw new SQLException(ex);
             }
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "Default";
     }
     
     @Override
