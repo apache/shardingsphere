@@ -46,15 +46,16 @@ public final class HandleConfiguration {
      */
     private String tablesFirstDataNodes;
     
-    private String[] shardingTables;
+    private String[] jobShardingDataNodes;
     
     private String logicTables;
     
-    private int shardingItem;
+    /**
+     * Job sharding item, from {@link org.apache.shardingsphere.elasticjob.api.ShardingContext}.
+     */
+    private Integer jobShardingItem;
     
     private int shardingSize = 1000 * 10000;
-    
-    private boolean running = true;
     
     private String databaseType;
     
@@ -65,11 +66,11 @@ public final class HandleConfiguration {
     }
     
     /**
-     * Get sharding total count.
+     * Get job sharding count.
      *
-     * @return sharding total count
+     * @return job sharding count
      */
-    public int getShardingTotalCount() {
-        return null == shardingTables ? 0 : shardingTables.length;
+    public int getJobShardingCount() {
+        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.length;
     }
 }

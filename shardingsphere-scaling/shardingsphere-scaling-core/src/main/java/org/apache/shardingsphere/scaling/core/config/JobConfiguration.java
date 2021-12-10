@@ -65,7 +65,7 @@ public final class JobConfiguration {
             handleConfig.setDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
         RuleConfiguration ruleConfig = getRuleConfig();
-        if (null == handleConfig.getShardingTables()) {
+        if (null == handleConfig.getJobShardingDataNodes()) {
             List<HandleConfiguration> newHandleConfigs = new LinkedList<>();
             for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
                 Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
@@ -75,7 +75,7 @@ public final class JobConfiguration {
             }
             // TODO handle several rules changed or dataSources changed
             for (HandleConfiguration each : newHandleConfigs) {
-                handleConfig.setShardingTables(each.getShardingTables());
+                handleConfig.setJobShardingDataNodes(each.getJobShardingDataNodes());
                 handleConfig.setLogicTables(each.getLogicTables());
                 handleConfig.setTablesFirstDataNodes(each.getTablesFirstDataNodes());
             }

@@ -86,7 +86,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
-        result.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
+        result.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         result.setTables(jobConfig.getHandleConfig().getLogicTables());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
@@ -135,7 +135,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
         jobConfig.fillInProperties();
-        if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
+        if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
@@ -150,7 +150,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     private String createJobConfig(final JobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
-        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
+        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
@@ -174,7 +174,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed()
                 .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     

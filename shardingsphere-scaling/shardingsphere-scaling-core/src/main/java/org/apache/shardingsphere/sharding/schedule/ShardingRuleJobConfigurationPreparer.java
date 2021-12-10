@@ -76,7 +76,7 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         for (Entry<String, List<DataNode>> entry : shouldScalingActualDataNodes.entrySet()) {
             dataNodes.addAll(entry.getValue());
         }
-        result.setShardingTables(groupByDataSource(dataNodes));
+        result.setJobShardingDataNodes(groupByDataSource(dataNodes));
         result.setLogicTables(getLogicTables(shouldScalingActualDataNodes.keySet()));
         result.setTablesFirstDataNodes(getTablesFirstDataNodes(shouldScalingActualDataNodes));
         return result;
@@ -160,38 +160,36 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return Optional.empty();
     }
     
-    private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final HandleConfiguration handleConfig) {
-        if (null == handleConfig.getShardingTables()) {
-            log.info("shardingTables null");
+    private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> totalDataSourceTableNameMap, final HandleConfiguration handleConfig) {
+        if (null == handleConfig.getJobShardingDataNodes()) {
+            log.info("jobShardingDataNodes null");
             return;
         }
-        Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(handleConfig));
-        dataSourceTableNameMap.entrySet().removeIf(entry -> !shardingDataSourceTableMap.containsKey(entry.getKey()));
-        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            filterByShardingTables(entry.getValue(), shardingDataSourceTableMap.get(entry.getKey()));
+        // TODO simplify data source and table name converting, include tablesFirstDataNodes and jobShardingDataNodes format
+        Map<String, Set<String>> jobDataSourceTableNameMap = toDataSourceTableNameMap(getJobShardingDataNodesEntry(handleConfig));
+        totalDataSourceTableNameMap.entrySet().removeIf(entry -> !jobDataSourceTableNameMap.containsKey(entry.getKey()));
+        for (Entry<String, Map<String, String>> entry : totalDataSourceTableNameMap.entrySet()) {
+            filterByShardingTables(entry.getValue(), jobDataSourceTableNameMap.get(entry.getKey()));
         }
     }
     
-    private static String getShardingDataSourceTables(final HandleConfiguration handleConfig) {
-        if (handleConfig.getShardingItem() >= handleConfig.getShardingTables().length) {
-            log.warn("shardingItem={} ge handleConfig.shardingTables.len={}", handleConfig.getShardingItem(), handleConfig.getShardingTables().length);
+    private static String getJobShardingDataNodesEntry(final HandleConfiguration handleConfig) {
+        if (handleConfig.getJobShardingItem() >= handleConfig.getJobShardingDataNodes().length) {
+            log.warn("jobShardingItem={} ge handleConfig.jobShardingDataNodes.len={}", handleConfig.getJobShardingItem(), handleConfig.getJobShardingDataNodes().length);
             return "";
         }
-        return handleConfig.getShardingTables()[handleConfig.getShardingItem()];
+        return handleConfig.getJobShardingDataNodes()[handleConfig.getJobShardingItem()];
     }
     
     private static void filterByShardingTables(final Map<String, String> fullTables, final Set<String> shardingTables) {
         fullTables.entrySet().removeIf(entry -> !shardingTables.contains(entry.getKey()));
     }
     
-    private static Map<String, Set<String>> toDataSourceTableNameMap(final String shardingDataSourceTables) {
+    private static Map<String, Set<String>> toDataSourceTableNameMap(final String jobShardingDataNodesEntry) {
         Map<String, Set<String>> result = new HashMap<>();
-        for (String each : new InlineExpressionParser(shardingDataSourceTables).splitAndEvaluate()) {
-            String[] table = each.split("\\.");
-            if (!result.containsKey(table[0])) {
-                result.put(table[0], new HashSet<>());
-            }
-            result.get(table[0]).add(table[1]);
+        for (String each : new InlineExpressionParser(jobShardingDataNodesEntry).splitAndEvaluate()) {
+            DataNode dataNode = new DataNode(each);
+            result.computeIfAbsent(dataNode.getDataSourceName(), k -> new HashSet<>()).add(dataNode.getTableName());
         }
         return result;
     }
