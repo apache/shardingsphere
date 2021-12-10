@@ -37,6 +37,15 @@ public final class HandleConfiguration {
     
     private int retryTimes = 3;
     
+    /**
+     * Collection of each logic table's first data node.
+     * <p>
+     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
+     * then value may be: {@code ds_0.t_order_0,ds_0.t_order_item_0}.
+     * </p>
+     */
+    private String tablesFirstDataNodes;
+    
     private String[] shardingTables;
     
     private String logicTables;

@@ -77,6 +77,7 @@ public final class JobConfiguration {
             for (HandleConfiguration each : newHandleConfigs) {
                 handleConfig.setShardingTables(each.getShardingTables());
                 handleConfig.setLogicTables(each.getLogicTables());
+                handleConfig.setTablesFirstDataNodes(each.getTablesFirstDataNodes());
             }
         }
     }

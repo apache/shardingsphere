@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.schedule;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -77,9 +78,16 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         }
         result.setShardingTables(groupByDataSource(dataNodes));
         result.setLogicTables(getLogicTables(shouldScalingActualDataNodes.keySet()));
+        result.setTablesFirstDataNodes(getTablesFirstDataNodes(shouldScalingActualDataNodes));
         return result;
     }
     
+    /**
+     * Get scaling actual data nodes.
+     *
+     * @param ruleConfig rule configuration
+     * @return map(logic table name, DataNode of each logic table)
+     */
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleConfiguration ruleConfig) {
         TypedDataSourceConfiguration sourceConfig = ruleConfig.getSource().unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
@@ -100,14 +108,20 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         for (DataNode each : dataNodes) {
             dataSourceDataNodesMap.computeIfAbsent(each.getDataSourceName(), k -> new LinkedList<>()).add(each);
         }
-        return dataSourceDataNodesMap.values().stream().map(each -> each.stream().map(dataNode -> String.format("%s.%s", dataNode.getDataSourceName(), dataNode.getTableName()))
+        return dataSourceDataNodesMap.values().stream().map(each -> each.stream().map(DataNode::format)
                 .collect(Collectors.joining(","))).toArray(String[]::new);
     }
     
     private static String getLogicTables(final Set<String> logicTables) {
-        return logicTables.stream()
-                .reduce((a, b) -> String.format("%s, %s", a, b))
-                .orElse("");
+        return Joiner.on(',').join(logicTables);
+    }
+    
+    private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
+        List<String> result = new LinkedList<>();
+        for (Entry<String, List<DataNode>> entry : actualDataNodes.entrySet()) {
+            result.add(entry.getValue().get(0).format());
+        }
+        return Joiner.on(',').join(result);
     }
     
     // TODO handle several rules changed or dataSources changed
