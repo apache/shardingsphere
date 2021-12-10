@@ -56,7 +56,6 @@ public final class JobContext {
     
     public JobContext(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
-        jobConfig.fillInProperties();
         jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getShardingItem();
         taskConfigs = jobConfig.convertToTaskConfigs();
