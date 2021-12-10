@@ -26,27 +26,26 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultAuthorityRuleConfigurationBuilderTest {
-
+    
     private final DefaultAuthorityRuleConfigurationBuilder builder = new DefaultAuthorityRuleConfigurationBuilder();
-
+    
     @Test
-    public void buildTest() {
-        AuthorityRuleConfiguration build = builder.build();
-        assertNotNull(build);
-        assertNotNull(build.getProvider());
-        assertThat("ALL_PRIVILEGES_PERMITTED", equalTo(build.getProvider().getType()));
-        assertThat(1, is(build.getUsers().size()));
+    public void assertBuild() {
+        AuthorityRuleConfiguration authorityRuleConfiguration = builder.build();
+        assertNotNull(authorityRuleConfiguration);
+        assertNotNull(authorityRuleConfiguration.getProvider());
+        assertThat(authorityRuleConfiguration.getProvider().getType(), is("ALL_PRIVILEGES_PERMITTED"));
+        assertThat(authorityRuleConfiguration.getUsers().size(), is(1));
     }
-
+    
     @Test
-    public void getOrder() {
+    public void assertGetOrder() {
         int order = builder.getOrder();
-        assertThat(500, is(order));
+        assertThat(order, is(500));
     }
-
+    
     @Test
-    public void getTypeClass() {
-        assertThat(AuthorityRuleBuilder.class, equalTo(builder.getTypeClass()));
+    public void assertGetTypeClass() {
+        assertThat(builder.getTypeClass(), equalTo(AuthorityRuleBuilder.class));
     }
 }
-
