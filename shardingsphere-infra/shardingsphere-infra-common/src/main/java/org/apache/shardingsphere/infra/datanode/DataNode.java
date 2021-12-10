@@ -85,4 +85,13 @@ public final class DataNode {
     public String format() {
         return dataSourceName + DELIMITER + tableName;
     }
+    
+    /**
+     * Get formatted text length.
+     *
+     * @return formatted text length
+     */
+    public int getFormattedTextLength() {
+        return dataSourceName.length() + DELIMITER.length() + tableName.length();
+    }
 }
