@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * Handle configuration.
  */
@@ -46,7 +48,7 @@ public final class HandleConfiguration {
      */
     private String tablesFirstDataNodes;
     
-    private String[] jobShardingDataNodes;
+    private List<String> jobShardingDataNodes;
     
     private String logicTables;
     
@@ -71,6 +73,6 @@ public final class HandleConfiguration {
      * @return job sharding count
      */
     public int getJobShardingCount() {
-        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.length;
+        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
     }
 }

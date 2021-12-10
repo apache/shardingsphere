@@ -105,13 +105,13 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return result;
     }
     
-    private static String[] groupByDataSource(final Collection<DataNode> dataNodes) {
+    private static List<String> groupByDataSource(final Collection<DataNode> dataNodes) {
         Map<String, Collection<DataNode>> dataSourceDataNodesMap = new LinkedHashMap<>();
         for (DataNode each : dataNodes) {
             dataSourceDataNodesMap.computeIfAbsent(each.getDataSourceName(), k -> new LinkedList<>()).add(each);
         }
         return dataSourceDataNodesMap.values().stream().map(each -> each.stream().map(DataNode::format)
-                .collect(Collectors.joining(","))).toArray(String[]::new);
+                .collect(Collectors.joining(","))).collect(Collectors.toList());
     }
     
     private static String getLogicTables(final Set<String> logicTables) {
@@ -176,11 +176,11 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
     }
     
     private static String getJobShardingDataNodesEntry(final HandleConfiguration handleConfig) {
-        if (handleConfig.getJobShardingItem() >= handleConfig.getJobShardingDataNodes().length) {
-            log.warn("jobShardingItem={} ge handleConfig.jobShardingDataNodes.len={}", handleConfig.getJobShardingItem(), handleConfig.getJobShardingDataNodes().length);
+        if (handleConfig.getJobShardingItem() >= handleConfig.getJobShardingDataNodes().size()) {
+            log.warn("jobShardingItem={} ge handleConfig.jobShardingDataNodes.len={}", handleConfig.getJobShardingItem(), handleConfig.getJobShardingDataNodes().size());
             return "";
         }
-        return handleConfig.getJobShardingDataNodes()[handleConfig.getJobShardingItem()];
+        return handleConfig.getJobShardingDataNodes().get(handleConfig.getJobShardingItem());
     }
     
     private static void filterByShardingTables(final Map<String, String> fullTables, final Set<String> shardingTables) {
