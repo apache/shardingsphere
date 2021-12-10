@@ -56,11 +56,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
+    private final Map<String, String> tableNameMap;
+    
     public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        tableNameMap = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
         config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
     }
     
@@ -152,12 +155,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public void put(final String tableName, final String dataSourceName) {
         if (dataSourceNames.contains(dataSourceName)) {
             singleTableDataNodes.put(tableName.toLowerCase(), Collections.singletonList(new DataNode(dataSourceName, tableName)));
+            tableNameMap.put(tableName.toLowerCase(), tableName);
         }
     }
     
     @Override
     public void remove(final String tableName) {
         singleTableDataNodes.remove(tableName.toLowerCase());
+        tableNameMap.remove(tableName.toLowerCase());
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
@@ -197,12 +202,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return singleTableDataNodes.values().stream().filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getTableName)).collect(Collectors.toList());
+        return tableNameMap.values();
     }
     
     @Override
     public Collection<String> getTables() {
-        return singleTableDataNodes.values().stream().filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getTableName)).collect(Collectors.toList());
+        return tableNameMap.values();
     }
     
     @Override
