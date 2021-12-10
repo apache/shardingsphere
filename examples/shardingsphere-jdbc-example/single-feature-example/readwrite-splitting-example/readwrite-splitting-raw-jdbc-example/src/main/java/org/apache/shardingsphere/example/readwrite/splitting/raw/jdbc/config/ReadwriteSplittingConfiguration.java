@@ -43,7 +43,7 @@ public final class ReadwriteSplittingConfiguration implements ExampleConfigurati
         algoritProperties.put("demo_read_ds_1", "1");
         ShardingSphereAlgorithmConfiguration algorithmConfiguration = new ShardingSphereAlgorithmConfiguration("WEIGHT", algoritProperties);
         Map<String, ShardingSphereAlgorithmConfiguration> sphereAlgorithmConfigurationMap = new HashMap<>(1);
-        sphereAlgorithmConfigurationMap.put("read_weight_lb", algorithmConfiguration);
+        sphereAlgorithmConfigurationMap.put("demo_weight_lb", algorithmConfiguration);
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), sphereAlgorithmConfigurationMap);
         Properties properties = new Properties();
         properties.setProperty("sql-show", String.valueOf(true));
