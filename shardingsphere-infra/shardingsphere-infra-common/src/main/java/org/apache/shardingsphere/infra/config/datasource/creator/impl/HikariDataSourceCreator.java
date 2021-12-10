@@ -31,11 +31,11 @@ import java.util.Map.Entry;
  */
 public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
     
-    private final Map<String, Object> skippedProperties = new HashMap<>(2, 1);
+    private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
     public HikariDataSourceCreator() {
-        skippedProperties.put("minimumIdle", -1);
-        skippedProperties.put("maximumPoolSize", -1);
+        invalidProperties.put("minimumIdle", -1);
+        invalidProperties.put("maximumPoolSize", -1);
     }
     
     @Override
@@ -62,8 +62,8 @@ public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
         dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
     }
     
-    private boolean isInvalidProperty(final String property, final Object value) {
-        return skippedProperties.containsKey(property) && null != value && value.equals(skippedProperties.get(property));
+    private boolean isInvalidProperty(final String key, final Object value) {
+        return invalidProperties.containsKey(key) && null != value && value.equals(invalidProperties.get(key));
     }
     
     @Override
