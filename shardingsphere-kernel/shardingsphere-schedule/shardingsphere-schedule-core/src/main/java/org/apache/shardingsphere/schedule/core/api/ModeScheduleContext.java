@@ -85,6 +85,23 @@ public final class ModeScheduleContext {
     }
     
     /**
+     * Schedule with cron.
+     *
+     * @param jobName job name
+     * @param job job implementation
+     * @param cron cron expression
+     */
+    public void scheduleWithCron(final String jobName, final Consumer<JobParameter> job, final String cron) {
+        if (null == registryCenter) {
+            log.warn("registryCenter is null, ignore, jobName={}, cron={}", job, cron);
+            return;
+        }
+        JobConfiguration jobConfig = JobConfiguration.newBuilder(jobName, 1).cron(cron).build();
+        ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job), jobConfig);
+        bootstrap.schedule();
+    }
+    
+    /**
      * Start cron job.
      *
      * @param job cron job

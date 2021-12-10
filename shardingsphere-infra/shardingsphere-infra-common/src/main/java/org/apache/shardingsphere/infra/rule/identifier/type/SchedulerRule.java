@@ -32,8 +32,8 @@ public interface SchedulerRule extends ShardingSphereRule {
     /**
      *  Get cron jobs.
      *
-     * @param schemaName schema name.
-     * @param dataSources datasource.
+     * @param schemaName schema name
+     * @param dataSources datasource
      * @return cron jobs
      */
     List<CronJob> getCronJobs(String schemaName, Map<String, DataSource> dataSources);
