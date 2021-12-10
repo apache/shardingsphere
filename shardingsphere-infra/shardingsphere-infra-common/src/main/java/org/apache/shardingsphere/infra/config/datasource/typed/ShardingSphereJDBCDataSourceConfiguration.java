@@ -98,6 +98,18 @@ public final class ShardingSphereJDBCDataSourceConfiguration extends TypedDataSo
     }
     
     /**
+     * Get actual data source configuration.
+     *
+     * @param actualDataSourceName actual data source name
+     * @return actual data source configuration
+     */
+    public StandardJDBCDataSourceConfiguration getActualDataSourceConfig(final String actualDataSourceName) {
+        Map<String, Object> yamlDataSourceConfig = rootConfig.getDataSources().get(actualDataSourceName);
+        Preconditions.checkNotNull(yamlDataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
+        return new StandardJDBCDataSourceConfiguration(yamlDataSourceConfig);
+    }
+    
+    /**
      * YAML parameter configuration.
      */
     @NoArgsConstructor
