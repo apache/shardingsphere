@@ -29,12 +29,7 @@ import java.util.concurrent.Executors;
 public final class HikariDataSourceKiller implements DataSourceKiller {
     
     @Override
-    public String getType() {
-        return HikariDataSource.class.getCanonicalName();
-    }
-    
-    @Override
-    public void closeDataSource(final DataSource dataSource) {
+    public void kill(final DataSource dataSource) {
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -50,5 +45,10 @@ public final class HikariDataSourceKiller implements DataSourceKiller {
             }
         });
         executor.shutdown();
+    }
+    
+    @Override
+    public String getType() {
+        return HikariDataSource.class.getCanonicalName();
     }
 }
