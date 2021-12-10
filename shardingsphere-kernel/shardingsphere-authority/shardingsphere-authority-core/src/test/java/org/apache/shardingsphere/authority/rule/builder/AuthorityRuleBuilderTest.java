@@ -25,13 +25,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class AuthorityRuleBuilderTest {
-
+    
     private final AuthorityRuleBuilder ruleBuilder = new AuthorityRuleBuilder();
-
+    
     @Test
     public void getOrderTest() {
         int order = ruleBuilder.getOrder();
-        assertThat(500, is(order));
+        assertThat(order, is(500));
     }
     
     @Test
@@ -39,4 +39,3 @@ public final class AuthorityRuleBuilderTest {
         assertThat(AuthorityRuleConfiguration.class, equalTo(ruleBuilder.getTypeClass()));
     }
 }
-

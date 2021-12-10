@@ -37,56 +37,50 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthorityRuleConfigurationYamlSwapperTest {
-
+    
     private final AuthorityRuleConfigurationYamlSwapper swapper = new AuthorityRuleConfigurationYamlSwapper();
-
+    
     @Test
-    public void swapToYamlConfigurationTest() {
+    public void assertSwapToYamlConfiguration() {
         AuthorityRuleConfiguration authorityRuleConfiguration = mock(AuthorityRuleConfiguration.class);
         ShardingSphereAlgorithmConfiguration configuration = mock(ShardingSphereAlgorithmConfiguration.class);
-
         when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
-
         YamlAuthorityRuleConfiguration result = swapper.swapToYamlConfiguration(authorityRuleConfiguration);
         assertNotNull(result);
-        assertThat(0, is(result.getUsers().size()));
+        assertThat(result.getUsers().size(), is(0));
         assertNotNull(result.getProvider());
     }
-
+    
     @Test
-    public void swapToObjectTest() {
+    public void assertSwapToObject() {
         YamlAuthorityRuleConfiguration authorityRuleConfiguration = mock(YamlAuthorityRuleConfiguration.class);
         YamlShardingSphereAlgorithmConfiguration configuration = mock(YamlShardingSphereAlgorithmConfiguration.class);
-
         when(authorityRuleConfiguration.getUsers()).thenReturn(Collections.singletonList("root@localhost:pass"));
         when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
         when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
-
         AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
-
         assertNotNull(resultConfig);
         assertNotNull(resultConfig.getUsers());
-        assertThat(1, is(resultConfig.getUsers().size()));
+        assertThat(resultConfig.getUsers().size(), is(1));
         assertNotNull(resultConfig.getProvider());
     }
-
+    
     @Test
-    public void getTypeClass() {
-        assertThat(AuthorityRuleConfiguration.class, equalTo(swapper.getTypeClass()));
+    public void assertGetTypeClass() {
+        assertThat(swapper.getTypeClass(), equalTo(AuthorityRuleConfiguration.class));
     }
-
+    
     @Test
-    public void getRuleTagName() {
-        assertThat("AUTHORITY", equalTo(swapper.getRuleTagName()));
+    public void assertGetRuleTagName() {
+        assertThat(swapper.getRuleTagName(), is("AUTHORITY"));
     }
-
+    
     @Test
-    public void getOrder() {
-        assertThat(500, is(swapper.getOrder()));
+    public void assertGetOrder() {
+        assertThat(swapper.getOrder(), is(500));
     }
 }
-
