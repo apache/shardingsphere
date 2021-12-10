@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -42,18 +43,19 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
     
     static {
         GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
-        SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
+        SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout");
     }
     
     private static final Collection<Class<?>> GENERAL_CLASS_TYPES;
     
-    private static final Collection<String> SKIPPED_PROPERTY_NAMES;
+    private static final Collection<String> SKIPPED_PROPERTY_KEYS;
     
     private static final String GETTER_PREFIX = "get";
     
     private static final String SETTER_PREFIX = "set";
     
-    protected final DataSourceConfiguration buildDataSourceConfiguration(final DataSource dataSource) {
+    @Override
+    public final DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
         result.getProps().putAll(findAllGetterProperties(dataSource));
         return result;
@@ -65,7 +67,7 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
         Map<String, Object> result = new LinkedHashMap<>(getterMethods.size(), 1);
         for (Method each : getterMethods) {
             String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
-            if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
+            if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_KEYS.contains(propertyName)) {
                 Object propertyValue = each.invoke(target);
                 if (null != propertyValue) {
                     result.put(propertyName, propertyValue);
@@ -86,28 +88,50 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
         return result;
     }
     
+    @Override
+    public final DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
+        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
+        Method[] methods = result.getClass().getMethods();
+        addPropertySynonym(dataSourceConfig);
+        for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
+            String propertyName = entry.getKey();
+            Object propertyValue = entry.getValue();
+            if (!isSkippedProperty(propertyName) && !isInvalidProperty(propertyName, propertyValue)) {
+                setField(result, methods, propertyName, propertyValue);
+            }
+        }
+        return result;
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
     protected final DataSource buildDataSource(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     
+    private void addPropertySynonym(final DataSourceConfiguration dataSourceConfig) {
+        for (Entry<String, String> entry : getPropertySynonyms().entrySet()) {
+            dataSourceConfig.addPropertySynonym(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    private boolean isSkippedProperty(final String key) {
+        return SKIPPED_PROPERTY_KEYS.contains(key);
+    }
+    
+    private boolean isInvalidProperty(final String key, final Object value) {
+        return getInvalidProperties().containsKey(key) && null != value && value.equals(getInvalidProperties().get(key));
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
-    protected final void setField(final DataSource dataSource, final Method[] methods, final String property, final Object value) {
+    protected final void setField(final DataSource dataSource, final Method[] methods, final String propertyName, final Object value) {
         try {
-            if (isSkip(property)) {
-                return;
-            }
-            Optional<Method> setterMethod = findSetterMethod(methods, property);
+            Optional<Method> setterMethod = findSetterMethod(methods, propertyName);
             if (setterMethod.isPresent() && null != value) {
                 setDataSourceField(setterMethod.get(), dataSource, value);
             }
         } catch (final IllegalArgumentException ex) {
-            throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", property, ex.getMessage());
+            throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", propertyName, ex.getMessage());
         }
-    }
-    
-    private boolean isSkip(final String property) {
-        return SKIPPED_PROPERTY_NAMES.contains(property);
     }
     
     private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
@@ -129,4 +153,8 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
+    
+    protected abstract Map<String, String> getPropertySynonyms();
+    
+    protected abstract Map<String, Object> getInvalidProperties();
 }
