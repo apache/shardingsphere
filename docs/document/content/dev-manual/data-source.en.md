@@ -48,13 +48,13 @@ chapter = true
 | DefaultDataSourceCreator | Default data source creator |
 | HikariDataSourceCreator  | Hikari data source creator  |
 
-## DataSourceKiller
+## DataSourceDestroyer
 
-| *SPI Name*              | *Description*                |
-| ----------------------- | ---------------------------- |
-| DataSourceKiller        | Default data source killer   |
+| *SPI Name*                 | *Description*                 |
+| -------------------------- | ----------------------------- |
+| DataSourceDestroyer        | Default data source destroyer |
 
-| *Implementation Class*  | *Description*                |
-| ----------------------- | ---------------------------- |
-| DefaultDataSourceKiller | Default data source killer   |
-| HikariDataSourceKiller  | Hikari data source killer    |
+| *Implementation Class*     | *Description*                 |
+| -------------------------- | ----------------------------- |
+| DefaultDataSourceDestroyer | Default data source destroyer |
+| HikariDataSourceDestroyer  | Hikari data source destroyer  |

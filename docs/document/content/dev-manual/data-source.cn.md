@@ -48,13 +48,13 @@ chapter = true
 | DefaultDataSourceCreator | 默认数据源创建器     |
 | HikariDataSourceCreator  | Hikari 数据源创建器 |
 
-## DataSourceKiller
+## DataSourceDestroyer
 
-| *SPI 名称*               | *详细说明*         |
-| ----------------------- | ----------------- |
-| DataSourceKiller        | 数据源销毁器        |
+| *SPI 名称*                  | *详细说明*         |
+| -------------------------- | ----------------- |
+| DataSourceDestroyer        | 数据源销毁器        |
 
-| *已知实现类*              | *详细说明*         |
-| ----------------------- | ----------------- |
-| DefaultDataSourceKiller | 默认数据源销毁器     |
-| HikariDataSourceKiller  | Hikari 数据源销毁器 |
+| *已知实现类*                 | *详细说明*         |
+| -------------------------- | ----------------- |
+| DefaultDataSourceDestroyer | 默认数据源销毁器     |
+| HikariDataSourceDestroyer  | Hikari 数据源销毁器 |
