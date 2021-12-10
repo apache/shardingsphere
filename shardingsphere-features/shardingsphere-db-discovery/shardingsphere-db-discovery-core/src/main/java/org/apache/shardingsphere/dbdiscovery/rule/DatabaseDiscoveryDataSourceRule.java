@@ -59,8 +59,7 @@ public final class DatabaseDiscoveryDataSourceRule {
         this.databaseDiscoveryType = databaseDiscoveryType;
     }
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final DatabaseDiscoveryType databaseDiscoveryType,
-                                           final Properties props) {
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
         checkConfiguration(config);
         name = config.getName();
         dataSourceNames = config.getDataSourceNames();
