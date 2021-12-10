@@ -171,3 +171,10 @@ NODES
     : N O D E S
     ;
 
+KEY
+    : K E Y
+    ;
+
+GENERATOR
+    : G E N E R A T O R
+    ;
