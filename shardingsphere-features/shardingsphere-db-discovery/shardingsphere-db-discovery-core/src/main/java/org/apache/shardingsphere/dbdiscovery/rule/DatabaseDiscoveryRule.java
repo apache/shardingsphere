@@ -212,7 +212,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             result.add(new CronJobScheduler(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
                 each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(),
                         entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames()).execute(null),
-                entry.getValue().getDatabaseDiscoveryType().getProps().getProperty("keepAliveCron")));
+                entry.getValue().getHeartbeatProps().getProperty("keepAliveCron")));
         }
         return result;
     }
