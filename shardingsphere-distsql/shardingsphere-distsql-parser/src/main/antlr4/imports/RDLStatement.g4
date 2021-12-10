@@ -102,3 +102,11 @@ poolProperty
 ignoreSingleTables
     : IGNORE SINGLE TABLES
     ;
+
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    ;
+
+keyGeneratorName
+    : IDENTIFIER
+    ;

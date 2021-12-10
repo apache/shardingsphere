@@ -15,28 +15,10 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
-
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | dropShardingKeyGenerator
-    ) SEMI?
-    ;
+/**
+ * Key generator definition statement.
+ */
+public abstract class KeyGeneratorDefinitionStatement extends RDLStatement {
+}
