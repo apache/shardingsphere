@@ -64,6 +64,9 @@ public final class JobConfiguration {
         if (Strings.isNullOrEmpty(handleConfig.getDatabaseType())) {
             handleConfig.setDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
+        if (null == handleConfig.getJobShardingItem()) {
+            handleConfig.setJobShardingItem(0);
+        }
         RuleConfiguration ruleConfig = getRuleConfig();
         if (null == handleConfig.getJobShardingDataNodes()) {
             List<HandleConfiguration> newHandleConfigs = new LinkedList<>();

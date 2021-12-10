@@ -62,6 +62,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
+    // TODO replace to JobConfiguration
     private final JobContext jobContext;
     
     @Override

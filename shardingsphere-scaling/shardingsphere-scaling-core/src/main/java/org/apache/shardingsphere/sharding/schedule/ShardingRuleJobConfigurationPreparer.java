@@ -121,7 +121,7 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
     private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
         List<JobDataNodeEntry> dataNodeEntries = new ArrayList<>(actualDataNodes.size());
         for (Entry<String, List<DataNode>> entry : actualDataNodes.entrySet()) {
-            dataNodeEntries.add(new JobDataNodeEntry(entry.getKey(), entry.getValue()));
+            dataNodeEntries.add(new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1)));
         }
         return new JobDataNodeLine(dataNodeEntries).marshal();
     }
