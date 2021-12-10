@@ -72,7 +72,7 @@ public final class ShardingDropTableStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDropTableForMySQL() {
+    public void assertPreValidateDropTableForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SQLStatementContext<DropTableStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
