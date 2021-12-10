@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.singletable.route;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -121,12 +121,13 @@ public final class SingleTableRouteEngine {
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<String> logicTables) {
-        Map<String, SingleTableDataNode> singleTableDataNodes = singleTableRule.getSingleTableDataNodes();
+        Map<String, Collection<DataNode>> singleTableDataNodes = singleTableRule.getSingleTableDataNodes();
         for (String each : logicTables) {
-            if (!singleTableDataNodes.containsKey(each)) {
+            Collection<DataNode> dataNodes = singleTableDataNodes.get(each);
+            if (null == dataNodes || dataNodes.isEmpty()) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
-            String dataSource = singleTableDataNodes.get(each).getDataSourceName();
+            String dataSource = dataNodes.iterator().next().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(each, each)));
         }
     }
