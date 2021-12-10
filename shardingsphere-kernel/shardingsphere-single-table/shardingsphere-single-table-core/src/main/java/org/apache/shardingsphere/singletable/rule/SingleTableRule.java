@@ -42,7 +42,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -57,18 +56,11 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
-    private final Map<String, Collection<DataNode>> dataNodeMap;
-    
-    private final Map<String, String> tableNameMap;
-    
     public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
-        dataNodeMap = singleTableDataNodes.values().stream().map(each -> new DataNode(each.getDataSourceName(), each.getTableName()))
-                .collect(Collectors.groupingBy(DataNode::getTableName, ConcurrentHashMap::new, Collectors.toCollection(LinkedList::new)));
-        tableNameMap = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().getTableName()));
         config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
     }
     
@@ -156,16 +148,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public void put(final String tableName, final String dataSourceName) {
         if (dataSourceNames.contains(dataSourceName)) {
             singleTableDataNodes.put(tableName.toLowerCase(), new SingleTableDataNode(tableName, dataSourceName));
-            dataNodeMap.put(tableName.toLowerCase(), Collections.singletonList(new DataNode(dataSourceName, tableName)));
-            tableNameMap.put(tableName.toLowerCase(), tableName);
         }
     }
     
     @Override
     public void remove(final String tableName) {
         singleTableDataNodes.remove(tableName.toLowerCase());
-        dataNodeMap.remove(tableName.toLowerCase());
-        tableNameMap.remove(tableName.toLowerCase());
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
@@ -175,7 +163,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return dataNodeMap;
+        return singleTableDataNodes.values().stream().map(each -> new DataNode(each.getDataSourceName(), each.getTableName()))
+                .collect(Collectors.groupingBy(DataNode::getTableName, LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
     }
     
     @Override
@@ -205,12 +194,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return tableNameMap.values();
+        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getTables() {
-        return tableNameMap.values();
+        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
     }
     
     @Override
