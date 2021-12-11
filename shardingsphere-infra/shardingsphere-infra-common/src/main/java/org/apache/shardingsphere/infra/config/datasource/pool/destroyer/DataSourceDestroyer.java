@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
-
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Data source creator.
+ * Data source destroyer.
  */
-public interface DataSourceCreator extends TypedSPI, RequiredSPI {
+public interface DataSourceDestroyer extends TypedSPI, RequiredSPI {
     
     /**
-     * Create data source configuration by data source.
+     * destroy data source gracefully.
      * 
      * @param dataSource data source
-     * @return data source configuration
+     * @throws SQLException SQL exception
      */
-    DataSourceConfiguration createDataSourceConfiguration(DataSource dataSource);
-    
-    /**
-     * Create data source by data source configuration.
-     * 
-     * @param dataSourceConfig data source configuration
-     * @return data source
-     */
-    DataSource createDataSource(DataSourceConfiguration dataSourceConfig);
+    void destroy(DataSource dataSource) throws SQLException;
 }

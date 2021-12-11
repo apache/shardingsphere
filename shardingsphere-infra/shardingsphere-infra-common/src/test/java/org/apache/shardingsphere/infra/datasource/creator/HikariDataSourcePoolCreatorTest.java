@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.datasource.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourceCreator;
-import org.apache.shardingsphere.infra.config.datasource.creator.impl.DefaultDataSourceCreator;
-import org.apache.shardingsphere.infra.config.datasource.creator.impl.HikariDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreator;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public final class HikariDataSourceCreatorTest {
+public final class HikariDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSourceConfigurationWithoutDriverClassName() {
@@ -41,15 +41,15 @@ public final class HikariDataSourceCreatorTest {
         dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
-        DataSourceConfiguration dataSourceConfiguration = new DefaultDataSourceCreator().createDataSourceConfiguration(dataSource);
+        DataSourceConfiguration dataSourceConfiguration = new DefaultDataSourcePoolCreator().createDataSourceConfiguration(dataSource);
         Map<String, Object> props = dataSourceConfiguration.getProps();
         assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
     }
     
     @Test
     public void assertCreateDataSourceConfiguration() {
-        DataSourceCreator dataSourceCreator = new HikariDataSourceCreator();
-        DataSourceConfiguration configuration = dataSourceCreator.createDataSourceConfiguration(dataSourceCreator.createDataSource(createDataSourceConfiguration()));
+        DataSourcePoolCreator dataSourcePoolCreator = new HikariDataSourcePoolCreator();
+        DataSourceConfiguration configuration = dataSourcePoolCreator.createDataSourceConfiguration(dataSourcePoolCreator.createDataSource(createDataSourceConfiguration()));
         assertThat(configuration.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(configuration.getProps().get("jdbcUrl"), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(configuration.getProps().get("driverClassName"), is("org.h2.Driver"));
@@ -61,8 +61,8 @@ public final class HikariDataSourceCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        DataSourceCreator dataSourceCreator = new HikariDataSourceCreator();
-        DataSource dataSource = dataSourceCreator.createDataSource(createDataSourceConfiguration());
+        DataSourcePoolCreator dataSourcePoolCreator = new HikariDataSourcePoolCreator();
+        DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
         assertThat(hikariDataSource.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));

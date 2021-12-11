@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
@@ -24,16 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Hikari data source creator.
+ * Hikari data source pool creator.
  */
 @Getter
-public final class HikariDataSourceCreator extends AbstractDataSourceCreator {
+public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
-    public HikariDataSourceCreator() {
+    public HikariDataSourcePoolCreator() {
         buildPropertySynonyms();
         buildInvalidProperties();
     }

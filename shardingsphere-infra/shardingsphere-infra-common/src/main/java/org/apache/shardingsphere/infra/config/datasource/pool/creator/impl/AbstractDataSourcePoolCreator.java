@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import javax.sql.DataSource;
@@ -37,9 +37,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Abstract data source creator.
+ * Abstract data source pool creator.
  */
-public abstract class AbstractDataSourceCreator implements DataSourceCreator {
+public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCreator {
     
     static {
         GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);

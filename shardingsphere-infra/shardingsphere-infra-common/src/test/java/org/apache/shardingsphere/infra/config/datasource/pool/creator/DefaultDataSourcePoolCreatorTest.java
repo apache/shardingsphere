@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.creator.impl.DefaultDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -27,11 +27,11 @@ import javax.sql.DataSource;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultDataSourceCreatorTest {
+public final class DefaultDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSourceConfiguration() {
-        assertThat(new DefaultDataSourceCreator().createDataSourceConfiguration(createDataSource()), is(createDataSourceConfiguration()));
+        assertThat(new DefaultDataSourcePoolCreator().createDataSourceConfiguration(createDataSource()), is(createDataSourceConfiguration()));
     }
     
     private DataSource createDataSource() {
@@ -45,7 +45,7 @@ public final class DefaultDataSourceCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        HikariDataSource actual = (HikariDataSource) new DefaultDataSourceCreator().createDataSource(createDataSourceConfiguration());
+        HikariDataSource actual = (HikariDataSource) new DefaultDataSourcePoolCreator().createDataSource(createDataSourceConfiguration());
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));

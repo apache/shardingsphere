@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourceDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourceDestroyerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
