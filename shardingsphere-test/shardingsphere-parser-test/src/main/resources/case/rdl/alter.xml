@@ -240,5 +240,15 @@
         </shardingAlgorithm>
     </alter-sharding-algorithm>
 
+    <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
+        <keyGenerator key-generator-name="uuid_key_generator">
+            <algorithm algorithm-name="inline">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </algorithm>
+        </keyGenerator>
+    </alter-sharding-key-generator>
+
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 </sql-parser-test-cases>
