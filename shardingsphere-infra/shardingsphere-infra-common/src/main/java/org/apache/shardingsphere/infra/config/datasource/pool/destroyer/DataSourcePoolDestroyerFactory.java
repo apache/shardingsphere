@@ -17,21 +17,28 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+
+import java.util.Properties;
 
 /**
- * Data source destroyer.
+ * Data source pool destroyer factory.
  */
-public interface DataSourceDestroyer extends TypedSPI, RequiredSPI {
+public final class DataSourcePoolDestroyerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DataSourcePoolDestroyer.class);
+    }
     
     /**
-     * destroy data source gracefully.
+     * Get data source pool destroyer instance.
      * 
-     * @param dataSource data source
-     * @throws SQLException SQL exception
+     * @param dataSourceClassName data source class name
+     * @return instance of data source pool destroyer
      */
-    void destroy(DataSource dataSource) throws SQLException;
+    public static DataSourcePoolDestroyer getInstance(final String dataSourceClassName) {
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
+    }
 }

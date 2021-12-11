@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourceDestroyer;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyer;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * Default data source destroyer.
+ * Default data source pool destroyer.
  */
-public final class DefaultDataSourceDestroyer implements DataSourceDestroyer {
+public final class DefaultDataSourcePoolDestroyer implements DataSourcePoolDestroyer {
     
     @Override
     public void destroy(final DataSource dataSource) throws SQLException {
