@@ -55,6 +55,10 @@ alterShardingAlgorithm
     : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
     ;
 
+alterShardingKeyGenerator
+    : ALTER SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
+    ;
+
 dropShardingTableRule
     : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
     ;
@@ -81,6 +85,14 @@ shardingAutoTableRule
 
 shardingTableRule
     : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
+    ;
+
+keyGeneratorDefination
+    : keyGeneratorName LP algorithmDefinition RP
+    ;
+
+keyGeneratorName
+    : IDENTIFIER
     ;
 
 resources
