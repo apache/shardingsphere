@@ -41,7 +41,7 @@ chapter = true
 
 | *SPI Name*                   | *Description*                    |
 | ---------------------------- | -------------------------------- |
-| DataSourcePoolCreator        | Data source creator              |
+| DataSourcePoolCreator        | Data source pool creator         |
 
 | *Implementation Class*       | *Description*                    |
 | ---------------------------- | -------------------------------- |
