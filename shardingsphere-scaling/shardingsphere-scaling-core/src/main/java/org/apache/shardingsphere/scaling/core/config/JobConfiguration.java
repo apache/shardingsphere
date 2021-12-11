@@ -68,8 +68,11 @@ public final class JobConfiguration {
         if (null == handleConfig.getJobId()) {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
-        if (Strings.isNullOrEmpty(handleConfig.getDatabaseType())) {
-            handleConfig.setDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
+        if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
+            handleConfig.setSourceDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
+        }
+        if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
+            handleConfig.setSourceDatabaseType(getRuleConfig().getTarget().unwrap().getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);

@@ -59,7 +59,9 @@ public final class HandleConfiguration {
     
     private int shardingSize = 1000 * 10000;
     
-    private String databaseType;
+    private String sourceDatabaseType;
+    
+    private String targetDatabaseType;
     
     /**
      * Get job sharding count.
