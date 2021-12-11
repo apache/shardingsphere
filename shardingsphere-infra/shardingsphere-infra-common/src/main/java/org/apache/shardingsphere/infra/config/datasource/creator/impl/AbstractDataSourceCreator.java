@@ -93,7 +93,7 @@ public abstract class AbstractDataSourceCreator implements DataSourceCreator {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         Method[] methods = result.getClass().getMethods();
         addPropertySynonym(dataSourceConfig);
-        for (Entry<String, Object> entry : dataSourceConfig.getAllProps().entrySet()) {
+        for (Entry<String, Object> entry : dataSourceConfig.getAllProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
             if (!isSkippedProperty(propertyName) && !isInvalidProperty(propertyName, propertyValue)) {

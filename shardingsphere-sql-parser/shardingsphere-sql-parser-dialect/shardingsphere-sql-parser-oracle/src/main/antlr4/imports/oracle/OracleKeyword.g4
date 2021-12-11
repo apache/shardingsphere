@@ -2614,3 +2614,11 @@ ALLOCATE
 DEALLOCATE
     : D E A L L O C A T E
     ;
+
+SHARED
+    : S H A R E D
+    ;
+
+AUTHENTICATED
+    : A U T H E N T I C A T E D
+    ;

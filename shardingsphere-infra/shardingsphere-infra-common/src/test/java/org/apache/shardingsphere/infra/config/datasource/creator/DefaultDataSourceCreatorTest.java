@@ -24,47 +24,40 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultDataSourceCreatorTest {
     
     @Test
-    public void assertDataSourceConfigurationEquals() {
-        DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
-        DataSourceConfiguration generateDataSourceConfiguration = defaultDataSourceCreator.createDataSourceConfiguration(createDataSource());
-        DataSourceConfiguration targetDataSourceConfiguration = createDataSourceConfiguration();
-        assertThat(generateDataSourceConfiguration, is(targetDataSourceConfiguration));
+    public void assertCreateDataSourceConfiguration() {
+        assertThat(new DefaultDataSourceCreator().createDataSourceConfiguration(createDataSource()), is(createDataSourceConfiguration()));
+    }
+    
+    private DataSource createDataSource() {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName("org.h2.Driver");
+        result.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     @Test
     public void assertCreateDataSource() {
-        DefaultDataSourceCreator defaultDataSourceCreator = new DefaultDataSourceCreator();
-        DataSource generateDataSource = defaultDataSourceCreator.createDataSource(createDataSourceConfiguration());
-        assertThat(generateDataSource, instanceOf(HikariDataSource.class));
-        HikariDataSource targetDataSource = (HikariDataSource) generateDataSource;
-        assertThat(targetDataSource.getUsername(), is("root"));
-        assertThat(targetDataSource.getPassword(), is("root"));
-        assertThat(targetDataSource.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(targetDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-    }
-    
-    private DataSource createDataSource() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
-        return dataSource;
+        HikariDataSource actual = (HikariDataSource) new DefaultDataSourceCreator().createDataSource(createDataSourceConfiguration());
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
-        DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfiguration.getProps().put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSourceConfiguration.getProps().put("driverClassName", "org.h2.Driver");
-        dataSourceConfiguration.getProps().put("username", "root");
-        dataSourceConfiguration.getProps().put("password", "root");
-        return dataSourceConfiguration;
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.getProps().put("driverClassName", "org.h2.Driver");
+        result.getProps().put("username", "root");
+        result.getProps().put("password", "root");
+        return result;
     }
 }
