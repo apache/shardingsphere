@@ -39,22 +39,22 @@ chapter = true
 
 ## DataSourcePoolCreator
 
-| *SPI 名称*                    | *详细说明*         |
-| ---------------------------- | ----------------- |
-| DataSourcePoolCreator        | 数据源创建器        |
+| *SPI 名称*                    | *详细说明*              |
+| ---------------------------- | ---------------------- |
+| DataSourcePoolCreator        | 数据源连接池创建器        |
 
-| *已知实现类*                   | *详细说明*         |
-| ---------------------------- | ----------------- |
-| DefaultDataSourcePoolCreator | 默认数据源创建器     |
-| HikariDataSourcePoolCreator  | Hikari 数据源创建器 |
+| *已知实现类*                   | *详细说明*              |
+| ---------------------------- | ---------------------- |
+| DefaultDataSourcePoolCreator | 默认数据源连接池创建器     |
+| HikariDataSourcePoolCreator  | Hikari 数据源连接池创建器 |
 
 ## DataSourcePoolDestroyer
 
-| *SPI 名称*                      | *详细说明*         |
-| ------------------------------ | ----------------- |
-| DataSourcePoolDestroyer        | 数据源连接池销毁器   |
+| *SPI 名称*                      | *详细说明*              |
+| ------------------------------ | ---------------------- |
+| DataSourcePoolDestroyer        | 数据源连接池销毁器        |
 
-| *已知实现类*                     | *详细说明*         |
-| ------------------------------ | ----------------- |
-| DefaultDataSourcePoolDestroyer | 默认数据源销毁器     |
-| HikariDataSourcePoolDestroyer  | Hikari 数据源销毁器 |
+| *已知实现类*                     | *详细说明*              |
+| ------------------------------ | ---------------------- |
+| DefaultDataSourcePoolDestroyer | 默认数据源连接池销毁器     |
+| HikariDataSourcePoolDestroyer  | Hikari 数据源连接池销毁器 |
