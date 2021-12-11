@@ -15,23 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.destroyer;
+package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyer;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * Data source destroyer.
+ * Default data source pool destroyer.
  */
-public interface DataSourceDestroyer extends TypedSPI, RequiredSPI {
+public final class DefaultDataSourcePoolDestroyer implements DataSourcePoolDestroyer {
     
-    /**
-     * destroy data source gracefully.
-     * 
-     * @param dataSource data source
-     * @throws SQLException SQL exception
-     */
-    void destroy(DataSource dataSource) throws SQLException;
+    @Override
+    public void destroy(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new SQLException(ex);
+            }
+        }
+    }
+    
+    @Override
+    public String getType() {
+        return "Default";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

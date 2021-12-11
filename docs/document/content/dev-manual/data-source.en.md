@@ -37,24 +37,24 @@ chapter = true
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 | OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
-## DataSourceCreator
+## DataSourcePoolCreator
 
-| *SPI Name*               | *Description*               |
-| ------------------------ | --------------------------- |
-| DataSourceCreator        | Data source creator         |
+| *SPI Name*                   | *Description*                    |
+| ---------------------------- | -------------------------------- |
+| DataSourcePoolCreator        | Data source pool creator         |
 
-| *Implementation Class*   | *Description*               |
-| ------------------------ | --------------------------- |
-| DefaultDataSourceCreator | Default data source creator |
-| HikariDataSourceCreator  | Hikari data source creator  |
+| *Implementation Class*       | *Description*                    |
+| ---------------------------- | -------------------------------- |
+| DefaultDataSourcePoolCreator | Default data source pool creator |
+| HikariDataSourcePoolCreator  | Hikari data source pool creator  |
 
-## DataSourceDestroyer
+## DataSourcePoolDestroyer
 
-| *SPI Name*                 | *Description*                 |
-| -------------------------- | ----------------------------- |
-| DataSourceDestroyer        | Default data source destroyer |
+| *SPI Name*                     | *Description*                      |
+| ------------------------------ | ---------------------------------- |
+| DataSourcePoolDestroyer        | Data source pool destroyer         |
 
-| *Implementation Class*     | *Description*                 |
-| -------------------------- | ----------------------------- |
-| DefaultDataSourceDestroyer | Default data source destroyer |
-| HikariDataSourceDestroyer  | Hikari data source destroyer  |
+| *Implementation Class*         | *Description*                      |
+| ------------------------------ | ---------------------------------- |
+| DefaultDataSourcePoolDestroyer | Default data source pool destroyer |
+| HikariDataSourcePoolDestroyer  | Hikari data source pool destroyer  |

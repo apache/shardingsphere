@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.destroyer.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourceDestroyer;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Default data source destroyer.
+ * Default data source pool creator.
  */
-public final class DefaultDataSourceDestroyer implements DataSourceDestroyer {
+public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
     
     @Override
-    public void destroy(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLException(ex);
-            }
-        }
+    protected Map<String, String> getPropertySynonyms() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    protected Map<String, Object> getInvalidProperties() {
+        return Collections.emptyMap();
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
@@ -24,21 +24,22 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Data source creator factory.
+ * Data source pool destroyer factory.
  */
-public final class DataSourceCreatorFactory {
+public final class DataSourcePoolDestroyerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourceCreator.class);
+        ShardingSphereServiceLoader.register(DataSourcePoolDestroyer.class);
     }
     
     /**
-     * Get data source creator.
+     * Get data source pool destroyer instance.
      * 
      * @param dataSourceClassName data source class name
-     * @return data source creator
+     * @return instance of data source pool destroyer
      */
-    public static DataSourceCreator getDataSourceCreator(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourceCreator.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourceCreator.class));
+    public static DataSourcePoolDestroyer getInstance(final String dataSourceClassName) {
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties())
+                .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
     }
 }

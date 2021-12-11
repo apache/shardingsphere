@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
@@ -24,9 +24,9 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import javax.sql.DataSource;
 
 /**
- * Data source creator.
+ * Data source pool creator.
  */
-public interface DataSourceCreator extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolCreator extends TypedSPI, RequiredSPI {
     
     /**
      * Create data source configuration by data source.
@@ -37,7 +37,7 @@ public interface DataSourceCreator extends TypedSPI, RequiredSPI {
     DataSourceConfiguration createDataSourceConfiguration(DataSource dataSource);
     
     /**
-     * Create data source by data source configuration.
+     * Create data source.
      * 
      * @param dataSourceConfig data source configuration
      * @return data source

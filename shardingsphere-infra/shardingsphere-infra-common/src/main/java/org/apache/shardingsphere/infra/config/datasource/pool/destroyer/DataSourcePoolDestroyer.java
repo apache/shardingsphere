@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
 
-import java.util.Collections;
-import java.util.Map;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Default data source creator.
+ * Data source pool destroyer.
  */
-public final class DefaultDataSourceCreator extends AbstractDataSourceCreator {
+public interface DataSourcePoolDestroyer extends TypedSPI, RequiredSPI {
     
-    @Override
-    protected Map<String, String> getPropertySynonyms() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    protected Map<String, Object> getInvalidProperties() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * destroy data source pool gracefully.
+     * 
+     * @param dataSource data source
+     * @throws SQLException SQL exception
+     */
+    void destroy(DataSource dataSource) throws SQLException;
 }
