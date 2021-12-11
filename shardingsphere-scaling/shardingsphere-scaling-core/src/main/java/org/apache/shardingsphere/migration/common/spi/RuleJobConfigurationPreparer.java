@@ -42,7 +42,7 @@ public interface RuleJobConfigurationPreparer extends TypedSPI {
      * Convert to handle configuration, used to build job configuration.
      *
      * @param ruleConfig rule configuration
-     * @return handle configuration
+     * @return handle configuration. It won't be used directly, but merge necessary configuration (e.g. shardingTables, logicTables) into final {@link HandleConfiguration}
      */
     HandleConfiguration convertToHandleConfig(RuleConfiguration ruleConfig);
     

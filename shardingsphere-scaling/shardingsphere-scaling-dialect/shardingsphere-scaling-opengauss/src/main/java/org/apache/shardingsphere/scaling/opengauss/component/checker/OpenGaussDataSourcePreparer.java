@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.migration.common.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
 import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
+import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,15 +51,15 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     private static final String WITH_OF_TABLE_EXTEND = "with (";
     
     @Override
-    public void prepareTargetTables(final JobConfiguration jobConfig) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         Collection<ActualTableDefinition> actualTableDefinitions;
         try {
-            actualTableDefinitions = getActualTableDefinitions(jobConfig);
+            actualTableDefinitions = getActualTableDefinitions(parameter);
         } catch (final SQLException ex) {
             throw new PrepareFailedException("get table definitions failed.", ex);
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
-        try (DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
+        try (DataSourceWrapper targetDataSource = getTargetDataSource(parameter.getRuleConfig());
              Connection targetConnection = targetDataSource.getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
@@ -69,17 +72,19 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         }
     }
     
-    private Collection<ActualTableDefinition> getActualTableDefinitions(final JobConfiguration jobConfig) throws SQLException {
+    private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
         Collection<ActualTableDefinition> result = new ArrayList<>();
-        Map<DataSource, Map<String, String>> dataSourceTableNamesMap = getDataSourceTableNamesMap(jobConfig.getRuleConfig().getSource().unwrap());
-        for (Entry<DataSource, Map<String, String>> entry : dataSourceTableNamesMap.entrySet()) {
-            try (DataSourceWrapper dataSource = new DataSourceWrapper(entry.getKey());
-                 Connection sourceConnection = dataSource.getConnection()) {
-                for (Entry<String, String> tableNameEntry : entry.getValue().entrySet()) {
-                    String actualTableName = tableNameEntry.getKey();
+        ShardingSphereJDBCDataSourceConfiguration sourceConfig = (ShardingSphereJDBCDataSourceConfiguration) parameter.getRuleConfig().getSource().unwrap();
+        try (DataSourceManager dataSourceManager = new DataSourceManager()) {
+            for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
+                DataNode dataNode = each.getDataNodes().get(0);
+                // Keep dataSource to reuse
+                DataSourceWrapper dataSource = dataSourceManager.getDataSource(sourceConfig.getActualDataSourceConfig(dataNode.getDataSourceName()));
+                try (Connection sourceConnection = dataSource.getConnection()) {
+                    String actualTableName = dataNode.getTableName();
                     int oid = queryTableOid(sourceConnection, actualTableName);
                     String tableDefinition = queryTableDefinition(sourceConnection, oid);
-                    String logicTableName = tableNameEntry.getValue();
+                    String logicTableName = each.getLogicTableName();
                     result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
                 }
             }
@@ -158,7 +163,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         String[] search = {WITH_OF_TABLE_EXTEND, ")"};
         List<Integer> searchPos = new ArrayList<>(2);
         int startPos = 0;
-        for (String each: search) {
+        for (String each : search) {
             int curSearch = lowerCreateSQL.indexOf(each, startPos);
             if (curSearch <= 0) {
                 break;

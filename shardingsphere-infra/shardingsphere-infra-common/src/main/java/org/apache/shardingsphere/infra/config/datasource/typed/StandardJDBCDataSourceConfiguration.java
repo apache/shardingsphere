@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -53,8 +53,20 @@ public final class StandardJDBCDataSourceConfiguration extends TypedDataSourceCo
     
     @SuppressWarnings("unchecked")
     public StandardJDBCDataSourceConfiguration(final String parameter) {
+        this(YamlEngine.unmarshal(parameter, Map.class), parameter);
+    }
+    
+    /**
+     * Construct by YAML data source configuration.
+     *
+     * @param yamlDataSourceConfig YAML data source configuration, equivalent to {@link DataSourceConfiguration}
+     */
+    public StandardJDBCDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
+        this(yamlDataSourceConfig, YamlEngine.marshal(yamlDataSourceConfig));
+    }
+    
+    private StandardJDBCDataSourceConfiguration(final Map<String, Object> yamlConfig, final String parameter) {
         this.parameter = parameter;
-        Map<String, Object> yamlConfig = YamlEngine.unmarshal(parameter, Map.class);
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
         }
@@ -83,11 +95,13 @@ public final class StandardJDBCDataSourceConfiguration extends TypedDataSourceCo
         hikariConfig.setJdbcUrl(new JdbcUri(hikariConfig.getJdbcUrl()).appendParameters(parameters));
     }
     
-    private static String wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, String> parameter = new HashMap<>(3, 1);
-        parameter.put("jdbcUrl", jdbcUrl);
-        parameter.put("username", username);
-        parameter.put("password", password);
-        return YamlEngine.marshal(parameter);
+    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        result.put("jdbcUrl", jdbcUrl);
+        result.put("username", username);
+        result.put("password", password);
+        return result;
     }
+    
+    // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.schedule;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -35,6 +36,8 @@ import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -75,11 +78,18 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         for (Entry<String, List<DataNode>> entry : shouldScalingActualDataNodes.entrySet()) {
             dataNodes.addAll(entry.getValue());
         }
-        result.setShardingTables(groupByDataSource(dataNodes));
+        result.setJobShardingDataNodes(groupByDataSource(dataNodes));
         result.setLogicTables(getLogicTables(shouldScalingActualDataNodes.keySet()));
+        result.setTablesFirstDataNodes(getTablesFirstDataNodes(shouldScalingActualDataNodes));
         return result;
     }
     
+    /**
+     * Get scaling actual data nodes.
+     *
+     * @param ruleConfig rule configuration
+     * @return map(logic table name, DataNode of each logic table)
+     */
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleConfiguration ruleConfig) {
         TypedDataSourceConfiguration sourceConfig = ruleConfig.getSource().unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
@@ -95,21 +105,28 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return result;
     }
     
-    private static String[] groupByDataSource(final Collection<DataNode> dataNodes) {
+    private static List<String> groupByDataSource(final Collection<DataNode> dataNodes) {
         Map<String, Collection<DataNode>> dataSourceDataNodesMap = new LinkedHashMap<>();
         for (DataNode each : dataNodes) {
             dataSourceDataNodesMap.computeIfAbsent(each.getDataSourceName(), k -> new LinkedList<>()).add(each);
         }
-        return dataSourceDataNodesMap.values().stream().map(each -> each.stream().map(dataNode -> String.format("%s.%s", dataNode.getDataSourceName(), dataNode.getTableName()))
-                .collect(Collectors.joining(","))).toArray(String[]::new);
+        return dataSourceDataNodesMap.values().stream().map(each -> each.stream().map(DataNode::format)
+                .collect(Collectors.joining(","))).collect(Collectors.toList());
     }
     
     private static String getLogicTables(final Set<String> logicTables) {
-        return logicTables.stream()
-                .reduce((a, b) -> String.format("%s, %s", a, b))
-                .orElse("");
+        return Joiner.on(',').join(logicTables);
     }
     
+    private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
+        List<JobDataNodeEntry> dataNodeEntries = new ArrayList<>(actualDataNodes.size());
+        for (Entry<String, List<DataNode>> entry : actualDataNodes.entrySet()) {
+            dataNodeEntries.add(new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1)));
+        }
+        return new JobDataNodeLine(dataNodeEntries).marshal();
+    }
+    
+    // TODO handle several rules changed or dataSources changed
     @Override
     public List<TaskConfiguration> convertToTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
@@ -145,38 +162,36 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return Optional.empty();
     }
     
-    private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final HandleConfiguration handleConfig) {
-        if (null == handleConfig.getShardingTables()) {
-            log.info("shardingTables null");
+    private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> totalDataSourceTableNameMap, final HandleConfiguration handleConfig) {
+        if (null == handleConfig.getJobShardingDataNodes()) {
+            log.info("jobShardingDataNodes null");
             return;
         }
-        Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(handleConfig));
-        dataSourceTableNameMap.entrySet().removeIf(entry -> !shardingDataSourceTableMap.containsKey(entry.getKey()));
-        for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            filterByShardingTables(entry.getValue(), shardingDataSourceTableMap.get(entry.getKey()));
+        // TODO simplify data source and table name converting, and jobShardingDataNodes format
+        Map<String, Set<String>> jobDataSourceTableNameMap = toDataSourceTableNameMap(getJobShardingDataNodesEntry(handleConfig));
+        totalDataSourceTableNameMap.entrySet().removeIf(entry -> !jobDataSourceTableNameMap.containsKey(entry.getKey()));
+        for (Entry<String, Map<String, String>> entry : totalDataSourceTableNameMap.entrySet()) {
+            filterByShardingTables(entry.getValue(), jobDataSourceTableNameMap.get(entry.getKey()));
         }
     }
     
-    private static String getShardingDataSourceTables(final HandleConfiguration handleConfig) {
-        if (handleConfig.getShardingItem() >= handleConfig.getShardingTables().length) {
-            log.warn("shardingItem={} ge handleConfig.shardingTables.len={}", handleConfig.getShardingItem(), handleConfig.getShardingTables().length);
+    private static String getJobShardingDataNodesEntry(final HandleConfiguration handleConfig) {
+        if (handleConfig.getJobShardingItem() >= handleConfig.getJobShardingDataNodes().size()) {
+            log.warn("jobShardingItem={} ge handleConfig.jobShardingDataNodes.len={}", handleConfig.getJobShardingItem(), handleConfig.getJobShardingDataNodes().size());
             return "";
         }
-        return handleConfig.getShardingTables()[handleConfig.getShardingItem()];
+        return handleConfig.getJobShardingDataNodes().get(handleConfig.getJobShardingItem());
     }
     
     private static void filterByShardingTables(final Map<String, String> fullTables, final Set<String> shardingTables) {
         fullTables.entrySet().removeIf(entry -> !shardingTables.contains(entry.getKey()));
     }
     
-    private static Map<String, Set<String>> toDataSourceTableNameMap(final String shardingDataSourceTables) {
+    private static Map<String, Set<String>> toDataSourceTableNameMap(final String jobShardingDataNodesEntry) {
         Map<String, Set<String>> result = new HashMap<>();
-        for (String each : new InlineExpressionParser(shardingDataSourceTables).splitAndEvaluate()) {
-            String[] table = each.split("\\.");
-            if (!result.containsKey(table[0])) {
-                result.put(table[0], new HashSet<>());
-            }
-            result.get(table[0]).add(table[1]);
+        for (String each : new InlineExpressionParser(jobShardingDataNodesEntry).splitAndEvaluate()) {
+            DataNode dataNode = new DataNode(each);
+            result.computeIfAbsent(dataNode.getDataSourceName(), k -> new HashSet<>()).add(dataNode.getTableName());
         }
         return result;
     }

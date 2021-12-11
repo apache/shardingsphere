@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
@@ -35,7 +36,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -75,8 +75,8 @@ public final class AbstractImporterTest {
     @Mock
     private Channel channel;
     
-    @Mock(extraInterfaces = AutoCloseable.class)
-    private DataSource dataSource;
+    @Mock
+    private DataSourceWrapper dataSource;
     
     @Mock
     private Connection connection;
