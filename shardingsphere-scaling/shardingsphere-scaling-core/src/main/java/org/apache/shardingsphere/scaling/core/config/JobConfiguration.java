@@ -61,9 +61,9 @@ public final class JobConfiguration {
     }
     
     /**
-     * Fill in properties.
+     * Build handle configuration.
      */
-    public void fillInProperties() {
+    public void buildHandleConfig() {
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig.getJobId()) {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
@@ -83,7 +83,7 @@ public final class JobConfiguration {
             for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
                 Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
                 Preconditions.checkArgument(preparerOptional.isPresent(), "Could not find registered service for type '%s'", each);
-                HandleConfiguration newHandleConfig = preparerOptional.get().convertToHandleConfig(ruleConfig);
+                HandleConfiguration newHandleConfig = preparerOptional.get().createHandleConfig(ruleConfig);
                 newHandleConfigs.add(newHandleConfig);
             }
             // TODO handle several rules changed or dataSources changed
@@ -100,13 +100,13 @@ public final class JobConfiguration {
      *
      * @return task configurations
      */
-    public List<TaskConfiguration> convertToTaskConfigs() {
+    public List<TaskConfiguration> buildTaskConfigs() {
         RuleConfiguration ruleConfig = getRuleConfig();
         // TODO handle several rules changed or dataSources changed
         for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
             Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
             Preconditions.checkArgument(preparerOptional.isPresent(), "Could not find registered service for type '%s'", each);
-            return preparerOptional.get().convertToTaskConfigs(this);
+            return preparerOptional.get().createTaskConfigs(ruleConfig, handleConfig);
         }
         log.warn("return empty task configurations");
         return Collections.emptyList();

@@ -24,16 +24,15 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.migration.common.spi.RuleJobConfigurationPreparer;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
@@ -71,7 +70,7 @@ import java.util.stream.Collectors;
 public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfigurationPreparer {
     
     @Override
-    public HandleConfiguration convertToHandleConfig(final RuleConfiguration ruleConfig) {
+    public HandleConfiguration createHandleConfig(final RuleConfiguration ruleConfig) {
         HandleConfiguration result = new HandleConfiguration();
         Map<String, List<DataNode>> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(ruleConfig);
         Collection<DataNode> dataNodes = new ArrayList<>();
@@ -128,33 +127,33 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
     
     // TODO handle several rules changed or dataSources changed
     @Override
-    public List<TaskConfiguration> convertToTaskConfigs(final JobConfiguration jobConfig) {
+    public List<TaskConfiguration> createTaskConfigs(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
-        ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(jobConfig);
+        ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(ruleConfig);
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> sourceDataSource = new YamlDataSourceConfigurationSwapper().getDataSourceConfigurations(sourceConfig.getRootConfig());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getRootConfig().getDataSources().keySet()));
-        Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(jobConfig);
-        filterByShardingDataSourceTables(dataSourceTableNameMap, jobConfig.getHandleConfig());
+        Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(ruleConfig);
+        filterByShardingDataSourceTables(dataSourceTableNameMap, handleConfig);
         Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
-            ImporterConfiguration importerConfig = createImporterConfig(jobConfig, shardingColumnsMap);
-            TaskConfiguration taskConfig = new TaskConfiguration(jobConfig.getHandleConfig(), dumperConfig, importerConfig);
+            ImporterConfiguration importerConfig = createImporterConfig(ruleConfig, handleConfig, shardingColumnsMap);
+            TaskConfiguration taskConfig = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
             log.info("toTaskConfigs, dataSourceName={}, taskConfig={}", entry.getKey(), taskConfig);
             result.add(taskConfig);
         }
         return result;
     }
     
-    private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final JobConfiguration jobConfig) {
-        JDBCDataSourceConfiguration result = jobConfig.getRuleConfig().getSource().unwrap();
+    private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final RuleConfiguration ruleConfig) {
+        JDBCDataSourceConfiguration result = ruleConfig.getSource().unwrap();
         Preconditions.checkArgument(result instanceof ShardingSphereJDBCDataSourceConfiguration, "Only support ShardingSphere source data source.");
         return (ShardingSphereJDBCDataSourceConfiguration) result;
     }
     
-    private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final JobConfiguration jobConfig) {
-        JDBCDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
+    private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final RuleConfiguration ruleConfig) {
+        JDBCDataSourceConfiguration dataSourceConfig = ruleConfig.getTarget().unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return Optional.of(
                     ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
@@ -272,11 +271,11 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return result;
     }
     
-    private static ImporterConfiguration createImporterConfig(final JobConfiguration jobConfig, final Map<String, Set<String>> shardingColumnsMap) {
+    private static ImporterConfiguration createImporterConfig(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig, final Map<String, Set<String>> shardingColumnsMap) {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(jobConfig.getRuleConfig().getTarget().unwrap());
+        result.setDataSourceConfig(ruleConfig.getTarget().unwrap());
         result.setShardingColumnsMap(shardingColumnsMap);
-        result.setRetryTimes(jobConfig.getHandleConfig().getRetryTimes());
+        result.setRetryTimes(handleConfig.getRetryTimes());
         return result;
     }
     

@@ -83,13 +83,14 @@ public final class ResourceUtil {
         setupChangedYamlRuleConfigClassNames(ruleConfig);
         ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
         ruleConfig.setTarget(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml")).wrap());
+        // TODO remove handleConfig manual initialization
         HandleConfiguration handleConfig = new HandleConfiguration();
         result.setHandleConfig(handleConfig);
         handleConfig.setJobShardingItem(0);
         handleConfig.setLogicTables("t_order");
         handleConfig.setTablesFirstDataNodes("t_order:ds_0.t_order");
         handleConfig.setJobShardingDataNodes(Collections.singletonList("ds_0.t_order"));
-        result.fillInProperties();
+        result.buildHandleConfig();
         return result;
     }
     

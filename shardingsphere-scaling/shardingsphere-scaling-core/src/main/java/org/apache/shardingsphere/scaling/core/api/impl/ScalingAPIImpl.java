@@ -134,7 +134,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        jobConfig.fillInProperties();
+        jobConfig.buildHandleConfig();
         if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
