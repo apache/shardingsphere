@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -54,19 +54,19 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
     private void checkDuplicate(final String schemaName, final CreateShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         LinkedList<String> keyGeneratorNames = sqlStatement.getKeyGeneratorSegments().stream()
                 .map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toCollection(LinkedList::new));
-        checkDuplicateInput(keyGeneratorNames, duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        checkDuplicateInput(keyGeneratorNames, duplicated -> new DuplicateKeyGeneratorException("sharding", schemaName, duplicated));
         if (null != currentRuleConfig) {
-            checkExist(keyGeneratorNames, currentRuleConfig.getKeyGenerators().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+            checkExist(keyGeneratorNames, currentRuleConfig.getKeyGenerators().keySet(), duplicated -> new DuplicateKeyGeneratorException("sharding", schemaName, duplicated));
         }
     }
     
-    private static void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
-    private static void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }
