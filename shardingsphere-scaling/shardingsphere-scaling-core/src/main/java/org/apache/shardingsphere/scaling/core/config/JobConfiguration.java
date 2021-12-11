@@ -49,9 +49,16 @@ public final class JobConfiguration {
         ShardingSphereServiceLoader.register(RuleJobConfigurationPreparer.class);
     }
     
+    private WorkflowConfiguration workflowConfig;
+    
     private RuleConfiguration ruleConfig;
     
     private HandleConfiguration handleConfig = new HandleConfiguration();
+    
+    public JobConfiguration(final WorkflowConfiguration workflowConfig, final RuleConfiguration ruleConfig) {
+        this.workflowConfig = workflowConfig;
+        this.ruleConfig = ruleConfig;
+    }
     
     /**
      * Fill in properties.

@@ -76,6 +76,8 @@ public final class ResourceUtil {
      */
     public static JobConfiguration mockStandardJdbcTargetJobConfig() {
         JobConfiguration result = new JobConfiguration();
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", "id1");
+        result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);
         setupChangedYamlRuleConfigClassNames(ruleConfig);
@@ -87,7 +89,6 @@ public final class ResourceUtil {
         handleConfig.setLogicTables("t_order");
         handleConfig.setTablesFirstDataNodes("t_order:ds_0.t_order");
         handleConfig.setJobShardingDataNodes(Collections.singletonList("ds_0.t_order"));
-        handleConfig.setWorkflowConfig(new WorkflowConfiguration("logic_db", "id1"));
         result.fillInProperties();
         return result;
     }

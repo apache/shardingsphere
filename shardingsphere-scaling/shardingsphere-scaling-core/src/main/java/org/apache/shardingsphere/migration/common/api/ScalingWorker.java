@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
@@ -100,9 +99,9 @@ public final class ScalingWorker {
             log.info("source and target sharding configuration is the same, ignore");
             return Optional.empty();
         }
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId());
         RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
-        HandleConfiguration handleConfig = new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
-        return Optional.of(new JobConfiguration(ruleConfig, handleConfig));
+        return Optional.of(new JobConfiguration(workflowConfig, ruleConfig));
     }
     
     private Optional<YamlShardingRuleConfiguration> getYamlShardingRuleConfiguration(final YamlRootConfiguration rootConfig) {
