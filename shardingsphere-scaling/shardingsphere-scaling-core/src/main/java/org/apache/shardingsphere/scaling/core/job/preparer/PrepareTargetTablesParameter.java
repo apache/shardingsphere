@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
+
 /**
- * Data source preparer.
+ * Prepare target tables parameter.
  */
-public interface DataSourcePreparer {
+@RequiredArgsConstructor
+@Getter
+public final class PrepareTargetTablesParameter {
     
-    /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+    @NonNull
+    private final JobDataNodeLine tablesFirstDataNodes;
+    
+    @NonNull
+    private final RuleConfiguration ruleConfig;
 }

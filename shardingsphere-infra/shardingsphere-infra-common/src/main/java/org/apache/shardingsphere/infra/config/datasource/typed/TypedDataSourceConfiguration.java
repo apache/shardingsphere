@@ -26,6 +26,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -71,6 +72,23 @@ public abstract class TypedDataSourceConfiguration {
      * @return database type
      */
     public abstract DatabaseType getDatabaseType();
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getParameter());
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (null == obj || getClass() != obj.getClass()) {
+            return false;
+        }
+        TypedDataSourceConfiguration that = (TypedDataSourceConfiguration) obj;
+        return Objects.equals(getType(), that.getType()) && Objects.equals(getParameter(), that.getParameter());
+    }
     
     /**
      * Wrap.

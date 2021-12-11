@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.migration.common.spi.RuleJobConfigurationPreparer;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -33,6 +32,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Scaling job configuration.
@@ -42,15 +42,8 @@ import java.util.Optional;
 @Getter
 @Setter
 @Slf4j
+// TODO share for totally new scenario
 public final class JobConfiguration {
-    
-    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR;
-    
-    static {
-        SnowflakeKeyGenerateAlgorithm generateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        generateAlgorithm.init();
-        ID_AUTO_INCREASE_GENERATOR = generateAlgorithm;
-    }
     
     static {
         ShardingSphereServiceLoader.register(RuleJobConfigurationPreparer.class);
@@ -66,13 +59,16 @@ public final class JobConfiguration {
     public void fillInProperties() {
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig.getJobId()) {
-            handleConfig.setJobId((Long) ID_AUTO_INCREASE_GENERATOR.generateKey());
+            handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
         if (Strings.isNullOrEmpty(handleConfig.getDatabaseType())) {
             handleConfig.setDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
+        if (null == handleConfig.getJobShardingItem()) {
+            handleConfig.setJobShardingItem(0);
+        }
         RuleConfiguration ruleConfig = getRuleConfig();
-        if (null == handleConfig.getShardingTables()) {
+        if (null == handleConfig.getJobShardingDataNodes()) {
             List<HandleConfiguration> newHandleConfigs = new LinkedList<>();
             for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
                 Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
@@ -82,8 +78,9 @@ public final class JobConfiguration {
             }
             // TODO handle several rules changed or dataSources changed
             for (HandleConfiguration each : newHandleConfigs) {
-                handleConfig.setShardingTables(each.getShardingTables());
+                handleConfig.setJobShardingDataNodes(each.getJobShardingDataNodes());
                 handleConfig.setLogicTables(each.getLogicTables());
+                handleConfig.setTablesFirstDataNodes(each.getTablesFirstDataNodes());
             }
         }
     }

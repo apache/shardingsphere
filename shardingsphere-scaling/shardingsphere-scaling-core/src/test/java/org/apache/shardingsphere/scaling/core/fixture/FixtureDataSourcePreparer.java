@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
+import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
 
 public final class FixtureDataSourcePreparer implements DataSourcePreparer {
     
     @Override
-    public void prepareTargetTables(final JobConfiguration jobConfig) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
     }
 }

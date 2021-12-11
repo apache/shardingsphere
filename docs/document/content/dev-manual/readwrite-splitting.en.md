@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.7. </b>"
+pre = "<b>6.8. </b>"
 title = "Readwrite-splitting"
-weight = 7
+weight = 8
 chapter = true
 +++
 

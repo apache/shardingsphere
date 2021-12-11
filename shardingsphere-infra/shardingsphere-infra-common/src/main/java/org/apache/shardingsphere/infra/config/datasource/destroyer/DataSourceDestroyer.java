@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer;
+package org.apache.shardingsphere.infra.config.datasource.destroyer;
+
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Data source preparer.
+ * Data source destroyer.
  */
-public interface DataSourcePreparer {
+public interface DataSourceDestroyer extends TypedSPI, RequiredSPI {
     
     /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
+     * destroy data source gracefully.
+     * 
+     * @param dataSource data source
+     * @throws SQLException SQL exception
      */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+    void destroy(DataSource dataSource) throws SQLException;
 }
