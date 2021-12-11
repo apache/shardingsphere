@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.destroyer.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourceDestroyer;
+
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
