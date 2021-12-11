@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.Standa
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.migration.common.spi.RuleJobConfigurationPreparer;
+import org.apache.shardingsphere.migration.common.spi.JobConfigurationPreparer;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import java.util.ArrayList;
@@ -64,10 +63,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sharding rule job configuration preparer.
+ * Sharding job configuration preparer.
  */
 @Slf4j
-public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfigurationPreparer {
+public final class ShardingJobConfigurationPreparer implements JobConfigurationPreparer {
     
     @Override
     public HandleConfiguration createHandleConfig(final RuleConfiguration ruleConfig) {
@@ -125,7 +124,6 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         return new JobDataNodeLine(dataNodeEntries).marshal();
     }
     
-    // TODO handle several rules changed or dataSources changed
     @Override
     public List<TaskConfiguration> createTaskConfigs(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
@@ -277,10 +275,5 @@ public final class ShardingRuleJobConfigurationPreparer implements RuleJobConfig
         result.setShardingColumnsMap(shardingColumnsMap);
         result.setRetryTimes(handleConfig.getRetryTimes());
         return result;
-    }
-    
-    @Override
-    public String getType() {
-        return YamlShardingRuleConfiguration.class.getName();
     }
 }

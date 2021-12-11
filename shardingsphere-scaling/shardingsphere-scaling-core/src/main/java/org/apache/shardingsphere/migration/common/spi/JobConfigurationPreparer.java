@@ -17,25 +17,17 @@
 
 package org.apache.shardingsphere.migration.common.spi;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 import java.util.List;
 
 /**
- * Rule job configuration preparer, SPI interface.
+ * Job configuration preparer, SPI interface.
  */
-public interface RuleJobConfigurationPreparer extends TypedSPI {
-    
-    /**
-     * Get type.
-     *
-     * @return {@link YamlRuleConfiguration} implementation class full name
-     */
-    String getType();
+public interface JobConfigurationPreparer extends RequiredSPI {
     
     /**
      * Create handle configuration, used to build job configuration.
