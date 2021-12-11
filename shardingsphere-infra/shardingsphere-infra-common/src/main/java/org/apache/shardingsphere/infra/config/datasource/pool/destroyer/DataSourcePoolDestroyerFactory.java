@@ -39,6 +39,7 @@ public final class DataSourcePoolDestroyerFactory {
      * @return instance of data source pool destroyer
      */
     public static DataSourcePoolDestroyer getInstance(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties()).orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties())
+                .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
     }
 }
