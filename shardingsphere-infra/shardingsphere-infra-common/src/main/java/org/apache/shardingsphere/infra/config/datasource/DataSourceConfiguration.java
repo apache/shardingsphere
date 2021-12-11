@@ -52,18 +52,18 @@ public final class DataSourceConfiguration {
         if (props.containsKey(originalName)) {
             props.put(synonym, props.get(originalName));
         }
-        // TODO fixes by #6709
         if (props.containsKey(synonym)) {
             props.put(originalName, props.get(synonym));
         }
     }
     
     /**
-     * Get all props.
+     * Get all properties.
      * 
-     * @return map of all props
+     * @return all properties
      */
-    public Map<String, Object> getAllProps() {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Map<String, Object> getAllProperties() {
         Map<String, Object> result = new HashMap<>(props);
         result.putAll((Map) customPoolProps);
         return result;
