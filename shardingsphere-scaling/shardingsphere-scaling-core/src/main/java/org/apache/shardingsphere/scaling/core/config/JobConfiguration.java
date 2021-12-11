@@ -72,7 +72,7 @@ public final class JobConfiguration {
             handleConfig.setSourceDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            handleConfig.setSourceDatabaseType(getRuleConfig().getTarget().unwrap().getDatabaseType().getName());
+            handleConfig.setTargetDatabaseType(getRuleConfig().getTarget().unwrap().getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);

@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-databaseType: H2
 incremental:
   ds_0:
     delay:
@@ -25,5 +24,5 @@ incremental:
 inventory:
   unfinished:
     ds_0.t_order#0: ''
+sourceDatabaseType: H2
 status: RUNNING
-
