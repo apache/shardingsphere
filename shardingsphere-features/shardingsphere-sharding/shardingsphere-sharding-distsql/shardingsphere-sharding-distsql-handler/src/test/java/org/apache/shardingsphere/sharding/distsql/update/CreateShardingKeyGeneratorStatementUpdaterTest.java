@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -52,13 +52,13 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
         when(shardingSphereMetaData.getName()).thenReturn("test");
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test(expected = DuplicateKeyGeneratorException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment, keyGeneratorSegment), null);
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test(expected = DuplicateKeyGeneratorException.class)
     public void assertExecuteWithExist() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
