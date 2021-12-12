@@ -32,7 +32,7 @@ public final class JDBCDataSourceCreatorFactory {
     /**
      * Get JDBC data source creator instance.
      * 
-     * @param type type
+     * @param type JDBC data source creator type
      * @return JDBC data source creator instance
      */
     public static JDBCDataSourceCreator getInstance(final String type) {
