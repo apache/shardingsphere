@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.spi.JobRuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -38,19 +40,26 @@ import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.executor.job.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.scaling.core.executor.job.ScalingJobExecutor;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Scaling worker.
  */
 @Slf4j
 public final class ScalingWorker {
+    
+    static {
+        ShardingSphereServiceLoader.register(JobRuleAlteredDetector.class);
+    }
     
     private static final ScalingWorker INSTANCE = new ScalingWorker();
     
@@ -88,36 +97,40 @@ public final class ScalingWorker {
     private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
-        Optional<YamlShardingRuleConfiguration> sourceShardingConfigOptional = getYamlShardingRuleConfiguration(sourceRootConfig);
-        Optional<YamlShardingRuleConfiguration> targetShardingConfigOptional = getYamlShardingRuleConfiguration(targetRootConfig);
-        if (!sourceShardingConfigOptional.isPresent() || !targetShardingConfigOptional.isPresent()) {
-            log.info("sourceShardingConfig or targetShardingConfig not present, ignore");
-            return Optional.empty();
-        }
-        if (isShardingRulesTheSame(sourceShardingConfigOptional.get(), targetShardingConfigOptional.get())) {
-            log.info("source and target sharding configuration is the same, ignore");
-            return Optional.empty();
+        Map<String, JobRuleAlteredDetector> typeDetectorMap = ShardingSphereServiceLoader.getSingletonServiceInstances(JobRuleAlteredDetector.class).stream()
+                .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+        for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
+            String type = each.getClass().getName();
+            JobRuleAlteredDetector detector = typeDetectorMap.get(type);
+            if (null == detector) {
+                continue;
+            }
+            boolean ruleAltered = detector.isRuleAltered(each.getLeft(), each.getRight());
+            log.info("type={}, ruleAltered={}", type, ruleAltered);
+            if (ruleAltered) {
+                break;
+            }
         }
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId());
         RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
         return Optional.of(new JobConfiguration(workflowConfig, ruleConfig));
     }
     
-    private Optional<YamlShardingRuleConfiguration> getYamlShardingRuleConfiguration(final YamlRootConfiguration rootConfig) {
-        return rootConfig.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
-    }
-    
-    // TODO more accurate comparison
-    private boolean isShardingRulesTheSame(final YamlShardingRuleConfiguration sourceShardingConfig, final YamlShardingRuleConfiguration targetShardingConfig) {
-        for (Entry<String, YamlTableRuleConfiguration> entry : sourceShardingConfig.getTables().entrySet()) {
-            entry.getValue().setLogicTable(null);
+    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(
+            final Collection<YamlRuleConfiguration> sourceRules, final Collection<YamlRuleConfiguration> targetRules) {
+        Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> sourceRulesMap = sourceRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
+        Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> targetRulesMap = targetRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
+        Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> result = new LinkedList<>();
+        for (Entry<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> entry : sourceRulesMap.entrySet()) {
+            YamlRuleConfiguration targetRule = targetRulesMap.get(entry.getKey());
+            result.add(Pair.of(entry.getValue(), targetRule));
         }
-        for (Entry<String, YamlTableRuleConfiguration> entry : targetShardingConfig.getTables().entrySet()) {
-            entry.getValue().setLogicTable(null);
+        for (Entry<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> entry : targetRulesMap.entrySet()) {
+            if (!sourceRulesMap.containsKey(entry.getKey())) {
+                result.add(Pair.of(null, entry.getValue()));
+            }
         }
-        String sourceShardingConfigYaml = YamlEngine.marshal(sourceShardingConfig);
-        String targetShardingConfigYaml = YamlEngine.marshal(targetShardingConfig);
-        return sourceShardingConfigYaml.equals(targetShardingConfigYaml);
+        return result;
     }
     
     private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
