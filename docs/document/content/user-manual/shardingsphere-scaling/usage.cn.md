@@ -13,9 +13,9 @@ weight = 2
 
 | 源端                   | 目标端                |
 | --------------------- | -------------------- |
-| MySQL(5.1.15 ~ 5.7.x) | MySQL                |
-| PostgreSQL(9.4 ~ )    | PostgreSQL           |
-| openGauss(2.1.0)      | openGauss            |
+| MySQL(5.1.15 ~ 5.7.x) | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )    | PostgreSQL(9.4 ~ )           |
+| openGauss(2.1.0)      | openGauss(2.1.0)            |
 
 **注意**：
 
@@ -40,9 +40,14 @@ weight = 2
 还没开启`自动建表`的数据库需要手动创建分表。
 
 ### 权限要求
-
+#### MySQL
 MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replication 相关权限。
-
+执行以下命令，确认是否有开启binlog：
+```
+show variables like '%log_bin%';
+show variables like '%binlog%';
+```
+如以下显示，则说明binlog已开启
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -52,6 +57,10 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 | binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
 
+执行以下命令，查看该用户是否有迁移权限
+```
+SHOW GRANTS 'user';
+···
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
 +------------------------------------------------------------------------------+
@@ -60,6 +69,8 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 +------------------------------------------------------------------------------+
 ```
 
+
+#### PostgreSQL
 PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
 
 ### DistSQL 接口
