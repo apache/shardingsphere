@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.creator;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Optional;
 
 /**
  * JDBC data source creator factory.
@@ -35,12 +32,10 @@ public final class JDBCDataSourceCreatorFactory {
     /**
      * Get JDBC data source creator instance.
      * 
-     * @param type type
+     * @param type JDBC data source creator type
      * @return JDBC data source creator instance
      */
     public static JDBCDataSourceCreator getInstance(final String type) {
-        Optional<JDBCDataSourceCreator> result = TypedSPIRegistry.findRegisteredService(JDBCDataSourceCreator.class, type, null);
-        Preconditions.checkArgument(result.isPresent(), "Unsupported data source type '%s'", type);
-        return result.get();
+        return TypedSPIRegistry.getRegisteredService(JDBCDataSourceCreator.class, type, null);
     }
 }
