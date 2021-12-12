@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
@@ -38,9 +37,6 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        if (!sqlStatementContext.getSqlStatement().getUnionSegments().isEmpty() && !shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty()) {
-            throw new ShardingSphereException("SELECT ... UNION statement can not support sharding tables or broadcast tables.");
-        }
     }
     
     @Override

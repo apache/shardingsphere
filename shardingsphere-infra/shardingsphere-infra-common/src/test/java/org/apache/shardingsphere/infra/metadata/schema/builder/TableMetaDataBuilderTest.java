@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -34,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,13 +61,4 @@ public final class TableMetaDataBuilderTest {
                 props)).isEmpty());
     }
     
-    @Test
-    public void assertDecorateForFederation() {
-        assertNotNull(TableMetaDataBuilder.decorateFederationTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
-    }
-    
-    @Test
-    public void assertDecorateForKernel() {
-        assertNotNull(TableMetaDataBuilder.decorateKernelTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
-    }
 }

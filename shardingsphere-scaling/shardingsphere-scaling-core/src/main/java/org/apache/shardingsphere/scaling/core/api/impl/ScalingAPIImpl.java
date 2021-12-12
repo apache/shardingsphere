@@ -24,7 +24,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -86,7 +86,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
-        result.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
+        result.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         result.setTables(jobConfig.getHandleConfig().getLogicTables());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
@@ -113,7 +113,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         HandleConfiguration handleConfig = jobConfig.getHandleConfig();
         WorkflowConfiguration workflowConfig;
-        if (null == handleConfig || null == (workflowConfig = handleConfig.getWorkflowConfig())) {
+        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
             log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
             return false;
         }
@@ -134,8 +134,8 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        jobConfig.fillInProperties();
-        if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
+        jobConfig.buildHandleConfig();
+        if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
         }
@@ -150,7 +150,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     private String createJobConfig(final JobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
-        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
+        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
@@ -174,7 +174,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed()
                 .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     
@@ -260,9 +260,9 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfiguration jobConfig = getJobConfig(jobId);
         Optional<Collection<JobContext>> optionalJobContexts = JobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        TypedDataSourceConfigurationWrap targetConfig = jobConfig.getRuleConfig().getTarget();
+        JDBCDataSourceConfigurationWrapper targetConfig = jobConfig.getRuleConfig().getTarget();
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
-        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
+        WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);

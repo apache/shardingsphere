@@ -83,5 +83,6 @@ execute
     | alterTablespace
     | dropTablespace
     | setConstraints
+    | copy
     ) SEMI_?
     ;

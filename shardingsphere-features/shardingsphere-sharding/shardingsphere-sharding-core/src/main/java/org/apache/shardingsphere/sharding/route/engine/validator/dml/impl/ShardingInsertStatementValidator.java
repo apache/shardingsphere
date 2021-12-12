@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,15 +56,10 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }
-        InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO ... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
-        }
-        Optional<SubquerySegment> insertSelectSegment = sqlStatement.getInsertSelect();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Optional<SubquerySegment> insertSelectSegment = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
-                && !isContainsKeyGenerateColumn(shardingRule, sqlStatement.getColumns(), tableName)) {
+                && !isContainsKeyGenerateColumn(shardingRule, sqlStatementContext.getSqlStatement().getColumns(), tableName)) {
             throw new ShardingSphereException("INSERT INTO ... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
         }
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
@@ -101,6 +98,13 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             Preconditions.checkState(singleRoutingOrSameShardingCondition, "Subquery sharding conditions must be same with primary query.");
         }
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Collection<AssignmentSegment> assignments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatementContext.getSqlStatement())
+                .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
+        Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, parameters);
+        Optional<RouteContext> onDuplicateKeyRouteContext = onDuplicateKeyShardingConditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional, props).route(shardingRule));
+        if (onDuplicateKeyRouteContext.isPresent() && !isSameRouteContext(routeContext, onDuplicateKeyRouteContext.get())) {
+            throw new ShardingSphereException("Can not update sharding key since the updated value will change %s's data nodes.", tableName);
+        }
         if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
             boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> dataNodes.size() == 1);
             Preconditions.checkState(isSingleDataNode, "Insert statement does not support sharding table routing to multiple data nodes.");

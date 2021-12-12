@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
-import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;

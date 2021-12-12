@@ -21,7 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.migration.common.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
+import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
 import java.sql.Connection;
@@ -30,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Data source preparer for MySQL.
@@ -40,12 +43,13 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     private final MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(Collections.emptyMap());
     
     @Override
-    public void prepareTargetTables(final JobConfiguration jobConfig) {
-        try (DataSourceWrapper sourceDataSource = getSourceDataSource(jobConfig);
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+        RuleConfiguration ruleConfig = parameter.getRuleConfig();
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource(ruleConfig);
              Connection sourceConnection = sourceDataSource.getConnection();
-             DataSourceWrapper targetDataSource = getTargetDataSource(jobConfig);
+             DataSourceWrapper targetDataSource = getTargetDataSource(ruleConfig);
              Connection targetConnection = targetDataSource.getConnection()) {
-            Collection<String> logicTableNames = getLogicTableNames(jobConfig.getRuleConfig().getSource().unwrap());
+            Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);
                 createTableSQL = addIfNotExistsForCreateTableSQL(createTableSQL);

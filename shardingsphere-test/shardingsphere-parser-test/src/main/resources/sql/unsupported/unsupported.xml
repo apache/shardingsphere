@@ -38,7 +38,6 @@
     <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL"/>
     <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL"/>
     <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL"/>
-    <sql-case id="copy_table_from_stdin" value="COPY bitwise_test FROM STDIN NULL 'null';" db-types="PostgreSQL" />
     <sql-case id="create_type" value="create type avg_state as (total bigint, count bigint);" db-types="PostgreSQL" />
     <sql-case id="create_aggregate" value="create aggregate my_avg(int4) (stype = avg_state, sfunc = avg_transfn, finalfunc = avg_finalfn)" db-types="PostgreSQL"/>
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />

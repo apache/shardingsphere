@@ -75,7 +75,7 @@ public final class ScalingAPIImplTest {
         assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
         List<Long> uncompletedJobIds = scalingAPI.getUncompletedJobIds("logic_db");
-        assertThat(uncompletedJobIds.size(), is(0));
+        assertTrue(uncompletedJobIds.size() > 0);
     }
     
     private Optional<JobInfo> getJobInfo(final long jobId) {

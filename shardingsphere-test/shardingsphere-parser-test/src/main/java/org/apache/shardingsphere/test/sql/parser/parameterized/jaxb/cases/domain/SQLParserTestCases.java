@@ -101,6 +101,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
@@ -203,6 +204,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
@@ -424,6 +426,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-database")
     private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-database-link")
+    private final List<CreateDatabaseLinkStatementTestCase> createDatabaseLinkTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-function")
     private final List<CreateFunctionStatementTestCase> createFunctionTestCase = new LinkedList<>();
@@ -463,6 +468,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "call")
     private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "copy")
+    private final List<CopyStatementTestCase> copyStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "xa")
     private final List<XATestCase> xaTestCase = new LinkedList<>();
@@ -897,6 +905,7 @@ public final class SQLParserTestCases {
         putAll(createProcedureTestCase, result);
         putAll(createFunctionTestCase, result);
         putAll(createDatabaseTestCase, result);
+        putAll(createDatabaseLinkTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
         putAll(showTriggerTestCase, result);
@@ -905,6 +914,7 @@ public final class SQLParserTestCases {
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);
         putAll(callProcedureTestCase, result);
+        putAll(copyStatementTestCase, result);
         putAll(xaTestCase, result);
         putAll(mergeTestCase, result);
         putAll(createSequenceTestCase, result);

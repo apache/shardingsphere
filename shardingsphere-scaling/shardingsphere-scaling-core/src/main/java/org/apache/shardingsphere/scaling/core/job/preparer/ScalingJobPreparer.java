@@ -21,10 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -69,17 +70,19 @@ public final class ScalingJobPreparer {
     }
     
     private void prepareTarget(final JobConfiguration jobConfig) {
-        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getDatabaseType());
+        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
         if (null == dataSourcePreparer) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        dataSourcePreparer.prepareTargetTables(jobConfig);
+        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getRuleConfig());
+        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
     }
     
     private void initDataSourceManager(final DataSourceManager dataSourceManager, final List<TaskConfiguration> taskConfigs) {
         for (TaskConfiguration taskConfig : taskConfigs) {
-            TypedDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
+            JDBCDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
             dataSourceManager.createSourceDataSource(dataSourceConfig);
         }
         dataSourceManager.createTargetDataSource(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
@@ -94,14 +97,14 @@ public final class ScalingJobPreparer {
     }
     
     private void checkSourceDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
     }
     
     private void checkTargetDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType());
         dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), jobContext.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
     }
     
@@ -127,7 +130,7 @@ public final class ScalingJobPreparer {
                 return positionOptional.get();
             }
         }
-        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }
     
     /**
@@ -139,7 +142,7 @@ public final class ScalingJobPreparer {
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
             initDataSourceManager(dataSourceManager, jobContext.getTaskConfigs());
             for (TaskConfiguration each : jobContext.getTaskConfigs()) {
-                PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(each.getHandleConfig().getDatabaseType());
+                PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(each.getHandleConfig().getSourceDatabaseType());
                 positionInitializer.destroy(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
             }
         } catch (final SQLException ex) {
