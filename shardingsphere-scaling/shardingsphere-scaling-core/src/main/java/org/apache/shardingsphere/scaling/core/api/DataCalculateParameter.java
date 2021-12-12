@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 
 import java.util.Collection;
 
@@ -37,7 +37,7 @@ public final class DataCalculateParameter {
     /**
      * Data source configuration of source side or target side.
      */
-    private TypedDataSourceConfiguration dataSourceConfig;
+    private JDBCDataSourceConfiguration dataSourceConfig;
     
     private String logicTableName;
     

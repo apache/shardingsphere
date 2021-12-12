@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -34,7 +35,7 @@ import java.util.Map;
  * Standard JDBC data source configuration.
  */
 @EqualsAndHashCode(of = "parameter", callSuper = false)
-public final class StandardJDBCDataSourceConfiguration extends TypedDataSourceConfiguration {
+public final class StandardJDBCDataSourceConfiguration extends JDBCDataSourceConfiguration {
     
     public static final String TYPE = "JDBC";
     

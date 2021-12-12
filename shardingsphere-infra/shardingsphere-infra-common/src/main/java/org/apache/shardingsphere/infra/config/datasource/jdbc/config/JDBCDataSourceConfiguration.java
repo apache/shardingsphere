@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.datasource.typed.creator.TypedDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
@@ -30,12 +30,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Typed data source configuration.
+ * JDBC data source configuration.
  */
-public abstract class TypedDataSourceConfiguration {
+public abstract class JDBCDataSourceConfiguration {
     
     static {
-        ShardingSphereServiceLoader.register(TypedDataSourceCreator.class);
+        ShardingSphereServiceLoader.register(JDBCDataSourceCreator.class);
     }
     
     /**
@@ -86,7 +86,7 @@ public abstract class TypedDataSourceConfiguration {
         if (null == obj || getClass() != obj.getClass()) {
             return false;
         }
-        TypedDataSourceConfiguration that = (TypedDataSourceConfiguration) obj;
+        JDBCDataSourceConfiguration that = (JDBCDataSourceConfiguration) obj;
         return Objects.equals(getType(), that.getType()) && Objects.equals(getParameter(), that.getParameter());
     }
     
@@ -95,8 +95,8 @@ public abstract class TypedDataSourceConfiguration {
      *
      * @return typed data source configuration wrap
      */
-    public TypedDataSourceConfigurationWrap wrap() {
-        TypedDataSourceConfigurationWrap result = new TypedDataSourceConfigurationWrap();
+    public JDBCDataSourceConfigurationWrapper wrap() {
+        JDBCDataSourceConfigurationWrapper result = new JDBCDataSourceConfigurationWrapper();
         result.setType(getType());
         result.setParameter(getParameter());
         return result;
@@ -110,8 +110,8 @@ public abstract class TypedDataSourceConfiguration {
      */
     public DataSource toDataSource() throws SQLException {
         String type = getType();
-        Optional<TypedDataSourceCreator> creatorOptional = TypedSPIRegistry.findRegisteredService(TypedDataSourceCreator.class, type, null);
-        Preconditions.checkArgument(creatorOptional.isPresent(), "Unsupported data source type '%s'", type);
-        return creatorOptional.get().createDataSource(getParameter(), getDataSourceConfiguration());
+        Optional<JDBCDataSourceCreator> creator = TypedSPIRegistry.findRegisteredService(JDBCDataSourceCreator.class, type, null);
+        Preconditions.checkArgument(creator.isPresent(), "Unsupported data source type '%s'", type);
+        return creator.get().createDataSource(getParameter(), getDataSourceConfiguration());
     }
 }

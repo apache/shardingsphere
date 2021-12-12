@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.opengauss.component.checker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.migration.common.job.preparer.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;

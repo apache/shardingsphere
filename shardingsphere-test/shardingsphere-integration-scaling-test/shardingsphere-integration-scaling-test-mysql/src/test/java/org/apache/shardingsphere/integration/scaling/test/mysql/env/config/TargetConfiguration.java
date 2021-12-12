@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -52,10 +52,7 @@ public final class TargetConfiguration {
     }
     
     private static StandardJDBCDataSourceConfiguration getConfiguration(final String host) {
-        StandardJDBCDataSourceConfiguration configuration = new StandardJDBCDataSourceConfiguration(
-                String.format(TARGET_JDBC_URL, host),
-                ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
-        return configuration;
+        return new StandardJDBCDataSourceConfiguration(String.format(TARGET_JDBC_URL, host), ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
     }
     
     /**

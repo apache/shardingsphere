@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
@@ -41,7 +42,7 @@ import java.util.Map;
  */
 @Getter
 @EqualsAndHashCode(of = "parameter", callSuper = false)
-public final class ShardingSphereJDBCDataSourceConfiguration extends TypedDataSourceConfiguration {
+public final class ShardingSphereJDBCDataSourceConfiguration extends JDBCDataSourceConfiguration {
     
     public static final String TYPE = "ShardingSphereJDBC";
     

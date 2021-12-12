@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ public final class MySQLImporterTest {
     
     @Test
     public void assertCreateSqlBuilder() {
-        when(importerConfig.getDataSourceConfig()).thenReturn(mock(TypedDataSourceConfiguration.class));
+        when(importerConfig.getDataSourceConfig()).thenReturn(mock(JDBCDataSourceConfiguration.class));
         MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager);
         String insertSQL = mysqlImporter.createSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));

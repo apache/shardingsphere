@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
@@ -44,19 +44,19 @@ public final class MySQLDataSourcePreparerTest {
     private PrepareTargetTablesParameter prepareTargetTablesParameter;
 
     @Mock
-    private RuleConfiguration ruleConfiguration;
+    private RuleConfiguration ruleConfig;
 
     @Mock
-    private TypedDataSourceConfigurationWrap sourceDataSourceConfigurationWrap;
+    private JDBCDataSourceConfigurationWrapper sourceDataSourceConfigurationWrapper;
 
     @Mock
-    private TypedDataSourceConfigurationWrap targetDataSourceConfigurationWrap;
+    private JDBCDataSourceConfigurationWrapper targetDataSourceConfigurationWrapper;
 
     @Mock
-    private ShardingSphereJDBCDataSourceConfiguration sourceScalingDataSourceConfiguration;
+    private ShardingSphereJDBCDataSourceConfiguration sourceScalingDataSourceConfig;
 
     @Mock
-    private ShardingSphereJDBCDataSourceConfiguration targetScalingDataSourceConfiguration;
+    private ShardingSphereJDBCDataSourceConfiguration targetScalingDataSourceConfig;
 
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource sourceDataSource;
@@ -66,14 +66,14 @@ public final class MySQLDataSourcePreparerTest {
 
     @Before
     public void setUp() throws SQLException {
-        when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfiguration);
+        when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
-        when(ruleConfiguration.getSource()).thenReturn(sourceDataSourceConfigurationWrap);
-        when(sourceDataSourceConfigurationWrap.unwrap()).thenReturn(sourceScalingDataSourceConfiguration);
-        when(sourceScalingDataSourceConfiguration.toDataSource()).thenReturn(sourceDataSource);
-        when(ruleConfiguration.getTarget()).thenReturn(targetDataSourceConfigurationWrap);
-        when(targetDataSourceConfigurationWrap.unwrap()).thenReturn(targetScalingDataSourceConfiguration);
-        when(targetScalingDataSourceConfiguration.toDataSource()).thenReturn(targetDataSource);
+        when(ruleConfig.getSource()).thenReturn(sourceDataSourceConfigurationWrapper);
+        when(sourceDataSourceConfigurationWrapper.unwrap()).thenReturn(sourceScalingDataSourceConfig);
+        when(sourceScalingDataSourceConfig.toDataSource()).thenReturn(sourceDataSource);
+        when(ruleConfig.getTarget()).thenReturn(targetDataSourceConfigurationWrapper);
+        when(targetDataSourceConfigurationWrapper.unwrap()).thenReturn(targetScalingDataSourceConfig);
+        when(targetScalingDataSourceConfig.toDataSource()).thenReturn(targetDataSource);
     }
     
     @Test
