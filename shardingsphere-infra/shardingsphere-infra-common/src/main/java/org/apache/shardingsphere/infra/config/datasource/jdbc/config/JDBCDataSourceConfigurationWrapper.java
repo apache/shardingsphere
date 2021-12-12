@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * JDBC data source configuration wrapper.
+ */
 @Getter
 @Setter
-public final class TypedDataSourceConfigurationWrap {
+public final class JDBCDataSourceConfigurationWrapper {
     
     private String type;
     
@@ -39,10 +44,10 @@ public final class TypedDataSourceConfigurationWrap {
      * @return typed data source configuration
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public TypedDataSourceConfiguration unwrap() {
+    public JDBCDataSourceConfiguration unwrap() {
         Map<String, Class<?>> classMap = DataSourceConfigurationHolder.getInstances();
         Preconditions.checkArgument(classMap.containsKey(type.toLowerCase()), "Unsupported data source type '%s'", type);
-        return (TypedDataSourceConfiguration) classMap.get(type.toLowerCase()).getConstructor(String.class).newInstance(parameter);
+        return (JDBCDataSourceConfiguration) classMap.get(type.toLowerCase()).getConstructor(String.class).newInstance(parameter);
     }
     
     private static class DataSourceConfigurationHolder {

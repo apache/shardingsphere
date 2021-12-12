@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.config.datasource;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.datasource.typed.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.typed.creator.TypedDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
@@ -29,9 +29,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * ShardingSphere JDBC typed data source creator.
+ * ShardingSphere JDBC data source creator.
  */
-public final class ShardingSphereJDBCTypedDataSourceCreator implements TypedDataSourceCreator {
+public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSourceCreator {
     
     @Override
     public DataSource createDataSource(final String parameter, final Object dataSourceConfig) throws SQLException {

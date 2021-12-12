@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -36,18 +36,18 @@ public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
+    private final Map<JDBCDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
-    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
+    private final Map<JDBCDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
     
-    private final Map<TypedDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
+    private final Map<JDBCDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
     
     /**
      * Create source data source.
      *
      * @param dataSourceConfig data source configuration
      */
-    public void createSourceDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+    public void createSourceDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
         DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         sourceDataSources.put(dataSourceConfig, dataSource);
@@ -58,7 +58,7 @@ public final class DataSourceManager implements AutoCloseable {
      *
      * @param dataSourceConfig data source configuration
      */
-    public void createTargetDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+    public void createTargetDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
         DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         targetDataSources.put(dataSourceConfig, dataSource);
@@ -70,7 +70,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public DataSourceWrapper getDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+    public DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
         if (cachedDataSources.containsKey(dataSourceConfig)) {
             return cachedDataSources.get(dataSourceConfig);
         }

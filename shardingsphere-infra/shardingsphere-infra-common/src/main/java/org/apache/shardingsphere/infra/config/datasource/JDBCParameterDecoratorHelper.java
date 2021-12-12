@@ -26,13 +26,14 @@ import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCParameterDecoratorHelper {
+    
     /**
      * Decorate data source.
      *
      * @param dataSource data source to be decorated
      * @return decorated data source
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static DataSource decorate(final DataSource dataSource) {
         Optional<JDBCParameterDecorator> decorator = ShardingSphereServiceLoader
                 .getSingletonServiceInstances(JDBCParameterDecorator.class)

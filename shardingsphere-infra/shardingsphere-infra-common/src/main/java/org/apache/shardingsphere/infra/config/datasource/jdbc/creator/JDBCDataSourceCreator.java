@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed.creator;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.creator;
 
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
@@ -23,15 +23,15 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * Typed data source creator, SPI interface.
+ * JDBC data source creator.
  */
-public interface TypedDataSourceCreator extends TypedSPI {
+public interface JDBCDataSourceCreator extends TypedSPI {
     
     /**
-     * Create data source by data source configuration.
+     * Create data source.
      *
      * @param parameter data source configuration
-     * @param dataSourceConfig configuration parsed from parameter
+     * @param dataSourceConfig data source configuration
      * @return data source
      * @throws SQLException if create data source failed
      */

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfigurationWrap;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,24 +36,24 @@ public final class RuleConfiguration {
     @NonNull
     private List<String> changedYamlRuleConfigClassNames = Collections.emptyList();
     
-    private TypedDataSourceConfigurationWrap source;
+    private JDBCDataSourceConfigurationWrapper source;
     
-    private TypedDataSourceConfigurationWrap target;
+    private JDBCDataSourceConfigurationWrapper target;
     
     /**
      * Set source.
      *
      * @param source source configuration
      */
-    public void setSource(final TypedDataSourceConfigurationWrap source) {
+    public void setSource(final JDBCDataSourceConfigurationWrapper source) {
         checkParameters(source);
         this.source = source;
     }
     
-    private void checkParameters(final TypedDataSourceConfigurationWrap wrap) {
-        Preconditions.checkNotNull(wrap);
-        Preconditions.checkNotNull(wrap.getType());
-        Preconditions.checkNotNull(wrap.getParameter());
+    private void checkParameters(final JDBCDataSourceConfigurationWrapper wrapper) {
+        Preconditions.checkNotNull(wrapper);
+        Preconditions.checkNotNull(wrapper.getType());
+        Preconditions.checkNotNull(wrapper.getParameter());
     }
     
     /**
@@ -61,7 +61,7 @@ public final class RuleConfiguration {
      *
      * @param target target configuration
      */
-    public void setTarget(final TypedDataSourceConfigurationWrap target) {
+    public void setTarget(final JDBCDataSourceConfigurationWrapper target) {
         checkParameters(target);
         this.target = target;
     }

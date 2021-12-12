@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;

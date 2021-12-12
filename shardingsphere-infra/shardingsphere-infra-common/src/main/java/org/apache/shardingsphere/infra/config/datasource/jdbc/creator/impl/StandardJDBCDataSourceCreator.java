@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.typed.creator;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.creator.impl;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
 
 import javax.sql.DataSource;
 
 /**
- * Standard JDBC typed data source creator.
+ * Standard JDBC data source creator.
  */
-public final class StandardJDBCTypedDataSourceCreator implements TypedDataSourceCreator {
+public final class StandardJDBCDataSourceCreator implements JDBCDataSourceCreator {
     
     @Override
     public DataSource createDataSource(final String parameter, final Object dataSourceConfig) {
