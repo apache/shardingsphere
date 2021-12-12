@@ -32,10 +32,10 @@
     <modules>
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-jdbc-example</module>
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-jpa-example</module>
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jpa-example</module>
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-mybatis-example</module>
-        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-mybatis-example</module>
+        <module>shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-mybatis-example</module>
     </modules>
 </project>
