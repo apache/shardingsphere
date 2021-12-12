@@ -15,42 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity;
+package org.apache.shardingsphere.example.readwrite.splitting.spring.boot.starter.jpa.entity;
 
-<#if framework?contains("jpa")>
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-</#if>
 import java.io.Serializable;
 
-<#if framework?contains("jpa")>
 @Entity
-@Table(name = "t_user")
-</#if>
-public class User implements Serializable {
+@Table(name = "t_order_item")
+public class OrderItem implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = 1332162822494069342L;
     
-    <#if framework?contains("jpa")>
     @Id
-    @Column(name = "user_id")
+    @Column(name = "order_item_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    </#if>
+    private long orderItemId;
+    
+    @Column(name = "order_id")
+    private long orderId;
+    
+    @Column(name = "user_id")
     private int userId;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "user_name")
-    </#if>
-    private String userName;
+    @Column(name = "status")
+    private String status;
     
-    <#if framework?contains("jpa")>
-    @Column(name = "pwd")
-    </#if>
-    private String pwd;
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+    
+    public long getOrderId() {
+        return orderId;
+    }
+    
+    public void setOrderId(final long orderId) {
+        this.orderId = orderId;
+    }
     
     public int getUserId() {
         return userId;
@@ -60,24 +69,16 @@ public class User implements Serializable {
         this.userId = userId;
     }
     
-    public String getUserName() {
-        return userName;
+    public String getStatus() {
+        return status;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
-    }
-    
-    public String getPwd() {
-        return pwd;
-    }
-    
-    public void setPwd(final String pwd) {
-        this.pwd = pwd;
+    public void setStatus(final String status) {
+        this.status = status;
     }
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
     }
 }
