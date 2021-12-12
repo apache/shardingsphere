@@ -22,7 +22,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
@@ -33,7 +32,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -57,16 +55,11 @@ public final class ResourceUtil {
      */
     public static JobConfiguration mockShardingSphereJdbcTargetJobConfig() {
         RuleConfiguration ruleConfig = new RuleConfiguration();
-        setupChangedYamlRuleConfigClassNames(ruleConfig);
         ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
         ruleConfig.setTarget(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_target.yaml")).wrap());
         JobConfiguration result = new JobConfiguration();
         result.setRuleConfig(ruleConfig);
         return result;
-    }
-    
-    private static void setupChangedYamlRuleConfigClassNames(final RuleConfiguration ruleConfig) {
-        ruleConfig.setChangedYamlRuleConfigClassNames(Collections.singletonList("org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"));
     }
     
     /**
@@ -76,19 +69,13 @@ public final class ResourceUtil {
      */
     public static JobConfiguration mockStandardJdbcTargetJobConfig() {
         JobConfiguration result = new JobConfiguration();
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", "id1");
+        result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);
-        setupChangedYamlRuleConfigClassNames(ruleConfig);
         ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
         ruleConfig.setTarget(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml")).wrap());
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        result.setHandleConfig(handleConfig);
-        handleConfig.setJobShardingItem(0);
-        handleConfig.setLogicTables("t_order");
-        handleConfig.setTablesFirstDataNodes("t_order:ds_0.t_order");
-        handleConfig.setJobShardingDataNodes(Collections.singletonList("ds_0.t_order"));
-        handleConfig.setWorkflowConfig(new WorkflowConfiguration("logic_db", "id1"));
-        result.fillInProperties();
+        result.buildHandleConfig();
         return result;
     }
     

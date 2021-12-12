@@ -15,18 +15,4 @@
 # limitations under the License.
 #
 
-incremental:
-  ds0:
-    delay:
-      lastEventTimestamps: 0
-      latestActiveTimeMillis: 0
-    position: ''
-inventory:
-  finished:
-  - ds0.t_2
-  - ds0.t_1
-  unfinished:
-    ds1.t_2: 1,2
-    ds1.t_1: ''
-sourceDatabaseType: H2
-status: RUNNING
+org.apache.shardingsphere.sharding.schedule.JobShardingRuleAlteredDetector

@@ -17,40 +17,32 @@
 
 package org.apache.shardingsphere.migration.common.spi;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 import java.util.List;
 
 /**
- * Rule job configuration preparer, SPI interface.
+ * Job configuration preparer, SPI interface.
  */
-public interface RuleJobConfigurationPreparer extends TypedSPI {
+public interface JobConfigurationPreparer extends RequiredSPI {
     
     /**
-     * Get type.
-     *
-     * @return {@link YamlRuleConfiguration} implementation class full name
-     */
-    String getType();
-    
-    /**
-     * Convert to handle configuration, used to build job configuration.
+     * Create handle configuration, used to build job configuration.
      *
      * @param ruleConfig rule configuration
-     * @return handle configuration. It won't be used directly, but merge necessary configuration (e.g. shardingTables, logicTables) into final {@link HandleConfiguration}
+     * @return handle configuration
      */
-    HandleConfiguration convertToHandleConfig(RuleConfiguration ruleConfig);
+    HandleConfiguration createHandleConfig(RuleConfiguration ruleConfig);
     
     /**
-     * Convert to task configurations, used by underlying scheduler.
+     * Create task configurations, used by underlying scheduler.
      *
-     * @param jobConfig job configuration
+     * @param ruleConfig rule configuration
+     * @param handleConfig handle configuration
      * @return task configurations
      */
-    List<TaskConfiguration> convertToTaskConfigs(JobConfiguration jobConfig);
+    List<TaskConfiguration> createTaskConfigs(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
 }

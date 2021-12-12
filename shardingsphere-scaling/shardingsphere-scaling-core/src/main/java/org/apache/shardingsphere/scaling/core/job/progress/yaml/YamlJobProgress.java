@@ -33,7 +33,7 @@ public final class YamlJobProgress {
     
     private String status;
     
-    private String databaseType;
+    private String sourceDatabaseType;
     
     private YamlInventory inventory;
     

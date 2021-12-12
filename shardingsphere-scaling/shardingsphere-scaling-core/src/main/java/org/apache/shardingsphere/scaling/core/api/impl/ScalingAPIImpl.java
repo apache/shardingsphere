@@ -113,7 +113,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         HandleConfiguration handleConfig = jobConfig.getHandleConfig();
         WorkflowConfiguration workflowConfig;
-        if (null == handleConfig || null == (workflowConfig = handleConfig.getWorkflowConfig())) {
+        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
             log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
             return false;
         }
@@ -134,7 +134,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        jobConfig.fillInProperties();
+        jobConfig.buildHandleConfig();
         if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new ScalingJobCreationException("handleConfig shardingTotalCount is 0");
@@ -262,7 +262,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
         JDBCDataSourceConfigurationWrapper targetConfig = jobConfig.getRuleConfig().getTarget();
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
-        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
+        WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);
