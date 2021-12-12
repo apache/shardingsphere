@@ -31,12 +31,12 @@
     
     <modules>
         <module>shardingsphere-jdbc-memory-local-sharding-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-jpa-example</module>
         <module>shardingsphere-jdbc-memory-local-sharding-spring-namespace-jdbc-example</module>
         <module>shardingsphere-jdbc-memory-local-sharding-spring-namespace-jpa-example</module>
         <module>shardingsphere-jdbc-memory-local-sharding-spring-namespace-mybatis-example</module>
-        <module>shardingsphere-jdbc-memory-local-sharding-springboot-starter-mybatis-example</module>
+        <module>shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-mybatis-example</module>
     </modules>
     
 </project>
