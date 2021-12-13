@@ -56,14 +56,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
-    private final Map<String, String> tableNameMap;
+    private final Map<String, String> tableNames;
     
     public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
-        tableNameMap = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
+        tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
         config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
     }
     
@@ -110,17 +110,15 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<String> singleTableNames) {
-        Set<String> dataSourceNames = singleTableNames.stream().map(each -> singleTableDataNodes.get(each.toLowerCase()))
-                .filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getDataSourceName)).collect(Collectors.toSet());
-        if (dataSourceNames.size() > 1) {
+        if (!isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
-        if (dataSourceNames.isEmpty()) {
-            return true;
-        }
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            if (!each.getDataSourceMapper().getLogicName().equals(dataSourceNames.iterator().next())) {
-                return false;
+        Collection<DataNode> dataNodes = singleTableDataNodes.get(singleTableNames.iterator().next().toLowerCase());
+        if (null != dataNodes && !dataNodes.isEmpty()) {
+            for (RouteUnit each : routeContext.getRouteUnits()) {
+                if (!each.getDataSourceMapper().getLogicName().equals(dataNodes.iterator().next().getDataSourceName())) {
+                    return false;
+                }
             }
         }
         return true;
@@ -155,14 +153,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public void put(final String tableName, final String dataSourceName) {
         if (dataSourceNames.contains(dataSourceName)) {
             singleTableDataNodes.put(tableName.toLowerCase(), Collections.singletonList(new DataNode(dataSourceName, tableName)));
-            tableNameMap.put(tableName.toLowerCase(), tableName);
+            tableNames.put(tableName.toLowerCase(), tableName);
         }
     }
     
     @Override
     public void remove(final String tableName) {
         singleTableDataNodes.remove(tableName.toLowerCase());
-        tableNameMap.remove(tableName.toLowerCase());
+        tableNames.remove(tableName.toLowerCase());
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
@@ -202,12 +200,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return tableNameMap.values();
+        return tableNames.values();
     }
     
     @Override
     public Collection<String> getTables() {
-        return tableNameMap.values();
+        return tableNames.values();
     }
     
     @Override
