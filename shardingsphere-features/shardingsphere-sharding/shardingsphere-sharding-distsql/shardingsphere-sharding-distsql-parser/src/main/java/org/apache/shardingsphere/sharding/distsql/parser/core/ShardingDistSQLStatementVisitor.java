@@ -174,15 +174,6 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     @Override
-    public ASTNode visitAlterShardingKeyGenerator(final AlterShardingKeyGeneratorContext ctx) {
-        return new AlterShardingKeyGeneratorStatement(ctx.keyGeneratorDefination().stream().map(this::buildKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
-    }
-    
-    private ShardingKeyGeneratorSegment buildKeyGeneratorSegment(final KeyGeneratorDefinationContext ctx) {
-        return new ShardingKeyGeneratorSegment(getIdentifierValue(ctx.keyGeneratorName()), (AlgorithmSegment) visitAlgorithmDefinition(ctx.algorithmDefinition()));
-    }
-    
-    @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
         return new DropShardingTableRuleStatement(ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
     }
@@ -364,6 +355,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitCreateShardingKeyGenerator(final CreateShardingKeyGeneratorContext ctx) {
         return new CreateShardingKeyGeneratorStatement(ctx.keyGeneratorDefination().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
+    }
+    
+    @Override
+    public ASTNode visitAlterShardingKeyGenerator(final AlterShardingKeyGeneratorContext ctx) {
+        return new AlterShardingKeyGeneratorStatement(ctx.keyGeneratorDefination().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
     }
     
     private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment(final KeyGeneratorDefinationContext ctx) {
