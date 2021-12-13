@@ -60,7 +60,7 @@ public final class OpenGaussAuthenticationHandler {
     private static final String CLIENT_KEY = "Client Key";
     
     /**
-     * Login with SCRAM sha256 password.
+     * Login with SCRAM SHA-256 password.
      *
      * @param username username
      * @param databaseName database name
