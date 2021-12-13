@@ -46,6 +46,7 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
+        // TODO remove duplicated splitting?
         if (!isValidDataNode(dataNode)) {
             throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
         }
@@ -74,5 +75,23 @@ public final class DataNode {
     @Override
     public int hashCode() {
         return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase());
+    }
+    
+    /**
+     * Format DataNode as string.
+     *
+     * @return formatted string
+     */
+    public String format() {
+        return dataSourceName + DELIMITER + tableName;
+    }
+    
+    /**
+     * Get formatted text length.
+     *
+     * @return formatted text length
+     */
+    public int getFormattedTextLength() {
+        return dataSourceName.length() + DELIMITER.length() + tableName.length();
     }
 }

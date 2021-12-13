@@ -42,7 +42,7 @@ public final class JobProgressTest {
     public void assertInit() {
         JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
-        assertThat(jobProgress.getDatabaseType(), is("H2"));
+        assertThat(jobProgress.getSourceDatabaseType(), is("H2"));
         assertThat(jobProgress.getInventoryTaskProgressMap().size(), is(4));
         assertThat(jobProgress.getIncrementalTaskProgressMap().size(), is(1));
     }
@@ -68,7 +68,7 @@ public final class JobProgressTest {
     public void assertToString() {
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(JobStatus.RUNNING);
-        jobProgress.setDatabaseType("H2");
+        jobProgress.setSourceDatabaseType("H2");
         jobProgress.setIncrementalTaskProgressMap(mockIncrementalTaskProgressMap());
         jobProgress.setInventoryTaskProgressMap(mockInventoryTaskProgressMap());
         assertThat(jobProgress.toString(), is(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml")));

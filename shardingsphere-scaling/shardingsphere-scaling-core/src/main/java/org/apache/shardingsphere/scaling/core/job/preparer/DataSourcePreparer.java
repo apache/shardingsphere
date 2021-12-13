@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-
 /**
  * Data source preparer.
  */
@@ -27,7 +25,7 @@ public interface DataSourcePreparer {
     /**
      * Prepare target tables.
      *
-     * @param jobConfig job configuration
+     * @param parameter prepare target tables parameter
      */
-    void prepareTargetTables(JobConfiguration jobConfig);
+    void prepareTargetTables(PrepareTargetTablesParameter parameter);
 }

@@ -55,7 +55,7 @@ public final class ScalingTaskUtil {
     }
     
     private static boolean isProgressCompleted(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
-        return handleConfig.getShardingTotalCount() == jobProgressMap.size()
+        return handleConfig.getJobShardingCount() == jobProgressMap.size()
                 && jobProgressMap.values().stream().allMatch(Objects::nonNull);
     }
     

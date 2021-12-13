@@ -41,12 +41,12 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     </#if>
     private int userId;
-
+    
     <#if framework?contains("jpa")>
     @Column(name = "user_name")
     </#if>
     private String userName;
-
+    
     <#if framework?contains("jpa")>
     @Column(name = "pwd")
     </#if>

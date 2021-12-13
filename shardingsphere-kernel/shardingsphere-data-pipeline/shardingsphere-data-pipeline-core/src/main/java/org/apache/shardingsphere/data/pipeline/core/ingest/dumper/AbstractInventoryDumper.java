@@ -35,8 +35,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.infra.config.datasource.typed.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.schedule.core.executor.AbstractLifecycleExecutor;
 
@@ -72,7 +72,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private TableMetaData createTableMetaData() {
-        TypedDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
+        JDBCDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
         return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
     }
