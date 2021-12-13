@@ -76,7 +76,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         ThreadLocalRandom random = ThreadLocalRandom.current();
         StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < result.capacity(); i++) {
-            result.append(Integer.toString(random.nextInt(0x10),  0x10));
+            result.append(Integer.toString(random.nextInt(0x10), 0x10));
         }
         return result.toString();
     }
@@ -118,8 +118,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
             throw new PostgreSQLProtocolViolationException("password", Character.toString(messageType));
         }
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        PostgreSQLLoginResult loginResult =
-                OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), saltHexString, nonceHexString, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult loginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(),
+                saltHexString, nonceHexString, serverIteration, passwordMessagePacket);
         if (PostgreSQLErrorCode.SUCCESSFUL_COMPLETION != loginResult.getErrorCode()) {
             throw new PostgreSQLAuthenticationException(loginResult.getErrorCode(), loginResult.getErrorMessage());
         }
