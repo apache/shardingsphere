@@ -242,7 +242,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
                     <properties>
                         <property key="aes-key-value" value="123456abc"/>
@@ -269,7 +269,7 @@
     
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
-            <table-rule  table-name="t_order">
+            <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_column_regex_match">
                     <algorithm algorithm-name="COLUMN_REGEX_MATCH">
                         <properties>
@@ -293,7 +293,7 @@
 
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
-            <table-rule  table-name="t_order">
+            <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_column_regex_match">
                     <algorithm algorithm-name="COLUMN_REGEX_MATCH">
                         <properties>
@@ -316,7 +316,7 @@
     </create-shadow-rule>
     
     <create-sharding-algorithm sql-case-id="create-sharding-algorithm">
-        <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
+        <shardingAlgorithm sharding-algorithm-name="algorithm_name">
             <algorithm algorithm-name="hash_mod">
                 <properties>
                     <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
@@ -325,7 +325,7 @@
         </shardingAlgorithm>
     </create-sharding-algorithm>
 
-    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm" />
+    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
@@ -342,6 +342,16 @@
             </algorithm>
         </shadow-algorithm>
     </create-shadow-algorithm>
-    
-    <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0" />
+
+    <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
+
+    <create-sharding-key-generator sql-case-id="create-sharding-key-generator">
+        <shardingKeyGenerator key-generator-name="uuid_key_generator">
+            <algorithm algorithm-name="uuid">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </algorithm>
+        </shardingKeyGenerator>
+    </create-sharding-key-generator>
 </sql-parser-test-cases>

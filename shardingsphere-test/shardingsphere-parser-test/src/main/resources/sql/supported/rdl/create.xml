@@ -52,4 +52,5 @@
     <distsql-case id="create-encrypt-rule-with-quota" value="CREATE ENCRYPT RULE `encrypt` (RESOURCE=ds_1, COLUMNS((NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))), (NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))))" />
     <distsql-case id="create-encrypt-rule-with-query-with-cipher-column" value="CREATE ENCRYPT RULE `encrypt` (RESOURCE=ds_1, COLUMNS((NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=false)" />
     <distsql-case id="create-shadow-rule-with-quota" value="CREATE SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES('operation'='insert','column'='user_id','regex'='[1]'))),(simple_note_algorithm,TYPE(NAME=SIMPLE_NOTE,PROPERTIES('shadow'='true',foo='bar')))))" />
+    <distsql-case id="create-sharding-key-generator" value="CREATE SHARDING KEY GENERATOR uuid_key_generator(TYPE(NAME=uuid,PROPERTIES('worker-id'=123)))" />
 </sql-cases>
