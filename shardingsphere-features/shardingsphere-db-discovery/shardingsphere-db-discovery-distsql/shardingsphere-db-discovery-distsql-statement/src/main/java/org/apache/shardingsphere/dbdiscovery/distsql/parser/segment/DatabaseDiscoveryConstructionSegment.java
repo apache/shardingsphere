@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
 
 /**
- * Create database discovery rule statement.
+ * Database discovery rule construction segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryRuleStatement extends CreateRuleStatement {
+public final class DatabaseDiscoveryConstructionSegment extends AbstractDatabaseDiscoverySegment {
     
-    private final Collection<AbstractDatabaseDiscoverySegment> rules;
+    private final String discoveryTypeName;
+    
+    private final String discoveryHeartbeatName;
+    
+    public DatabaseDiscoveryConstructionSegment(final String name, final Collection<String> dataSources, final String discoveryTypeName, final String discoveryHeartbeatName) {
+        super(name, dataSources);
+        this.discoveryTypeName = discoveryTypeName;
+        this.discoveryHeartbeatName = discoveryHeartbeatName;
+    }
 }
