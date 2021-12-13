@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
@@ -35,7 +36,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -70,13 +70,13 @@ public final class AbstractImporterTest {
     private ScalingSQLBuilder scalingSqlBuilder;
     
     @Mock
-    private TypedDataSourceConfiguration dataSourceConfig;
+    private JDBCDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;
     
-    @Mock(extraInterfaces = AutoCloseable.class)
-    private DataSource dataSource;
+    @Mock
+    private DataSourceWrapper dataSource;
     
     @Mock
     private Connection connection;

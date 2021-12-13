@@ -621,4 +621,8 @@
     <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL">
         <assertion expected-data-file="select_aggregation_projection_with_subquery.xml"/>
     </test-case>
+
+    <test-case sql="SELECT order_id_sharding AS order_id, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,tbl">
+        <assertion parameters="1010:int, 10:int" expected-data-file="select_multi_sharding_table_with_union_all.xml"/>
+    </test-case>
 </integration-test-cases>

@@ -49,7 +49,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Test
-    public void assertValidateCreateFunctionForMySQL() {
+    public void assertPreValidateCreateFunctionForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
@@ -70,7 +70,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateCreateFunctionWithShardingTableForMySQL() {
+    public void assertPreValidateCreateFunctionWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -84,7 +84,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test(expected = NoSuchTableException.class)
-    public void assertValidateCreateFunctionWithNoSuchTableForMySQL() {
+    public void assertPreValidateCreateFunctionWithNoSuchTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -98,7 +98,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test(expected = TableExistsException.class)
-    public void assertValidateCreateFunctionWithTableExistsForMySQL() {
+    public void assertPreValidateCreateFunctionWithTableExistsForMySQL() {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);

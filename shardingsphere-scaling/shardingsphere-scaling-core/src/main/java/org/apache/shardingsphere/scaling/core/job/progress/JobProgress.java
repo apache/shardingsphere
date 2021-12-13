@@ -46,7 +46,7 @@ public final class JobProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     
-    private String databaseType;
+    private String sourceDatabaseType;
     
     private Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
     

@@ -43,7 +43,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Test
-    public void assertValidateAlterViewForMySQL() {
+    public void assertPreValidateAlterViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
@@ -55,7 +55,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateAlterViewWithShardingTableForMySQL() {
+    public void assertPreValidateAlterViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();

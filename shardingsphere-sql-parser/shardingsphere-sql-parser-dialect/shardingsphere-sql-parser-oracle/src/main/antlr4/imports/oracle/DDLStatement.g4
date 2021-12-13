@@ -2009,3 +2009,16 @@ replaceFileNamePattern
 tablespaceDatafileClauses
     : DATAFILES (SIZE sizeClause | autoextendClause)+
     ;
+
+createDatabaseLink
+    : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
+    (connectToClause | dbLinkAuthentication)* (USING connectString)?
+    ;
+
+connectToClause
+    : CONNECT TO (CURRENT_USER | userName IDENTIFIED BY password dbLinkAuthentication?)
+    ;
+
+dbLinkAuthentication
+    : AUTHENTICATED BY userName IDENTIFIED BY password
+    ;

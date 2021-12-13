@@ -159,7 +159,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getPositionByPrimaryKeyRange(final JobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new ArrayList<>();
-        String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType())
+        String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {

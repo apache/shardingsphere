@@ -116,10 +116,6 @@ SELECT * FROM t_user u RIGHT JOIN t_user_role r ON u.user_id = r.user_id WHERE u
 * `CASE WHEN` 中包含子查询
 * `CASE WHEN` 中使用逻辑表名（请使用表别名）
 
-以下 UNION 和 UNION ALL 语句不支持：
-
-* 包含分片表和广播表
-
 ## SQL 示例
 
 | 稳定支持的 SQL                                                                                | 必要条件                          |
@@ -152,14 +148,16 @@ SELECT * FROM t_user u RIGHT JOIN t_user_role r ON u.user_id = r.user_id WHERE u
 ***
 
 | 实验性支持的 SQL                                                           | 必要条件                          |
-| ------------------------------------------------------------------------ | -------------------------------- |
+|--------------------------------------------------------------------------| -------------------------------- |
 | SELECT * FROM (SELECT * FROM tbl_name) o                                 |                                  |
 | SELECT * FROM (SELECT * FROM tbl_name) o WHERE o.col1 = ?                |                                  |
 | SELECT * FROM (SELECT * FROM tbl_name WHERE col1 = ?) o                  |                                  |
-| SELECT * FROM (SELECT * FROM tbl_name WHERE col1 = ?) o WHERE o.col1 = ? | 子查询和外层查询不在同一分片后的数据节点 |
+| SELECT * FROM (SELECT * FROM tbl_name WHERE col1 = ?) o WHERE o.col1 = ? | 子查询和外层查询不在同一分片后的数据节点|
 | SELECT (SELECT MAX(col1) FROM tbl_name) a, col2 from tbl_name            |                                  |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                       |                                  |
 | SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > ?  |                                  |
+| SELECT col1, col2 FROM tbl_name UNION SELECT col1, col2 FROM tbl_name    |                                  |
+| SELECT col1, col2 FROM tbl_name UNION ALL SELECT col1, col2 FROM tbl_name|                                  |
 
 ***
 

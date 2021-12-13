@@ -29,6 +29,7 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 
 import java.util.Properties;
 import java.util.function.Consumer;
@@ -97,6 +98,22 @@ public final class ModeScheduleContext {
         }
         JobConfiguration jobConfig = JobConfiguration.newBuilder(jobName, 1).cron(cron).build();
         ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job), jobConfig);
+        bootstrap.schedule();
+    }
+    
+    /**
+     * Start cron job.
+     *
+     * @param job cron job
+     */
+    @SuppressWarnings("all")
+    public void startCronJob(final CronJob job) {
+        if (null == registryCenter) {
+            log.warn("registryCenter is null, ignore, jobName={}, cron={}", job.getJobName(), job.getCron());
+            return;
+        }
+        JobConfiguration jobConfig = JobConfiguration.newBuilder(job.getJobName(), 1).cron(job.getCron()).build();
+        ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job.getJob()), jobConfig);
         bootstrap.schedule();
     }
     

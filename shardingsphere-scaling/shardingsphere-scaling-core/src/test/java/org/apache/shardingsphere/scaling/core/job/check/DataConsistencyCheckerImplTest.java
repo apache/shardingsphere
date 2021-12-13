@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingFixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
@@ -57,7 +57,7 @@ public final class DataConsistencyCheckerImplTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final TypedDataSourceConfiguration dataSourceConfig) {
+    private void initTableData(final JDBCDataSourceConfiguration dataSourceConfig) {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

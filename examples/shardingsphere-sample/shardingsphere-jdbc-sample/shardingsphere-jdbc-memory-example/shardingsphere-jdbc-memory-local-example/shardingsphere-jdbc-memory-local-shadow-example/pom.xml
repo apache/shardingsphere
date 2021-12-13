@@ -34,6 +34,9 @@
         <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-jdbc-example</module>
         <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-mybatis-example</module>
         <module>shardingsphere-jdbc-memory-local-shadow-spring-namespace-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-mybatis-example</module>
     </modules>
     
 </project>

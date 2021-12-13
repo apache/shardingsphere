@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.4. </b>"
+pre = "<b>6.5. </b>"
 title = "SQL 解析"
-weight = 4
+weight = 5
 chapter = true
 +++
 

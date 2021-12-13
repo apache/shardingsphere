@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * Handle configuration.
  */
@@ -37,30 +39,36 @@ public final class HandleConfiguration {
     
     private int retryTimes = 3;
     
-    private String[] shardingTables;
+    /**
+     * Collection of each logic table's first data node.
+     * <p>
+     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
+     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
+     * </p>
+     */
+    private String tablesFirstDataNodes;
+    
+    private List<String> jobShardingDataNodes;
     
     private String logicTables;
     
-    private int shardingItem;
+    /**
+     * Job sharding item, from {@link org.apache.shardingsphere.elasticjob.api.ShardingContext#getShardingItem()}.
+     */
+    private Integer jobShardingItem;
     
     private int shardingSize = 1000 * 10000;
     
-    private boolean running = true;
+    private String sourceDatabaseType;
     
-    private String databaseType;
-    
-    private WorkflowConfiguration workflowConfig;
-    
-    public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
-        this.workflowConfig = workflowConfig;
-    }
+    private String targetDatabaseType;
     
     /**
-     * Get sharding total count.
+     * Get job sharding count.
      *
-     * @return sharding total count
+     * @return job sharding count
      */
-    public int getShardingTotalCount() {
-        return null == shardingTables ? 0 : shardingTables.length;
+    public int getJobShardingCount() {
+        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
     }
 }
