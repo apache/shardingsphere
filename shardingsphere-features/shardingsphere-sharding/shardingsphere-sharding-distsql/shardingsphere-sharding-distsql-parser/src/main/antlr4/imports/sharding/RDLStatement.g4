@@ -178,11 +178,3 @@ algorithmProperties
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
-
-keyGeneratorDefination
-    : keyGeneratorName LP algorithmDefinition RP
-    ;
-
-keyGeneratorName
-    : IDENTIFIER
-    ;    
