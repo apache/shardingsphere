@@ -92,21 +92,21 @@ public final class OpenGaussAuthenticationHandlerTest {
     @Test
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
@@ -114,7 +114,7 @@ public final class OpenGaussAuthenticationHandlerTest {
     public void assertLoginWithNonExistDatabase() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
     }
     

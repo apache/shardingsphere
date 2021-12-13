@@ -27,7 +27,7 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSha256Packet;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -142,9 +142,9 @@ public final class OpenGaussAuthenticationEngineTest {
         AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
         assertFalse(actual.isFinished());
         assertThat(actual.getUsername(), is(username));
-        ArgumentCaptor<OpenGaussAuthenticationSha256Packet> argumentCaptor = ArgumentCaptor.forClass(OpenGaussAuthenticationSha256Packet.class);
+        ArgumentCaptor<OpenGaussAuthenticationSCRAMSha256Packet> argumentCaptor = ArgumentCaptor.forClass(OpenGaussAuthenticationSCRAMSha256Packet.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        OpenGaussAuthenticationSha256Packet sha256Packet = argumentCaptor.getValue();
+        OpenGaussAuthenticationSCRAMSha256Packet sha256Packet = argumentCaptor.getValue();
         String random64Code = new String(getRandom64Code(sha256Packet));
         String token = new String(getToken(sha256Packet));
         int serverIteration = getServerIteration(sha256Packet);
@@ -177,22 +177,22 @@ public final class OpenGaussAuthenticationEngineTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private byte[] getRandom64Code(final OpenGaussAuthenticationSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSha256Packet.class.getDeclaredField("random64Code");
+    private byte[] getRandom64Code(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
+        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code");
         field.setAccessible(true);
         return (byte[]) field.get(packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private byte[] getToken(final OpenGaussAuthenticationSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSha256Packet.class.getDeclaredField("token");
+    private byte[] getToken(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
+        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token");
         field.setAccessible(true);
         return (byte[]) field.get(packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private int getServerIteration(final OpenGaussAuthenticationSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSha256Packet.class.getDeclaredField("serverIteration");
+    private int getServerIteration(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
+        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration");
         field.setAccessible(true);
         return (int) field.get(packet);
     }
