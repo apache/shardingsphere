@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.infra.config.datasource.typed.TypedDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.SingleTableDataCalculator;
 
 /**
@@ -35,7 +35,7 @@ public abstract class AbstractSingleTableDataCalculator implements SingleTableDa
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    protected final DataSourceWrapper getDataSource(final TypedDataSourceConfiguration dataSourceConfig) {
+    protected final DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
         return dataSourceFactory.newInstance(dataSourceConfig);
     }
 }

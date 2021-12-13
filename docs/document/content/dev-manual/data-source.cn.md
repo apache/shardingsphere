@@ -37,24 +37,24 @@ chapter = true
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 | OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
-## DataSourceCreator
+## DataSourcePoolCreator
 
-| *SPI 名称*                | *详细说明*         |
-| ------------------------ | ----------------- |
-| DataSourceCreator        | 数据源创建器        |
+| *SPI 名称*                    | *详细说明*              |
+| ---------------------------- | ---------------------- |
+| DataSourcePoolCreator        | 数据源连接池创建器        |
 
-| *已知实现类*               | *详细说明*         |
-| ------------------------ | ----------------- |
-| DefaultDataSourceCreator | 默认数据源创建器     |
-| HikariDataSourceCreator  | Hikari 数据源创建器 |
+| *已知实现类*                   | *详细说明*              |
+| ---------------------------- | ---------------------- |
+| DefaultDataSourcePoolCreator | 默认数据源连接池创建器     |
+| HikariDataSourcePoolCreator  | Hikari 数据源连接池创建器 |
 
-## DataSourceDestroyer
+## DataSourcePoolDestroyer
 
-| *SPI 名称*                  | *详细说明*         |
-| -------------------------- | ----------------- |
-| DataSourceDestroyer        | 数据源销毁器        |
+| *SPI 名称*                      | *详细说明*              |
+| ------------------------------ | ---------------------- |
+| DataSourcePoolDestroyer        | 数据源连接池销毁器        |
 
-| *已知实现类*                 | *详细说明*         |
-| -------------------------- | ----------------- |
-| DefaultDataSourceDestroyer | 默认数据源销毁器     |
-| HikariDataSourceDestroyer  | Hikari 数据源销毁器 |
+| *已知实现类*                     | *详细说明*              |
+| ------------------------------ | ---------------------- |
+| DefaultDataSourcePoolDestroyer | 默认数据源连接池销毁器     |
+| HikariDataSourcePoolDestroyer  | Hikari 数据源连接池销毁器 |

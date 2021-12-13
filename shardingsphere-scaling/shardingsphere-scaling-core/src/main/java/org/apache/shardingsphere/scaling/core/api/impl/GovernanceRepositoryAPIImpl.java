@@ -49,7 +49,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public void persistJobProgress(final JobContext jobContext) {
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());
-        jobProgress.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
         repository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobProgress.toString());

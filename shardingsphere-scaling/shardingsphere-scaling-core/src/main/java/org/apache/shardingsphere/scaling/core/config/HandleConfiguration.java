@@ -43,7 +43,7 @@ public final class HandleConfiguration {
      * Collection of each logic table's first data node.
      * <p>
      * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
-     * then value may be: {@code ds_0.t_order_0,ds_0.t_order_item_0}.
+     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
      * </p>
      */
     private String tablesFirstDataNodes;
@@ -53,19 +53,15 @@ public final class HandleConfiguration {
     private String logicTables;
     
     /**
-     * Job sharding item, from {@link org.apache.shardingsphere.elasticjob.api.ShardingContext}.
+     * Job sharding item, from {@link org.apache.shardingsphere.elasticjob.api.ShardingContext#getShardingItem()}.
      */
     private Integer jobShardingItem;
     
     private int shardingSize = 1000 * 10000;
     
-    private String databaseType;
+    private String sourceDatabaseType;
     
-    private WorkflowConfiguration workflowConfig;
-    
-    public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
-        this.workflowConfig = workflowConfig;
-    }
+    private String targetDatabaseType;
     
     /**
      * Get job sharding count.

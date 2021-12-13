@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourceDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -82,6 +82,6 @@ public final class ShardingSphereResource {
      * @throws SQLException SQL exception
      */
     public void close(final DataSource dataSource) throws SQLException {
-        DataSourceDestroyerFactory.getInstance(dataSource.getClass().getName()).destroy(dataSource);
+        DataSourcePoolDestroyerFactory.getInstance(dataSource.getClass().getName()).destroy(dataSource);
     }
 }
