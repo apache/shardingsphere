@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Create database discovery rule statement.
+ * Abstract database discovery rule segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryRuleStatement extends CreateRuleStatement {
+public abstract class AbstractDatabaseDiscoverySegment implements ASTNode {
     
-    private final Collection<AbstractDatabaseDiscoverySegment> rules;
+    private final String name;
+    
+    private final Collection<String> dataSources;
 }

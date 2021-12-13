@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Expected database discovery rule.
+ * Database discovery rule definition segment.
  */
 @Getter
-@Setter
-public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
+public final class DatabaseDiscoveryDefinitionSegment extends AbstractDatabaseDiscoverySegment {
     
-    @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    private final AlgorithmSegment discoveryType;
     
-    @XmlAttribute(name = "type")
-    private String discoveryTypeName;
+    private final Properties discoveryHeartbeat;
     
-    @XmlElement(name = "properties")
-    private ExpectedProperties props;
+    public DatabaseDiscoveryDefinitionSegment(final String name, final Collection<String> dataSources, final AlgorithmSegment discoveryType, final Properties discoveryHeartbeat) {
+        super(name, dataSources);
+        this.discoveryType = discoveryType;
+        this.discoveryHeartbeat = discoveryHeartbeat;
+    }
 }

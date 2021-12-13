@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Create database discovery rule statement test case.
+ * Database discovery type.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class CreateDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
+public final class DatabaseDiscoveryType implements ASTNode {
     
-    @XmlElement(name = "rule")
-    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
+    private final String name;
+    
+    private final AlgorithmSegment algorithmSegment;
 }
