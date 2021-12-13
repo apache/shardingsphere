@@ -18,7 +18,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-> Scaling还是实验性质的功能，在持续进化中，建议使用master分支最新版本，点击此处[下载最新版本]( https://github.com/apache/shardingsphere#nightly-builds )
+> Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载最新版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
 2. 解压缩 proxy发布包，修改配置文件`conf/config-sharding.yaml`，配置`schemaName`，`dataSources`，`rules`里的`shardingAlgorithms`和`keyGenerators`，[config-sharding.yaml示例]( https://github.com/apache/shardingsphere/blob/master/examples/docker/shardingsphere-proxy/sharding/conf/config-sharding.yaml )：
 
