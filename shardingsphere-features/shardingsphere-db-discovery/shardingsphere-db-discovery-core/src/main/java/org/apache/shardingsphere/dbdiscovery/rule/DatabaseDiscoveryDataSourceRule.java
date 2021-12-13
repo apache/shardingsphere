@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -41,16 +42,28 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final List<String> dataSourceNames;
     
+    private final Properties heartbeatProps;
+    
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     private String primaryDataSourceName;
     
+    //TODO remove this when job finished.
     public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final DatabaseDiscoveryType databaseDiscoveryType) {
         checkConfiguration(config);
         name = config.getName();
         dataSourceNames = config.getDataSourceNames();
+        this.heartbeatProps = new Properties();
+        this.databaseDiscoveryType = databaseDiscoveryType;
+    }
+    
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
+        checkConfiguration(config);
+        name = config.getName();
+        dataSourceNames = config.getDataSourceNames();
+        this.heartbeatProps = props;
         this.databaseDiscoveryType = databaseDiscoveryType;
     }
     
