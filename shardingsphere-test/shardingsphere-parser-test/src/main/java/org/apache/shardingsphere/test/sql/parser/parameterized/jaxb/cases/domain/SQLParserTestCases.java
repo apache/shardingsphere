@@ -164,6 +164,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDataBaseDiscoveryRuleStatementTestCase;
@@ -778,6 +779,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-sharding-algorithm")
     private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-sharding-key-generator")
+    private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "reset")
     private final List<ResetStatementTestCase> resetStatementTestCases = new LinkedList<>();
 
@@ -1021,6 +1025,7 @@ public final class SQLParserTestCases {
         putAll(showReplicaStatusStatementTestCases, result);
         putAll(showSlaveStatusStatementTestCases, result);
         putAll(alterShardingAlgorithmStatementTestCases, result);
+        putAll(alterShardingKeyGeneratorStatementTestCases, result);
         putAll(killStatementTestCases, result);
         putAll(createDefaultShadowAlgorithmStatementTestCases, result);
         putAll(cacheIndexStatementTestCases, result);

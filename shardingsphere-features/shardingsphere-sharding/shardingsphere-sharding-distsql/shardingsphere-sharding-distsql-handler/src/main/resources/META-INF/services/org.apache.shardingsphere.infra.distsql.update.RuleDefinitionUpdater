@@ -29,3 +29,4 @@ org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBroadcastT
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithmStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGeneratorStatementUpdater
+org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGeneratorStatementUpdater

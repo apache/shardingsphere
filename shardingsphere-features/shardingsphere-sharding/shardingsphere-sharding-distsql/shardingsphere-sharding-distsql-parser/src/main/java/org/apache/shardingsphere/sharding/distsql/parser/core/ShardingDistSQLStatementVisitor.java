@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ClearShardingHintContext;
@@ -71,6 +72,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegmen
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAlgorithmStatement;
@@ -353,6 +355,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitCreateShardingKeyGenerator(final CreateShardingKeyGeneratorContext ctx) {
         return new CreateShardingKeyGeneratorStatement(ctx.keyGeneratorDefination().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
+    }
+    
+    @Override
+    public ASTNode visitAlterShardingKeyGenerator(final AlterShardingKeyGeneratorContext ctx) {
+        return new AlterShardingKeyGeneratorStatement(ctx.keyGeneratorDefination().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
     }
     
     private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment(final KeyGeneratorDefinationContext ctx) {
