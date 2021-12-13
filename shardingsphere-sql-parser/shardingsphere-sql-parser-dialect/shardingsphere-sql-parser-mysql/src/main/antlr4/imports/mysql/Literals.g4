@@ -23,11 +23,6 @@ FILESIZE_LITERAL
     : INT_NUM_ ('K'|'M'|'G'|'T')
     ;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    |  BQ_ ~'`'+ BQ_
-    ;
-
 SINGLE_QUOTED_TEXT
     : SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
     ;
@@ -68,6 +63,11 @@ HEX_DIGIT_
 
 BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  BQ_ ~'`'+ BQ_
     ;
 
 NOT_SUPPORT_
