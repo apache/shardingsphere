@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Optional;
 
 import java.util.Map.Entry;
@@ -83,7 +82,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         checkDataSourcesArguments(dataSourceMap, dataSourceRuleConfigs);
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
-        startMonitor(schemaName, dataSourceMap);
+        findMasterSlaveRelation(schemaName, dataSourceMap);
         initAware();
     }
     
@@ -101,24 +100,25 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources,
-                                                                            final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig) {
+                                                                            final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeatConfig) {
         Map<String, DatabaseDiscoveryDataSourceRule> result = new HashMap<>(dataSources.size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : dataSources) {
-            checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each);
-            //TODO heartBeatConfig not empty when job finished.
-            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, null == heartBeatConfig.get(each.getDiscoveryHeartbeatName())
-                    ? new Properties() : heartBeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
+            checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each, heartbeatConfig);
+            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, heartbeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         return result;
     }
     
-    private void checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig) {
+    private void checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig,
+                                                                            final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeatConfig) {
+        Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryHeartbeatName(), "Discovery heartbeat cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
+        Preconditions.checkArgument(heartbeatConfig.containsKey(dataSourceRuleConfig.getDiscoveryHeartbeatName()),
+                "Can not find discovery heartbeat of rule name `%s`.", dataSourceRuleConfig.getName());
         Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryTypeName(), "Discovery type cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
         Preconditions.checkArgument(discoveryTypes.containsKey(dataSourceRuleConfig.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", dataSourceRuleConfig.getName());
     }
     
-    //TODO remove startPeriodicalUpdate method and change startMonitor method name when job finished.
-    private void startMonitor(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    private void findMasterSlaveRelation(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();

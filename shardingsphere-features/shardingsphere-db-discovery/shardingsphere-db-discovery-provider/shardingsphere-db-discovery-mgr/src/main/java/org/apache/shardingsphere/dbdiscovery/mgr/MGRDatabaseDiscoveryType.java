@@ -21,13 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
-import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -61,10 +54,6 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
     private static final String MEMBER_LIST = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
-    
-    private static CoordinatorRegistryCenter coordinatorRegistryCenter;
-    
-    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
     
     private String oldPrimaryDataSource;
     
@@ -265,36 +254,8 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        if (null == coordinatorRegistryCenter) {
-            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
-            coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
-            coordinatorRegistryCenter.init();
-        }
-        if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName)) {
-            SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
-        }
-        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames,
-                groupName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
-        SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
-    }
-    
-    @Override
     public String getPrimaryDataSource() {
         return oldPrimaryDataSource;
-    }
-    
-    @Override
-    public void updateProperties(final String groupName, final Properties props) {
-        new JobConfigurationAPIImpl(coordinatorRegistryCenter).updateJobConfiguration(createJobConfiguration("MGR-" + groupName, props.getProperty("keepAliveCron")));
-    }
-    
-    private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
-        JobConfigurationPOJO result = new JobConfigurationPOJO();
-        result.setJobName(jobName);
-        result.setCron(cron);
-        result.setShardingTotalCount(1);
-        return result;
     }
     
     @Override
