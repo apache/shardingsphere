@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -53,7 +54,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -197,10 +197,7 @@ public final class OpenGaussAuthenticationEngineTest {
         return (int) field.get(packet);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {
-        Method method = OpenGaussAuthenticationHandler.class.getDeclaredMethod("doRFC5802Algorithm", String.class, String.class, String.class, int.class);
-        method.setAccessible(true);
-        return new String((byte[]) method.invoke(OpenGaussAuthenticationHandler.class, password, random64code, token, serverIteration));
+        return new String(OpenGaussAuthenticationAlgorithm.doRFC5802Algorithm(password, random64code, token, serverIteration));
     }
 }
