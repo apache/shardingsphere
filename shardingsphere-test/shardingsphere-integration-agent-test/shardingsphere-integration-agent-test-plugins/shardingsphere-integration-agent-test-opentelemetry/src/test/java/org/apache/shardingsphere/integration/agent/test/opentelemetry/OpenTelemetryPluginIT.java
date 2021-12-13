@@ -80,7 +80,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
             assertNotNull(tracingResult.getDuration());
             Map<String, String> localEndPoint = tracingResult.getLocalEndpoint();
             assertNotNull(localEndPoint);
-            assertThat(localEndPoint.get("serviceName"), is("shardingsphere-agent"));
+            assertThat(localEndPoint.get("serviceName"), is("shardingsphere"));
             assertNotNull(localEndPoint.get("ipv4"));
             Map<String, String> tags = tracingResult.getTags();
             switch (name) {
@@ -101,14 +101,14 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
     
     private void assertRootInvokeTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
     }
     
     private void assertParseSqlTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
     }
     
     private void assertExecuteSqlTags(final Map<String, String> tags) {
@@ -117,7 +117,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         assertNotNull(tags.get("db.instance"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
         assertNotNull(tags.get("peer.hostname"));
         assertNotNull(tags.get("peer.port"));
     }
