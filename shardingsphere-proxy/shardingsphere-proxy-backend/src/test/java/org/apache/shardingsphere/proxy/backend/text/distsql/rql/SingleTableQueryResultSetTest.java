@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,9 +54,9 @@ public final class SingleTableQueryResultSetTest {
     
     @Before
     public void before() {
-        Map<String, SingleTableDataNode> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order", new SingleTableDataNode("t_order", "ds_1"));
-        singleTableDataNodeMap.put("t_order_item", new SingleTableDataNode("t_order_item", "ds_2"));
+        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
+        singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
+        singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(mockSingleTableRule(singleTableDataNodeMap));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
@@ -81,9 +82,9 @@ public final class SingleTableQueryResultSetTest {
     
     @Test
     public void assertGetRowDataMultipleRules() {
-        Map<String, SingleTableDataNode> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order_multiple", new SingleTableDataNode("t_order_multiple", "ds_1_multiple"));
-        singleTableDataNodeMap.put("t_order_item_multiple", new SingleTableDataNode("t_order_item_multiple", "ds_2_multiple"));
+        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
+        singleTableDataNodeMap.put("t_order_multiple", Collections.singletonList(new DataNode("ds_1_multiple", "t_order_multiple")));
+        singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
         addShardingSphereRule(mockSingleTableRule(singleTableDataNodeMap));
         DistSQLResultSet resultSet = new SingleTableQueryResultSet();
         resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
@@ -126,7 +127,7 @@ public final class SingleTableQueryResultSetTest {
         assertThat(rowData.next(), is("ds_1"));
     }
     
-    private SingleTableRule mockSingleTableRule(final Map<String, SingleTableDataNode> singleTableDataNodeMap) {
+    private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
         SingleTableRule singleTableRule = mock(SingleTableRule.class);
         when(singleTableRule.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
         return singleTableRule;

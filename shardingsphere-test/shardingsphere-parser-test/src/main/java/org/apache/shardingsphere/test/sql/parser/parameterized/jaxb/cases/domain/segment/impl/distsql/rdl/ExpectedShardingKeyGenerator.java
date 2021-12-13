@@ -26,14 +26,14 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected sharding key generator segment.
+ * Expected sharding key generator.
  */
 @Getter
 @Setter
 public final class ExpectedShardingKeyGenerator extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlAttribute(name = "key-generator-name")
-    private String shardingAlgorithmName;
+    private String keyGeneratorName;
     
     @XmlElement(name = "algorithm")
     private ExpectedAlgorithm algorithmSegment;

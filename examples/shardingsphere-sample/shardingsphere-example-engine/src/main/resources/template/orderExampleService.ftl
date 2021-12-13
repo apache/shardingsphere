@@ -14,20 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-    /**
-     * Execute test.
-     *
-     * @throws SQLException
-     */
-    public void run() {
-        try {
-            this.initEnvironment();
-            this.processSuccess();
-        } finally {
-            this.cleanEnvironment();
-        }
-    }
     
     /**
      * Initialize the database test environment.
