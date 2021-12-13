@@ -101,14 +101,14 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
     
     private void assertRootInvokeTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
     
     private void assertParseSqlTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
     
     private void assertExecuteSqlTags(final Map<String, String> tags) {
@@ -117,7 +117,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         assertNotNull(tags.get("db.instance"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
-        assertThat(tags.get("otel.library.name"), is("shardingsphere"));
+        assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
         assertNotNull(tags.get("peer.hostname"));
         assertNotNull(tags.get("peer.port"));
     }
