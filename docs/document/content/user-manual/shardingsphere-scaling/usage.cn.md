@@ -131,8 +131,6 @@ ADD RESOURCE ds_2 (
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | 定义         | 5.x版本之后，引入的自动分片技术交由 ShardingSphere 自动管理分片，用户只需要指定分片数量和使用的数据源，无需再关心表的具体分布详情可参见：https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sharding/#自动化分片算法 | 需要自定义分片配置，可设置物理数据节点，数据分片、表分片等   |
 | 推荐使用场景 | 不需要关心实际表在哪个库、哪个库有几张表等问题只需考虑：SHARDING_COLUMN：设置用作分片键的列TYPE：设置分片算法和数量GENERATED_KEY：设置分布式自增ID | 需要设置以下参数：DATANODES：物理数据节点表达式DATABASE_STRATEGY：数据库分片策略TABLE_STRATEGY：表分片策略GENERATED_KEY：设置分布式自增ID |
-| 示例         | `ALTER SHARDING TABLE RULE t_order ( RESOURCES(ds_2, ds_3, ds_4), SHARDING_COLUMN=order_id, TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)), GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))) );` | `ALTER SHARDING TABLE RULE t_order ( DATANODES("ds_${2..4}.t_order_${0..1}"), DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline), TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline), GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))) );` |
-
 
 `AutoTableRule`修改示例：
 ```sql
@@ -160,7 +158,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 
 #### 查询所有迁移任务
 
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#弹性伸缩)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 示例：
 ```sql
@@ -206,18 +204,17 @@ mysql> show scaling status 660152090995195904;
 | PREPARING                                         | 准备中                                                        |
 | RUNNING                                           | 运行中                                                        |
 | EXECUTE_INVENTORY_TASK                            | 全量迁移中                                                     |
-| EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     |
-| ALMOST_FINISHED                                   | 基本完成(偏内部使用的状态，不用特别在意这个状态。目前的设置逻辑：数据校验完成之后、切换配置之前)                                                       |
+| EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     | |
 | FINISHED                                          | 已完成（整个流程完成了，新规则已生效）                                                         |
 | PREPARING_FAILURE                                 | 准备阶段失败                                                    |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | 增量迁移阶段失败                                                 |
 
-如果`status`出现失败的情况，可以查看`Sharding-Proxy`的日志查看错误堆栈分析问题。
+如果`status`出现失败的情况，可以查看`proxy`的日志查看错误堆栈分析问题。
 
 
 #### 手动模式
-`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#弹性伸缩)。
+`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 ```
 check scaling {jobId};
 ```
@@ -250,4 +247,4 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### 其他DistSQL
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#弹性伸缩)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。

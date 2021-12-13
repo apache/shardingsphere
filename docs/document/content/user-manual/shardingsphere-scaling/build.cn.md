@@ -18,59 +18,12 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-> Scaling还是实验性质的功能，在持续进化中，建议使用master分支最新版本，点击此处[下载最新版本]( http://117.48.121.24:8080/Proxy/ )
+> Scaling还是实验性质的功能，在持续进化中，建议使用master分支最新版本，点击此处[下载最新版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
-2. 解压缩 proxy发布包，修改配置文件`conf/sharding.yaml`，配置`schemaName`，`dataSources`，`rules`里的`shardingAlgorithms`和`keyGenerators`，以下示例可供参考：
-```yaml
-schemaName: sharding_db
-
-dataSources:
- ds_0:
-   url: jdbc:mysql://127.0.0.1:3308/account?serverTimezone=UTC&useSSL=false
-   username: root
-   password: root
-   connectionTimeoutMilliseconds: 30000
-   idleTimeoutMilliseconds: 60000
-   maxLifetimeMilliseconds: 1800000
-   maxPoolSize: 50
-   minPoolSize: 1
-
-rules:
-- !SHARDING
- tables:
-   user:
-     actualDataNodes: ds_0.user
-     databaseStrategy:
-       standard:
-         shardingColumn: id
-         shardingAlgorithmName: database_inline
-     tableStrategy:
-       standard:
-         shardingColumn: id
-         shardingAlgorithmName: user_inline
-     keyGenerateStrategy:
-       column: id
-       keyGeneratorName: snowflake
- 
- shardingAlgorithms:
-   database_inline:
-     type: INLINE
-     props:
-       algorithm-expression: ds_0
-   user_inline:
-     type: INLINE
-     props:
-       algorithm-expression: user_${id % 16}
- 
- keyGenerators:
-   snowflake:
-     type: SNOWFLAKE
-     props:
-       worker-id: 123
-```
+2. 解压缩 proxy发布包，修改配置文件`conf/config-sharding.yaml`，配置`schemaName`，`dataSources`，`rules`里的`shardingAlgorithms`和`keyGenerators`，[config-sharding.yaml示例]( https://github.com/apache/shardingsphere/blob/master/examples/docker/shardingsphere-proxy/sharding/conf/config-sharding.yaml )：
 
 3. 解压缩 proxy 发布包，修改配置文件 `conf/server.yaml`，这里主要是开启 `scaling` 和 `mode` 配置：
-如果配置的Mode是Cluster，需要提前启动对应的配置中心。
+如果配置的Mode是Cluster，需要提前启动对应的`注册中心`。
 
 
 ```yaml
@@ -104,7 +57,7 @@ mode:
 
 可以通过`ScalingClusterAutoSwitchAlgorithm`接口自定义一个SPI实现，通过`ScalingDataConsistencyCheckAlgorithm`接口自定义一个SPI实现。详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
 
-overwrite字段含义为：控制配置文件是否覆盖 zk 元数据，一般可在测试时使用。
+overwrite字段含义为：控制配置文件是否覆盖`注册中心`元数据，一般可在测试时使用。
 
 3. 启动 ShardingSphere-Proxy：
 
