@@ -17,26 +17,18 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * JDBC data source configuration.
  */
 public abstract class JDBCDataSourceConfiguration {
-    
-    static {
-        ShardingSphereServiceLoader.register(JDBCDataSourceCreator.class);
-    }
     
     /**
      * Get type.
@@ -109,9 +101,6 @@ public abstract class JDBCDataSourceConfiguration {
      * @throws SQLException SQL exception
      */
     public DataSource toDataSource() throws SQLException {
-        String type = getType();
-        Optional<JDBCDataSourceCreator> creator = TypedSPIRegistry.findRegisteredService(JDBCDataSourceCreator.class, type, null);
-        Preconditions.checkArgument(creator.isPresent(), "Unsupported data source type '%s'", type);
-        return creator.get().createDataSource(getParameter(), getDataSourceConfiguration());
+        return JDBCDataSourceCreatorFactory.getInstance(getType()).createDataSource(getParameter(), getDataSourceConfiguration());
     }
 }

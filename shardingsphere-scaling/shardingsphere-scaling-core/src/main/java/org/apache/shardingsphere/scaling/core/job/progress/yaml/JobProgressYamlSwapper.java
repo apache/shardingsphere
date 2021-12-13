@@ -49,7 +49,7 @@ public final class JobProgressYamlSwapper {
     public YamlJobProgress swapToYaml(final JobProgress jobProgress) {
         YamlJobProgress result = new YamlJobProgress();
         result.setStatus(jobProgress.getStatus().name());
-        result.setDatabaseType(jobProgress.getDatabaseType());
+        result.setSourceDatabaseType(jobProgress.getSourceDatabaseType());
         result.setInventory(getYamlInventory(jobProgress.getInventoryTaskProgressMap()));
         result.setIncremental(getYamlIncremental(jobProgress.getIncrementalTaskProgressMap()));
         return result;
@@ -94,9 +94,9 @@ public final class JobProgressYamlSwapper {
     public JobProgress swapToObject(final YamlJobProgress yamlJobProgress) {
         JobProgress result = new JobProgress();
         result.setStatus(JobStatus.valueOf(yamlJobProgress.getStatus()));
-        result.setDatabaseType(yamlJobProgress.getDatabaseType());
+        result.setSourceDatabaseType(yamlJobProgress.getSourceDatabaseType());
         result.setInventoryTaskProgressMap(getInventoryTaskProgressMap(yamlJobProgress.getInventory()));
-        result.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(yamlJobProgress.getDatabaseType(), yamlJobProgress.getIncremental()));
+        result.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(yamlJobProgress.getSourceDatabaseType(), yamlJobProgress.getIncremental()));
         return result;
     }
     

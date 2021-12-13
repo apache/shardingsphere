@@ -153,7 +153,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDataBaseDiscoveryRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
@@ -164,9 +165,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDataBaseDiscoveryRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryConstructionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleStatementTestCase;
@@ -178,6 +181,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingAutoTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultSingleTableRuleStatementTestCase;
@@ -522,8 +526,11 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-resource")
     private final List<AlterResourceStatementTestCase> alterResourceTestCase = new LinkedList<>();
     
-    @XmlElement(name = "alter-database-discovery-rule")
-    private final List<AlterDataBaseDiscoveryRuleStatementTestCase> alterDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+    @XmlElement(name = "alter-database-discovery-definition-rule")
+    private final List<AlterDatabaseDiscoveryDefinitionRuleStatementTestCase> alterDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-database-discovery-construction-rule")
+    private final List<AlterDatabaseDiscoveryConstructionRuleStatementTestCase> alterDataBaseDiscoveryConstructionRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-encrypt-rule")
     private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCase = new LinkedList<>();
@@ -543,8 +550,11 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-sharding-table-rule")
     private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-database-discovery-rule")
-    private final List<CreateDataBaseDiscoveryRuleStatementTestCase> createDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+    @XmlElement(name = "create-database-discovery-definition-rule")
+    private final List<CreateDatabaseDiscoveryDefinitionRuleStatementTestCase> createDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-database-discovery-construction-rule")
+    private final List<CreateDatabaseDiscoveryConstructionRuleStatementTestCase> createDataBaseDiscoveryConstructionRuleTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
@@ -756,6 +766,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-sharding-algorithm")
     private final List<CreateShardingAlgorithmStatementTestCase> createShardingAlgorithmStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-sharding-key-generator")
+    private final List<CreateShardingKeyGeneratorStatementTestCase> createShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-default-sharding-strategy")
     private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
     
@@ -773,6 +786,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "alter-sharding-algorithm")
     private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-sharding-key-generator")
+    private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset")
     private final List<ResetStatementTestCase> resetStatementTestCases = new LinkedList<>();
@@ -928,13 +944,15 @@ public final class SQLParserTestCases {
         putAll(renameTestCase, result);
         putAll(addResourceTestCase, result);
         putAll(alterResourceTestCase, result);
-        putAll(alterDataBaseDiscoveryRuleTestCase, result);
+        putAll(alterDatabaseDiscoveryDefinitionRuleTestCases, result);
+        putAll(alterDataBaseDiscoveryConstructionRuleTestCase, result);
         putAll(alterEncryptRuleTestCase, result);
         putAll(alterReadwriteSplittingRuleTestCase, result);
         putAll(alterShardingBindingTableRulesTestCase, result);
         putAll(alterShardingBroadcastTableRulesTestCase, result);
         putAll(alterShardingTableRuleTestCase, result);
-        putAll(createDataBaseDiscoveryRuleTestCase, result);
+        putAll(createDatabaseDiscoveryDefinitionRuleTestCases, result);
+        putAll(createDataBaseDiscoveryConstructionRuleTestCase, result);
         putAll(createEncryptRuleTestCase, result);
         putAll(createReadwriteSplittingRuleTestCase, result);
         putAll(createShardingBindingTableRulesTestCase, result);
@@ -1007,6 +1025,7 @@ public final class SQLParserTestCases {
         putAll(optimizeTableStatementTestCases, result);
         putAll(repairTableStatementTestCases, result);
         putAll(createShardingAlgorithmStatementTestCases, result);
+        putAll(createShardingKeyGeneratorStatementTestCases, result);
         putAll(createDefaultShardingStrategyStatementTestCases, result);
         putAll(createShardingTableRuleTestCases, result);
         putAll(alterShardingTableRuleTestCases, result);
@@ -1016,6 +1035,7 @@ public final class SQLParserTestCases {
         putAll(showReplicaStatusStatementTestCases, result);
         putAll(showSlaveStatusStatementTestCases, result);
         putAll(alterShardingAlgorithmStatementTestCases, result);
+        putAll(alterShardingKeyGeneratorStatementTestCases, result);
         putAll(killStatementTestCases, result);
         putAll(createDefaultShadowAlgorithmStatementTestCases, result);
         putAll(cacheIndexStatementTestCases, result);

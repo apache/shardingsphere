@@ -22,7 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryRuleConstants;
+import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
@@ -35,22 +37,28 @@ import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedE
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.SchedulerRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Optional;
+
+import java.util.Map.Entry;
 
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, SchedulerRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
@@ -63,18 +71,18 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
     public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
-        this(schemaName, dataSourceMap, config.getDataSources(), getDiscoveryTypes(config.getDiscoveryTypes()));
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryTypes(config.getDiscoveryTypes()));
     }
     
     public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
-        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryTypes());
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), config.getDiscoveryTypes());
     }
     
     private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
-                                  final Map<String, DatabaseDiscoveryType> discoveryTypes) {
+                                  final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryType> discoveryTypes) {
         checkDataSourcesArguments(dataSourceMap, dataSourceRuleConfigs);
         this.discoveryTypes = discoveryTypes;
-        dataSourceRules = getDataSourceRules(dataSourceRuleConfigs);
+        dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
         startMonitor(schemaName, dataSourceMap);
         initAware();
     }
@@ -92,11 +100,14 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
     }
     
-    private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources) {
+    private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources,
+                                                                            final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig) {
         Map<String, DatabaseDiscoveryDataSourceRule> result = new HashMap<>(dataSources.size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : dataSources) {
             checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each);
-            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, discoveryTypes.get(each.getDiscoveryTypeName())));
+            //TODO heartBeatConfig not empty when job finished.
+            result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, null == heartBeatConfig.get(each.getDiscoveryHeartbeatName())
+                    ? new Properties() : heartBeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         return result;
     }
@@ -106,6 +117,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         Preconditions.checkArgument(discoveryTypes.containsKey(dataSourceRuleConfig.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", dataSourceRuleConfig.getName());
     }
     
+    //TODO remove startPeriodicalUpdate method and change startMonitor method name when job finished.
     private void startMonitor(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
@@ -118,7 +130,6 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
-                databaseDiscoveryType.startPeriodicalUpdate(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -192,5 +203,17 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Override
     public String getType() {
         return DatabaseDiscoveryRule.class.getSimpleName();
+    }
+    
+    @Override
+    public List<CronJob> getCronJobs(final String schemaName, final Map<String, DataSource> dataSources) {
+        List<CronJob> result = new ArrayList<>(dataSourceRules.size());
+        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+            result.add(new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
+                each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(), entry.getValue().getDatabaseDiscoveryType(),
+                        entry.getValue().getDisabledDataSourceNames()).execute(null),
+                entry.getValue().getHeartbeatProps().getProperty("keepAliveCron")));
+        }
+        return result;
     }
 }

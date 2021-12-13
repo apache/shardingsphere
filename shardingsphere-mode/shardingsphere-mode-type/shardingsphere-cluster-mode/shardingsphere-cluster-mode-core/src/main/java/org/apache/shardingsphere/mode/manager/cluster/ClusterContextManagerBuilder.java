@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.SchedulerRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -57,6 +58,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +88,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
         afterBuildContextManager();
+        startMonitor();
         return contextManager;
     }
     
@@ -246,6 +249,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
         schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
+    }
+    
+    private void startMonitor() {
+        metaDataContexts.getAllSchemaNames().forEach(each -> metaDataContexts.getMetaData(each).getRuleMetaData().getRules().stream().filter(each1 -> each1 instanceof SchedulerRule)
+                .forEach(each1 -> startSchedules(each, metaDataContexts.getMetaData(each).getResource().getDataSources(), (SchedulerRule) each1)));
+    }
+    
+    private void startSchedules(final String schemaName, final Map<String, DataSource> dataSources, final SchedulerRule schedulerRule) {
+        schedulerRule.getCronJobs(schemaName, dataSources).forEach(each -> contextManager.getModeScheduleContext().startCronJob(each));
     }
     
     @Override

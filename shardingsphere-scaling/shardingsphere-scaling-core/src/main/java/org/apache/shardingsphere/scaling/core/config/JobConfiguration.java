@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.migration.common.spi.RuleJobConfigurationPreparer;
+import org.apache.shardingsphere.migration.common.spi.JobConfigurationPreparer;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -46,42 +42,42 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class JobConfiguration {
     
     static {
-        ShardingSphereServiceLoader.register(RuleJobConfigurationPreparer.class);
+        ShardingSphereServiceLoader.register(JobConfigurationPreparer.class);
     }
+    
+    private WorkflowConfiguration workflowConfig;
     
     private RuleConfiguration ruleConfig;
     
-    private HandleConfiguration handleConfig = new HandleConfiguration();
+    private HandleConfiguration handleConfig;
+    
+    public JobConfiguration(final WorkflowConfiguration workflowConfig, final RuleConfiguration ruleConfig) {
+        this.workflowConfig = workflowConfig;
+        this.ruleConfig = ruleConfig;
+    }
     
     /**
-     * Fill in properties.
+     * Build handle configuration.
      */
-    public void fillInProperties() {
+    public void buildHandleConfig() {
+        RuleConfiguration ruleConfig = getRuleConfig();
         HandleConfiguration handleConfig = getHandleConfig();
+        if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
+            JobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(JobConfigurationPreparer.class);
+            handleConfig = preparer.createHandleConfig(ruleConfig);
+            this.handleConfig = handleConfig;
+        }
         if (null == handleConfig.getJobId()) {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
-        if (Strings.isNullOrEmpty(handleConfig.getDatabaseType())) {
-            handleConfig.setDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
+        if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
+            handleConfig.setSourceDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
+        }
+        if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
+            handleConfig.setTargetDatabaseType(getRuleConfig().getTarget().unwrap().getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);
-        }
-        RuleConfiguration ruleConfig = getRuleConfig();
-        if (null == handleConfig.getJobShardingDataNodes()) {
-            List<HandleConfiguration> newHandleConfigs = new LinkedList<>();
-            for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
-                Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
-                Preconditions.checkArgument(preparerOptional.isPresent(), "Could not find registered service for type '%s'", each);
-                HandleConfiguration newHandleConfig = preparerOptional.get().convertToHandleConfig(ruleConfig);
-                newHandleConfigs.add(newHandleConfig);
-            }
-            // TODO handle several rules changed or dataSources changed
-            for (HandleConfiguration each : newHandleConfigs) {
-                handleConfig.setJobShardingDataNodes(each.getJobShardingDataNodes());
-                handleConfig.setLogicTables(each.getLogicTables());
-                handleConfig.setTablesFirstDataNodes(each.getTablesFirstDataNodes());
-            }
         }
     }
     
@@ -90,15 +86,8 @@ public final class JobConfiguration {
      *
      * @return task configurations
      */
-    public List<TaskConfiguration> convertToTaskConfigs() {
-        RuleConfiguration ruleConfig = getRuleConfig();
-        // TODO handle several rules changed or dataSources changed
-        for (String each : ruleConfig.getChangedYamlRuleConfigClassNames()) {
-            Optional<RuleJobConfigurationPreparer> preparerOptional = TypedSPIRegistry.findRegisteredService(RuleJobConfigurationPreparer.class, each, null);
-            Preconditions.checkArgument(preparerOptional.isPresent(), "Could not find registered service for type '%s'", each);
-            return preparerOptional.get().convertToTaskConfigs(this);
-        }
-        log.warn("return empty task configurations");
-        return Collections.emptyList();
+    public List<TaskConfiguration> buildTaskConfigs() {
+        JobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(JobConfigurationPreparer.class);
+        return preparer.createTaskConfigs(ruleConfig, handleConfig);
     }
 }
