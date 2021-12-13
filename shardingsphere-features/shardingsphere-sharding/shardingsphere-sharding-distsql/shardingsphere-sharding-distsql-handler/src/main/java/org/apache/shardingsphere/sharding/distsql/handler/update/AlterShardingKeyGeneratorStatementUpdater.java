@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTabl
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -62,7 +63,7 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     }
     
     private void checkExist(final Collection<String> requireNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        LinkedList<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getShardingAlgorithms().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistAlgorithms.isEmpty(), new RequiredAlgorithmMissedException("sharding", notExistAlgorithms));
     }
     
@@ -70,7 +71,7 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
         LinkedList<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream()
                 .map(ShardingKeyGeneratorSegment::getAlgorithmSegment).map(AlgorithmSegment::getName).collect(Collectors.toCollection(LinkedList::new));
         Collection<String> invalidAlgorithmNames = requireNames.stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), new InvalidAlgorithmConfigurationException("sharding", invalidAlgorithmNames));
     }
     
@@ -79,13 +80,13 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getKeyGeneratorSegments().stream()
                 .collect(Collectors.toMap(ShardingKeyGeneratorSegment::getKeyGeneratorName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setShardingAlgorithms(algorithmConfigurationMap);
+        result.setKeyGenerators(algorithmConfigurationMap);
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
+        currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
     }
     
     @Override
@@ -95,6 +96,6 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return AlterShardingAlgorithmStatement.class.getCanonicalName();
+        return AlterShardingKeyGeneratorStatement.class.getCanonicalName();
     }
 }

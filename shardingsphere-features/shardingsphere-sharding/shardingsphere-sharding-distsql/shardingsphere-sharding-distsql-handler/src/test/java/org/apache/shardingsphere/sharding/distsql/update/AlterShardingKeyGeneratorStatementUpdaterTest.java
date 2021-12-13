@@ -76,7 +76,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
         properties.put("inputKey", "inputValue");
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
+        shardingRuleConfiguration.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
     }
     
