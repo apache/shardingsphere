@@ -25,13 +25,9 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     
-    <sql-parser:rule id="sqlParseRule">
-        <sql-parser:sql-comment-parse-enable value="true" />
-        <sql-parser:sql-statement-cache>
-            <sql-parser:cache-option initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
-        </sql-parser:sql-statement-cache>
-        <sql-parser:parser-tree-cache>
-            <sql-parser:cache-option initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
-        </sql-parser:parser-tree-cache>
-    </sql-parser:rule>
+    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parser-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
+    
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+
+    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
 </beans>

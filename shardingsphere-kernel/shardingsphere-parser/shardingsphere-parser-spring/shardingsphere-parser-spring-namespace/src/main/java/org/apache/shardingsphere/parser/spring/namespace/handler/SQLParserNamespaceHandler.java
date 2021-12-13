@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.parser.spring.namespace.handler;
 
+import org.apache.shardingsphere.parser.spring.namespace.parser.CacheOptionBeanDefinitionParser;
 import org.apache.shardingsphere.parser.spring.namespace.parser.SQLParserRuleBeanDefinitionParser;
 import org.apache.shardingsphere.parser.spring.namespace.tag.SQLParserRuleBeanDefinitionTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
@@ -29,5 +30,6 @@ public final class SQLParserNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.ROOT_TAG, new SQLParserRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.CACHE_OPTION, new CacheOptionBeanDefinitionParser());
     }
 }

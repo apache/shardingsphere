@@ -17,59 +17,48 @@
 
 package org.apache.shardingsphere.parser.spring.namespace.parser;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.spring.namespace.tag.SQLParserRuleBeanDefinitionTag;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Optional;
+
+/**
+ * SQL parser bean parser for spring namespace.
+ */
 public class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SQLParserRuleConfiguration.class);
         factory.addPropertyValue("sqlCommentParseEnabled", parseSQLCommentParserEnableConfiguration(element));
-        factory.addPropertyValue("sqlStatementCacheOption", parseSQLStatementCacheConfiguration(element));
-        factory.addPropertyValue("parseTreeCacheOption", parserTreeCacheConfiguration(element));
+        setSQLStatementCacheOption(element, factory);
+        setParseTreeCacheOption(element, factory);
         return factory.getBeanDefinition();
+    }
+    
+    private void setSQLStatementCacheOption(Element element, BeanDefinitionBuilder factory) {
+        Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF);
+        cacheRef.ifPresent(optional -> factory.addPropertyReference("sqlStatementCacheOption", optional));
+    }
+    
+    private void setParseTreeCacheOption(Element element, BeanDefinitionBuilder factory) {
+        Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.PARSER_TREE_CACHE_REF);
+        cacheRef.ifPresent(optional -> factory.addPropertyReference("parseTreeCacheOption", optional));
     }
     
     private boolean parseSQLCommentParserEnableConfiguration(final Element element) {
-        Element sqlCommentParserEnable = DomUtils.getChildElementByTagName(element, SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE);
-        return Boolean.parseBoolean(sqlCommentParserEnable.getAttribute(SQLParserRuleBeanDefinitionTag.VALUE));
+        String sqlCommentParserEnable = element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE);
+        return Boolean.parseBoolean(sqlCommentParserEnable);
     }
     
-    private BeanDefinition parseSQLStatementCacheConfiguration(final Element element) {
-        Element sqlStatementCacheElement = DomUtils.getChildElementByTagName(element, SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE);
-        if (null == sqlStatementCacheElement) {
-            return null;
-        }
-        return parserCacheOption(sqlStatementCacheElement);
+    private Optional<String> parseCacheRef(final Element element, final String tagName) {
+        String result = element.getAttribute(tagName);
+        return Strings.isNullOrEmpty(result) ? Optional.empty() : Optional.of(result);
     }
-    
-    private BeanDefinition parserTreeCacheConfiguration(final Element element) {
-        Element parserTreeCacheElement = DomUtils.getChildElementByTagName(element, SQLParserRuleBeanDefinitionTag.PARSER_TREE_CACHE);
-        if (null == parserTreeCacheElement) {
-            return null;
-        }
-        return parserCacheOption(parserTreeCacheElement);
-    }
-    
-    private BeanDefinition parserCacheOption(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CacheOption.class);
-        Element cacheElement = DomUtils.getChildElementByTagName(element, SQLParserRuleBeanDefinitionTag.CACHE_OPTION);
-        if (null == cacheElement) {
-            return null;
-        }
-        factory.addPropertyValue("initialCapacity", cacheElement.getAttribute(SQLParserRuleBeanDefinitionTag.INITIAL_CAPACITY));
-        factory.addPropertyValue("maximumSize", cacheElement.getAttribute(SQLParserRuleBeanDefinitionTag.MAXIMUM_SIZE));
-        factory.addPropertyValue("concurrencyLevel", cacheElement.getAttribute(SQLParserRuleBeanDefinitionTag.CONCURRENCY_LEVEL));
-        return factory.getBeanDefinition();
-    }
-
 }

@@ -25,39 +25,16 @@
 
     <xsd:element name="rule">
         <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="sql-comment-parse-enable"/>
-                <xsd:element ref="sql-statement-cache"/>
-                <xsd:element ref="parser-tree-cache"/>
-            </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="sql-comment-parse-enable" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="sql-statement-cache-ref" type="xsd:string" />
+            <xsd:attribute name="parser-tree-cache-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-
-    <xsd:element name="sql-comment-parse-enable">
-        <xsd:complexType>
-            <xsd:attribute name="value" type="xsd:boolean" default="false"/>
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="sql-statement-cache">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="cache-option"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="parser-tree-cache">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="cache-option"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
+    
     <xsd:element name="cache-option">
         <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="initial-capacity" type="xsd:int" use="required"/>
             <xsd:attribute name="maximum-size" type="xsd:long" use="required"/>
             <xsd:attribute name="concurrency-level" type="xsd:int" use="required"/>

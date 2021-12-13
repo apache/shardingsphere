@@ -30,11 +30,9 @@ public final class SQLParserRuleBeanDefinitionTag {
     
     public static final String SQL_COMMENT_PARSER_ENABLE = "sql-comment-parse-enable";
     
-    public static final String VALUE = "value";
+    public static final String SQL_STATEMENT_CACHE_REF = "sql-statement-cache-ref";
     
-    public static final String SQL_STATEMENT_CACHE = "sql-statement-cache";
-    
-    public static final String PARSER_TREE_CACHE = "parser-tree-cache";
+    public static final String PARSER_TREE_CACHE_REF = "parser-tree-cache-ref";
     
     public static final String INITIAL_CAPACITY = "initial-capacity";
     
