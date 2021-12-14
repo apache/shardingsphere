@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Database discovery type.
+ * Expected database discovery construction type.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryType implements ASTNode {
+@Setter
+public final class ExpectedDatabaseDiscoveryType extends AbstractExpectedIdentifierSQLSegment {
     
-    private final String name;
+    @XmlAttribute(name = "discovery-type-name")
+    private String discoveryTypeName;
     
-    private final AlgorithmSegment algorithmSegment;
+    @XmlElement(name = "algorithm")
+    private ExpectedAlgorithm algorithmSegment;
 }

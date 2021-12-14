@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Create database discovery type statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateDatabaseDiscoveryTypeStatement extends CreateRuleStatement {
+    
+    private final Collection<DatabaseDiscoveryTypeSegment> types;
+}
