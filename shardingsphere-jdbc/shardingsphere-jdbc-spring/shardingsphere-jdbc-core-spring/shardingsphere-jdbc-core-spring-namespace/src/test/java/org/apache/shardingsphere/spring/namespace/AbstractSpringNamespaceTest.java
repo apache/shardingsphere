@@ -97,7 +97,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
         assertThat(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
     }
     
-    public void assertSQLParserRule(final SQLParserRule sqlParserRule) {
+    private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
         assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
         assertCacheOption(sqlParserRule.getSqlStatementCache());
         assertCacheOption(sqlParserRule.getParserTreeCache());
