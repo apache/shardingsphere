@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
 public class CacheOptionBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
-    protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CacheOption.class);
         factory.addPropertyValue("initialCapacity", element.getAttribute(SQLParserRuleBeanDefinitionTag.INITIAL_CAPACITY));
         factory.addPropertyValue("maximumSize", element.getAttribute(SQLParserRuleBeanDefinitionTag.MAXIMUM_SIZE));

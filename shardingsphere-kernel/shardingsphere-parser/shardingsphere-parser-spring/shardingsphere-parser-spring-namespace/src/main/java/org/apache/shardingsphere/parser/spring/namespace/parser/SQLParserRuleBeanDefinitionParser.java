@@ -42,12 +42,12 @@ public class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinitionPar
         return factory.getBeanDefinition();
     }
     
-    private void setSQLStatementCacheOption(Element element, BeanDefinitionBuilder factory) {
+    private void setSQLStatementCacheOption(final Element element, final BeanDefinitionBuilder factory) {
         Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF);
         cacheRef.ifPresent(optional -> factory.addPropertyReference("sqlStatementCacheOption", optional));
     }
     
-    private void setParseTreeCacheOption(Element element, BeanDefinitionBuilder factory) {
+    private void setParseTreeCacheOption(final Element element, final BeanDefinitionBuilder factory) {
         Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.PARSER_TREE_CACHE_REF);
         cacheRef.ifPresent(optional -> factory.addPropertyReference("parseTreeCacheOption", optional));
     }
