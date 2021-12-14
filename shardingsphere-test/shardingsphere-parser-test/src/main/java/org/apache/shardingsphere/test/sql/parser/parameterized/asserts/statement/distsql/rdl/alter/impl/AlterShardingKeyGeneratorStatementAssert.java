@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.rdl.ShardingKeyGeneratorAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingKeyGenerator;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingKeyGeneratorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingKeyGeneratorStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,19 +33,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Create sharding key generator statement assert.
+ * Alter sharding key generator statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateShardingKeyGeneratorStatementAssert {
+public final class AlterShardingKeyGeneratorStatementAssert {
     
     /**
-     * Assert create sharding key generator statement is correct with expected parser result.
+     * Assert alter sharding key generator statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create sharding key generator statement
+     * @param actual actual alter sharding key generator statement
      * @param expected expected create sharding key generator statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingKeyGeneratorStatement actual, final CreateShardingKeyGeneratorStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingKeyGeneratorStatement actual, final AlterShardingKeyGeneratorStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding key generator statement should not exist."), actual);
         } else {

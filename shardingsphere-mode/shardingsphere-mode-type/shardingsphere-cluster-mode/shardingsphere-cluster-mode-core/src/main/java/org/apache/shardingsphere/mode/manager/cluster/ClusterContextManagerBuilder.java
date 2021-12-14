@@ -252,8 +252,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void startMonitor() {
-        metaDataContexts.getAllSchemaNames().forEach(each -> metaDataContexts.getMetaData(each).getRuleMetaData().getRules().stream().filter(each1 -> each1 instanceof SchedulerRule)
-                .forEach(each1 -> startSchedules(each, metaDataContexts.getMetaData(each).getResource().getDataSources(), (SchedulerRule) each1)));
+        metaDataContexts.getAllSchemaNames().forEach(each -> metaDataContexts.getMetaData(each).getRuleMetaData().getRules().stream().filter(rule -> rule instanceof SchedulerRule)
+                .forEach(rule -> startSchedules(each, metaDataContexts.getMetaData(each).getResource().getDataSources(), (SchedulerRule) rule)));
     }
     
     private void startSchedules(final String schemaName, final Map<String, DataSource> dataSources, final SchedulerRule schedulerRule) {

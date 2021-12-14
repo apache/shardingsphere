@@ -50,15 +50,6 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private String primaryDataSourceName;
     
-    //TODO remove this when job finished.
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final DatabaseDiscoveryType databaseDiscoveryType) {
-        checkConfiguration(config);
-        name = config.getName();
-        dataSourceNames = config.getDataSourceNames();
-        this.heartbeatProps = new Properties();
-        this.databaseDiscoveryType = databaseDiscoveryType;
-    }
-    
     public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
         checkConfiguration(config);
         name = config.getName();
