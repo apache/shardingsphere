@@ -18,20 +18,24 @@
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlCharStringLiteral;
+import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
+import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.fun.SqlPositionFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Function converter.
@@ -41,7 +45,10 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
     @Override
     public Optional<SqlBasicCall> convertToSQLNode(final FunctionSegment segment) {
         if ("POSITION".equalsIgnoreCase(segment.getFunctionName())) {
-            return Optional.of(new SqlBasicCall(new SqlPositionFunction(), getPositionSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(new SqlPositionFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
+        if ("CAST".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }
@@ -51,21 +58,42 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
         if (null == sqlBasicCall) {
             return Optional.empty();
         }
-        FunctionSegment functionSegment = new FunctionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), sqlBasicCall.getOperator().getName(), sqlBasicCall.toString());
+        FunctionSegment functionSegment = new FunctionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), sqlBasicCall.getOperator().getName(), getFunctionText(sqlBasicCall));
         functionSegment.getParameters().addAll(getParameters(sqlBasicCall));
         return Optional.of(functionSegment);
     }
     
-    private List<ExpressionSegment> getParameters(final SqlBasicCall sqlBasicCall) {
-        return sqlBasicCall.getOperandList().stream()
-                .map(operand -> new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", ""))).collect(Collectors.toList());
+    private String getFunctionText(final SqlBasicCall sqlBasicCall) {
+        if (null != sqlBasicCall.getOperator() && sqlBasicCall.getOperator() instanceof SqlCastFunction) {
+            return sqlBasicCall.toString().replace("`", "");
+        }
+        return sqlBasicCall.toString();
     }
     
-    private SqlNode[] getPositionSqlNodes(final Collection<ExpressionSegment> expressionSegments) {
+    private List<ExpressionSegment> getParameters(final SqlBasicCall sqlBasicCall) {
+        List<ExpressionSegment> result = new ArrayList<>();
+        sqlBasicCall.getOperandList().forEach(operand -> {
+            if (operand instanceof SqlDataTypeSpec) {
+                DataTypeSegment dataTypeSegment = new DataTypeSegment();
+                dataTypeSegment.setStartIndex(getStartIndex(operand));
+                dataTypeSegment.setStopIndex(getStopIndex(operand));
+                dataTypeSegment.setDataTypeName(operand.toString().replace("`", ""));
+                result.add(dataTypeSegment);
+            } else if (operand instanceof SqlCharStringLiteral) {
+                result.add(new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", "")));
+            }
+        });
+        return result;
+    }
+    
+    private SqlNode[] getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> sqlNodes = new ArrayList<>();
-        expressionSegments.forEach(expressionSegment -> {
-            if (expressionSegment instanceof LiteralExpressionSegment) {
-                sqlNodes.add(SqlLiteral.createCharString(((LiteralExpressionSegment) expressionSegment).getLiterals().toString(), SqlParserPos.ZERO));
+        sqlSegments.forEach(sqlSegment -> {
+            if (sqlSegment instanceof LiteralExpressionSegment) {
+                sqlNodes.add(SqlLiteral.createCharString(((LiteralExpressionSegment) sqlSegment).getLiterals().toString(), SqlParserPos.ZERO));
+            }
+            if (sqlSegment instanceof DataTypeSegment) {
+                sqlNodes.add(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(((DataTypeSegment) sqlSegment).getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
             }
         });
         return sqlNodes.toArray(new SqlNode[0]);

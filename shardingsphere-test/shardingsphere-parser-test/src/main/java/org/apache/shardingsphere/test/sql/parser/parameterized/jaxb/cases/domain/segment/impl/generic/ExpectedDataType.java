@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.generic;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedBaseSimpleExpression;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Expected data type.
+ */
 @Getter
 @Setter
-public final class DataTypeSegment implements ExpressionSegment {
+public final class ExpectedDataType extends ExpectedBaseSimpleExpression {
     
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private String dataTypeName;
-    
-    private DataTypeLengthSegment dataLength;
+    @XmlAttribute
+    private String value;
 }
