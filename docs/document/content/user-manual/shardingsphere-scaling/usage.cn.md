@@ -127,9 +127,9 @@ ADD RESOURCE ds_2 (
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
 
 `SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式，以下是两种分片规则的对比：
-| 名称         | AutoTableRule（自动分片）                                    | TableRule（自定义分片）                                      |
+| 类型         | AutoTableRule（自动分片）                                    | TableRule（自定义分片）                                      |
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 定义         | 5.x版本之后，引入的自动分片技术交由 ShardingSphere 自动管理分片，用户只需要指定分片数量和使用的数据源，无需再关心表的具体分布详情可参见：https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sharding/#自动化分片算法 | 需要自定义分片配置，可设置物理数据节点，数据分片、表分片等   |
+| 定义         | 5.x版本之后，引入的自动分片技术交由 ShardingSphere 自动管理分片，用户只需要指定分片数量和使用的数据源，无需再关心表的具体分布详情可参见：[#自动化分片算法](/cn/features/sharding/concept/sharding/#自动化分片算法) | 需要自定义分片配置，可设置物理数据节点，数据分片、表分片等   |
 | 推荐使用场景 | 不需要关心实际表在哪个库、哪个库有几张表等问题只需考虑：SHARDING_COLUMN：设置用作分片键的列TYPE：设置分片算法和数量GENERATED_KEY：设置分布式自增ID | 需要设置以下参数：DATANODES：物理数据节点表达式DATABASE_STRATEGY：数据库分片策略TABLE_STRATEGY：表分片策略GENERATED_KEY：设置分布式自增ID |
 
 `AutoTableRule`修改示例：
@@ -204,7 +204,7 @@ mysql> show scaling status 660152090995195904;
 | PREPARING                                         | 准备中                                                        |
 | RUNNING                                           | 运行中                                                        |
 | EXECUTE_INVENTORY_TASK                            | 全量迁移中                                                     |
-| EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     | |
+| EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     |
 | FINISHED                                          | 已完成（整个流程完成了，新规则已生效）                                                         |
 | PREPARING_FAILURE                                 | 准备阶段失败                                                    |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |

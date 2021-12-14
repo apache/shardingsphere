@@ -21,11 +21,9 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 > Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载最新版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
 2. 解压缩 proxy发布包，修改配置文件`conf/config-sharding.yaml`，配置`schemaName`，`dataSources`，`rules`里的`shardingAlgorithms`和`keyGenerators`，[config-sharding.yaml示例]( https://github.com/apache/shardingsphere/blob/master/examples/docker/shardingsphere-proxy/sharding/conf/config-sharding.yaml )：
-
-3. 解压缩 proxy 发布包，修改配置文件 `conf/server.yaml`，这里主要是开启 `scaling` 和 `mode` 配置：
-如果配置的Mode是Cluster，需要提前启动对应的`注册中心`。
-
-
+   
+3. 修改配置文件 `conf/server.yaml`，如果配置的`Mode`是`Cluster`，需要提前启动对应的注册中心。
+这里主要是开启 `scaling` 和 `mode` 配置：
 ```yaml
 scaling:
   blockQueueSize: 10000
@@ -89,7 +87,7 @@ sh bin/start.sh
 |         |                               | workerThread                                                 | 工作线程池大小，允许同时运行的迁移任务线程数                 | 40        |
 |         | clusterAutoSwitchAlgorithm    | type                                                         | 开启自动检测任务是否完成及切换配置，目前系统提供了IDLE类型实现 | -         |
 |         |                               | props:incremental-task-idle-minute-threshold                 | 增量同步空闲时间最大值，超过该值，进入下一状态               | 30 (分钟) |
-|         | dataConsistencyCheckAlgorithm | type                                                         | 配置设置数据校验算法，关闭该配置系统将不进行数据校验。目前系统提供了DEFAULT类型实现，DEFAULT算法目前支持的数据库：MySQL。其他数据库还不能打开这个配置项，相关支持还在开发中可以通过ScalingClusterAutoSwitchAlgorithm接口自定义一个SPI实现，通过ScalingDataConsistencyCheckAlgorithm接口自定义一个SPI实现。详情请参见[开发者手册#弹性伸缩](https://shardingsphere.apache.org/document/current/cn/dev-manual/scaling/)。 | -         |
+|         | dataConsistencyCheckAlgorithm | type                                                         | 配置数据校验算法，关闭该配置系统将不进行数据校验。目前系统提供了DEFAULT类型实现，DEFAULT算法目前支持的数据库：MySQL。其他数据库还不能打开这个配置项，相关支持还在开发中。详情请参见[开发者手册#弹性伸缩#数据一致性算法](/cn/dev-manual/scaling/#scalingdataconsistencycheckalgorithm)。 | -         |
 | mode    | type                          | Cluster                                                      |                                                              | -         |
 |         | repository                    | type、props | 注册中心，当前支持Zookeeper，Etcd                            | -         |
-|         | overwrite                     | -                                                            | 控制配置文件是否覆盖 zk 元数据，一般可在测试时使用。         | false     |
+|         | overwrite                     | -                                                            | 控制配置文件是否覆盖注册中心元数据，一般可在测试时使用。         | false     |
