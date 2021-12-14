@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * MGR database discovery type fixture.
@@ -53,17 +52,8 @@ public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryT
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        
-    }
-    
-    @Override
     public String getPrimaryDataSource() {
         return null;
     }
     
-    @Override
-    public void updateProperties(final String groupName, final Properties props) {
-        
-    }
 }
