@@ -37,8 +37,8 @@ public final class SQLParserSpringNamespaceTest extends AbstractJUnit4SpringCont
     @Test
     public void assertSQLParserRule() {
         assertThat(sqlParserRuleConfiguration.isSqlCommentParseEnabled(), is(true));
-        assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCacheOption());
-        assertCacheOption(sqlParserRuleConfiguration.getParseTreeCacheOption());
+        assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
+        assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
     }
 
     private void assertCacheOption(final CacheOption cacheOption) {

@@ -35,7 +35,7 @@ public class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
     
     private boolean sqlCommentParseEnabled;
     
-    private CacheOption parseTreeCacheOption;
+    private CacheOption parseTreeCache;
     
-    private CacheOption sqlStatementCacheOption;
+    private CacheOption sqlStatementCache;
 }

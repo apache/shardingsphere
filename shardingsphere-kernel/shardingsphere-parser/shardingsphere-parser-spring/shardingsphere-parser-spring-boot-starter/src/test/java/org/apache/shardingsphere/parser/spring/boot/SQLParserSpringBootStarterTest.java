@@ -43,8 +43,8 @@ public class SQLParserSpringBootStarterTest {
     @Test
     public void assertSQLParserRule() {
         assertThat(sqlParserRuleConfiguration.isSqlCommentParseEnabled(), is(true));
-        assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCacheOption());
-        assertCacheOption(sqlParserRuleConfiguration.getParseTreeCacheOption());
+        assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
+        assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
     }
 
     private void assertCacheOption(final CacheOption cacheOption) {

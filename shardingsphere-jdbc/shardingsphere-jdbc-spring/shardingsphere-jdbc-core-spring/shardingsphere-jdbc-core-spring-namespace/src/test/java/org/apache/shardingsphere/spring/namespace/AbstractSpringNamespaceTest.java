@@ -22,9 +22,11 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -56,6 +58,8 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
                 assertReadwriteSplittingRule((ReadwriteSplittingRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
+            } else if (each instanceof SQLParserRule) {
+                assertSQLParserRule((SQLParserRule) each);
             }
         }
     }
@@ -91,6 +95,18 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertTrue(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").isPresent());
         assertThat(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
+    }
+    
+    public void assertSQLParserRule(final SQLParserRule sqlParserRule) {
+        assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
+        assertCacheOption(sqlParserRule.getSqlStatementCache());
+        assertCacheOption(sqlParserRule.getParserTreeCache());
+    }
+    
+    private void assertCacheOption(final CacheOption cacheOption) {
+        assertThat(cacheOption.getInitialCapacity(), is(1024));
+        assertThat(cacheOption.getMaximumSize(), is(1024L));
+        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     @Test
