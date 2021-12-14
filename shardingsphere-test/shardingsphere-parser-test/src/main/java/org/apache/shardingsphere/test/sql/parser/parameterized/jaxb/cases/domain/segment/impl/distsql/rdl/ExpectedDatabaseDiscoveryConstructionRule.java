@@ -15,21 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * Create database discovery rule statement.
+ * Expected database discovery construction rule.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryRuleStatement extends CreateRuleStatement {
+@Setter
+public final class ExpectedDatabaseDiscoveryConstructionRule extends AbstractExpectedIdentifierSQLSegment {
     
-    private final Collection<AbstractDatabaseDiscoverySegment> rules;
+    @XmlAttribute(name = "rule-name")
+    private String name;
+    
+    @XmlElement(name = "data-source")
+    private Collection<String> dataSources;
+    
+    @XmlAttribute(name = "type")
+    private String discoveryType;
+    
+    @XmlAttribute(name = "heartbeat")
+    private String discoveryHeartbeat;
 }

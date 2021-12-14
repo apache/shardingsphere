@@ -42,12 +42,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLLoginResult;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -92,21 +92,21 @@ public final class OpenGaussAuthenticationHandlerTest {
     @Test
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
@@ -114,7 +114,7 @@ public final class OpenGaussAuthenticationHandlerTest {
     public void assertLoginWithNonExistDatabase() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
-        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
     }
     
@@ -157,10 +157,7 @@ public final class OpenGaussAuthenticationHandlerTest {
         return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singleton(rule));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {
-        Method method = OpenGaussAuthenticationHandler.class.getDeclaredMethod("doRFC5802Algorithm", String.class, String.class, String.class, int.class);
-        method.setAccessible(true);
-        return new String((byte[]) method.invoke(OpenGaussAuthenticationHandler.class, password, random64code, token, serverIteration));
+        return new String(OpenGaussAuthenticationAlgorithm.doRFC5802Algorithm(password, random64code, token, serverIteration));
     }
 }

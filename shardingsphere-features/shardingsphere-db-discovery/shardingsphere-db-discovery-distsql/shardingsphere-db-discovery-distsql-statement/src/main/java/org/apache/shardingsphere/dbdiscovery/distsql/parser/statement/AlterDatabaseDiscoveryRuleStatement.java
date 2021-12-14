@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class AlterDatabaseDiscoveryRuleStatement extends AlterRuleStatement {
     
-    private final Collection<DatabaseDiscoveryRuleSegment> rules;
+    private final Collection<AbstractDatabaseDiscoverySegment> rules;
 }
