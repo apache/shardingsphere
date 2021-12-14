@@ -238,7 +238,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return table rule
      */
     public Optional<TableRule> findTableRuleByActualTable(final String actualTableName) {
-        return tableRules.values().stream().filter(each -> each.isExisted(actualTableName)).findFirst();
+        for (TableRule each : tableRules.values()) {
+            if (each.isExisted(actualTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     /**
