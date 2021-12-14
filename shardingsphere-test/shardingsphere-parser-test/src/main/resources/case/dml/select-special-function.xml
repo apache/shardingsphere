@@ -51,7 +51,7 @@
                             <literal-expression value="1" start-index="12" stop-index="14"/>
                         </parameter>
                         <parameter>
-                            <literal-expression value="UNSIGNED" start-index="19" stop-index="26"/>
+                            <data-type value="UNSIGNED" start-index="19" stop-index="26"/>
                         </parameter>
                     </function>
                 </expr>

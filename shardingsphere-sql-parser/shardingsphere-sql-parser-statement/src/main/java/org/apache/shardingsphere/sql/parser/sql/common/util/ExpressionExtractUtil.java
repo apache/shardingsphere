@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Expression extract utility class.
@@ -102,9 +101,7 @@ public final class ExpressionExtractUtil {
                 result.addAll(getParameterMarkerExpressions(Collections.singletonList(((BinaryOperationExpression) each).getRight())));
             }
             if (each instanceof FunctionSegment) {
-                List<ExpressionSegment> expressionSegments = ((FunctionSegment) each).getParameters().stream()
-                        .filter(sqlSegment -> sqlSegment instanceof ExpressionSegment).map(sqlSegment -> (ExpressionSegment) sqlSegment).collect(Collectors.toList());
-                result.addAll(getParameterMarkerExpressions(expressionSegments));
+                result.addAll(getParameterMarkerExpressions(((FunctionSegment) each).getParameters()));
             }
         }
         return result;

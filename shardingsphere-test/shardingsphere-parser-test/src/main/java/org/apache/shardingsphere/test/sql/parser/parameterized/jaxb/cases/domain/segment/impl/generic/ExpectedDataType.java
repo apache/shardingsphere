@@ -15,34 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.generic;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedBaseSimpleExpression;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Function segment.
+ * Expected data type.
  */
-@RequiredArgsConstructor
 @Getter
-public final class FunctionSegment implements ComplexExpressionSegment {
+@Setter
+public final class ExpectedDataType extends ExpectedBaseSimpleExpression {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String functionName;
-    
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
-    
-    private final String text;
-    
-    @Setter
-    private OwnerSegment owner;
+    @XmlAttribute
+    private String value;
 }
