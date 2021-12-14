@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.junit.Test;
@@ -103,6 +104,7 @@ public final class DatabaseDiscoveryRuleTest {
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "TEST");
         return new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), Collections.emptyMap(), ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));
+                Collections.singleton(config), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));
     }
 }
