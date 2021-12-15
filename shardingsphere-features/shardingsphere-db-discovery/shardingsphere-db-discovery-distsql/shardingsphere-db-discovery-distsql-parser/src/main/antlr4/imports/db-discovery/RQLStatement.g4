@@ -30,6 +30,7 @@ showDatabaseDiscoveryTypes
 showDatabaseDiscoveryHeartbeats
     : SHOW DB_DISCOVERY HEARTBEATS (FROM schemaName)?
     ;
+    
 schemaName
     : IDENTIFIER
     ;
