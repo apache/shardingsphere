@@ -15,70 +15,17 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import Alphabet;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-TYPES
-    : T Y P E S
-    ;
-
-HEARTBEATS
-    : H E A R T B E A T S
-    ;
+/**
+ * Show database discovery types statement.
+ */
+public final class ShowDatabaseDiscoveryTypesStatement extends ShowRulesStatement {
     
-DB_DISCOVERY
-    : D B UL_ D I S C O V E R Y
-    ;
-
-HEARTBEAT
-    : H E A R T B E A T
-    ;
+    public ShowDatabaseDiscoveryTypesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}
