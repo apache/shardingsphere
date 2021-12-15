@@ -18,3 +18,5 @@
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.CreateDatabaseDiscoveryRuleStatementUpdater
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.AlterDatabaseDiscoveryRuleStatementUpdater
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.DropDatabaseDiscoveryRuleStatementUpdater
+org.apache.shardingsphere.dbdiscovery.distsql.handler.update.AlterDatabaseDiscoveryHeartbeatStatementUpdater
+org.apache.shardingsphere.dbdiscovery.distsql.handler.update.CreateDatabaseDiscoveryHeartbeatStatementUpdater

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
@@ -78,5 +79,17 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     
     private static String getName(final String ruleName, final String type) {
         return String.format("%s_%s", ruleName, type);
+    }
+    
+    /**
+     * Convert database discovery heartbeat segment to database discovery type configuration.
+     *
+     * @param heartbeatSegments database discovery heartbeat segments
+     * @return database discovery heartbeat configuration
+     */
+    public static DatabaseDiscoveryRuleConfiguration convertDiscoveryHeartbeat(final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeatSegments) {
+        DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        heartbeatSegments.forEach(each -> result.getDiscoveryHeartbeats().put(each.getHeartbeatName(), new DatabaseDiscoveryHeartBeatConfiguration(each.getProperties())));
+        return result;
     }
 }

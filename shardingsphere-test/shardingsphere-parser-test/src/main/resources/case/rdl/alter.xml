@@ -165,6 +165,14 @@
         </rule>
     </alter-database-discovery-construction-rule>
 
+    <alter-database-discovery-heartbeat sql-case-id="alter-database-discovery-heartbeat">
+        <rule heartbeat-name="mgr_heartbeat" >
+            <properties>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </properties>
+        </rule>
+    </alter-database-discovery-heartbeat>
+    
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
