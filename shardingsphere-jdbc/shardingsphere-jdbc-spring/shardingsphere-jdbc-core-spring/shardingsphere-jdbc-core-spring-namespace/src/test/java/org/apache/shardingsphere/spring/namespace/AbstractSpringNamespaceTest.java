@@ -50,6 +50,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     public void assertShardingSphereDataSource() {
         assertDataSources();
         Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> globalRules = dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -58,7 +59,11 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
                 assertReadwriteSplittingRule((ReadwriteSplittingRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
-            } else if (each instanceof SQLParserRule) {
+            }
+        }
+        assertThat(globalRules.size(), is(3));
+        for (ShardingSphereRule each : globalRules) {
+            if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);
             }
         }
