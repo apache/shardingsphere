@@ -15,70 +15,24 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryType;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-TYPES
-    : T Y P E S
-    ;
-
-HEARTBEATS
-    : H E A R T B E A T S
-    ;
+/**
+ * Create database discovery type statement test case.
+ */
+@Getter
+@Setter
+public final class CreateDatabaseDiscoveryTypeStatementTestCase extends SQLParserTestCase {
     
-DB_DISCOVERY
-    : D B UL_ D I S C O V E R Y
-    ;
-
-HEARTBEAT
-    : H E A R T B E A T
-    ;
+    @XmlElement(name = "type")
+    private final List<ExpectedDatabaseDiscoveryType> types = new LinkedList<>();
+}

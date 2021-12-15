@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryTypeStatementTestCase;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,31 +34,30 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Create database discovery heartbeat statement assert.
+ * Create database discovery type statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateDatabaseDiscoveryTypeStatementAssert {
     
     /**
-     * Assert create database discovery heartbeat statement is correct with expected parser result.
+     * Assert create database discovery type statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create database discovery heartbeat statement
-     * @param expected expected create database discovery heartbeat statement test case
+     * @param actual actual create database discovery type statement
+     * @param expected expected create database discovery type statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDatabaseDiscoveryHeartbeatStatement actual, final CreateDatabaseDiscoveryHeartbeatStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDatabaseDiscoveryTypeStatement actual, final CreateDatabaseDiscoveryTypeStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            Map<String, DatabaseDiscoveryHeartbeatSegment> actualMap = actual.getHeartbeats().stream().collect(Collectors.toMap(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName, each -> each));
-            expected.getHeartbeats().forEach(each -> {
-                DatabaseDiscoveryHeartbeatSegment actualSegment = actualMap.get(each.getName());
+            Map<String, DatabaseDiscoveryTypeSegment> actualMap = actual.getTypes().stream().collect(Collectors.toMap(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName, each -> each));
+            expected.getTypes().forEach(each -> {
+                DatabaseDiscoveryTypeSegment actualSegment = actualMap.get(each.getDiscoveryTypeName());
                 assertNotNull(actualSegment);
-                assertThat(actualSegment.getHeartbeatName(), is(each.getName()));
-                PropertiesAssert.assertIs(assertContext, actualSegment.getProperties(), each.getProperties());
+                assertThat(actualSegment.getDiscoveryTypeName(), is(each.getDiscoveryTypeName()));
+                AlgorithmAssert.assertIs(assertContext, actualSegment.getAlgorithmSegment(), each.getAlgorithmSegment());
             });
-            
         }
     }
 }

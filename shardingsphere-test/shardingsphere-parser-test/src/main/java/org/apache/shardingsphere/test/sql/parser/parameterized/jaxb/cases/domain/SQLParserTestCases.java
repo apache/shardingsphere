@@ -171,6 +171,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
@@ -557,6 +558,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-database-discovery-construction-rule")
     private final List<CreateDatabaseDiscoveryConstructionRuleStatementTestCase> createDataBaseDiscoveryConstructionRuleTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-database-discovery-type")
+    private final List<CreateDatabaseDiscoveryTypeStatementTestCase> createDatabaseDiscoveryTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database-discovery-heartbeat")
     private final List<CreateDatabaseDiscoveryHeartbeatStatementTestCase> createDatabaseDiscoveryHeartbeatTestCases = new LinkedList<>();
@@ -961,6 +965,7 @@ public final class SQLParserTestCases {
         putAll(alterShardingTableRuleTestCase, result);
         putAll(createDatabaseDiscoveryDefinitionRuleTestCases, result);
         putAll(createDataBaseDiscoveryConstructionRuleTestCase, result);
+        putAll(createDatabaseDiscoveryTypeTestCases, result);
         putAll(createDatabaseDiscoveryHeartbeatTestCases, result);
         putAll(alterDatabaseDiscoveryHeartbeatTestCases, result);
         putAll(createEncryptRuleTestCase, result);

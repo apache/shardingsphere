@@ -19,7 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryHeartbeatsStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
@@ -73,8 +75,8 @@ public final class ShowRulesStatementAssert {
      * @param expected expected show rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowDatabaseDiscoveryRulesStatement) {
-            ShowDatabaseDiscoveryRulesStatementAssert.assertIs(assertContext, (ShowDatabaseDiscoveryRulesStatement) actual, (ShowDataBaseDiscoveryRulesStatementTestCase) expected);
+        if (actual instanceof ShowDatabaseDiscoveryRulesStatement || actual instanceof ShowDatabaseDiscoveryTypesStatement || actual instanceof ShowDatabaseDiscoveryHeartbeatsStatement) {
+            ShowDatabaseDiscoveryRulesStatementAssert.assertIs(assertContext, actual, (ShowDataBaseDiscoveryRulesStatementTestCase) expected);
         } else if (actual instanceof ShowEncryptRulesStatement) {
             ShowEncryptRulesStatementAssert.assertIs(assertContext, (ShowEncryptRulesStatement) actual, (ShowEncryptRulesStatementTestCase) expected);
         } else if (actual instanceof ShowReadwriteSplittingRulesStatement) {
