@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.generic;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedBaseSimpleExpression;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryTypes
-    | showDatabaseDiscoveryHeartbeats
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Expected data type.
+ */
+@Getter
+@Setter
+public final class ExpectedDataType extends ExpectedBaseSimpleExpression {
+    
+    @XmlAttribute
+    private String value;
+}

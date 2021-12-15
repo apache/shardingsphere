@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Expected database discovery type.
+ */
 @Getter
 @Setter
-public final class DataTypeSegment implements ExpressionSegment {
+public final class ExpectedDatabaseDiscoveryType extends AbstractExpectedIdentifierSQLSegment {
     
-    private int startIndex;
+    @XmlAttribute(name = "discovery-type-name")
+    private String discoveryTypeName;
     
-    private int stopIndex;
-    
-    private String dataTypeName;
-    
-    private DataTypeLengthSegment dataLength;
+    @XmlElement(name = "algorithm")
+    private ExpectedAlgorithm algorithmSegment;
 }

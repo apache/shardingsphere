@@ -3192,7 +3192,14 @@
             <column-projection name="user_id" start-index="7" stop-index="13"/>
             <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38">
                 <expr>
-                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" />
+                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="37"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -3205,7 +3212,14 @@
         <projections start-index="7" stop-index="40">
             <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" />
+                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="31"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
             <column-projection name="user_id" start-index="34" stop-index="40"/>
