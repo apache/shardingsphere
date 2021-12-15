@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected database discovery construction type.
+ * Expected database discovery type.
  */
 @Getter
 @Setter
