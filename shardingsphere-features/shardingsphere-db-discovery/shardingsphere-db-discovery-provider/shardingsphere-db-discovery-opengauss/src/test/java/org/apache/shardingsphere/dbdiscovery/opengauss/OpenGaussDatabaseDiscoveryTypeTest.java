@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.opengauss;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -46,35 +45,27 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
     private final OpenGaussDatabaseDiscoveryType ogHaType = new OpenGaussDatabaseDiscoveryType();
     
     @Test
-    public void assertCheckHAConfig() {
+    public void assertCheckHAConfig() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
-        try {
-            when(dataSource.getConnection()).thenReturn(connection);
-            when(connection.createStatement()).thenReturn(statement);
-            when(statement.executeQuery(DB_ROLE)).thenReturn(resultSet);
-            when(statement.executeQuery(STANDBYS)).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
-            when(resultSet.getString("local_role")).thenReturn("Primary");
-            when(resultSet.getString("db_state")).thenReturn("Normal");
-            when(resultSet.getString("db_state")).thenReturn("Sync");
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(DB_ROLE)).thenReturn(resultSet);
+        when(statement.executeQuery(STANDBYS)).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
+        when(resultSet.getString("local_role")).thenReturn("Primary");
+        when(resultSet.getString("db_state")).thenReturn("Normal");
+        when(resultSet.getString("db_state")).thenReturn("Sync");
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(dataSourceMap.get(null)).thenReturn(dataSource);
-        try {
-            ogHaType.getProps().setProperty("groupName", "group_name");
-            ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        ogHaType.getProps().setProperty("groupName", "group_name");
+        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
     @Test
-    public void assertUpdatePrimaryDataSource() {
+    public void assertUpdatePrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -87,19 +78,15 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
             resultSets.add(mock(ResultSet.class));
             databaseMetaData.add(mock(DatabaseMetaData.class));
         }
-        try {
-            for (int i = 0; i < 3; i++) {
-                when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
-                when(connections.get(i).createStatement()).thenReturn(statements.get(i));
-                when(statements.get(i).executeQuery(DB_ROLE)).thenReturn(resultSets.get(i));
-                when(resultSets.get(i).next()).thenReturn(true, false);
-                when(resultSets.get(i).getString("local_role")).thenReturn("Primary");
-                when(resultSets.get(i).getString("db_state")).thenReturn("Normal");
-                when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
-                when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:postgres://127.0.0.1:" + (3306 + i) + "/ds_0");
-            }
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+        for (int i = 0; i < 3; i++) {
+            when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
+            when(connections.get(i).createStatement()).thenReturn(statements.get(i));
+            when(statements.get(i).executeQuery(DB_ROLE)).thenReturn(resultSets.get(i));
+            when(resultSets.get(i).next()).thenReturn(true, false);
+            when(resultSets.get(i).getString("local_role")).thenReturn("Primary");
+            when(resultSets.get(i).getString("db_state")).thenReturn("Normal");
+            when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
+            when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:postgres://127.0.0.1:" + (3306 + i) + "/ds_0");
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         for (int i = 0; i < 3; i++) {

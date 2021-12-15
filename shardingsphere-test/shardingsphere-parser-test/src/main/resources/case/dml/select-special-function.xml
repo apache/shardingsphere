@@ -46,7 +46,14 @@
         <projections start-index="7" stop-index="27">
             <expression-projection text="CAST('1' AS UNSIGNED)" start-index="7" stop-index="27">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="27" text="CAST('1' AS UNSIGNED)" />
+                    <function function-name="CAST" start-index="7" stop-index="27" text="CAST('1' AS UNSIGNED)">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="14"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="19" stop-index="26"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingKeyGenerator;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class AlterShardingKeyGeneratorStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "keyGenerator")
-    private final List<ExpectedShardingAlgorithm> shardingAlgorithms = new LinkedList<>();
+    @XmlElement(name = "shardingKeyGenerator")
+    private final List<ExpectedShardingKeyGenerator> shardingKeyGenerators = new LinkedList<>();
 }

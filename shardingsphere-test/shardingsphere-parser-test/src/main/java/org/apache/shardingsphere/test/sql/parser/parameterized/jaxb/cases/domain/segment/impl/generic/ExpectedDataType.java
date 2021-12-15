@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.api.config.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.generic;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedBaseSimpleExpression;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Database discovery heartbeat config.
+ * Expected data type.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryHeartBeatConfiguration {
+@Setter
+public final class ExpectedDataType extends ExpectedBaseSimpleExpression {
     
-    private final Properties props;
+    @XmlAttribute
+    private String value;
 }
