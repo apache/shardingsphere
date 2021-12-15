@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
  * Alter database discovery heartbeat statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterDatabaseDiscoveryTypeStatementAssert {
+public final class AlterDatabaseDiscoveryHeartbeatStatementAssert {
     
     /**
      * Assert alter database discovery heartbeat statement is correct with expected parser result.
