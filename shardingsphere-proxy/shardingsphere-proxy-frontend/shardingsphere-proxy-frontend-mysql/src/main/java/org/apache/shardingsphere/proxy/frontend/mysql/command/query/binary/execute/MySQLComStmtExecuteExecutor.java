@@ -40,6 +40,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -55,11 +56,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * COM_STMT_EXECUTE command executor for MySQL.
@@ -141,8 +143,11 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
-        return new BinaryRow(queryResponseRow.getCells().stream().map(
-            each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
+        List<BinaryCell> result = new ArrayList<>(queryResponseRow.getCells().size());
+        for (QueryResponseCell each : queryResponseRow.getCells()) {
+            result.add(new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData()));
+        }
+        return new BinaryRow(result);
     }
     
     @Override
