@@ -64,7 +64,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
-        config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
+        config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -97,8 +97,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @return whether single tables are in same data source or not
      */
     public boolean isSingleTablesInSameDataSource(final Collection<String> singleTableNames) {
-        Set<String> dataSourceNames = singleTableNames.stream().map(each -> singleTableDataNodes.get(each.toLowerCase()))
-                .filter(Objects::nonNull).flatMap(each -> each.stream().map(DataNode::getDataSourceName)).collect(Collectors.toSet());
+        Set<String> dataSourceNames = singleTableNames.stream().map(each -> findSingleTableDataNode(each)
+                .orElse(null)).filter(Objects::nonNull).map(DataNode::getDataSourceName).collect(Collectors.toSet());
         return dataSourceNames.size() <= 1;
     }
     
@@ -113,10 +113,10 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         if (!isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
-        Collection<DataNode> dataNodes = singleTableDataNodes.get(singleTableNames.iterator().next().toLowerCase());
-        if (null != dataNodes && !dataNodes.isEmpty()) {
+        Optional<DataNode> dataNode = findSingleTableDataNode(singleTableNames.iterator().next());
+        if (dataNode.isPresent()) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
-                if (!each.getDataSourceMapper().getLogicName().equals(dataNodes.iterator().next().getDataSourceName())) {
+                if (!each.getDataSourceMapper().getLogicName().equals(dataNode.get().getDataSourceName())) {
                     return false;
                 }
             }
@@ -134,14 +134,14 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     /**
-     * Get sharding logic table names.
+     * Get single table names.
      *
-     * @param logicTableNames logic table names
-     * @return sharding logic table names
+     * @param tableNames table names
+     * @return single table names
      */
-    public Collection<String> getSingleTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> getSingleTableNames(final Collection<String> tableNames) {
         Collection<String> result = new LinkedList<>();
-        for (String each : logicTableNames) {
+        for (String each : tableNames) {
             if (singleTableDataNodes.containsKey(each.toLowerCase())) {
                 result.add(each);
             }
@@ -166,6 +166,16 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
         return rules.stream().filter(each -> each instanceof DataNodeContainedRule)
                 .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
+    }
+    
+    /**
+     * Find single table data node.
+     * 
+     * @param tableName table name
+     * @return data node
+     */
+    public Optional<DataNode> findSingleTableDataNode(final String tableName) {
+        return Optional.ofNullable(singleTableDataNodes.get(tableName.toLowerCase())).map(optional -> optional.iterator().next());
     }
     
     @Override
