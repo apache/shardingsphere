@@ -19,14 +19,16 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 
 import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +39,7 @@ import java.util.TreeMap;
  */
 public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlBasicCall> {
     
-    private static final Map<String, SqlBinaryOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Map<String, SqlOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
         register();
@@ -57,10 +59,11 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.MINUS);
         register(SqlStdOperatorTable.MULTIPLY);
         register(SqlStdOperatorTable.DIVIDE);
+        register(SqlStdOperatorTable.LIKE);
     }
     
-    private static void register(final SqlBinaryOperator sqlBinaryOperator) {
-        REGISTRY.put(sqlBinaryOperator.getName(), sqlBinaryOperator);
+    private static void register(final SqlOperator sqlOperator) {
+        REGISTRY.put(sqlOperator.getName(), sqlOperator);
     }
     
     private static void registerAlias() {
@@ -69,7 +72,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<SqlBasicCall> convertToSQLNode(final BinaryOperationExpression segment) {
-        SqlBinaryOperator operator = convertOperator(segment.getOperator());
+        SqlOperator operator = convertOperator(segment.getOperator());
         SqlNode left = new ExpressionConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new ExpressionConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
         return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
@@ -82,10 +85,15 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
         String operator = sqlBasicCall.getOperator().getName();
         String text = sqlBasicCall.toString();
+        if (SqlKind.LIKE == sqlBasicCall.getOperator().getKind()) {
+            ListExpression listExpression = new ListExpression(getStartIndex(sqlBasicCall.getOperandList().get(1)), getStopIndex(sqlBasicCall.getOperandList().get(1)));
+            listExpression.getItems().add(right);
+            return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, listExpression, operator, text));
+        }
         return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, operator, text));
     }
     
-    private SqlBinaryOperator convertOperator(final String operator) {
+    private SqlOperator convertOperator(final String operator) {
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
     }

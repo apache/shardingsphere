@@ -18,24 +18,13 @@
 package org.apache.shardingsphere.dbdiscovery.mgr;
 
 import com.google.common.eventbus.EventBus;
-import lombok.SneakyThrows;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.zookeeper.CreateMode;
-import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -47,14 +36,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -166,63 +152,5 @@ public final class MGRDatabaseDiscoveryTypeTest {
         }
         mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
-    }
-    
-    @Test
-    @Ignore
-    public void assertStartPeriodicalUpdate() throws NoSuchFieldException, IllegalAccessException {
-        Properties props = mock(Properties.class);
-        when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
-        when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
-        Field propsFiled = MGRDatabaseDiscoveryType.class.getDeclaredField("props");
-        propsFiled.setAccessible(true);
-        propsFiled.set(mgrHaType, props);
-        final Map<String, ScheduleJobBootstrap> scheduleJobHashMap = spy(HashMap.class);
-        Field field = MGRDatabaseDiscoveryType.class.getDeclaredField("SCHEDULE_JOB_BOOTSTRAP_MAP");
-        makeAccessible(field);
-        field.set(mgrHaType, scheduleJobHashMap);
-        Map<String, DataSource> originalDataSourceMap = new HashMap<>(3, 1);
-        mgrHaType.startPeriodicalUpdate("discovery_db", originalDataSourceMap, null, "group_name");
-        verify(scheduleJobHashMap, times(2)).get("group_name");
-        assertThat(scheduleJobHashMap.get("group_name").getClass(), Matchers.equalTo(ScheduleJobBootstrap.class));
-        scheduleJobHashMap.get("group_name").shutdown();
-    }
-    
-    @Test
-    @Ignore
-    public void assertUpdateProperties() throws Exception {
-        Properties props = mock(Properties.class);
-        when(props.getProperty("zkServerLists")).thenReturn("127.0.0.1:2181");
-        when(props.getProperty("keepAliveCron")).thenReturn("0/5 * * * * ?");
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "");
-        CoordinatorRegistryCenter coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
-        coordinatorRegistryCenter.init();
-        ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name", "123".getBytes("utf-8"));
-        ((CuratorFramework) coordinatorRegistryCenter.getRawClient()).create().withMode(CreateMode.PERSISTENT).forPath("/MGR-group_name/config", "123".getBytes("utf-8"));
-        mgrHaType.updateProperties("group_name", props);
-        assertThat(coordinatorRegistryCenter.get("/MGR-group_name/config"), is("cron: 0/5 * * * * ?\n" + "disabled: false\n"
-                + "failover: false\n" + "jobName: MGR-group_name\n" + "maxTimeDiffSeconds: -1\n" + "misfire: false\n"
-                + "monitorExecution: false\n" + "overwrite: false\n" + "reconcileIntervalMinutes: 0\n" + "shardingTotalCount: 1\n" + "staticSharding: false\n"));
-    }
-    
-    @SneakyThrows
-    private void makeAccessible(final Field field) {
-        field.setAccessible(true);
-        Field modifiersField = getModifiersField();
-        modifiersField.setAccessible(true);
-        modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
-    }
-    
-    @SneakyThrows
-    private Field getModifiersField() {
-        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-        getDeclaredFields0.setAccessible(true);
-        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
-        for (Field each : fields) {
-            if ("modifiers".equals(each.getName())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
     }
 }

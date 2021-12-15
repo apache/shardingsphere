@@ -17,39 +17,38 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Test;
 
-/**
- * Authentication request sha256 for openGauss.
- */
-@RequiredArgsConstructor
-public final class OpenGaussAuthenticationSha256Packet implements PostgreSQLIdentifierPacket {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     
-    private static final int AUTH_REQ_SHA256 = 10;
+    private static final byte[] RANDOM_64_CODE = new byte[64];
     
-    private static final int PASSWORD_STORED_METHOD_SHA256 = 2;
+    private static final byte[] TOKEN = new byte[8];
     
-    private final byte[] random64Code;
+    private static final int SERVER_ITERATION = 2048;
     
-    private final byte[] token;
+    private final OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(RANDOM_64_CODE, TOKEN, SERVER_ITERATION);
     
-    private final int serverIteration;
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt4(AUTH_REQ_SHA256);
-        payload.writeInt4(PASSWORD_STORED_METHOD_SHA256);
-        payload.writeBytes(random64Code);
-        payload.writeBytes(token);
-        payload.writeInt4(serverIteration);
+    @Test
+    public void assertWrite() {
+        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
+        packet.write(payload);
+        verify(payload).writeInt4(10);
+        verify(payload).writeInt4(2);
+        verify(payload).writeBytes(RANDOM_64_CODE);
+        verify(payload).writeBytes(TOKEN);
+        verify(payload).writeInt4(SERVER_ITERATION);
     }
     
-    @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST;
+    @Test
+    public void assertIdentifierTag() {
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
 }

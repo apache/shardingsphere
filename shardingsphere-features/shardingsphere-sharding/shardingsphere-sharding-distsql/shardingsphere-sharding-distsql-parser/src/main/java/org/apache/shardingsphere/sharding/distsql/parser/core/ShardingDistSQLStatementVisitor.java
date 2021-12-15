@@ -259,7 +259,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         Collection<String> dataNodes = getDataNodes(ctx.dataNodes());
         ShardingStrategySegment tableStrategy = (ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy());
         ShardingStrategySegment databaseStrategy = (ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy());
-        KeyGenerateSegment keyGenerateSegment = (KeyGenerateSegment) visit(ctx.keyGenerateStrategy());
+        KeyGenerateSegment keyGenerateSegment = null != ctx.keyGenerateStrategy() ? (KeyGenerateSegment) visit(ctx.keyGenerateStrategy()) : null;
         return new TableRuleSegment(tableName, dataNodes, databaseStrategy, tableStrategy, keyGenerateSegment);
     }
     

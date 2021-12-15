@@ -128,6 +128,11 @@
                 </properties>
             </key-generate-strategy>
         </rule>
+        <rule name="t_order_item" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+        </rule>
     </create-sharding-table-rule>
     
     <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">

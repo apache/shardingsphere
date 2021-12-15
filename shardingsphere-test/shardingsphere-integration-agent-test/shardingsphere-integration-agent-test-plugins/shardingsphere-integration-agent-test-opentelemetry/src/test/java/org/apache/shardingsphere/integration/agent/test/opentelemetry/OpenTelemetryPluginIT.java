@@ -80,7 +80,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
             assertNotNull(tracingResult.getDuration());
             Map<String, String> localEndPoint = tracingResult.getLocalEndpoint();
             assertNotNull(localEndPoint);
-            assertThat(localEndPoint.get("serviceName"), is("shardingsphere-agent"));
+            assertThat(localEndPoint.get("serviceName"), is("shardingsphere"));
             assertNotNull(localEndPoint.get("ipv4"));
             Map<String, String> tags = tracingResult.getTags();
             switch (name) {
