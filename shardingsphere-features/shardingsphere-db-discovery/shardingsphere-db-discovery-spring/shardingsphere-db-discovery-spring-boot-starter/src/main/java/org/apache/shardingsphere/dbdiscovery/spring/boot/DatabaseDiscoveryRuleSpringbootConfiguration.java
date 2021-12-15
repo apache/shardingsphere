@@ -53,7 +53,7 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     private final YamlDatabaseDiscoveryRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Database-discovery rule configuration for spring boot.
+     * Database discovery rule configuration for spring boot.
      *
      * @param discoveryTypes database discovery types
      * @return discovery rule configuration
@@ -67,10 +67,10 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     }
     
     /**
-     * Database-discovery algorithm provided bean registry.
+     * Database discovery algorithm provided bean registry.
      *
      * @param environment environment
-     * @return database-discovery algorithm provided bean registry
+     * @return database discovery algorithm provided bean registry
      */
     @Bean
     public static DatabaseDiscoveryAlgorithmProvidedBeanRegistry databaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment environment) {
