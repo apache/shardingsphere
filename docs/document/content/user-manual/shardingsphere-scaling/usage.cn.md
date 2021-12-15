@@ -13,9 +13,9 @@ weight = 2
 
 | 源端                   | 目标端                |
 | --------------------- | -------------------- |
-| MySQL(5.1.15 ~ 5.7.x) | MySQL                |
-| PostgreSQL(9.4 ~ )    | PostgreSQL           |
-| openGauss(2.1.0)      | openGauss            |
+| MySQL(5.1.15 ~ 5.7.x) | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )    | PostgreSQL(9.4 ~ )           |
+| openGauss(2.1.0)      | openGauss(2.1.0)            |
 
 **注意**：
 
@@ -40,8 +40,16 @@ weight = 2
 还没开启`自动建表`的数据库需要手动创建分表。
 
 ### 权限要求
-
+#### MySQL
 MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replication 相关权限。
+执行以下命令，确认是否有开启binlog：
+
+```
+show variables like '%log_bin%';
+show variables like '%binlog%';
+```
+
+如以下显示，则说明binlog已开启
 
 ```
 +-----------------------------------------+---------------------------------------+
@@ -51,7 +59,14 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 | binlog_format                           | ROW                                   |
 | binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
+```
 
+执行以下命令，查看该用户是否有迁移权限
+```
+SHOW GRANTS 'user';
+```
+
+```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
 +------------------------------------------------------------------------------+
@@ -60,6 +75,7 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 +------------------------------------------------------------------------------+
 ```
 
+#### PostgreSQL
 PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
 
 ### DistSQL 接口
@@ -110,7 +126,11 @@ ADD RESOURCE ds_2 (
 
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
 
-`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式。
+`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式，以下是两种分片规则的对比：
+| 类型         | AutoTableRule（自动分片）                                    | TableRule（自定义分片）                                      |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 定义         | 5.x版本之后，引入的自动分片技术交由 ShardingSphere 自动管理分片，用户只需要指定分片数量和使用的数据源，无需再关心表的具体分布详情可参见：[#自动化分片算法](/cn/features/sharding/concept/sharding/#自动化分片算法) | 需要自定义分片配置，可设置物理数据节点，数据分片、表分片等   |
+| 推荐使用场景 | 不需要关心实际表在哪个库、哪个库有几张表等问题只需考虑：SHARDING_COLUMN：设置用作分片键的列TYPE：设置分片算法和数量GENERATED_KEY：设置分布式自增ID | 需要设置以下参数：DATANODES：物理数据节点表达式DATABASE_STRATEGY：数据库分片策略TABLE_STRATEGY：表分片策略GENERATED_KEY：设置分布式自增ID |
 
 `AutoTableRule`修改示例：
 ```sql
@@ -134,11 +154,11 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-**注意**：当前版本不支持通过修改`TableRule`触发迁移。
+**注意**：当前版本不支持通过修改`TableRule`触发迁移。对于同一个逻辑表，不能混合使用这2种格式。
 
 #### 查询所有迁移任务
 
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 示例：
 ```sql
@@ -185,11 +205,25 @@ mysql> show scaling status 660152090995195904;
 | RUNNING                                           | 运行中                                                        |
 | EXECUTE_INVENTORY_TASK                            | 全量迁移中                                                     |
 | EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     |
-| ALMOST_FINISHED                                   | 基本完成                                                       |
-| FINISHED                                          | 已完成                                                         |
+| FINISHED                                          | 已完成（整个流程完成了，新规则已生效）                                                         |
 | PREPARING_FAILURE                                 | 准备阶段失败                                                    |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | 增量迁移阶段失败                                                 |
+
+如果`status`出现失败的情况，可以查看`proxy`的日志查看错误堆栈分析问题。
+
+
+#### 手动模式
+`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+```
+check scaling {jobId};
+```
+
+check和checkout是给手动模式使用的，就是clusterAutoSwitchAlgorithm没配置的情况。并且各自有使用条件。
+
+check做数据一致性校验，那需要判断全量和增量都完成的情况下执行才有可能校验通过。目前的默认实现是对两端的全量数据进行CRC32计算、然后比对结果
+
+checkout是让新规则生效，前置步骤没完成是不会执行成功的。
 
 #### 预览新的分片规则是否生效
 
@@ -215,4 +249,4 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### 其他DistSQL
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
