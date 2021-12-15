@@ -47,13 +47,13 @@ public final class ShardingSphereRuleMetaData {
      * @return found rules
      */
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
-        List<T> list = new LinkedList<>();
+        List<T> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             if (clazz.isAssignableFrom(each.getClass())) {
-                list.add(clazz.cast(each));
+                result.add(clazz.cast(each));
             }
         }
-        return list;
+        return result;
     }
     
     /**
