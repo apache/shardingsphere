@@ -58,7 +58,6 @@ public final class CreateDatabaseDiscoveryTypeStatementAssert {
                 assertThat(actualSegment.getDiscoveryTypeName(), is(each.getDiscoveryTypeName()));
                 AlgorithmAssert.assertIs(assertContext, actualSegment.getAlgorithmSegment(), each.getAlgorithmSegment());
             });
-            
         }
     }
 }
