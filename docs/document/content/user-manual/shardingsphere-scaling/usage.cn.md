@@ -220,7 +220,9 @@ check scaling {jobId};
 ```
 
 check和checkout是给手动模式使用的，就是clusterAutoSwitchAlgorithm没配置的情况。并且各自有使用条件。
+
 check做数据一致性校验，那需要判断全量和增量都完成的情况下执行才有可能校验通过。目前的默认实现是对两端的全量数据进行CRC32计算、然后比对结果
+
 checkout是让新规则生效，前置步骤没完成是不会执行成功的。
 
 #### 预览新的分片规则是否生效
