@@ -221,7 +221,9 @@ check scaling {jobId};
 ```
 
 Check and checkout are used in manual mode, which is the case when clusterAutoSwitchAlgorithm is not configured. And each has its own conditions of use.
-The check is used for data consistency verification. It is possible to pass the verification only when it is executed when the full amount and the increment are completed. The current default implementation is to perform CRC32 calculation on the full amount of data at both ends, and then compare the results
+
+The check is used for data consistency verification. It is possible to pass the verification only when it is executed when the full amount and the increment are completed. The current default implementation is to perform CRC32 calculation on the full amount of data at both ends, and then compare the results.
+
 Checkout is to make the new rules take effect, and the pre-steps will not be executed successfully if the pre-steps are not completed.
 
 #### Preview new sharding rule
