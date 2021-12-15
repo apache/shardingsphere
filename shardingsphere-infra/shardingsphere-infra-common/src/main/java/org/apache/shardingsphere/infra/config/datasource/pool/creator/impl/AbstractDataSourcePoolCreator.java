@@ -69,7 +69,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
             String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
             if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_KEYS.contains(propertyName)) {
                 Object propertyValue = each.invoke(target);
-                if (null != propertyValue) {
+                if (null != propertyValue && !isInvalidProperty(propertyName, propertyValue)) {
                     result.put(propertyName, propertyValue);
                 }
             }
