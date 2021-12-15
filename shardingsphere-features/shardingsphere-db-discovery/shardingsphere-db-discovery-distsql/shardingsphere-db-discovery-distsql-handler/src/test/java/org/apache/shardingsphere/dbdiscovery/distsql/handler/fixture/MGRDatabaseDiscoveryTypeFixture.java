@@ -55,5 +55,4 @@ public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryT
     public String getPrimaryDataSource() {
         return null;
     }
-    
 }
