@@ -22,8 +22,7 @@ Or get binary package from [download page]( https://shardingsphere.apache.org/do
 
 2. Unzip the proxy distribution package, modify the configuration file `conf/config-sharding.yaml`，edit `schemaName`，`dataSources`，in `rules`, you can change `shardingAlgorithms` or`keyGenerators`，[config-sharding.yaml example]( https://github.com/apache/shardingsphere/blob/master/examples/docker/shardingsphere-proxy/sharding/conf/config-sharding.yaml )：
 
-3. Modify the configuration file `conf/server.yaml`,
-if the `Mode` is `Cluster`, please open the registry center you use before you run `proxy`.
+3. Modify the configuration file `conf/server.yaml`, if the `Mode` is `Cluster`, please open the registry center you use before you run `proxy`.
 now enable `scaling` and `mode`
 ```yaml
 scaling:
