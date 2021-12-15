@@ -25,6 +25,8 @@
     <distsql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM schemaName" />
     <distsql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
     <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
+    <distsql-case id="show-db-discovery-types" value="SHOW DB_DISCOVERY TYPES FROM db_discovery_db" />
+    <distsql-case id="show-db-discovery-heartbeats" value="SHOW DB_DISCOVERY HEARTBEATS FROM db_discovery_db" />
     <distsql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />
     <distsql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
     <distsql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" />
