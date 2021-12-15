@@ -83,7 +83,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     }
     
     /**
-     * Convert database discovery heartbeat segment to database discovery type configuration.
+     * Convert database discovery heartbeat segment to database discovery heartbeat configuration.
      *
      * @param heartbeatSegments database discovery heartbeat segments
      * @return database discovery heartbeat configuration
@@ -95,7 +95,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     }
     
     /**
-     * Convert database discovery type segment to database discovery type configuration.
+     * Convert database discovery type segment to database discovery heartbeat configuration.
      *
      * @param typeSegment database discovery type segments
      * @return database discovery type configuration
