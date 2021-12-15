@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create database discovery construction type statement test case.
+ * Create database discovery type statement test case.
  */
 @Getter
 @Setter
