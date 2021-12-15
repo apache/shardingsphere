@@ -39,7 +39,7 @@ It is the default value.
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.0.0.xsd)
 
 <standalone:repository />
 
@@ -79,7 +79,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.0.0.xsd)
 
 <cluster:repository />
 
