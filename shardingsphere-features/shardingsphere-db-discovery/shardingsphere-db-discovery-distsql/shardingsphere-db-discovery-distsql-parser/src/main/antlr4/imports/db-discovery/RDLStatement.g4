@@ -42,6 +42,14 @@ createDatabaseDiscoveryHeartbeat
 alterDatabaseDiscoveryHeartbeat
     : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
     ;
+
+dropDatabaseDiscoveryType
+    : DROP DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
+    ;
+
+dropDatabaseDiscoveryHeartbeat
+    : DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    ;
     
 databaseDiscoveryRule
     : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
@@ -76,15 +84,11 @@ resourceName
     ;
 
 typeDefinition
-    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP properties RP)? RP
+    : TYPE LP NAME EQ discoveryTypeName (COMMA PROPERTIES LP properties RP)? RP
     ;
 
 discoveryHeartbeat
     : HEARTBEAT LP PROPERTIES LP properties RP RP
-    ;
-
-typeName
-    : IDENTIFIER
     ;
 
 properties

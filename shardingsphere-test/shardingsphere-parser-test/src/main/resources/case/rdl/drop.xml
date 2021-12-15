@@ -52,6 +52,16 @@
         <rule>ha_group_0</rule>
         <rule>ha_group_1</rule>
     </drop-database-discovery-rule>
+
+    <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
+        <type>type_name_0</type>
+        <type>type_name_1</type>
+    </drop-database-discovery-type>
+
+    <drop-database-discovery-heartbeat sql-case-id="drop-database-discovery-heartbeat">
+        <heartbeat>heartbeat_name_0</heartbeat>
+        <heartbeat>heartbeat_name_1</heartbeat>
+    </drop-database-discovery-heartbeat>
     
     <drop-encrypt-rule sql-case-id="drop-encrypt-rule">
         <table>t_encrypt</table>
