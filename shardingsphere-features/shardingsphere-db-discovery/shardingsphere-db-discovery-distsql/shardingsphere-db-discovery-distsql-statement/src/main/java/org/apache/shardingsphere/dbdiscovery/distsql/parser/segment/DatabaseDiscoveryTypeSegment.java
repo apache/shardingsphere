@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    ) SEMI?
-    ;
+/**
+ * Database discovery type.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseDiscoveryTypeSegment implements ASTNode {
+    
+    private final String discoveryTypeName;
+    
+    private final AlgorithmSegment algorithmSegment;
+}
