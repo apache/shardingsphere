@@ -85,6 +85,10 @@
     <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL"/>
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_cast_as_signed_int" value="SELECT user_id,CAST(order_id AS SIGNED INT) FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_cast_as_unsigned_int" value="SELECT CAST(order_id AS UNSIGNED INT),user_id FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_cast_as_signed_integer" value="SELECT user_id,CAST(order_id AS SIGNED INTEGER) FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_cast_as_unsigned_integer" value="SELECT CAST(order_id AS UNSIGNED INTEGER),user_id FROM t_order" db-types="MySQL"/>
     <sql-case id="select_with_simple_table" value="SELECT * FROM employees WHERE department_id = 30 ORDER BY last_name" db-types="MySQL, Oracle" />
     <sql-case id="select_with_binding_tables_with_subquery_without_join" value="SELECT a.department_id &quot;Department&quot;, a.num_emp/b.total_count &quot;%_Employees&quot;, a.sal_sum/b.total_sal &quot;%_Salary&quot; 
     FROM (SELECT department_id, COUNT(*) num_emp, SUM(salary) sal_sum FROM employees GROUP BY department_id) a, (SELECT COUNT(*) total_count, SUM(salary) total_sal FROM employees) b ORDER BY a.department_id" db-types="Oracle" />
