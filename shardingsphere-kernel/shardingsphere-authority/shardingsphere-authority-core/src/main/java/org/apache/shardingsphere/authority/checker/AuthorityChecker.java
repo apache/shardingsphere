@@ -97,7 +97,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         // TODO add more Privilege and SQL statement mapping
         return null;
     }
-    
+
     private PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return PrivilegeType.SELECT;
@@ -113,7 +113,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         }
         return null;
     }
-    
+
     private PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof AlterDatabaseStatement) {
             return PrivilegeType.ALTER_ANY_DATABASE;
