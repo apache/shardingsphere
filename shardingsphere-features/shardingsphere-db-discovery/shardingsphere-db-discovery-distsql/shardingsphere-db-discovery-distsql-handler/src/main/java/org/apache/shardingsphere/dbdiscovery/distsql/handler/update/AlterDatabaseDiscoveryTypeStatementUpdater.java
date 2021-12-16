@@ -74,11 +74,11 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     }
     
     private void checkDuplicateDiscoveryType(final String schemaName, final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
-        Collection<String> duplicateTypeNames = getToBeCreatedDuplicateTypeNames(sqlStatement);
+        Collection<String> duplicateTypeNames = getToBeAlteredDuplicateTypeNames(sqlStatement);
         DistSQLException.predictionThrow(duplicateTypeNames.isEmpty(), new DuplicateRuleException(RULE_TYPE, schemaName, duplicateTypeNames));
     }
     
-    private Collection<String> getToBeCreatedDuplicateTypeNames(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
+    private Collection<String> getToBeAlteredDuplicateTypeNames(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
         return sqlStatement.getTypes().stream().collect(Collectors.toMap(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName, e -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
@@ -95,9 +95,9 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
+            currentRuleConfig.getDiscoveryTypes().putAll(toBeAlteredRuleConfig.getDiscoveryTypes());
         }
     }
     

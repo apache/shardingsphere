@@ -40,11 +40,11 @@ import static org.junit.Assert.assertThat;
 public final class AlterDatabaseDiscoveryTypeStatementAssert {
     
     /**
-     * Alter create database discovery type statement is correct with expected parser result.
+     * Alter database discovery type statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create database discovery type statement
-     * @param expected expected create database discovery type statement test case
+     * @param actual actual alter database discovery type statement
+     * @param expected expected alter database discovery type statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDatabaseDiscoveryTypeStatement actual, final AlterDatabaseDiscoveryTypeStatementTestCase expected) {
         if (null == expected) {
