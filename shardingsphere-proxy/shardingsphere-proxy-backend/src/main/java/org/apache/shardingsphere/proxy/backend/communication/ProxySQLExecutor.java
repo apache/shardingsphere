@@ -128,7 +128,7 @@ public final class ProxySQLExecutor {
         RawExecutionPrepareEngine prepareEngine = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, rules);
         ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext;
         try {
-            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), executionContext.getSqlStatementContext());
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
@@ -144,7 +144,7 @@ public final class ProxySQLExecutor {
                 type, maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules);
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
         try {
-            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), executionContext.getSqlStatementContext());
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }

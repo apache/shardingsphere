@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -27,9 +29,12 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,24 +63,53 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     }
     
     @Override
-    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits, 
+                                                  final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
             List<SQLUnit> sqlUnits = entry.getValue();
-            List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
-            ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+            List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits, sqlStatementContext);
+            int sqlUnitSize = sqlStatementContext instanceof SelectStatementContext ? sqlUnitGroups.size() : sqlUnits.size();
+            ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnitSize ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
             result.addAll(group(dataSourceName, sqlUnitGroups, connectionMode));
         }
         return decorate(routeContext, result);
     }
     
-    private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits) {
+    private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits, final SQLStatementContext<?> sqlStatementContext) {
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
-        return Lists.partition(sqlUnits, desiredPartitionSize);
+        List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return sqlUnitGroups;
+        }
+        List<List<SQLUnit>> result = new LinkedList<>();
+        for (List<SQLUnit> each : sqlUnitGroups) {
+            result.add(groupSQLUnit(each));
+        }
+        return result;
     }
     
     protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
+    
+    private List<SQLUnit> groupSQLUnit(final List<SQLUnit> sqlUnits) {
+        if (1 == sqlUnits.size()) {
+            return sqlUnits;
+        }
+        List<Object> parameters = new LinkedList<>();
+        StringBuilder builder = new StringBuilder();
+        int index = 0;
+        for (SQLUnit each : sqlUnits) {
+            parameters.addAll(each.getParameters());
+            String sql = SQLUtil.trimSemicolon(each.getSql());
+            if (index++ < sqlUnits.size() - 1) {
+                builder.append(QuoteCharacter.PARENTHESES.getStartDelimiter()).append(sql).append(QuoteCharacter.PARENTHESES.getEndDelimiter()).append(" UNION ALL ");
+            } else {
+                builder.append(sql);
+            }
+        }
+        return Collections.singletonList(new SQLUnit(builder.toString(), parameters));
+    }
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);

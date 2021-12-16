@@ -309,12 +309,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules())
-                .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), executionContext.getSqlStatementContext());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
-        return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+        return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), executionContext.getSqlStatementContext());
     }
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
@@ -475,7 +475,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             ExecutionUnit executionUnit = each.getExecutionUnit();
             executionUnits.add(executionUnit);
         }
-        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits));
+        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits, executionContext.getSqlStatementContext()));
         setBatchParametersForStatements();
     }
     

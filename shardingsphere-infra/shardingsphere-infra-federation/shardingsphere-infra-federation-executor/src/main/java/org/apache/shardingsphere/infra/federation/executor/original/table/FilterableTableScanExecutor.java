@@ -141,7 +141,7 @@ public final class FilterableTableScanExecutor {
         ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
-            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), context.getSqlStatementContext());
             setParameters(executionGroupContext.getInputGroups(), logicSQL.getParameters());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
