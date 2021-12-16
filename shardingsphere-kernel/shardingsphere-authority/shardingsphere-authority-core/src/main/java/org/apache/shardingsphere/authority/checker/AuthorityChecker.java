@@ -68,7 +68,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
-        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee);
+        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee).filter(optional -> optional.hasPrivileges(currentSchema));
         // TODO add error msg
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
     }
@@ -97,7 +97,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         // TODO add more Privilege and SQL statement mapping
         return null;
     }
-
+    
     private PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return PrivilegeType.SELECT;
@@ -113,7 +113,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         }
         return null;
     }
-
+    
     private PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof AlterDatabaseStatement) {
             return PrivilegeType.ALTER_ANY_DATABASE;
