@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import java.util.Properties;
 
 /**
- * Database discovery heartbeat.
+ * Database discovery heartbeat segment.
  */
 @RequiredArgsConstructor
 @Getter

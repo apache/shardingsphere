@@ -58,7 +58,6 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementAssert {
                 assertThat(actualSegment.getHeartbeatName(), is(each.getName()));
                 PropertiesAssert.assertIs(assertContext, actualSegment.getProperties(), each.getProperties());
             });
-            
         }
     }
 }
