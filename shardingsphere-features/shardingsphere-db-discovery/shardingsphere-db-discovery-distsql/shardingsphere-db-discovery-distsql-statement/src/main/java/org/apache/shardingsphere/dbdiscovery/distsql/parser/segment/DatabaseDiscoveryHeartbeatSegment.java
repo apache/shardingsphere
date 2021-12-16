@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryTypes
-    | showDatabaseDiscoveryHeartbeats
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    | createDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryHeartbeat
-    ) SEMI?
-    ;
+import java.util.Properties;
+
+/**
+ * Database discovery heartbeat segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseDiscoveryHeartbeatSegment implements ASTNode {
+    
+    private final String heartbeatName;
+    
+    private final Properties properties;
+}

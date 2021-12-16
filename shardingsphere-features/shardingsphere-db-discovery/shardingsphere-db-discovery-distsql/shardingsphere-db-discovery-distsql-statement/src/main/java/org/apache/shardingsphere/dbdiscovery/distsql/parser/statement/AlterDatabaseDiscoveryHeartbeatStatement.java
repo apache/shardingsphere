@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryTypes
-    | showDatabaseDiscoveryHeartbeats
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    | createDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryHeartbeat
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Alter database discovery heartbeat statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterDatabaseDiscoveryHeartbeatStatement extends AlterRuleStatement {
+    
+    private final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeats;
+}
