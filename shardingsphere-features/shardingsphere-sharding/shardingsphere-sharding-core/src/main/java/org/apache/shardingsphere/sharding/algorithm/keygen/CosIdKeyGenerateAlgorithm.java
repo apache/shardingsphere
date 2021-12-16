@@ -30,7 +30,7 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     public static final String TYPE = CosId.COSID.toUpperCase();
 
-    private volatile Properties props = new Properties();
+    private Properties props = new Properties();
 
     private volatile LazyIdGenerator cosIdProvider;
 
