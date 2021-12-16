@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Transaction context builder.
+ * Transaction contexts builder.
  */
 @RequiredArgsConstructor
 public final class TransactionContextsBuilder {
