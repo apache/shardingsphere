@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,8 +44,15 @@ public final class SchemaMetaDataPersistService {
      * @param schema schema to be persisted
      */
     public void persist(final String schemaName, final ShardingSphereSchema schema) {
-        String content = null == schema ? "" : YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema));
-        repository.persist(SchemaMetaDataNode.getMetaDataSchemaPath(schemaName), content);
+        if (null != schema) {
+            Optional<ShardingSphereSchema> originalSchema = load(schemaName);
+            if (originalSchema.isPresent()) {
+                originalSchema.get().getTables().entrySet().stream().filter(entry -> !schema.getTables().keySet().contains(entry.getKey()))
+                        .forEach(entry -> repository.delete(SchemaMetaDataNode.getTableMetaDataPath(schemaName, entry.getKey())));
+            }
+            schema.getTables().entrySet().forEach(entry -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, entry.getKey()), 
+                    YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(entry.getValue()))));
+        }
     }
     
     /**
@@ -64,8 +71,17 @@ public final class SchemaMetaDataPersistService {
      * @return Loaded schema
      */
     public Optional<ShardingSphereSchema> load(final String schemaName) {
-        String path = repository.get(SchemaMetaDataNode.getMetaDataSchemaPath(schemaName));
-        return Strings.isNullOrEmpty(path) ? Optional.empty() : Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
+        Collection<String> tables = repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataTablesPath(schemaName));
+        if (tables.isEmpty()) {
+            return Optional.empty();
+        }
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        tables.forEach(each -> {
+            String content = repository.get(SchemaMetaDataNode.getTableMetaDataPath(schemaName, each));
+            TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
+            schema.getTables().put(each, tableMetaData);
+        });
+        return Optional.of(schema);
     }
     
     /**

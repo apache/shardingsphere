@@ -46,8 +46,8 @@ public class SchemaMetaDataNodeTest {
     }
     
     @Test
-    public void assertGetMetaDataSchemaPath() {
-        assertThat(SchemaMetaDataNode.getMetaDataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
+    public void assertGetMetaDataTablesPath() {
+        assertThat(SchemaMetaDataNode.getMetaDataTablesPath("sharding_db"), is("/metadata/sharding_db/tables"));
     }
 
     @Test

@@ -142,7 +142,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isSchemaChangedEvent(final String schemaName, final String key) {
-        return SchemaMetaDataNode.getMetaDataSchemaPath(schemaName).equals(key);
+        // TODO refresh meta data
+        return false;
     }
     
     private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
