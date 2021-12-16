@@ -56,6 +56,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Text protocol backend handler factory.
@@ -72,18 +73,22 @@ public final class TextProtocolBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sql SQL to be executed
+     * @param sqlStatementSupplier optional SQL statement supplier
      * @param connectionSession connection session
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final Supplier<Optional<SQLStatement>> sqlStatementSupplier,
+                                                         final ConnectionSession connectionSession) throws SQLException {
         String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sql, false);
+        SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
+            Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+            return new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sql, false);
+        });
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
