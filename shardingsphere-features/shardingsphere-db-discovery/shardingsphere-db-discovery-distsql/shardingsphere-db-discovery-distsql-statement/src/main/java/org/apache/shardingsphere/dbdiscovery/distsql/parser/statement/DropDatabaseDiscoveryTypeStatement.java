@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Set xa statement.
+ * Drop database discovery type statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
-
-    private String op;
-
-    private String xid;
+public final class DropDatabaseDiscoveryTypeStatement extends DropRuleStatement {
+    
+    private final Collection<String> types;
 }

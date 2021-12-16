@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Set xa statement.
+ * Drop database discovery type statement test case.
  */
 @Getter
 @Setter
-@ToString
-public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
-
-    private String op;
-
-    private String xid;
+public final class DropDataBaseDiscoveryTypeStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "type")
+    private final List<String> types = new LinkedList<>();
 }
