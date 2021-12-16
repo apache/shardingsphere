@@ -51,6 +51,10 @@ dropDatabaseDiscoveryHeartbeat
     : DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
     ;
     
+alterDatabaseDiscoveryType
+    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
 databaseDiscoveryRule
     : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
     ;

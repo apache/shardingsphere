@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryType;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryTypes
-    | showDatabaseDiscoveryHeartbeats
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    | createDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryHeartbeat
-    | dropDatabaseDiscoveryType
-    | dropDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryType
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Alter database discovery type statement test case.
+ */
+@Getter
+@Setter
+public final class AlterDatabaseDiscoveryTypeStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "type")
+    private final List<ExpectedDatabaseDiscoveryType> types = new LinkedList<>();
+}

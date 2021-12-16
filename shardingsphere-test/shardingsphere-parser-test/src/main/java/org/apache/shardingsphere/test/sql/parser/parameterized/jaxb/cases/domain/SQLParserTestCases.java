@@ -155,6 +155,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
@@ -570,6 +571,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-database-discovery-heartbeat")
     private final List<AlterDatabaseDiscoveryHeartbeatStatementTestCase> alterDatabaseDiscoveryHeartbeatTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-database-discovery-type")
+    private final List<AlterDatabaseDiscoveryTypeStatementTestCase> alterDatabaseDiscoveryTypeTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
     
@@ -976,6 +980,7 @@ public final class SQLParserTestCases {
         putAll(createDatabaseDiscoveryTypeTestCases, result);
         putAll(createDatabaseDiscoveryHeartbeatTestCases, result);
         putAll(alterDatabaseDiscoveryHeartbeatTestCases, result);
+        putAll(alterDatabaseDiscoveryTypeTestCases, result);
         putAll(createEncryptRuleTestCase, result);
         putAll(createReadwriteSplittingRuleTestCase, result);
         putAll(createShardingBindingTableRulesTestCase, result);
