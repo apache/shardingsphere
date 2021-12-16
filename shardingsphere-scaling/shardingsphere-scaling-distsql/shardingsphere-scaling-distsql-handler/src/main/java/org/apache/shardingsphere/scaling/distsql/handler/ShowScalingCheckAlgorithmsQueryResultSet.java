@@ -39,7 +39,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = PipelineAPIFactory.getScalingAPI().listDataConsistencyCheckAlgorithms().stream()
+        data = PipelineAPIFactory.getPipelineJobAPI().listDataConsistencyCheckAlgorithms().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getType());

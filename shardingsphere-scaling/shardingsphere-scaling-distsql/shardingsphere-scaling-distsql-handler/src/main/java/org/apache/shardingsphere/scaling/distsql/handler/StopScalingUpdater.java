@@ -28,7 +28,7 @@ public final class StopScalingUpdater implements RALUpdater<StopScalingStatement
     
     @Override
     public void executeUpdate(final StopScalingStatement sqlStatement) {
-        PipelineAPIFactory.getScalingAPI().stop(sqlStatement.getJobId());
+        PipelineAPIFactory.getPipelineJobAPI().stop(sqlStatement.getJobId());
     }
     
     @Override

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.PipelineAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
@@ -47,7 +47,7 @@ public final class FinishedCheckJobTest {
     private static FinishedCheckJob finishedCheckJob;
     
     @Mock
-    private PipelineAPI pipelineAPI;
+    private PipelineJobAPI pipelineJobAPI;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -60,7 +60,7 @@ public final class FinishedCheckJobTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(finishedCheckJob, "pipelineAPI", pipelineAPI);
+        ReflectionUtil.setFieldValue(finishedCheckJob, "pipelineJobAPI", pipelineJobAPI);
     }
     
     @Test
@@ -68,7 +68,7 @@ public final class FinishedCheckJobTest {
         JobInfo jobInfo = new JobInfo(1L);
         jobInfo.setActive(false);
         List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
-        when(pipelineAPI.list()).thenReturn(jobInfos);
+        when(pipelineJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
     
@@ -82,8 +82,8 @@ public final class FinishedCheckJobTest {
                 + "  - ds_0.t_order_$->{0..1}\n"
                 + "ruleConfig:\n");
         List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
-        when(pipelineAPI.list()).thenReturn(jobInfos);
-        when(pipelineAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
+        when(pipelineJobAPI.list()).thenReturn(jobInfos);
+        when(pipelineJobAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         finishedCheckJob.execute(null);
     }
     

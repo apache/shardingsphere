@@ -28,7 +28,7 @@ public final class DropScalingUpdater implements RALUpdater<DropScalingStatement
     
     @Override
     public void executeUpdate(final DropScalingStatement sqlStatement) {
-        PipelineAPIFactory.getScalingAPI().remove(sqlStatement.getJobId());
+        PipelineAPIFactory.getPipelineJobAPI().remove(sqlStatement.getJobId());
     }
     
     @Override

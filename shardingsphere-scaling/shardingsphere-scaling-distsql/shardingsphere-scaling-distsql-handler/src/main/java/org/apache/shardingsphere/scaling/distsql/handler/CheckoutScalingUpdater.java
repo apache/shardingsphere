@@ -28,7 +28,7 @@ public final class CheckoutScalingUpdater implements RALUpdater<CheckoutScalingS
     
     @Override
     public void executeUpdate(final CheckoutScalingStatement sqlStatement) {
-        PipelineAPIFactory.getScalingAPI().switchClusterConfiguration(sqlStatement.getJobId());
+        PipelineAPIFactory.getPipelineJobAPI().switchClusterConfiguration(sqlStatement.getJobId());
     }
     
     @Override

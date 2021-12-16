@@ -22,11 +22,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.PipelineAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
@@ -55,7 +55,7 @@ public final class PipelineAPIFactory {
      *
      * @return scaling API
      */
-    public static PipelineAPI getScalingAPI() {
+    public static PipelineJobAPI getPipelineJobAPI() {
         return PipelineAPIHolder.getInstance();
     }
     
@@ -114,14 +114,14 @@ public final class PipelineAPIFactory {
     // TODO extract PipelineAPIHolder
     private static final class PipelineAPIHolder {
         
-        private static volatile PipelineAPI instance;
+        private static volatile PipelineJobAPI instance;
         
-        public static PipelineAPI getInstance() {
+        public static PipelineJobAPI getInstance() {
             if (null == instance) {
                 synchronized (PipelineAPIFactory.class) {
                     if (null == instance) {
                         checkServerConfig();
-                        instance = new PipelineAPIImpl();
+                        instance = new PipelineJobAPIImpl();
                     }
                 }
             }

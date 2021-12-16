@@ -43,9 +43,9 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
         CheckScalingStatement checkScalingStatement = (CheckScalingStatement) sqlStatement;
         Map<String, DataConsistencyCheckResult> checkResultMap;
         if (null == checkScalingStatement.getTypeStrategy()) {
-            checkResultMap = PipelineAPIFactory.getScalingAPI().dataConsistencyCheck(checkScalingStatement.getJobId());
+            checkResultMap = PipelineAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId());
         } else {
-            checkResultMap = PipelineAPIFactory.getScalingAPI().dataConsistencyCheck(checkScalingStatement.getJobId(), checkScalingStatement.getTypeStrategy().getName());
+            checkResultMap = PipelineAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId(), checkScalingStatement.getTypeStrategy().getName());
         }
         data = checkResultMap.entrySet().stream()
                 .map(each -> {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -34,11 +34,11 @@ import java.util.Map;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final PipelineAPI pipelineAPI = PipelineAPIFactory.getScalingAPI();
+    private final PipelineJobAPI pipelineJobAPI = PipelineAPIFactory.getPipelineJobAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<JobInfo> jobInfos = pipelineAPI.list();
+        List<JobInfo> jobInfos = pipelineJobAPI.list();
         for (JobInfo jobInfo : jobInfos) {
             if (!jobInfo.isActive()) {
                 continue;
@@ -47,21 +47,21 @@ public final class FinishedCheckJob implements SimpleJob {
             try {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
-                if (!RuleAlteredJobProgressDetector.almostFinished(pipelineAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
+                if (!RuleAlteredJobProgressDetector.almostFinished(pipelineJobAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
                 // TODO lock proxy
-                if (!pipelineAPI.isDataConsistencyCheckNeeded()) {
+                if (!pipelineJobAPI.isDataConsistencyCheckNeeded()) {
                     log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
-                    pipelineAPI.switchClusterConfiguration(jobId);
+                    pipelineJobAPI.switchClusterConfiguration(jobId);
                     continue;
                 }
                 if (!dataConsistencyCheck(jobId)) {
                     log.error("data consistency check failed, job {}", jobId);
                     continue;
                 }
-                pipelineAPI.switchClusterConfiguration(jobId);
+                pipelineJobAPI.switchClusterConfiguration(jobId);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -71,7 +71,7 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean dataConsistencyCheck(final long jobId) {
-        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineAPI.dataConsistencyCheck(jobId);
-        return pipelineAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
+        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId);
+        return pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
 }

@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Pipeline API.
+ * Pipeline job API.
  */
-public interface PipelineAPI {
+public interface PipelineJobAPI {
     
     /**
      * List all jobs.

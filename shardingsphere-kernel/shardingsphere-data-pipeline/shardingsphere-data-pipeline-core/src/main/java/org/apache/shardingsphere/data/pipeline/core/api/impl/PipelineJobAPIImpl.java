@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -68,7 +68,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-public final class PipelineAPIImpl implements PipelineAPI {
+public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     

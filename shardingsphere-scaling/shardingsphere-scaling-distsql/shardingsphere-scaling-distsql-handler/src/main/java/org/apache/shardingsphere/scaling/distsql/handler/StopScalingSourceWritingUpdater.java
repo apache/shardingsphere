@@ -28,7 +28,7 @@ public final class StopScalingSourceWritingUpdater implements RALUpdater<StopSca
     
     @Override
     public void executeUpdate(final StopScalingSourceWritingStatement sqlStatement) {
-        PipelineAPIFactory.getScalingAPI().stopClusterWriteDB(sqlStatement.getJobId());
+        PipelineAPIFactory.getPipelineJobAPI().stopClusterWriteDB(sqlStatement.getJobId());
     }
     
     @Override
