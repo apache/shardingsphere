@@ -25,8 +25,9 @@ Attributes:
 | ----------- | -------------------------------------------- | ---------------------------------- |
 | name        | String                                       | Table name                         |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
+| queryWithCipherColumn (?) | boolean                                             | The current table whether query with cipher column for data encrypt.  | true            |
 
-### Encrypt Column Rule Configuration
+### Encrypt Column Rule Configuratiow
 
 Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
 
