@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -39,9 +39,9 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.migration.common.api.ScalingWorker;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -121,10 +121,10 @@ public final class BootstrapInitializer {
         // TODO decouple "Cluster" to pluggable
         if (null != modeConfig && "Cluster".equals(modeConfig.getType())) {
             scalingConfig.get().setModeConfiguration(modeConfig);
-            ScalingContext.getInstance().init(scalingConfig.get());
-            ScalingWorker.init(); 
+            RuleAlteredContext.getInstance().init(scalingConfig.get());
+            RuleAlteredJobWorker.init();
         } else {
-            ScalingContext.getInstance().init(scalingConfig.get());
+            RuleAlteredContext.getInstance().init(scalingConfig.get());
         }
     }
     

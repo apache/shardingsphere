@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

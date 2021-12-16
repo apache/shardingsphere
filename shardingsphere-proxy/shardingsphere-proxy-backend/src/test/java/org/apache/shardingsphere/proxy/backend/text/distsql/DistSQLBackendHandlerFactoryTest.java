@@ -44,8 +44,8 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandle
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
@@ -286,7 +286,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         ServerConfiguration serverConfiguration = mock(ServerConfiguration.class);
         when(serverConfiguration.getModeConfiguration()).thenReturn(modeConfiguration);
         when(serverConfiguration.getWorkerThread()).thenReturn(1);
-        ScalingContext.getInstance().init(serverConfiguration);
+        RuleAlteredContext.getInstance().init(serverConfiguration);
     }
     
     @After

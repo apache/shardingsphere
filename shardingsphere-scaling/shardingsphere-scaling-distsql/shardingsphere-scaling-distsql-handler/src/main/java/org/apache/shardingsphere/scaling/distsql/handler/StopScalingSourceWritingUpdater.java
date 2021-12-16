@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 
 /**
@@ -28,7 +28,7 @@ public final class StopScalingSourceWritingUpdater implements RALUpdater<StopSca
     
     @Override
     public void executeUpdate(final StopScalingSourceWritingStatement sqlStatement) {
-        ScalingAPIFactory.getScalingAPI().stopClusterWriteDB(sqlStatement.getJobId());
+        PipelineAPIFactory.getScalingAPI().stopClusterWriteDB(sqlStatement.getJobId());
     }
     
     @Override

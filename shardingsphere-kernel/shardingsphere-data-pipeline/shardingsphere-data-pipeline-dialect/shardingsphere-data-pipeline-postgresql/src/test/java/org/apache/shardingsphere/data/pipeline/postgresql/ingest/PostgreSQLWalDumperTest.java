@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.config.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;

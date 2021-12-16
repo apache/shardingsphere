@@ -44,9 +44,10 @@
             <artifactId>shardingsphere-infra-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO remove cluster mode dependency after 3 modes have equivalent features -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
+            <artifactId>shardingsphere-cluster-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     
@@ -59,6 +60,10 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
         </dependency>
     </dependencies>
 </project>

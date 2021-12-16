@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.junit.Test;
 
 import java.util.Arrays;

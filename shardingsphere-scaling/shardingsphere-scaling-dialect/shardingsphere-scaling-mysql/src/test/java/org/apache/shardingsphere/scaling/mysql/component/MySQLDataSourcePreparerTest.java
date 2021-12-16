@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeLine;
-import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourcePreparer;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public final class MySQLDataSourcePreparerTest {
         verify(targetDataSource).getConnection();
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertThrowPrepareFailedException() throws SQLException {
         when(sourceDataSource.getConnection()).thenThrow(SQLException.class);
         MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();

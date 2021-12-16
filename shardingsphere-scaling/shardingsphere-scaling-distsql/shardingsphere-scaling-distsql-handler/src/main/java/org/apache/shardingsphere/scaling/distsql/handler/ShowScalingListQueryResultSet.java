@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -38,7 +38,7 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = ScalingAPIFactory.getScalingAPI().list().stream()
+        data = PipelineAPIFactory.getScalingAPI().list().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getJobId());
