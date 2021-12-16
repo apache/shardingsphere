@@ -80,8 +80,8 @@ public final class PostgreSQLPortal {
         this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement) {
             databaseCommunicationEngine = null;
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), preparedStatement.getSql(),
-                    () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"),
+                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
             return;
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
