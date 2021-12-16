@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Database discovery type segment.
+ * Create database discovery heartbeat statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryTypeSegment implements ASTNode {
+public final class CreateDatabaseDiscoveryHeartbeatStatement extends CreateRuleStatement {
     
-    private final String discoveryTypeName;
-    
-    private final AlgorithmSegment algorithmSegment;
+    private final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeats;
 }

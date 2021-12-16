@@ -19,17 +19,18 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Properties;
+
 /**
- * Database discovery type segment.
+ * Database discovery heartbeat segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryTypeSegment implements ASTNode {
+public final class DatabaseDiscoveryHeartbeatSegment implements ASTNode {
     
-    private final String discoveryTypeName;
+    private final String heartbeatName;
     
-    private final AlgorithmSegment algorithmSegment;
+    private final Properties properties;
 }

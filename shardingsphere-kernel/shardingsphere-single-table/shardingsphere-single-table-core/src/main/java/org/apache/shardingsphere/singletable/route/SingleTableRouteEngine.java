@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -121,13 +122,12 @@ public final class SingleTableRouteEngine {
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<String> logicTables) {
-        Map<String, Collection<DataNode>> singleTableDataNodes = singleTableRule.getSingleTableDataNodes();
         for (String each : logicTables) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.get(each);
-            if (null == dataNodes || dataNodes.isEmpty()) {
+            Optional<DataNode> dataNode = singleTableRule.findSingleTableDataNode(each);
+            if (!dataNode.isPresent()) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
-            String dataSource = dataNodes.iterator().next().getDataSourceName();
+            String dataSource = dataNode.get().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(each, each)));
         }
     }

@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryHeartbeat;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Database discovery type segment.
+ * Create database discovery heartbeat statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryTypeSegment implements ASTNode {
+@Setter
+public final class CreateDatabaseDiscoveryHeartbeatStatementTestCase extends SQLParserTestCase {
     
-    private final String discoveryTypeName;
-    
-    private final AlgorithmSegment algorithmSegment;
+    @XmlElement(name = "heartbeat")
+    private final List<ExpectedDatabaseDiscoveryHeartbeat> heartbeats = new LinkedList<>();
 }

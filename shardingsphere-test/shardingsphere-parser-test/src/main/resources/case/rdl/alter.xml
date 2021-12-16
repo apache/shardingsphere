@@ -165,6 +165,14 @@
         </rule>
     </alter-database-discovery-construction-rule>
 
+    <alter-database-discovery-heartbeat sql-case-id="alter-database-discovery-heartbeat">
+        <rule heartbeat-name="mgr_heartbeat" >
+            <properties>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </properties>
+        </rule>
+    </alter-database-discovery-heartbeat>
+    
     <alter-database-discovery-type sql-case-id="alter-database-discovery-type">
         <type discovery-type-name="primary_replica_ds_mgr">
             <algorithm algorithm-name="mgr">

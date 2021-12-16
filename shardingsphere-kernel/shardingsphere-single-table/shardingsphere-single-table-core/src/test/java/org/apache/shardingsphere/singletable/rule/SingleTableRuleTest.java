@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -109,5 +110,27 @@ public final class SingleTableRuleTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("student"));
+    }
+    
+    @Test
+    public void assertFindSingleTableDataNode() {
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
+                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode("employee");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getTableName(), is("employee"));
+    }
+    
+    @Test
+    public void assertFindSingleTableDataNodeWithUpperCase() {
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
+                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode("EMPLOYEE");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getTableName(), is("employee"));
     }
 }

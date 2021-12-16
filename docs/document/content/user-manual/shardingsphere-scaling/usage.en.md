@@ -13,9 +13,9 @@ The migration scene we support:
 
 | Source                     | Target               |
 | -------------------------- | -------------------- |
-| MySQL(5.1.15 ~ 5.7.x)      | MySQL                |
-| PostgreSQL(9.4 ~ )         | PostgreSQL           |
-| openGauss(2.1.0)           | openGauss            |
+| MySQL(5.1.15 ~ 5.7.x)      | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )         | PostgreSQL(9.4 ~ )           |
+| openGauss(2.1.0)           | openGauss(2.1.0)             |
 
 **Attention**: 
 
@@ -43,6 +43,15 @@ For RDBMS which `Create table automatically` feature is not supported, we need t
 
 We need to enable `binlog` for MySQL. Privileges of users scaling used should include Replication privileges.
 
+Execute the following command to confirm whether binlog is turned on:
+
+```sql
+show variables like '%log_bin%';
+show variables like '%binlog%';
+```
+
+As shown below, it means that binlog has been turned on：
+
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -51,7 +60,15 @@ We need to enable `binlog` for MySQL. Privileges of users scaling used should in
 | binlog_format                           | ROW                                   |
 | binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
+```
 
+Execute the following command to check whether the user has migration permission
+
+```sql
+SHOW GRANTS 'user';
+```
+
+```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
 +------------------------------------------------------------------------------+
@@ -110,7 +127,11 @@ ADD RESOURCE ds_2 (
 
 Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
 
-`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types.
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types. The following is a comparison of the two sharding rules：
+| Tyoe         | AutoTableRule                                | TableRule                                      |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Definition    | After the 5.x version, the automatic sharding technology introduced is handed over to ShardingSphere to automatically manage the sharding. Users only need to specify the number of shards and the data source used, and no longer need to care about the specific distribution of the table. For details, please refer to[#auto-sharding-algorithm](/en/features/sharding/concept/sharding/#auto-sharding-algorithm) | Need to customize the sharding configuration, you can set up physical data nodes, data shards, table shards, etc.  |
+| Recommended usage scenarios | No need to care about which library the actual table is in, which library has several tables, etc. Just consider: SHARDING_COLUMN: set the column used as the sharding key TYPE: set the sharding algorithm and number GENERATED_KEY: set the distributed auto-increment ID | Need to set these params: DATANODES: physical data node expression. DATABASE_STRATEGY：database sharding strategy. TABLE_STRATEGY：table sharding strategy. GENERATED_KEY：set the distributed auto-increment ID |
 
 Example of alter `AutoTableRule`:
 ```sql
@@ -134,11 +155,11 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-**Attention**: We could not emit scaling job by altering `TableRule` in current version.
+**Attention**: We could not emit scaling job by altering `TableRule` in current version. For the same logical table, these two formats can not use at the same time.
 
 #### List scaling jobs
 
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) for more details.
 
 Example:
 ```sql
@@ -186,10 +207,24 @@ Current scaling job is finished, new sharding rule should take effect, and not i
 | EXECUTE_INVENTORY_TASK                            | inventory task running                                       |
 | EXECUTE_INCREMENTAL_TASK                          | incremental task running                                     |
 | ALMOST_FINISHED                                   | almost finished                                              |
-| FINISHED                                          | finished                                                     |
+| FINISHED                                          | finished(The whole process is completed, and the new rules have taken effect)                                                     |
 | PREPARING_FAILURE                                 | preparation failed                                           |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | inventory task failed                                        |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | incremental task failed                                      |
+
+If `status` fails, you can check the log of `proxy` to view the error stack and analyze the problem.
+
+#### manual mode
+`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling)。
+```
+check scaling {jobId};
+```
+
+Check and checkout are used in manual mode, which is the case when clusterAutoSwitchAlgorithm is not configured. And each has its own conditions of use.
+
+The check is used for data consistency verification. It is possible to pass the verification only when it is executed when the full amount and the increment are completed. The current default implementation is to perform CRC32 calculation on the full amount of data at both ends, and then compare the results.
+
+Checkout is to make the new rules take effect, and the pre-steps will not be executed successfully if the pre-steps are not completed.
 
 #### Preview new sharding rule
 
@@ -215,4 +250,4 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### Other DistSQL
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) for more details.
