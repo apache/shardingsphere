@@ -46,12 +46,12 @@ public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
     private final DropDatabaseDiscoveryTypeStatementUpdater updater = new DropDatabaseDiscoveryTypeStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentType() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRules() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutToBeDroppedTypes() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     

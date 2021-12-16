@@ -39,7 +39,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementAssert {
      *
      * @param assertContext assert context
      * @param actual actual drop database discovery heartbeat statement
-     * @param expected expected drop database discovery rule statement test case
+     * @param expected expected drop database discovery heartbeat statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryHeartbeatStatement actual, final DropDataBaseDiscoveryHeartbeatStatementTestCase expected) {
         if (null == expected) {

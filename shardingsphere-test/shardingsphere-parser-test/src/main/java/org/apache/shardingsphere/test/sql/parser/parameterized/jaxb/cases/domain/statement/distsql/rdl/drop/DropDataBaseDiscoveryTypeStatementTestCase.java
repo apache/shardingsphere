@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Drop database discovery heartbeat statement test case.
+ * Drop database discovery type statement test case.
  */
 @Getter
 @Setter

@@ -39,7 +39,7 @@ public final class DropDatabaseDiscoveryTypeStatementAssert {
      *
      * @param assertContext assert context
      * @param actual actual drop database discovery type statement
-     * @param expected expected drop database discovery rule statement test case
+     * @param expected expected drop database discovery type statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryTypeStatement actual, final DropDataBaseDiscoveryTypeStatementTestCase expected) {
         if (null == expected) {

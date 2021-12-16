@@ -46,12 +46,12 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     private final DropDatabaseDiscoveryHeartbeatStatementUpdater updater = new DropDatabaseDiscoveryHeartbeatStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentHeartbeat() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRules() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutToBeDroppedHeartbeat() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     

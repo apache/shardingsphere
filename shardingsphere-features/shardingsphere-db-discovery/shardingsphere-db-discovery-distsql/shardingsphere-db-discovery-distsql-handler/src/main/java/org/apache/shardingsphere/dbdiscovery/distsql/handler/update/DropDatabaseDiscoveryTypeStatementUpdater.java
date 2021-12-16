@@ -61,12 +61,12 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String typeName) {
-        if (isDiscoveryTypeNotInUse(currentRuleConfig, typeName)) {
+        if (isNotInUse(currentRuleConfig, typeName)) {
             currentRuleConfig.getDiscoveryTypes().remove(typeName);
         }
     }
     
-    private boolean isDiscoveryTypeNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
+    private boolean isNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
         return currentRuleConfig.getDataSources().stream().noneMatch(each -> each.getDiscoveryTypeName().equals(toBeDroppedDiscoveryTypeName));
     }
     

@@ -61,12 +61,12 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String heartbeatName) {
-        if (isDiscoveryTypeNotInUse(currentRuleConfig, heartbeatName)) {
+        if (isNotInUse(currentRuleConfig, heartbeatName)) {
             currentRuleConfig.getDiscoveryHeartbeats().remove(heartbeatName);
         }
     }
     
-    private boolean isDiscoveryTypeNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
+    private boolean isNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
         return currentRuleConfig.getDataSources().stream().noneMatch(each -> each.getDiscoveryHeartbeatName().equals(toBeDroppedDiscoveryTypeName));
     }
     
