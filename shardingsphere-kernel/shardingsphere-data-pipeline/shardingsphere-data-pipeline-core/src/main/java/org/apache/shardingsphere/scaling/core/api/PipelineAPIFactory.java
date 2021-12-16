@@ -22,11 +22,9 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
@@ -49,15 +47,6 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 // TODO separate methods
 public final class PipelineAPIFactory {
-    
-    /**
-     * Get scaling API.
-     *
-     * @return scaling API
-     */
-    public static PipelineJobAPI getPipelineJobAPI() {
-        return PipelineAPIHolder.getInstance();
-    }
     
     /**
      * Get governance repository API.
@@ -109,24 +98,6 @@ public final class PipelineAPIFactory {
         Preconditions.checkNotNull(serverConfig, "Scaling server configuration is required.");
         Preconditions.checkNotNull(serverConfig.getModeConfiguration(), "Mode configuration is required.");
         Preconditions.checkArgument("Cluster".equals(serverConfig.getModeConfiguration().getType()), "Mode must be `Cluster`.");
-    }
-    
-    // TODO extract PipelineAPIHolder
-    private static final class PipelineAPIHolder {
-        
-        private static volatile PipelineJobAPI instance;
-        
-        public static PipelineJobAPI getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        checkServerConfig();
-                        instance = new PipelineJobAPIImpl();
-                    }
-                }
-            }
-            return instance;
-        }
     }
     
     private static final class GovernanceRepositoryAPIHolder {

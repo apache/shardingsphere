@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,7 +33,7 @@ import java.util.Optional;
 /**
  * Pipeline job API.
  */
-public interface PipelineJobAPI {
+public interface PipelineJobAPI extends RequiredSPI {
     
     /**
      * List all jobs.

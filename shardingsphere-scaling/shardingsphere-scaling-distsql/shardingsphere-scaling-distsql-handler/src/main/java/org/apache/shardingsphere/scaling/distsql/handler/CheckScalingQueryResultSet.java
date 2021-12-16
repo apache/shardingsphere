@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -43,9 +43,9 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
         CheckScalingStatement checkScalingStatement = (CheckScalingStatement) sqlStatement;
         Map<String, DataConsistencyCheckResult> checkResultMap;
         if (null == checkScalingStatement.getTypeStrategy()) {
-            checkResultMap = PipelineAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId());
+            checkResultMap = PipelineJobAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId());
         } else {
-            checkResultMap = PipelineAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId(), checkScalingStatement.getTypeStrategy().getName());
+            checkResultMap = PipelineJobAPIFactory.getPipelineJobAPI().dataConsistencyCheck(checkScalingStatement.getJobId(), checkScalingStatement.getTypeStrategy().getName());
         }
         data = checkResultMap.entrySet().stream()
                 .map(each -> {

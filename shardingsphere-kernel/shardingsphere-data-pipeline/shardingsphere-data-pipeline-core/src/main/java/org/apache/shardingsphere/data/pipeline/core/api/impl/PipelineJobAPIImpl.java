@@ -73,6 +73,11 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Override
+    public boolean isDefault() {
+        return true;
+    }
+    
+    @Override
     public List<JobInfo> list() {
         return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
     }

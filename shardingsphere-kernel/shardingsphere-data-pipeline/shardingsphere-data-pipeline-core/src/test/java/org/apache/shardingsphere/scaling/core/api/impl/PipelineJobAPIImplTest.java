@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.scaling.core.api.PipelineAPIFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public final class PipelineJobAPIImplTest {
         EmbedTestingServer.start();
         ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
         RuleAlteredContext.getInstance().init(mockServerConfig());
-        pipelineJobAPI = PipelineAPIFactory.getPipelineJobAPI();
+        pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
     }
     
     @Test
