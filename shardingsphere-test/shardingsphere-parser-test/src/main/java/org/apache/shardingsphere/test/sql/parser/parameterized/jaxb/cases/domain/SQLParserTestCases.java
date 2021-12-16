@@ -155,6 +155,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
@@ -560,6 +561,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-database-discovery-type")
     private final List<CreateDatabaseDiscoveryTypeStatementTestCase> createDatabaseDiscoveryTypeTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-database-discovery-type")
+    private final List<AlterDatabaseDiscoveryTypeStatementTestCase> alterDatabaseDiscoveryTypeTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
     
@@ -958,6 +962,7 @@ public final class SQLParserTestCases {
         putAll(createDatabaseDiscoveryDefinitionRuleTestCases, result);
         putAll(createDataBaseDiscoveryConstructionRuleTestCase, result);
         putAll(createDatabaseDiscoveryTypeTestCases, result);
+        putAll(alterDatabaseDiscoveryTypeTestCases, result);
         putAll(createEncryptRuleTestCase, result);
         putAll(createReadwriteSplittingRuleTestCase, result);
         putAll(createShardingBindingTableRulesTestCase, result);

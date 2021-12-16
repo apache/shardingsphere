@@ -23,6 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryTypeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryTypeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleConstructionContext;
@@ -42,8 +44,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQL
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryHeartbeatsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypeDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryTypesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypeDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypePropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypePropertyContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -112,6 +114,11 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     @Override
     public ASTNode visitCreateDatabaseDiscoveryType(final CreateDatabaseDiscoveryTypeContext ctx) {
         return new CreateDatabaseDiscoveryTypeStatement(buildAlgorithmEntry(ctx.databaseDiscoveryTypeDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitAlterDatabaseDiscoveryType(final AlterDatabaseDiscoveryTypeContext ctx) {
+        return new AlterDatabaseDiscoveryTypeStatement(buildAlgorithmEntry(ctx.databaseDiscoveryTypeDefinition()));
     }
     
     private Collection<DatabaseDiscoveryTypeSegment> buildAlgorithmEntry(final List<DatabaseDiscoveryTypeDefinitionContext> ctx) {

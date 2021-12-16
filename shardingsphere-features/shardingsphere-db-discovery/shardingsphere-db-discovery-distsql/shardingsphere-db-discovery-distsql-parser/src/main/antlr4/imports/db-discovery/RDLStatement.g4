@@ -35,6 +35,10 @@ createDatabaseDiscoveryType
     : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
     ;
 
+alterDatabaseDiscoveryType
+    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
 databaseDiscoveryRule
     : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
     ;
