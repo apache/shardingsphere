@@ -134,7 +134,7 @@
         <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?)=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_not_nested_subquery_in_table_alias" db-types="MySQL">
+    <rewrite-assertion id="select_not_nested_subquery_in_table_with_alias" db-types="MySQL">
         <input sql="SELECT count(*) as cnt FROM (SELECT ab.certificate_number FROM t_account ab) X" />
         <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_certificate_number, ab.assisted_query_certificate_number FROM t_account ab) X" />
     </rewrite-assertion>
