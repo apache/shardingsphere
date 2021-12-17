@@ -56,6 +56,15 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
+     * Persist schema tables.
+     * 
+     * @param schemaName schema name
+     */
+    public void persist(final String schemaName) {
+        repository.persist(SchemaMetaDataNode.getMetaDataTablesPath(schemaName), "");
+    }
+    
+    /**
      * Delete schema.
      *
      * @param schemaName schema name to be deleted
