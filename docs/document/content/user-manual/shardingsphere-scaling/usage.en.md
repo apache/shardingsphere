@@ -106,7 +106,7 @@ mysql> preview select count(1) from t_order;
 
 1. Add new data source resources
 
-Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for more details.
 
 Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
@@ -168,7 +168,7 @@ If `algorithm-expression` of `database_inline` and `DATANODES` of `t_order` is c
 
 #### List scaling jobs
 
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
 Example:
 ```sql
