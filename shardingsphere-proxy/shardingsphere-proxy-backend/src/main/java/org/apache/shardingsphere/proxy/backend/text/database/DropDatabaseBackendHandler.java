@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -61,7 +61,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
             throw new UnknownDatabaseException(schemaName);
         }
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new DBDropExistsException(schemaName);
+            throw new DBDropNotExistsException(schemaName);
         }
     }
     
