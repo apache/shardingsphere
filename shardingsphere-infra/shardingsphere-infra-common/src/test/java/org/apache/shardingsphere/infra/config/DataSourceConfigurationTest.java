@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,7 +41,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceConfigurationTest {
-
+    
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     
@@ -159,5 +160,12 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getMaximumPoolSize(), is(30));
         assertThat(actual.getIdleTimeout(), is(30000L));
+    }
+    
+    @Test
+    public void assertNotEqualsWithDifferentDataSourceClassName() throws Exception {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(JdbcDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfig));
     }
 }
