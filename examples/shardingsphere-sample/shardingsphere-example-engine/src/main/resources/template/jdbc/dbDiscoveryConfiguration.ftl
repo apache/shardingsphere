@@ -45,7 +45,7 @@
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartBeatConfiguration = new HashMap<>(1, 1);
         Properties props = new Properties();
-        props.put("keepAliveCron", "0/5 * * * * ?");
+        props.put("keep-alive-cron", "0/5 * * * * ?");
         discoveryHeartBeatConfiguration.put("mgr-heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(props));
         return discoveryHeartBeatConfiguration;
     }
@@ -53,8 +53,8 @@
     private Map<String, ShardingSphereAlgorithmConfiguration> createDiscoveryTypes() {
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         Properties props = new Properties();
-        props.put("keepAliveCron", "0/5 * * * * ?");
-        props.put("groupName", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        props.put("keep-alive-cron", "0/5 * * * * ?");
+        props.put("group-name", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         discoveryTypes.put("mgr", new ShardingSphereAlgorithmConfiguration("MGR", props));
         return discoveryTypes;
     }
