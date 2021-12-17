@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.api;
+package org.apache.shardingsphere.data.pipeline.core.api;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
