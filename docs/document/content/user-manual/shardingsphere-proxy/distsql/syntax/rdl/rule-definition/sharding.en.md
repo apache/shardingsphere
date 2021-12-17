@@ -177,6 +177,20 @@ TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}
 DROP SHARDING ALGORITHM database_inline;
 ```
 
+*Key Generator*
+
+```sql
+CREATE SHARDING KEY GENERATOR uuid_key_generator (
+TYPE(NAME=uuid, PROPERTIES("worker-id"=123))
+);
+
+ALTER SHARDING KEY GENERATOR uuid_key_generator (
+TYPE(NAME=uuid, PROPERTIES("worker-id"=123))
+);
+
+DROP SHARDING KEY GENERATOR uuid_key_generator;
+```
+
 ### Sharding Binding Table Rule
 
 ```sql

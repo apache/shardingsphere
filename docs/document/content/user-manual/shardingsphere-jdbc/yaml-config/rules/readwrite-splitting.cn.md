@@ -10,6 +10,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
+      autoAwareDataSourceName: # 自动发现数据源名称(与数据库发现配合使用)
       writeDataSourceName: # 写库数据源名称
       readDataSourceNames: 
         - <read-data_source-name> (+) # 读库数据源名称

@@ -28,4 +28,16 @@
     <artifactId>shardingsphere-data-pipeline-spi</artifactId>
     <name>${project.artifactId}</name>
     
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

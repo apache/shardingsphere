@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.Resp
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * COM_QUERY command packet executor for MySQL.
@@ -52,7 +53,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), connectionSession);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), Optional::empty, connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     

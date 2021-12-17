@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -78,8 +80,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
-        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port);
+                                final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
+        beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port, schemaName);
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
         afterBuildContextManager();
@@ -89,12 +91,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void beforeBuildContextManager(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                            final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                           final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
+                                           final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         registryCenter = new RegistryCenter(repository, port);
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        Collection<String> schemaNames = metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Arrays.asList(schemaName);
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
         Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties clusterProps = metaDataPersistService.getPropsService().load();

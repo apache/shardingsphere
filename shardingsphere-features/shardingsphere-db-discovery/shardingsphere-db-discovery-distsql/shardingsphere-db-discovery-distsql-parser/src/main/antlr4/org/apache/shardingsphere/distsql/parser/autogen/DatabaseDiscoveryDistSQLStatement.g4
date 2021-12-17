@@ -29,5 +29,8 @@ execute
     | createDatabaseDiscoveryType
     | createDatabaseDiscoveryHeartbeat
     | alterDatabaseDiscoveryHeartbeat
+    | dropDatabaseDiscoveryType
+    | dropDatabaseDiscoveryHeartbeat
+    | alterDatabaseDiscoveryType
     ) SEMI?
     ;

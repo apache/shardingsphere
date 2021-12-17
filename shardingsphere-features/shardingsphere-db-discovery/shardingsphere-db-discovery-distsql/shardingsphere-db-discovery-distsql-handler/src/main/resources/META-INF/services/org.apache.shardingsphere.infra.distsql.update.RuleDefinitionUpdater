@@ -21,3 +21,4 @@ org.apache.shardingsphere.dbdiscovery.distsql.handler.update.DropDatabaseDiscove
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.CreateDatabaseDiscoveryTypeStatementUpdater
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.AlterDatabaseDiscoveryHeartbeatStatementUpdater
 org.apache.shardingsphere.dbdiscovery.distsql.handler.update.CreateDatabaseDiscoveryHeartbeatStatementUpdater
+org.apache.shardingsphere.dbdiscovery.distsql.handler.update.AlterDatabaseDiscoveryTypeStatementUpdater
