@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public class ExpectedConvertTableDefinition extends AbstractExpectedSQLSegment {
+public final class ExpectedConvertTableDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "charset")
     private ExpectedCharsetName charsetName;

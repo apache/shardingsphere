@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public class ExpectedCollate extends AbstractExpectedSQLSegment {
+public final class ExpectedCollate extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String name;

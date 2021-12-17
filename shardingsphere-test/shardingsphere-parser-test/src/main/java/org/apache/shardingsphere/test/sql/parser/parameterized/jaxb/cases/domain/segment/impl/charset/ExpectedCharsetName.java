@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public class ExpectedCharsetName extends AbstractExpectedSQLSegment {
+public final class ExpectedCharsetName extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String name;
