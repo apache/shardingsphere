@@ -34,7 +34,7 @@ import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
-public class CosIdIntervalShardingAlgorithmTest {
+public final class CosIdIntervalShardingAlgorithmTest {
 
     static final ZoneOffset ZONE_OFFSET_SHANGHAI;
 

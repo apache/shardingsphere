@@ -61,9 +61,6 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
 
     public static final String ZONE_ID_KEY = "zone-id";
 
-    /**
-     * type of timestamp.
-     */
     public static final String TIMESTAMP_TYPE_KEY = "ts-type";
 
     private Properties props = new Properties();
@@ -80,9 +77,6 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
         this.props = props;
     }
 
-    /**
-     * Initialize algorithm.
-     */
     @Override
     public void init() {
         String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
@@ -103,26 +97,12 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
         algorithmConfig = new AlgorithmConfig(isSecondTs, dateTimeFormatter, zoneId, intervalTimeline);
     }
 
-    /**
-     * Sharding.
-     *
-     * @param availableTargetNames available data sources or table names
-     * @param shardingValue        sharding value
-     * @return sharding result for data source or table name
-     */
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         LocalDateTime shardingTime = convertShardingValue(shardingValue.getValue());
         return algorithmConfig.getIntervalTimeline().sharding(shardingTime);
     }
 
-    /**
-     * Sharding.
-     *
-     * @param availableTargetNames available data sources or table names
-     * @param shardingValue        sharding value
-     * @return sharding results for data sources or table names
-     */
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Range<LocalDateTime> shardingRangeTime = convertRangeShardingValue(shardingValue.getValueRange());
@@ -133,18 +113,15 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
         if (shardingValue instanceof LocalDateTime) {
             return (LocalDateTime) shardingValue;
         }
-
         if (shardingValue instanceof Date) {
             return LocalDateTimeConvert.fromDate((Date) shardingValue, algorithmConfig.getZoneId());
         }
-
         if (shardingValue instanceof Long) {
             if (algorithmConfig.isSecondTs()) {
                 return LocalDateTimeConvert.fromTimestampSecond((Long) shardingValue, algorithmConfig.getZoneId());
             }
             return LocalDateTimeConvert.fromTimestamp((Long) shardingValue, algorithmConfig.getZoneId());
         }
-
         if (shardingValue instanceof String) {
             return LocalDateTimeConvert.fromString((String) shardingValue, algorithmConfig.getDateTimeFormatter());
         }
@@ -183,17 +160,12 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
         return Range.atMost(upper);
     }
 
-    /**
-     * Get type.
-     *
-     * @return type
-     */
     @Override
     public String getType() {
         return TYPE;
     }
 
-    static class AlgorithmConfig {
+    private static class AlgorithmConfig {
 
         private final boolean isSecondTs;
 

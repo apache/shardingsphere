@@ -34,51 +34,27 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     private volatile LazyIdGenerator cosIdProvider;
 
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
     @Override
     public Properties getProps() {
         return props;
     }
 
-    /**
-     * Set properties.
-     *
-     * @param props properties
-     */
     @Override
     public void setProps(final Properties props) {
         this.props = props;
     }
 
-    /**
-     * Initialize algorithm.
-     */
     @Override
     public void init() {
         cosIdProvider = new LazyIdGenerator(getProps().getOrDefault(CosIdAlgorithm.ID_NAME_KEY, IdGeneratorProvider.SHARE).toString());
         cosIdProvider.tryGet(false);
     }
 
-    /**
-     * Generate key.
-     *
-     * @return generated key
-     */
     @Override
     public Comparable<?> generateKey() {
         return cosIdProvider.generate();
     }
 
-
-    /**
-     * Get type.
-     *
-     * @return type
-     */
     @Override
     public String getType() {
         return TYPE;

@@ -29,17 +29,17 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class CosIdModShardingAlgorithmTest {
+public final class CosIdModShardingAlgorithmTest {
 
-    public static final int DIVISOR = 4;
+    static final int DIVISOR = 4;
 
-    public static final String LOGIC_NAME = "t_mod";
+    static final String LOGIC_NAME = "t_mod";
 
-    public static final String COLUMN_NAME = "id";
+    static final String COLUMN_NAME = "id";
 
-    public static final String LOGIC_NAME_PREFIX = LOGIC_NAME + "_";
+    static final String LOGIC_NAME_PREFIX = LOGIC_NAME + "_";
 
-    public static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
+    static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
 
     static CosIdModShardingAlgorithm<Long> createShardingAlg() {
         Properties properties = new Properties();
@@ -102,14 +102,12 @@ public class CosIdModShardingAlgorithmTest {
 
         @Parameterized.Parameters
         public static Iterable<Object[]> argsProvider() {
-            return Arguments.ofArrayElement(
-                    Arguments.of(Range.all(), ALL_NODES),
+            return Arguments.ofArrayElement(Arguments.of(Range.all(), ALL_NODES),
                     /**
                      * Range.closed
                      */
                     Arguments.of(Range.closed(1L, 3L), new ExactCollection<>("t_mod_1", "t_mod_2", "t_mod_3")),
-                    Arguments.of(Range.closed(0L, 3L), ALL_NODES),
-                    Arguments.of(Range.closed(0L, 4L), ALL_NODES),
+                    Arguments.of(Range.closed(0L, 3L), ALL_NODES), Arguments.of(Range.closed(0L, 4L), ALL_NODES),
                     Arguments.of(Range.closed(0L, 1L), new ExactCollection<>("t_mod_0", "t_mod_1")),
                     Arguments.of(Range.closed(3L, 4L), new ExactCollection<>("t_mod_0", "t_mod_3")),
                     /**
@@ -161,18 +159,15 @@ public class CosIdModShardingAlgorithmTest {
                     Arguments.of(Range.lessThan(1L), new ExactCollection<>("t_mod_0")),
                     Arguments.of(Range.lessThan(2L), new ExactCollection<>("t_mod_0", "t_mod_1")),
                     Arguments.of(Range.lessThan(3L), new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2")),
-                    Arguments.of(Range.lessThan(4L), ALL_NODES),
-                    Arguments.of(Range.lessThan(5L), ALL_NODES),
+                    Arguments.of(Range.lessThan(4L), ALL_NODES), Arguments.of(Range.lessThan(5L), ALL_NODES),
                     /**
                      * Range.atMost
                      */
                     Arguments.of(Range.atMost(0L), new ExactCollection<>("t_mod_0")),
                     Arguments.of(Range.atMost(1L), new ExactCollection<>("t_mod_0", "t_mod_1")),
                     Arguments.of(Range.atMost(2L), new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2")),
-                    Arguments.of(Range.atMost(3L), ALL_NODES),
-                    Arguments.of(Range.atMost(4L), ALL_NODES),
-                    Arguments.of(Range.atMost(5L), ALL_NODES)
-            );
+                    Arguments.of(Range.atMost(3L), ALL_NODES), Arguments.of(Range.atMost(4L), ALL_NODES),
+                    Arguments.of(Range.atMost(5L), ALL_NODES));
         }
 
         @Test

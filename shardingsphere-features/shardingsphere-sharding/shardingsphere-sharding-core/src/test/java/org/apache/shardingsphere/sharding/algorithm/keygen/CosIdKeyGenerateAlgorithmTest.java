@@ -27,7 +27,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CosIdKeyGenerateAlgorithmTest {
+public final class CosIdKeyGenerateAlgorithmTest {
 
     @Test
     public void assertGenerateKey() {
