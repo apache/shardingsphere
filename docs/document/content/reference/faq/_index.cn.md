@@ -104,7 +104,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为 int(11)，泛型所对应的分片类型应为 Integer，如果需要配置为 Long 类型，请确保数据库中该字段类型为 bigint。
 
-## [分片、PROXY] 实现 `StandardShardingAlgorithm` 自定义算法时，指定了 `Comparable` 的具体类型为 Long, 且数据库表中字段类型为 bigint，出现 `ClassCastException: Integer can not cast to Long` 异常
+## [分片、PROXY] 实现 `StandardShardingAlgorithm` 自定义算法时，指定了 `Comparable` 的具体类型为 Long, 且数据库表中字段类型为 bigint，出现 `ClassCastException: Integer can not cast to Long` 异常。
 
 回答：
 
