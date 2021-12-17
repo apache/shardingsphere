@@ -21,6 +21,7 @@
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
@@ -29,6 +30,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>
@@ -66,4 +69,9 @@
         <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="ds_0_write" read-data-source-names="ds_0_read_0,ds_0_read_1" />
         <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0,ds_1_read_1" />
     </readwrite-splitting:rule>
+
+    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parser-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
+    
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
 </beans>
