@@ -164,7 +164,6 @@
                 <groupId>me.ahoo.cosid</groupId>
                 <artifactId>cosid-core</artifactId>
                 <version>${cosid.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
