@@ -66,12 +66,12 @@
 #  discoveryHeartbeats:
 #    mgr-heartbeat:
 #      props:
-#        keepAliveCron: '0/5 * * * * ?'
+#        keep-alive-cron: '0/5 * * * * ?'
 #  discoveryTypes:
 #    mgr:
 #      type: MGR
 #      props:
-#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
 
 ######################################################################################################
 #
@@ -123,9 +123,9 @@
 #  discoveryHeartbeats:
 #    mgr-heartbeat:
 #      props:
-#        keepAliveCron: '0/5 * * * * ?'
+#        keep-alive-cron: '0/5 * * * * ?'
 #  discoveryTypes:
 #    mgr:
 #      type: MGR
 #      props:
-#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
