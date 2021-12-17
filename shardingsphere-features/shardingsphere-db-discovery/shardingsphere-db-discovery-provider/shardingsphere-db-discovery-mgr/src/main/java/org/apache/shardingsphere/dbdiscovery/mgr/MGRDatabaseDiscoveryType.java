@@ -96,7 +96,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
         try (ResultSet resultSet = statement.executeQuery(GROUP_NAME)) {
             while (resultSet.next()) {
                 String serverGroupName = resultSet.getString("VARIABLE_VALUE");
-                String ruleGroupName = props.getProperty("groupName");
+                String ruleGroupName = props.getProperty("group-name");
                 if (!serverGroupName.equals(ruleGroupName)) {
                     throw new ShardingSphereConfigurationException("MGR group name is not consistent\n" + "serverGroupName: %s\nruleGroupName: %s", serverGroupName, ruleGroupName);
                 }

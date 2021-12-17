@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLPositionInitializer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPipelineSQLBuilder;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLEnvironmentChecker;
 
 /**
@@ -56,8 +56,8 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<MySQLScalingSQLBuilder> getSQLBuilderClass() {
-        return MySQLScalingSQLBuilder.class;
+    public Class<MySQLPipelineSQLBuilder> getSQLBuilderClass() {
+        return MySQLPipelineSQLBuilder.class;
     }
     
     @Override

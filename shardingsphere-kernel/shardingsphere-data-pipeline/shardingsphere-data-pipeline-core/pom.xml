@@ -31,6 +31,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-spi</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-schedule-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -44,12 +49,13 @@
             <artifactId>shardingsphere-infra-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO remove cluster mode dependency after 3 modes have equivalent features -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
+            <artifactId>shardingsphere-cluster-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-    
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>

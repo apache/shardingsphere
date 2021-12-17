@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 
 import java.util.ArrayList;

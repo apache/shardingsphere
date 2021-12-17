@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,13 +45,13 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
                     if (resultSet.next()) {
                         tableName = resultSet.getString(3);
                     } else {
-                        throw new PrepareFailedException("No resultSet find in the source data source.");
+                        throw new PipelineJobPrepareFailedException("No resultSet find in the source data source.");
                     }
                     checkTableExisted(tableName, connection);
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data sources privilege check failed.", ex);
+            throw new PipelineJobPrepareFailedException("Data sources privilege check failed.", ex);
         }
     }
     
@@ -67,7 +67,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     }
     
     @Override
-    protected ScalingSQLBuilder getSQLBuilder() {
-        return new PostgreSQLScalingSQLBuilder(new HashMap<>());
+    protected PipelineSQLBuilder getSQLBuilder() {
+        return new PostgreSQLPipelineSQLBuilder(new HashMap<>());
     }
 }

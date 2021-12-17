@@ -1135,4 +1135,19 @@
         <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_convert">
+        <table name="t1" start-index="12" stop-index="13"/>
+        <convert-table start-index="15" stop-index="46">
+            <charset name="DEFAULT" start-index="40" stop-index="46" />
+        </convert-table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_convert_collate">
+        <table name="t1" start-index="12" stop-index="13"/>
+        <convert-table start-index="15" stop-index="65">
+            <charset name="DEFAULT" start-index="40" stop-index="46" />
+            <collate name="cp1251_bin" start-index="56" stop-index="65" />
+        </convert-table>
+    </alter-table>
+    
 </sql-parser-test-cases>

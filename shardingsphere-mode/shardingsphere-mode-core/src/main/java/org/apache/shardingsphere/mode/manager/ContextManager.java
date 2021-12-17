@@ -128,7 +128,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
                 newMetaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName));
         metaDataContexts.getMetaDataMap().put(schemaName, newMetaDataContexts.getMetaData(schemaName));
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, null));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName));
     }
     
     /**

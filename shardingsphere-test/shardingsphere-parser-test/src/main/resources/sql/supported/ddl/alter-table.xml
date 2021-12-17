@@ -140,4 +140,6 @@
     <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
     <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
     <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL"/>
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL"/>
 </sql-cases>

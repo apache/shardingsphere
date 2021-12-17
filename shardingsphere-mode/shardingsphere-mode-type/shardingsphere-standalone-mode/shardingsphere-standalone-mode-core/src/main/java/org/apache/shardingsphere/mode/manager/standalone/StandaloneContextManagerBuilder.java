@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -61,12 +63,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap,
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
+                                final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = null == modeConfig.getRepository() ? new StandalonePersistRepositoryConfiguration("File", new Properties()) : modeConfig.getRepository();
         StandalonePersistRepository repository = TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        Collection<String> schemaNames = metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Arrays.asList(schemaName);
         Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
         Map<String, Collection<RuleConfiguration>> standaloneSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties standaloneProps = metaDataPersistService.getPropsService().load();
