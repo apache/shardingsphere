@@ -39,5 +39,4 @@ public final class ConvertTableDefinitionSegment implements AlterDefinitionSegme
     private final CharsetNameSegment charsetName;
     
     private CollateClauseSegment collateClause;
-    
 }
