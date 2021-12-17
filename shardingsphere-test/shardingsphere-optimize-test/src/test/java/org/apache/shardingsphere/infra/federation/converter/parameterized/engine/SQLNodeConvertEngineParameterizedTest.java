@@ -94,6 +94,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union");
         SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
+//        SUPPORTED_SQL_CASE_IDS.add("select_with_single_comment");
     }
     
     private final String sqlCaseId;
@@ -123,7 +124,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     private static boolean isSupportedSQLCase(final Object[] sqlTestParameter) {
         String sqlCaseId = sqlTestParameter[0].toString();
-        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId);
+        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX);
     }
     
     @Test
