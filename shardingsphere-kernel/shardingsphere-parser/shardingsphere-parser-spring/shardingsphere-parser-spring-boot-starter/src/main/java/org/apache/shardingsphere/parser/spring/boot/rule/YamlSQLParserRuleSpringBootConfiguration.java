@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.config;
+package org.apache.shardingsphere.parser.spring.boot.rule;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * SQL parser rule configuration.
+ * YAML SQL parser rule spring boot configuration.
  */
+@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
+public final class YamlSQLParserRuleSpringBootConfiguration {
     
-    private boolean sqlCommentParseEnabled;
-    
-    private CacheOption parseTreeCache;
-    
-    private CacheOption sqlStatementCache;
+    private YamlSQLParserRuleConfiguration sqlParser;
 }

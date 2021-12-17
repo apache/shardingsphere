@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -91,6 +93,8 @@ public class SpringBootStarterTest {
                 assertEncryptRule((EncryptRule) each);
             } else if (each instanceof ShadowRule) {
                 assertShadowRule((ShadowRule) each);
+            } else if (each instanceof SQLParserRule) {
+                assertSQLParserRule((SQLParserRule) each);
             }
         }
     }
@@ -157,6 +161,18 @@ public class SpringBootStarterTest {
         assertThat(shadowTableRules.get("t_user").getShadowDataSources().size(), is(1));
         assertThat(shadowTableRules.get("t_user").getHintShadowAlgorithmNames().size(), is(1));
         assertThat(shadowTableRules.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
+    }
+    
+    private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
+        assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
+        assertCacheOption(sqlParserRule.getSqlStatementCache());
+        assertCacheOption(sqlParserRule.getParserTreeCache());
+    }
+
+    private void assertCacheOption(final CacheOption cacheOption) {
+        assertThat(cacheOption.getInitialCapacity(), is(1024));
+        assertThat(cacheOption.getMaximumSize(), is(1024L));
+        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {

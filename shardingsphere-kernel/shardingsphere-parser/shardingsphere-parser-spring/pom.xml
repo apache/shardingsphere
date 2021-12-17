@@ -19,20 +19,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>shardingsphere-parser</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser</artifactId>
-    <name>${project.artifactId}</name>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-parser-spring</artifactId>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-parser-api</module>
-        <module>shardingsphere-parser-core</module>
-        <module>shardingsphere-parser-spring</module>
+        <module>shardingsphere-parser-spring-boot-starter</module>
+        <module>shardingsphere-parser-spring-namespace</module>
     </modules>
-
+    
 </project>

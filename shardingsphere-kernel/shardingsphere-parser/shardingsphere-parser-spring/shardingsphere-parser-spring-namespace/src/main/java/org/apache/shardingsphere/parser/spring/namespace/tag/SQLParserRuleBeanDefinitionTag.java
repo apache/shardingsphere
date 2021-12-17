@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.config;
+package org.apache.shardingsphere.parser.spring.namespace.tag;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
- * SQL parser rule configuration.
+ * SQL parser rule bean definition tag constants.
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLParserRuleBeanDefinitionTag {
     
-    private boolean sqlCommentParseEnabled;
+    public static final String ROOT_TAG = "rule";
     
-    private CacheOption parseTreeCache;
+    public static final String SQL_COMMENT_PARSER_ENABLE = "sql-comment-parse-enable";
     
-    private CacheOption sqlStatementCache;
+    public static final String SQL_STATEMENT_CACHE_REF = "sql-statement-cache-ref";
+    
+    public static final String PARSER_TREE_CACHE_REF = "parser-tree-cache-ref";
+    
+    public static final String INITIAL_CAPACITY = "initial-capacity";
+    
+    public static final String MAXIMUM_SIZE = "maximum-size";
+    
+    public static final String CONCURRENCY_LEVEL = "concurrency-level";
+    
+    public static final String CACHE_OPTION = "cache-option";
 }

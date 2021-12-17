@@ -22,17 +22,32 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-parser-spring</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser</artifactId>
+    <artifactId>shardingsphere-parser-spring-namespace</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
     
-    <modules>
-        <module>shardingsphere-parser-api</module>
-        <module>shardingsphere-parser-core</module>
-        <module>shardingsphere-parser-spring</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-spring-namespace-infra</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+    </dependencies>
+    
 </project>
