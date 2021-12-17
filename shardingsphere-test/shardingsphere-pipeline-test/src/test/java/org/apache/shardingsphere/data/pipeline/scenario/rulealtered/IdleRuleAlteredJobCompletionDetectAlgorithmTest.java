@@ -36,68 +36,68 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ScalingIdleClusterAutoSwitchAlgorithmTest {
+public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     
     @Mock
     private Properties propsMock;
     
-    private IdleRuleAlteredJobCompletionDetectAlgorithm scalingAlgorithm = new IdleRuleAlteredJobCompletionDetectAlgorithm();
+    private IdleRuleAlteredJobCompletionDetectAlgorithm detectAlgorithm = new IdleRuleAlteredJobCompletionDetectAlgorithm();
     
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        ReflectionUtil.setFieldValue(scalingAlgorithm, "props", propsMock);
+        ReflectionUtil.setFieldValue(detectAlgorithm, "props", propsMock);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNoIdleThresholdKey() {
         Mockito.when(propsMock.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn(false);
-        scalingAlgorithm.init();
+        detectAlgorithm.init();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailInvalidIdleThresholdKey() {
         Mockito.when(propsMock.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn(true);
         Mockito.when(propsMock.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn("@");
-        scalingAlgorithm.init();
+        detectAlgorithm.init();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNegativeIdleThresholdKey() {
         Mockito.when(propsMock.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn(true);
         Mockito.when(propsMock.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn("-8");
-        scalingAlgorithm.init();
+        detectAlgorithm.init();
     }
     
     @Test
     public void assertInitSuccess() {
         Mockito.when(propsMock.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn(true);
         Mockito.when(propsMock.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_THRESHOLD_KEY)).thenReturn("4");
-        scalingAlgorithm.init();
+        detectAlgorithm.init();
     }
     
     @Test
     public void assertGetType() {
-        assertThat(scalingAlgorithm.getType(), is("IDLE"));
+        assertThat(detectAlgorithm.getType(), is("IDLE"));
     }
     
     @Test
     public void assertFalseOnNullIncrementalTasks() {
-        assertFalse(scalingAlgorithm.allIncrementalTasksAlmostFinished(null));
+        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(null));
     }
     
     @Test
     public void assertFalseOnEmptyIncrementalTasks() {
-        assertFalse(scalingAlgorithm.allIncrementalTasksAlmostFinished(Collections.emptyList()));
+        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(Collections.emptyList()));
     }
     
     @Test
     public void assertFalseOnFewPendingIncrementalTasks() {
-        assertFalse(scalingAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(10L, 50L)));
+        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(10L, 50L)));
     }
     
     @Test
     public void assertTrueWhenAllIncrementalTasksAlmostFinished() {
-        assertTrue(scalingAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(60L, 50L, 30L)));
+        assertTrue(detectAlgorithm.allIncrementalTasksAlmostFinished(Arrays.asList(60L, 50L, 30L)));
     }
 }
