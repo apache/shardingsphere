@@ -105,7 +105,7 @@ mysql> preview select count(1) from t_order;
 
 1. 添加新的数据源
 
-详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rdl-resource/)。
+详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
 
 先在底层数据库系统创建需要的分库，下面的 `DistSQL` 需要用到。
 
@@ -122,7 +122,7 @@ ADD RESOURCE ds_2 (
 
 2. 修改分片规则
 
-详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rdl-sharding-rule/)。
+详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 `SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式，以下是两种分片规则的对比：
 

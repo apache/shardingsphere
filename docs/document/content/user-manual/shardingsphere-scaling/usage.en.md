@@ -106,7 +106,7 @@ mysql> preview select count(1) from t_order;
 
 1. Add new data source resources
 
-Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rdl-resource/) for more details.
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for more details.
 
 Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
@@ -123,7 +123,7 @@ ADD RESOURCE ds_2 (
 
 2. Alter sharding table rule
 
-Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
 `SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types. The following is a comparison of the two sharding rules: 
 
