@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
+import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -55,9 +57,11 @@ public final class SchemaMetaDataMetaDataPersistServiceTest {
     
     @Test
     public void assertPersist() {
-        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlSchema.class));
+        TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        schema.getTables().put("t_order", tableMetaData);
         new SchemaMetaDataPersistService(repository).persist("foo_db", schema);
-        verify(repository).persist(eq("/metadata/foo_db/schema"), anyString());
+        verify(repository).persist(eq("/metadata/foo_db/tables/t_order"), anyString());
     }
     
     @Test
@@ -69,7 +73,8 @@ public final class SchemaMetaDataMetaDataPersistServiceTest {
     @Test
     public void assertLoad() {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
-        when(repository.get("/metadata/foo_db/schema")).thenReturn(readYAML());
+        when(repository.getChildrenKeys("/metadata/foo_db/tables")).thenReturn(Lists.newArrayList("t_order"));
+        when(repository.get("/metadata/foo_db/tables/t_order")).thenReturn(readYAML());
         Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db");
         assertTrue(schemaOptional.isPresent());
         Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test");
