@@ -57,7 +57,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        repository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobProgress.toString());
+        String value = YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress));
+        repository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final RuleAlteredJobContext jobContext) {
@@ -79,8 +80,10 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = repository.get(getOffsetPath(jobId, shardingItem));
-        JobProgress result = JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
-        return Strings.isNullOrEmpty(data) ? null : result;
+        if (Strings.isNullOrEmpty(data)) {
+            return null;
+        }
+        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
     
     @Override

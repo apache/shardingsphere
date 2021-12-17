@@ -68,6 +68,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
+// TODO replace RuleAltered
 public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

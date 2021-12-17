@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskFactory;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -57,6 +59,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class GovernanceRepositoryAPIImplTest {
     
+    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeClass
@@ -71,7 +75,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(actual.toString(), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test

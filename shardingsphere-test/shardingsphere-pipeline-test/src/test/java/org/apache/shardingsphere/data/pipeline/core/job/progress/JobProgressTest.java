@@ -23,17 +23,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -72,28 +67,5 @@ public final class JobProgressTest {
         assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_2") instanceof PrimaryKeyPosition);
-    }
-    
-    @Test
-    public void assertToString() {
-        JobProgress jobProgress = new JobProgress();
-        jobProgress.setStatus(JobStatus.RUNNING);
-        jobProgress.setSourceDatabaseType("H2");
-        jobProgress.setIncrementalTaskProgressMap(mockIncrementalTaskProgressMap());
-        jobProgress.setInventoryTaskProgressMap(mockInventoryTaskProgressMap());
-        assertThat(jobProgress.toString(), is(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml")));
-    }
-    
-    private Map<String, IncrementalTaskProgress> mockIncrementalTaskProgressMap() {
-        return Collections.singletonMap("ds0", new IncrementalTaskProgress(new PlaceholderPosition()));
-    }
-    
-    private Map<String, InventoryTaskProgress> mockInventoryTaskProgressMap() {
-        Map<String, InventoryTaskProgress> result = new HashMap<>(4, 1);
-        result.put("ds0.t_1", new InventoryTaskProgress(new FinishedPosition()));
-        result.put("ds0.t_2", new InventoryTaskProgress(new FinishedPosition()));
-        result.put("ds1.t_1", new InventoryTaskProgress(new PlaceholderPosition()));
-        result.put("ds1.t_2", new InventoryTaskProgress(new PrimaryKeyPosition(1, 2)));
-        return result;
     }
 }

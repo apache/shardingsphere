@@ -63,6 +63,7 @@ public final class JobConfiguration {
         RuleConfiguration ruleConfig = getRuleConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
+            // TODO singleton
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
             handleConfig = preparer.createHandleConfig(ruleConfig);
             this.handleConfig = handleConfig;
