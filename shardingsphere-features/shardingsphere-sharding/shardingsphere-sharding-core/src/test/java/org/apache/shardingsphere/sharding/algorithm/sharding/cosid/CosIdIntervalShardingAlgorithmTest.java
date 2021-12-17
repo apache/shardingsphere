@@ -27,7 +27,6 @@ import org.junit.runners.Parameterized;
 import java.time.LocalDateTime;
 
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
@@ -36,8 +35,6 @@ import java.util.function.Function;
 import static org.junit.Assert.assertEquals;
 
 public class CosIdIntervalShardingAlgorithmTest {
-
-    static final DateTimeFormatter DATE_TIME_FORMATTER;
 
     static final ZoneOffset ZONE_OFFSET_SHANGHAI;
 
@@ -56,7 +53,6 @@ public class CosIdIntervalShardingAlgorithmTest {
     static final ExactCollection<String> ALL_NODES;
 
     static {
-        DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_PATTERN);
         ZONE_OFFSET_SHANGHAI = ZoneOffset.of("+8");
         LOWER_DATE_TIME = LocalDateTime.of(2021, 1, 1, 0, 0);
         UPPER_DATE_TIME = LOWER_DATE_TIME.plusYears(1);
@@ -72,8 +68,8 @@ public class CosIdIntervalShardingAlgorithmTest {
     static CosIdIntervalShardingAlgorithm createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.toString());
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.toString());
+        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
@@ -97,7 +93,7 @@ public class CosIdIntervalShardingAlgorithmTest {
     }
 
     static Iterable<Object[]> preciseArgsProviderAsString() {
-        return preciseArgsProvider(ldt -> ldt.format(DATE_TIME_FORMATTER));
+        return preciseArgsProvider(ldt -> ldt.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
     }
 
     static Iterable<Object[]> preciseArgsProviderAsDate() {
@@ -151,7 +147,7 @@ public class CosIdIntervalShardingAlgorithmTest {
     }
 
     static Iterable<Object[]> rangeArgsProviderAsString() {
-        return rangeArgsProvider(ldt -> ldt.format(DATE_TIME_FORMATTER));
+        return rangeArgsProvider(ldt -> ldt.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
     }
 
     static Iterable<Object[]> rangeArgsProviderAsDate() {

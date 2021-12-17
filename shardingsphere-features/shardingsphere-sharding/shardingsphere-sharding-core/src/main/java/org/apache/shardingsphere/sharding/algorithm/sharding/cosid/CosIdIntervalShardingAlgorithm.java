@@ -45,6 +45,8 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
 
     public static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
+    public static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN);
+
     public static final String DATE_TIME_LOWER_KEY = "datetime-lower";
 
     public static final String DATE_TIME_UPPER_KEY = "datetime-upper";
@@ -84,8 +86,8 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
     @Override
     public void init() {
         String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
-        LocalDateTime effectiveLower = LocalDateTime.parse(PropertiesUtil.getRequiredValue(getProps(), DATE_TIME_LOWER_KEY));
-        LocalDateTime effectiveUpper = LocalDateTime.parse(PropertiesUtil.getRequiredValue(getProps(), DATE_TIME_UPPER_KEY));
+        LocalDateTime effectiveLower = LocalDateTime.parse(PropertiesUtil.getRequiredValue(getProps(), DATE_TIME_LOWER_KEY), DEFAULT_DATE_TIME_FORMATTER);
+        LocalDateTime effectiveUpper = LocalDateTime.parse(PropertiesUtil.getRequiredValue(getProps(), DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
         DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(PropertiesUtil.getRequiredValue(getProps(), SHARDING_SUFFIX_FORMAT_KEY));
         ChronoUnit stepUnit = ChronoUnit.valueOf(PropertiesUtil.getRequiredValue(getProps(), INTERVAL_UNIT_KEY));
         int stepAmount = Integer.parseInt(getProps().getProperty(INTERVAL_AMOUNT_KEY, "1"));
