@@ -125,13 +125,13 @@ ADD RESOURCE ds_2 (
 
 Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
-`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types. The following is a comparison of the two sharding rules: 
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. Following is a comparison of the two sharding rule types: 
 
 | Type         | AutoTableRule                                               | TableRule                                                    |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Definition   | [Auto Sharding Algorithm](/en/features/sharding/concept/sharding/#auto-sharding-algorithm) | [User-Defined Sharding Algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm)   |
 
-Meaning of fields in DistSQL is the same as YAML configuration, please refer to [YAML Configuration#Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/).
+Meaning of fields in DistSQL is the same as YAML configuration, please refer to [YAML Configuration#Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) for more details.
 
 Example of alter `AutoTableRule`:
 ```sql
@@ -139,7 +139,7 @@ ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
@@ -147,15 +147,24 @@ If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted
 
 Uncompleted example of alter `TableRule`:
 ```sql
+ALTER SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+);
+
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
 GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+), t_order_item (
+DATANODES("ds_${2..4}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-**Attention**: We could not emit scaling job by altering `TableRule` in current version. For the same logical table, these two formats can not use at the same time.
+If `algorithm-expression` of `database_inline` and `DATANODES` of `t_order` is changed, then scaling job will be emitted.
 
 #### List scaling jobs
 
