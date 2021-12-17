@@ -19,6 +19,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.ahoo.cosid.sharding.IntervalStep;
 import me.ahoo.cosid.util.LocalDateTimeConvert;
 import me.ahoo.cosid.sharding.IntervalTimeline;
@@ -63,19 +65,11 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
 
     public static final String TIMESTAMP_TYPE_KEY = "ts-type";
 
+    @Getter
+    @Setter
     private Properties props = new Properties();
 
     private volatile AlgorithmConfig algorithmConfig;
-
-    @Override
-    public Properties getProps() {
-        return props;
-    }
-
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
-    }
 
     @Override
     public void init() {

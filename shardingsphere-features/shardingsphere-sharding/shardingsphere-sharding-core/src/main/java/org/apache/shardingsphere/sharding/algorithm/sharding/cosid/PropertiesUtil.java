@@ -22,9 +22,17 @@ import java.util.Properties;
 /**
  * Properties tool class.
  */
-final class PropertiesUtil {
+public final class PropertiesUtil {
 
-    static String getRequiredValue(final Properties properties, final String key) {
+    /**
+     * Get the value according to the key and verify whether the value exists. If it does not exist, an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param properties The Properties
+     * @param key        key of properties
+     * @return value of key
+     * @throws IllegalArgumentException throw an exception when the key does not exist
+     */
+    public static String getRequiredValue(final Properties properties, final String key) {
         Preconditions.checkArgument(properties.containsKey(key), "%s can not be null.", key);
         return properties.get(key).toString();
     }

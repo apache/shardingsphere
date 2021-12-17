@@ -15,6 +15,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.ahoo.cosid.CosId;
 import me.ahoo.cosid.provider.IdGeneratorProvider;
 import me.ahoo.cosid.provider.LazyIdGenerator;
@@ -30,19 +32,11 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     public static final String TYPE = CosId.COSID.toUpperCase();
 
+    @Getter
+    @Setter
     private Properties props = new Properties();
 
     private volatile LazyIdGenerator cosIdProvider;
-
-    @Override
-    public Properties getProps() {
-        return props;
-    }
-
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
-    }
 
     @Override
     public void init() {

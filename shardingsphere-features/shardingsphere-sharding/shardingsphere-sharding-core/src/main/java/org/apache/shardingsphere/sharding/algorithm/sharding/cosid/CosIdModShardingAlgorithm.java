@@ -15,6 +15,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.ahoo.cosid.sharding.ModCycle;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -32,6 +34,8 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
 
     public static final String MODULO_KEY = "mod";
 
+    @Getter
+    @Setter
     private Properties props = new Properties();
 
     private volatile ModCycle<T> modCycle;
@@ -39,16 +43,6 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     @Override
     public String getType() {
         return TYPE;
-    }
-
-    @Override
-    public Properties getProps() {
-        return props;
-    }
-
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
     }
 
     @Override
