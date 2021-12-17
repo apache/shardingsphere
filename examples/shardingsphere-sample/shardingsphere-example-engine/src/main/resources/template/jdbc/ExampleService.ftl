@@ -67,7 +67,6 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
             this.cleanEnvironment();
         }
     }
-    
 <#if feature=="encrypt" || feature=="shadow">
     <#include "userExampleService.ftl">
 <#else>
