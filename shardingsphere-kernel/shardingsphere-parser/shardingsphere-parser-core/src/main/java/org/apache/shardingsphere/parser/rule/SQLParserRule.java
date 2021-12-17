@@ -36,8 +36,8 @@ public final class SQLParserRule implements GlobalRule {
     
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
         this.sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
-        this.sqlStatementCache = ruleConfig.getSqlStatementCacheOption();
-        this.parserTreeCache = ruleConfig.getParseTreeCacheOption();
+        this.sqlStatementCache = ruleConfig.getSqlStatementCache();
+        this.parserTreeCache = ruleConfig.getParseTreeCache();
     }
     
     @Override

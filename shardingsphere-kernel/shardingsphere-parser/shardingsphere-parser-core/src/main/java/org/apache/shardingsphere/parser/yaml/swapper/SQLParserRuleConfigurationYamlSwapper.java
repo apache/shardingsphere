@@ -35,8 +35,8 @@ public final class SQLParserRuleConfigurationYamlSwapper implements YamlRuleConf
     public YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
         YamlSQLParserRuleConfiguration result = new YamlSQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(data.isSqlCommentParseEnabled());
-        result.setParserTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCacheOption()));
-        result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCacheOption()));
+        result.setParserTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
+        result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
         return result;
     }
 
