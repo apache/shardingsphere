@@ -26,15 +26,12 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckException;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
@@ -105,14 +102,16 @@ public final class TextProtocolBackendHandlerFactory {
         if (extraHandler.isPresent()) {
             return extraHandler.get();
         }
+        Optional<TextProtocolBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
+        if (databaseOperateHandler.isPresent()) {
+            return databaseOperateHandler.get();
+        }
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().isPresent()
                 ? sqlStatementContext.getTablesContext().getSchemaName().get() : connectionSession.getSchemaName();
-        checkAuthority(schemaName, connectionSession.getGrantee(), sqlStatement);
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
+                getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
-        }
-        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
@@ -126,6 +125,13 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
+    }
+    
+    private static Optional<TextProtocolBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession));
+        }
+        return Optional.empty();
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
@@ -142,15 +148,6 @@ public final class TextProtocolBackendHandlerFactory {
     private static void checkUnsupportedSQLStatement(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DCLStatement || sqlStatement instanceof FlushStatement || sqlStatement instanceof MySQLShowCreateUserStatement) {
             throw new UnsupportedOperationException("Unsupported operation");
-        }
-    }
-    
-    private static void checkAuthority(final String schemaName, final Grantee grantee, final SQLStatement sqlStatement) {
-        try {
-            SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
-                    getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), grantee);
-        } catch (SQLCheckException ex) {
-            throw new UnknownDatabaseException(schemaName);
         }
     }
 }

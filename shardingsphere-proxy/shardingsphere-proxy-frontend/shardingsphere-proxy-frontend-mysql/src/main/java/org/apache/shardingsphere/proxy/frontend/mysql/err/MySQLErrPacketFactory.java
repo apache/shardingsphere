@@ -75,7 +75,10 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
-        if (cause instanceof NoDatabaseSelectedException || cause instanceof SchemaNotExistedException) {
+        if (cause instanceof SchemaNotExistedException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName());
+        }
+        if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
