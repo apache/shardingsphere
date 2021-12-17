@@ -108,7 +108,7 @@ mysql> preview select count(1) from t_order;
 
 1. Add new data source resources
 
-Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for more details.
 
 Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
@@ -125,7 +125,7 @@ ADD RESOURCE ds_2 (
 
 2. Alter sharding table rule
 
-Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
 `SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types. The following is a comparison of the two sharding rules：
 | Tyoe         | AutoTableRule                                | TableRule                                      |
@@ -159,7 +159,7 @@ GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 
 #### List scaling jobs
 
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
 Example:
 ```sql
@@ -215,7 +215,7 @@ Current scaling job is finished, new sharding rule should take effect, and not i
 If `status` fails, you can check the log of `proxy` to view the error stack and analyze the problem.
 
 #### manual mode
-`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling)。
+`Sharding-Scaling`提供了一些命令，可以手动执行。详情可见：[RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling)。
 ```
 check scaling {jobId};
 ```
@@ -250,4 +250,4 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### Other DistSQL
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
