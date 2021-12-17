@@ -17,12 +17,25 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreator;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public final class DataSourcePoolCreatorFactoryTest {
     
     @Test
-    public void test() throws Exception {
+    public void assertDataSourcePoolCreatorExisted() {
+        DataSourcePoolCreator actualDataSourcePoolCreator = DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName());
+        assertTrue(actualDataSourcePoolCreator instanceof HikariDataSourcePoolCreator);
+    }
     
+    @Test
+    public void assertDataSourcePoolCreatorNotExisted() {
+        DataSourcePoolCreator actualDataSourcePoolCreator = DataSourcePoolCreatorFactory.getInstance(JdbcDataSource.class.getName());
+        assertTrue(actualDataSourcePoolCreator instanceof DefaultDataSourcePoolCreator);
     }
 }
