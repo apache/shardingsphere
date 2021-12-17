@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.api.config.server.yaml;
 
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.config.server.yaml.ServerConfigurationYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.config.server.yaml.YamlServerConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;

@@ -54,7 +54,7 @@ public final class HandleConfiguration {
     private String logicTables;
     
     /**
-     * Job sharding item, from {@link org.apache.shardingsphere.elasticjob.api.ShardingContext#getShardingItem()}.
+     * Job sharding item.
      */
     private Integer jobShardingItem;
     

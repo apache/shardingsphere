@@ -24,9 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.List;
 import java.util.Map;
@@ -42,8 +39,6 @@ import java.util.stream.Collectors;
 @Setter
 public final class JobProgress {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
-    
     private JobStatus status = JobStatus.RUNNING;
     
     private String sourceDatabaseType;
@@ -51,16 +46,6 @@ public final class JobProgress {
     private Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
     
     private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
-    
-    /**
-     * Init by string data.
-     *
-     * @param data string data
-     * @return job progress
-     */
-    public static JobProgress init(final String data) {
-        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
-    }
     
     /**
      * Get incremental position.
@@ -84,11 +69,6 @@ public final class JobProgress {
         return inventoryTaskProgressMap.entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition()));
-    }
-    
-    @Override
-    public String toString() {
-        return YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(this));
     }
     
     /**

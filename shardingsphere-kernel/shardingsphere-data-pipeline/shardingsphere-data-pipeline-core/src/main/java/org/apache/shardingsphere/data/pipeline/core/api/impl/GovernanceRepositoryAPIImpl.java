@@ -25,9 +25,12 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -42,6 +45,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
+    
+    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
     
     private final ClusterPersistRepository repository;
     
@@ -74,7 +79,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = repository.get(getOffsetPath(jobId, shardingItem));
-        return Strings.isNullOrEmpty(data) ? null : JobProgress.init(data);
+        JobProgress result = JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+        return Strings.isNullOrEmpty(data) ? null : result;
     }
     
     @Override

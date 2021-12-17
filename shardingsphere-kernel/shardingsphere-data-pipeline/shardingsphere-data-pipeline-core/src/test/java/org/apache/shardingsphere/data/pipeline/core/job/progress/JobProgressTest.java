@@ -25,7 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,9 +42,15 @@ import static org.junit.Assert.assertTrue;
 
 public final class JobProgressTest {
     
+    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    
+    private JobProgress getJobProgress(final String data) {
+        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+    }
+    
     @Test
     public void assertInit() {
-        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
         assertThat(jobProgress.getSourceDatabaseType(), is("H2"));
         assertThat(jobProgress.getInventoryTaskProgressMap().size(), is(4));
@@ -50,7 +59,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetIncrementalPosition() {
-        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         Optional<IngestPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
         assertTrue(positionOptional.isPresent());
         assertTrue(positionOptional.get() instanceof PlaceholderPosition);
@@ -58,7 +67,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetInventoryPosition() {
-        JobProgress jobProgress = JobProgress.init(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
         assertThat(jobProgress.getInventoryPosition("ds0").size(), is(2));
         assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
