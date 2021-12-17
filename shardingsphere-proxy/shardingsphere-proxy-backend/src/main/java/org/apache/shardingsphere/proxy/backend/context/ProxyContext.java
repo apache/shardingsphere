@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.migration.common.api.ScalingWorker;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -126,6 +126,6 @@ public final class ProxyContext {
      * @return true if scaling enabled, false if not
      */
     public boolean isScalingEnabled() {
-        return ScalingWorker.isEnabled();
+        return RuleAlteredJobWorker.isEnabled();
     }
 }

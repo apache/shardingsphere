@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
+import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.migration.common.job.preparer.AbstractDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.config.internal.JobDataNodeEntry;
-import org.apache.shardingsphere.scaling.core.job.preparer.ActualTableDefinition;
-import org.apache.shardingsphere.scaling.core.job.preparer.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.scaling.core.job.preparer.TableDefinitionSQLType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,7 +56,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         try {
             actualTableDefinitions = getActualTableDefinitions(parameter);
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("get table definitions failed.", ex);
+            throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         try (DataSourceWrapper targetDataSource = getTargetDataSource(parameter.getRuleConfig());
@@ -68,7 +68,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                 log.info("create target table '{}' success", entry.getKey());
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("prepare target tables failed.", ex);
+            throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
     }
     
@@ -98,7 +98,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             statement.setString(1, actualTableName);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
-                    throw new PrepareFailedException("select oid has no result, sql: " + sql + ", actualTableName: " + actualTableName);
+                    throw new PipelineJobPrepareFailedException("select oid has no result, sql: " + sql + ", actualTableName: " + actualTableName);
                 }
                 return resultSet.getInt(1);
             }
@@ -109,7 +109,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         String sql = String.format("SELECT * FROM pg_get_tabledef(%d)", oid);
         try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             if (!resultSet.next()) {
-                throw new PrepareFailedException("table definition has no result, sql: " + sql);
+                throw new PipelineJobPrepareFailedException("table definition has no result, sql: " + sql);
             }
             return resultSet.getString(1);
         }

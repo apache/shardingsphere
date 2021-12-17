@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -40,7 +40,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        data = ScalingAPIFactory.getScalingAPI().getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+        data = PipelineJobAPIFactory.getPipelineJobAPI().getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
