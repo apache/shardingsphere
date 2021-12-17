@@ -42,11 +42,12 @@ public interface ContextManagerBuilder extends TypedSPI, RequiredSPI {
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite whether overwrite to persistence
-     * @param port port                   
+     * @param port port
+     * @param schemaName schema name            
      * @return context manager
      * @throws SQLException SQL exception
      */
     ContextManager build(ModeConfiguration modeConfig, Map<String, Map<String, DataSource>> dataSourcesMap,
                          Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, Collection<RuleConfiguration> globalRuleConfigs, Properties props, boolean isOverwrite, 
-                         Integer port) throws SQLException;
+                         Integer port, String schemaName) throws SQLException;
 }
