@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceConfigurationTest {
-    
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     
