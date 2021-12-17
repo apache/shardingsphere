@@ -41,7 +41,7 @@
         </props>
     </standalone:repository>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule, sqlParseRule">
         <shardingsphere:mode type="Standalone" repository-ref="local" overwrite="true" />
         <props>
             <prop key="sql-show">false</prop>

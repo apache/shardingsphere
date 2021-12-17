@@ -544,7 +544,30 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-**8. Announce release completed by email**
+**8. Upload xsd files of Spring namespace to official website**
+
+Submit a pull request to upload the xsd files of Spring namespace to https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
+
+The list of files to be uploaded is as follows:
+
+- datasource.xsd
+- datasource-${RELEASE.VERSION}.xsd
+- mode/standalone/repository.xsd
+- mode/standalone/repository-${RELEASE.VERSION}.xsd
+- mode/cluster/repository.xsd
+- mode/cluster/repository-${RELEASE.VERSION}.xsd
+- sharding.xsd
+- sharding-${RELEASE.VERSION}.xsd
+- encrypt.xsd
+- encrypt-${RELEASE.VERSION}.xsd
+- readwrite-splitting.xsd
+- readwrite-splitting-${RELEASE.VERSION}.xsd
+- shadow.xsd
+- shadow-${RELEASE.VERSION}.xsd
+- database-discovery.xsd
+- database-discovery-${RELEASE.VERSION}.xsd
+
+**9. Announce release completed by email**
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 

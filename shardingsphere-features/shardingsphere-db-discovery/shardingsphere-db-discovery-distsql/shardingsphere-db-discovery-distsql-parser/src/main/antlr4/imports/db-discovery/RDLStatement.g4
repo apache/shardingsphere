@@ -31,16 +31,48 @@ dropDatabaseDiscoveryRule
     : DROP DB_DISCOVERY RULE ruleName (COMMA ruleName)*
     ;
 
+createDatabaseDiscoveryType
+    : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
+createDatabaseDiscoveryHeartbeat
+    : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+    
+alterDatabaseDiscoveryHeartbeat
+    : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+
+dropDatabaseDiscoveryType
+    : DROP DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
+    ;
+
+dropDatabaseDiscoveryHeartbeat
+    : DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    ;
+    
+alterDatabaseDiscoveryType
+    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
 databaseDiscoveryRule
     : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
     ;
 
 databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA discoveryType COMMA discoveryHeartbeat RP
+    : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
     ;
 
 databaseDiscoveryRuleConstruction
     : ruleName LP resources COMMA TYPE EQ discoveryTypeName COMMA HEARTBEAT EQ discoveryHeartbeatName RP
+    ;
+
+databaseDiscoveryTypeDefinition
+    : discoveryTypeName LP typeDefinition RP
+    ;
+
+heartbeatDefinition
+    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
     ;
 
 ruleName
@@ -55,23 +87,19 @@ resourceName
     : IDENTIFIER
     ;
 
-discoveryType
-    : TYPE LP NAME EQ type (COMMA PROPERTIES LP typeProperties RP)? RP
+typeDefinition
+    : TYPE LP NAME EQ discoveryTypeName (COMMA PROPERTIES LP properties RP)? RP
     ;
 
 discoveryHeartbeat
-    : HEARTBEAT LP PROPERTIES LP typeProperties RP RP
+    : HEARTBEAT LP PROPERTIES LP properties RP RP
     ;
 
-type
-    : IDENTIFIER
+properties
+    : property (COMMA property)*
     ;
 
-typeProperties
-    : typeProperty (COMMA typeProperty)*
-    ;
-
-typeProperty
+property
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;
 

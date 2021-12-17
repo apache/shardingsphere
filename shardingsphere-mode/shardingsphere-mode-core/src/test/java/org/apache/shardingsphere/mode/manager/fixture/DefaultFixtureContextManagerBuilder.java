@@ -32,7 +32,8 @@ public final class DefaultFixtureContextManagerBuilder implements ContextManager
 
     @Override
     public ContextManager build(final ModeConfiguration modeConfig, final Map<String, Map<String, DataSource>> dataSourcesMap, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs,
-                                final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite, final Integer port) throws SQLException {
+                                final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, 
+                                final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         return null;
     }
 

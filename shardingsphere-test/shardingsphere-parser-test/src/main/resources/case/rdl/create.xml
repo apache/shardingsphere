@@ -128,6 +128,11 @@
                 </properties>
             </key-generate-strategy>
         </rule>
+        <rule name="t_order_item" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+        </rule>
     </create-sharding-table-rule>
     
     <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
@@ -205,7 +210,29 @@
             <data-source>resource1</data-source>
         </rule>
     </create-database-discovery-construction-rule>
-    
+
+    <create-database-discovery-type sql-case-id="create-database-discovery-type">
+        <type discovery-type-name="primary_replica_ds_mgr">
+            <algorithm algorithm-name="mgr">
+                <properties>
+                    <property key="groupName" value="92504d5b-6dec"/>
+                </properties>
+            </algorithm>
+        </type>
+        <type discovery-type-name="primary_replica_ds_mgr_2">
+            <algorithm algorithm-name="mgr"/>
+        </type>
+    </create-database-discovery-type>
+
+
+    <create-database-discovery-heartbeat sql-case-id="create-database-discovery-heartbeat">
+        <rule heartbeat-name="mgr_heartbeat" >
+            <properties>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </properties>
+        </rule>
+    </create-database-discovery-heartbeat>
+
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
         <rule rule-name="ha_group_0" type="mgr">
             <data-source>resource0</data-source>

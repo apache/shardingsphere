@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;

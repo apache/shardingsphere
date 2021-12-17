@@ -541,7 +541,30 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀：`h
 
 `最新版本`中保留一个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-**8. 邮件通知版本发布完成**
+**8. 上传 Spring namespace xsd 文件至官方网站**
+
+提交 pull request 将源码中的 xsd 文件以及发布版本的 xsd 文件上传至 https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
+
+应上传的文件列表如下：
+
+- datasource.xsd
+- datasource-${RELEASE.VERSION}.xsd  
+- mode/standalone/repository.xsd
+- mode/standalone/repository-${RELEASE.VERSION}.xsd  
+- mode/cluster/repository.xsd
+- mode/cluster/repository-${RELEASE.VERSION}.xsd  
+- sharding.xsd
+- sharding-${RELEASE.VERSION}.xsd  
+- encrypt.xsd
+- encrypt-${RELEASE.VERSION}.xsd  
+- readwrite-splitting.xsd
+- readwrite-splitting-${RELEASE.VERSION}.xsd  
+- shadow.xsd
+- shadow-${RELEASE.VERSION}.xsd  
+- database-discovery.xsd
+- database-discovery-${RELEASE.VERSION}.xsd
+
+**9. 邮件通知版本发布完成**
 
 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 

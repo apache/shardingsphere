@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedConstraintDefinition;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedConvertTableDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
@@ -42,6 +43,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rename-table")
     private ExpectedSimpleTable renameTable;
+    
+    @XmlElement(name = "convert-table")
+    private ExpectedConvertTableDefinition convertTable;
     
     @XmlElement(name = "add-column")
     private final List<ExpectedAddColumnDefinition> addColumns = new LinkedList<>();

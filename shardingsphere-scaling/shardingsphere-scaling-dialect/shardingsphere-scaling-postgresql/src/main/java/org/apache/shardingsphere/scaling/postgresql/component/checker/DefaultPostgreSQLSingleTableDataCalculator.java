@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
-import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
 
 /**
  * Default PostgreSQL single table data calculator.
@@ -31,7 +31,7 @@ public final class DefaultPostgreSQLSingleTableDataCalculator extends AbstractSi
     
     @Override
     public String getAlgorithmType() {
-        return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
+        return DefaultDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override

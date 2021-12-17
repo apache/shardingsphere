@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.ingest.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
 import java.sql.Connection;

@@ -72,7 +72,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, null);
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, null, schemaName);
     }
     
     @Override
