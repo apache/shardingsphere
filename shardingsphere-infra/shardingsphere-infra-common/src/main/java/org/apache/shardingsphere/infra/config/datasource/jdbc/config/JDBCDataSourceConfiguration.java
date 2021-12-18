@@ -67,7 +67,7 @@ public abstract class JDBCDataSourceConfiguration {
     /**
      * Wrap.
      *
-     * @return typed data source configuration wrap
+     * @return JDBC data source configuration wrapper
      */
     public JDBCDataSourceConfigurationWrapper wrap() {
         JDBCDataSourceConfigurationWrapper result = new JDBCDataSourceConfigurationWrapper();
