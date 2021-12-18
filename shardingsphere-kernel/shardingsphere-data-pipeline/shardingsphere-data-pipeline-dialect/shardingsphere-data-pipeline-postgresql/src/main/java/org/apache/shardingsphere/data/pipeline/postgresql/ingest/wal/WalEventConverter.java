@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapperFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
@@ -50,7 +50,7 @@ public final class WalEventConverter {
     public WalEventConverter(final DumperConfiguration dumperConfig) {
         this.dumperConfig = dumperConfig;
         databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
+        metaDataManager = new MetaDataManager(new DataSourceWrapperFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     /**

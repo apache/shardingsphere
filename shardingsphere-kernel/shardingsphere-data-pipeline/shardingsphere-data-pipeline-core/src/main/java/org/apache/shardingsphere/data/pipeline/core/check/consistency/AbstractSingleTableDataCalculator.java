@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapperFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
@@ -33,9 +33,9 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 @Slf4j
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final DataSourceWrapperFactory dataSourceWrapperFactory = new DataSourceWrapperFactory();
     
     protected final DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
-        return dataSourceFactory.newInstance(dataSourceConfig);
+        return dataSourceWrapperFactory.newInstance(dataSourceConfig);
     }
 }

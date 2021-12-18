@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class DataSourceManager implements AutoCloseable {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final DataSourceWrapperFactory dataSourceWrapperFactory = new DataSourceWrapperFactory();
     
     private final Map<JDBCDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
@@ -48,7 +48,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      */
     public void createSourceDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
-        DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+        DataSourceWrapper dataSource = dataSourceWrapperFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         sourceDataSources.put(dataSourceConfig, dataSource);
     }
@@ -59,7 +59,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      */
     public void createTargetDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
-        DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+        DataSourceWrapper dataSource = dataSourceWrapperFactory.newInstance(dataSourceConfig);
         cachedDataSources.put(dataSourceConfig, dataSource);
         targetDataSources.put(dataSourceConfig, dataSource);
     }
@@ -78,7 +78,7 @@ public final class DataSourceManager implements AutoCloseable {
             if (cachedDataSources.containsKey(dataSourceConfig)) {
                 return cachedDataSources.get(dataSourceConfig);
             }
-            DataSourceWrapper result = dataSourceFactory.newInstance(dataSourceConfig);
+            DataSourceWrapper result = dataSourceWrapperFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }

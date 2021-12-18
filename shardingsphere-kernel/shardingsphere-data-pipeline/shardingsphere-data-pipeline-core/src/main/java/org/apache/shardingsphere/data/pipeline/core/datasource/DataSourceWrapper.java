@@ -28,7 +28,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * Data source wrapper is for abstract standard jdbc and sharding jdbc.
+ * Data source wrapper for JDBC.
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -97,7 +97,7 @@ public final class DataSourceWrapper implements DataSource, AutoCloseable {
                 throw new SQLException("data source close failed.", ex);
             }
         } else {
-            log.warn("dataSource is not closed, it might cause connection leak, dataSource={}", dataSource);
+            log.warn("DataSource is not closed, it might cause connection leak, dataSource={}", dataSource);
         }
     }
 }

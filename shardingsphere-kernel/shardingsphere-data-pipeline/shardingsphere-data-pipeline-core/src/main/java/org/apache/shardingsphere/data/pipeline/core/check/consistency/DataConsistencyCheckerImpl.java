@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapperFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final DataSourceWrapperFactory dataSourceWrapperFactory = new DataSourceWrapperFactory();
     
     // TODO replace to JobConfiguration
     private final RuleAlteredJobContext jobContext;
@@ -83,8 +83,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
         JDBCDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
         JDBCDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
+        try (DataSourceWrapper sourceDataSource = dataSourceWrapperFactory.newInstance(sourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceWrapperFactory.newInstance(targetConfig)) {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetConfig.getDatabaseType()));
             long sourceCount = sourceFuture.get();
@@ -155,7 +155,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     private Map<String, Collection<String>> getTablesColumnNamesMap(final JDBCDataSourceConfiguration dataSourceConfig) {
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+        try (DataSourceWrapper dataSource = dataSourceWrapperFactory.newInstance(dataSourceConfig);
              Connection connection = dataSource.getConnection()) {
             Map<String, Collection<String>> result = new LinkedHashMap<>();
             try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, "%", "%")) {

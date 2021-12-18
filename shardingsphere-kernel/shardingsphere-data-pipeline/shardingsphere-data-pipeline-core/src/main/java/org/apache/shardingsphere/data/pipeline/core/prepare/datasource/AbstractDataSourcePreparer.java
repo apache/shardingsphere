@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapperFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 
@@ -47,14 +47,14 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final DataSourceWrapperFactory dataSourceWrapperFactory = new DataSourceWrapperFactory();
     
     protected DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getSource().unwrap());
+        return dataSourceWrapperFactory.newInstance(ruleConfig.getSource().unwrap());
     }
     
     protected DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getTarget().unwrap());
+        return dataSourceWrapperFactory.newInstance(ruleConfig.getTarget().unwrap());
     }
     
     protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 import java.sql.SQLException;
 
 /**
- * Data source factory.
+ * Data source wrapper factory.
  */
-public final class DataSourceFactory {
+public final class DataSourceWrapperFactory {
     
     /**
-     * New instance data source wrapper.
+     * Get new instance of data source wrapper.
      *
      * @param dataSourceConfig data source configuration
-     * @return new data source wrapper
+     * @return new instance of data source wrapper
      */
     @SneakyThrows(SQLException.class)
     public DataSourceWrapper newInstance(final JDBCDataSourceConfiguration dataSourceConfig) {
