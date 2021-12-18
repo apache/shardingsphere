@@ -101,7 +101,7 @@ public final class JdbcUri {
      * Append parameters.
      *
      * @param parameters JDBC parameters
-     * @return new JDBC url
+     * @return new JDBC URL
      */
     public String appendParameters(final Map<String, String> parameters) {
         return String.format("jdbc:%s://%s/%s?%s", getScheme(), getHost(), getDatabase(), mergeParameters(getParameters(), parameters));

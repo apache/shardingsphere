@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * JDBC data source configuration.
@@ -65,27 +64,10 @@ public abstract class JDBCDataSourceConfiguration {
      */
     public abstract DatabaseType getDatabaseType();
     
-    @Override
-    public int hashCode() {
-        return Objects.hash(getType(), getParameter());
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (null == obj || getClass() != obj.getClass()) {
-            return false;
-        }
-        JDBCDataSourceConfiguration that = (JDBCDataSourceConfiguration) obj;
-        return Objects.equals(getType(), that.getType()) && Objects.equals(getParameter(), that.getParameter());
-    }
-    
     /**
      * Wrap.
      *
-     * @return typed data source configuration wrap
+     * @return JDBC data source configuration wrapper
      */
     public JDBCDataSourceConfigurationWrapper wrap() {
         JDBCDataSourceConfigurationWrapper result = new JDBCDataSourceConfigurationWrapper();
