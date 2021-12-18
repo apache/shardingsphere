@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -75,14 +75,17 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
-        if (cause instanceof NoDatabaseSelectedException || cause instanceof SchemaNotExistedException) {
+        if (cause instanceof SchemaNotExistedException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName());
+        }
+        if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
         }
-        if (cause instanceof DBDropExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_EXISTS_ERROR, ((DBDropExistsException) cause).getDatabaseName());
+        if (cause instanceof DBDropNotExistsException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) cause).getDatabaseName());
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());

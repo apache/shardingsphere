@@ -69,8 +69,15 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
             return new SQLCheckResult(true, "");
         }
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee);
+        if (!privileges.isPresent()) {
+            return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
+        }
+        if (!privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
+            return new SQLCheckResult(false, String.format("Unknown database '%s'", currentSchema));
+        }
         // TODO add error msg
-        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
+        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), 
+                        String.format("Access denied for operation %s", getPrivilege(sqlStatement).name()))).orElseGet(() -> new SQLCheckResult(false, ""));
     }
     
     @Override

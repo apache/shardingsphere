@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBDropExistsException extends BackendException {
+public final class DBDropNotExistsException extends BackendException {
     
     private static final long serialVersionUID = 6088272565526510361L;
     

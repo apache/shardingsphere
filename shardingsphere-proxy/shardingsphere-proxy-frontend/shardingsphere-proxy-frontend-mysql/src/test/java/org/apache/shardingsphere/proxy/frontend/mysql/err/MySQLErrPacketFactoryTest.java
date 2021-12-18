@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -122,7 +122,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBDropExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropNotExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1008));
         assertThat(actual.getSqlState(), is("HY000"));

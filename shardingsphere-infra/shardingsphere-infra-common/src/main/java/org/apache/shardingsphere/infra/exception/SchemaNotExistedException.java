@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.infra.exception;
 
+import lombok.Getter;
+
 /**
  * Schema does not exist exception.
  */
+@Getter
 public final class SchemaNotExistedException extends ShardingSphereException {
     
     private static final long serialVersionUID = -1818822065202117480L;
     
+    private final String schemaName;
+    
     public SchemaNotExistedException(final String schemaName) {
         super(String.format("Schema '%s' doesn't exist.", schemaName));
+        this.schemaName = schemaName;
     }
 }
