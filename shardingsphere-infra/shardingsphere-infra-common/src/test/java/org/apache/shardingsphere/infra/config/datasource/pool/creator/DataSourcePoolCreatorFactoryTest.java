@@ -29,13 +29,11 @@ public final class DataSourcePoolCreatorFactoryTest {
     
     @Test
     public void assertDataSourcePoolCreatorExisted() {
-        DataSourcePoolCreator actualDataSourcePoolCreator = DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName());
-        assertTrue(actualDataSourcePoolCreator instanceof HikariDataSourcePoolCreator);
+        assertTrue(DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName()) instanceof HikariDataSourcePoolCreator);
     }
     
     @Test
     public void assertDataSourcePoolCreatorNotExisted() {
-        DataSourcePoolCreator actualDataSourcePoolCreator = DataSourcePoolCreatorFactory.getInstance(JdbcDataSource.class.getName());
-        assertTrue(actualDataSourcePoolCreator instanceof DefaultDataSourcePoolCreator);
+        assertTrue(DataSourcePoolCreatorFactory.getInstance(JdbcDataSource.class.getName()) instanceof DefaultDataSourcePoolCreator);
     }
 }
