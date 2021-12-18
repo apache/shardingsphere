@@ -28,12 +28,12 @@ import static org.junit.Assert.assertTrue;
 public final class DataSourcePoolCreatorFactoryTest {
     
     @Test
-    public void assertDataSourcePoolCreatorExisted() {
+    public void assertGetInstanceWhenDataSourcePoolCreatorExisted() {
         assertTrue(DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName()) instanceof HikariDataSourcePoolCreator);
     }
     
     @Test
-    public void assertDataSourcePoolCreatorNotExisted() {
+    public void assertGetInstanceWhenDataSourcePoolCreatorNotExisted() {
         assertTrue(DataSourcePoolCreatorFactory.getInstance(JdbcDataSource.class.getName()) instanceof DefaultDataSourcePoolCreator);
     }
 }
