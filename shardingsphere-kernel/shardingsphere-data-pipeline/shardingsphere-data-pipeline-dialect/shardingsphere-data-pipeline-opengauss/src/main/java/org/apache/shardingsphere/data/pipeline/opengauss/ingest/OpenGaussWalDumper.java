@@ -53,20 +53,20 @@ import java.sql.SQLException;
  */
 @Slf4j
 public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
-
+    
     private final WalPosition walPosition;
-
+    
     private final DumperConfiguration dumperConfig;
-
+    
     private final OpenGaussLogicalReplication logicalReplication = new OpenGaussLogicalReplication();
-
+    
     private final WalEventConverter walEventConverter;
     
     private String slotName = OpenGaussLogicalReplication.SLOT_NAME_PREFIX;
-
+    
     @Setter
     private Channel channel;
-
+    
     public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
@@ -87,7 +87,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 .createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig())
                 .unwrap(PgConnection.class);
     }
-
+    
     private MppdbDecodingPlugin initReplication() {
         MppdbDecodingPlugin plugin = null;
         try {
@@ -98,12 +98,12 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 OpenGaussTimestampUtils utils = new OpenGaussTimestampUtils(conn.unwrap(PgConnection.class).getTimestampUtils());
                 plugin = new MppdbDecodingPlugin(utils);
             }
-        } catch (SQLException sqlExp) {
-            log.warn("create replication slot failed!");
+        } catch (SQLException ex) {
+            log.warn("Create replication slot failed!");
         }
         return plugin;
     }
-
+    
     private void dump() {
         DecodingPlugin decodingPlugin = initReplication();
         try (PgConnection pgConnection = getReplicationConn()) {
@@ -130,7 +130,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
             throw new IngestException(ex);
         }
     }
-
+    
     private void updateRecordOldValue(final Record record) {
         if (!(record instanceof DataRecord)) {
             return;
@@ -139,9 +139,9 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
         if (!IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
             return;
         }
-        for (Column col: dataRecord.getColumns()) {
-            if (col.isPrimaryKey() && col.isUpdated()) {
-                col.setOldValue(col.getValue());
+        for (Column each: dataRecord.getColumns()) {
+            if (each.isPrimaryKey() && each.isUpdated()) {
+                each.setOldValue(each.getValue());
             }
         }
     }
