@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -37,7 +38,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -92,6 +96,8 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDefaultTableStrategy());
         assertNull(actual.getDefaultKeyGenerateStrategy());
         assertNull(actual.getDefaultShardingColumn());
+        assertNull(actual.getScalingName());
+        assertTrue(actual.getScaling().isEmpty());
     }
     
     @Test
@@ -150,5 +156,15 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultTableShardingStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
         assertThat(actual.getDefaultShardingColumn(), is("user_id"));
+    }
+    
+    @Test
+    public void assertScalingSwap() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/sharding-scaling.yaml");
+        assertNotNull(url);
+        YamlShardingRuleConfiguration yamlConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlShardingRuleConfiguration.class);
+        ShardingRuleConfiguration actualConfig = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
+        YamlShardingRuleConfiguration actualYamlConfig = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(actualConfig);
+        assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
 }

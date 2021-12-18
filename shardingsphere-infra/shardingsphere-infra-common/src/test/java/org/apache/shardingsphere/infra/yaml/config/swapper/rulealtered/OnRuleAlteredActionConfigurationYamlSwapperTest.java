@@ -39,9 +39,8 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
         Properties dataConsistencyCheckerProps = new Properties();
-        dataConsistencyCheckerProps.setProperty("chunk-size", "10000");
-        dataConsistencyCheckerProps.setProperty("ignored-column-names", "tbl1.blob1,tbl1.clob1");
-        yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("CRC32", dataConsistencyCheckerProps));
+        dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
+        yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
         OnRuleAlteredActionConfigurationYamlSwapper yamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
         OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
         YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);
