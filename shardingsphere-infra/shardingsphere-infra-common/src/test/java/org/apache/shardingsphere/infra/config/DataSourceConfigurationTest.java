@@ -21,7 +21,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceConfigurationTest {
-
+    
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     
@@ -66,8 +65,8 @@ public final class DataSourceConfigurationTest {
     
     @Test
     public void assertEquals() {
-        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
         assertThat(originalDataSourceConfig, is(originalDataSourceConfig));
         assertThat(originalDataSourceConfig, is(targetDataSourceConfig));
         originalDataSourceConfig.getProps().put("username", "root");
@@ -78,23 +77,28 @@ public final class DataSourceConfigurationTest {
     }
     
     @Test
-    public void assertNotEquals() {
-        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+    public void assertNotEqualsWithNullValue() {
+        assertFalse(new DataSourceConfiguration("FooDataSourceClass").equals(null));
+    }
+    
+    @Test
+    public void assertNotEqualsWithDifferentDataSourceClassName() {
+        assertThat(new DataSourceConfiguration("FooDataSourceClass"), not(new DataSourceConfiguration("BarDataSourceClass")));
+    }
+    
+    @Test
+    public void assertNotEqualsWithDifferentProperties() {
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
         originalDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfig.getProps().put("username", "root0");
         assertThat(originalDataSourceConfig, not(targetDataSourceConfig));
     }
     
     @Test
-    public void assertEqualsWithNull() {
-        assertFalse(new DataSourceConfiguration(HikariDataSource.class.getName()).equals(null));
-    }
-    
-    @Test
     public void assertSameHashCode() {
-        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
         assertThat(originalDataSourceConfig.hashCode(), is(targetDataSourceConfig.hashCode()));
         originalDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfig.getProps().put("username", "root");
@@ -106,14 +110,14 @@ public final class DataSourceConfigurationTest {
     
     @Test
     public void assertDifferentHashCode() {
-        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
         originalDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfig.getProps().put("username", "root");
         targetDataSourceConfig.getProps().put("password", "root");
         assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
-        originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        targetDataSourceConfig = new DataSourceConfiguration(BasicDataSource.class.getName());
+        originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        targetDataSourceConfig = new DataSourceConfiguration("BarDataSourceClass");
         assertThat(originalDataSourceConfig.hashCode(), not(targetDataSourceConfig.hashCode()));
     }
     
@@ -139,6 +143,7 @@ public final class DataSourceConfigurationTest {
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertCreateDataSourceWithCustomPoolProps() {
         Map<String, Object> props = new HashMap<>(16, 1);
@@ -160,12 +165,5 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getMaximumPoolSize(), is(30));
         assertThat(actual.getIdleTimeout(), is(30000L));
-    }
-    
-    @Test
-    public void assertNotEqualsWithDifferentDataSourceClassName() throws Exception {
-        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(JdbcDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        assertThat(originalDataSourceConfig, not(targetDataSourceConfig));
     }
 }
