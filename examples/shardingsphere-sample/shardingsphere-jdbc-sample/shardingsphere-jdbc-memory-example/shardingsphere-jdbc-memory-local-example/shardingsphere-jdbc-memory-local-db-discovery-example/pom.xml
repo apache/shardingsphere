@@ -20,29 +20,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>shardingsphere-jdbc-memory-local-encrypt-example</artifactId>
+        <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-jdbc-memory-local-encrypt-spring-boot-starter-jdbc-example</artifactId>
+    <packaging>pom</packaging>
+    <artifactId>shardingsphere-jdbc-memory-local-db-discovery-example</artifactId>
     <name>${project.artifactId}</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>2.2.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.2.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
-        </dependency>
-    </dependencies>
-
+    <modules>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-jdbc-example</module>
+    </modules>
+    
 </project>
