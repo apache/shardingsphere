@@ -34,5 +34,5 @@ Please refer to [Usage Manual](/en/user-manual/shardingsphere-scaling/usage/) fo
 
 - [Features#Scaling](/en/features/scaling/) : Core Concept, User Norms
 - [User Manual#Scaling](/en/user-manual/shardingsphere-scaling/) : Build, Manual
-- [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#scaling) : DistSQL for Scaling
+- [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) : DistSQL for Scaling
 - [Dev Manual#Scaling](/en/dev-manual/scaling/) : SPI interfaces and implementations
