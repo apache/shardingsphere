@@ -20,20 +20,20 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreator;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class DataSourcePoolCreatorFactoryTest {
     
     @Test
     public void assertGetInstanceWhenDataSourcePoolCreatorExisted() {
-        assertTrue(DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName()) instanceof HikariDataSourcePoolCreator);
+        assertThat(DataSourcePoolCreatorFactory.getInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolCreator.class));
     }
     
     @Test
     public void assertGetInstanceWhenDataSourcePoolCreatorNotExisted() {
-        assertTrue(DataSourcePoolCreatorFactory.getInstance(JdbcDataSource.class.getName()) instanceof DefaultDataSourcePoolCreator);
+        assertThat(DataSourcePoolCreatorFactory.getInstance("NOT_EXISTED_DATA_SOURCE"), instanceOf(DefaultDataSourcePoolCreator.class));
     }
 }
