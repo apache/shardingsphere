@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -48,6 +49,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,17 +65,24 @@ public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
-    @Getter
-    private static boolean enabled;
+    private static final AtomicBoolean ENABLED = new AtomicBoolean(false);
     
     /**
-     * Init scaling worker.
+     * Is job worker enabled.
+     *
+     * @return enabled or not
      */
-    public static void init() {
-        ShardingSphereEventBus.getInstance().register(INSTANCE);
-        new FinishedCheckJobExecutor().start();
-        new PipelineJobExecutor().start();
-        enabled = true;
+    // TODO update ProxyContext.isScalingEnabled impl
+    public static boolean isEnabled() {
+        return ENABLED.get();
+    }
+    
+    private void initIfNecessary(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        if (ENABLED.compareAndSet(false, true)) {
+            ShardingSphereEventBus.getInstance().register(INSTANCE);
+            new FinishedCheckJobExecutor().start();
+            new PipelineJobExecutor().start();
+        }
     }
     
     /**
@@ -86,6 +95,7 @@ public final class RuleAlteredJobWorker {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<Long> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
+        // TODO do not switch immediately
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
@@ -106,8 +116,14 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             boolean ruleAltered = detector.isRuleAltered(each.getLeft(), each.getRight());
-            log.info("type={}, ruleAltered={}", type, ruleAltered);
+            Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(each.getLeft());
+            log.info("type={}, ruleAltered={}, onRuleAlteredActionEnabled={}", type, ruleAltered, onRuleAlteredActionConfigOptional.isPresent());
             if (ruleAltered) {
+                if (!onRuleAlteredActionConfigOptional.isPresent()) {
+                    log.error("rule altered but action is not enabled, ignored");
+                    return Optional.empty();
+                }
+                initIfNecessary(onRuleAlteredActionConfigOptional.get());
                 break;
             }
         }

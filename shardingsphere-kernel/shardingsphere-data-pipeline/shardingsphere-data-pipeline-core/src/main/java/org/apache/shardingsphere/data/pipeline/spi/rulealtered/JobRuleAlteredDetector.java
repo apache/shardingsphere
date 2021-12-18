@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
+
+import java.util.Optional;
 
 /**
  * Job rule altered detector, SPI interface.
@@ -33,4 +36,12 @@ public interface JobRuleAlteredDetector extends TypedSPI {
      * @return whether is rule altered or not
      */
     boolean isRuleAltered(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig);
+    
+    /**
+     * Get on rule altered action configuration.
+     *
+     * @param sourceRuleConfig source YAML rule configuration, may be null
+     * @return optional configuration
+     */
+    Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(YamlRuleConfiguration sourceRuleConfig);
 }
