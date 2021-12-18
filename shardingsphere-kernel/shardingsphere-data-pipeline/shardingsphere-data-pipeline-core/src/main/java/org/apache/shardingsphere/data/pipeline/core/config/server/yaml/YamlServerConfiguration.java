@@ -36,9 +36,7 @@ public final class YamlServerConfiguration implements YamlConfiguration {
     @Getter
     @Setter
     public static final class YamlScalingConfiguration {
-    
-        private int port = 8080;
-    
+        
         private int blockQueueSize = 10000;
     
         private int workerThread = 30;

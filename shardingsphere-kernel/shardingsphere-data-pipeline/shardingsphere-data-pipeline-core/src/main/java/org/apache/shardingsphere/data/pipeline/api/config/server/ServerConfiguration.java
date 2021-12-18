@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 @Setter
 public final class ServerConfiguration {
     
-    private int port = 8080;
-    
     private int blockQueueSize = 10000;
     
     private int workerThread = 30;

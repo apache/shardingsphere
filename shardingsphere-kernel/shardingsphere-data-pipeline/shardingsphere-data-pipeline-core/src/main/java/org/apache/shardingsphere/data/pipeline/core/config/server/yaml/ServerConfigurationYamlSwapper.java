@@ -29,7 +29,6 @@ public final class ServerConfigurationYamlSwapper implements YamlConfigurationSw
     @Override
     public YamlServerConfiguration swapToYamlConfiguration(final ServerConfiguration data) {
         YamlServerConfiguration result = new YamlServerConfiguration();
-        result.getScaling().setPort(data.getPort());
         result.getScaling().setBlockQueueSize(data.getBlockQueueSize());
         result.getScaling().setWorkerThread(data.getWorkerThread());
         if (null != data.getModeConfiguration()) {
@@ -41,7 +40,6 @@ public final class ServerConfigurationYamlSwapper implements YamlConfigurationSw
     @Override
     public ServerConfiguration swapToObject(final YamlServerConfiguration yamlConfig) {
         ServerConfiguration result = new ServerConfiguration();
-        result.setPort(yamlConfig.getScaling().getPort());
         result.setBlockQueueSize(yamlConfig.getScaling().getBlockQueueSize());
         result.setWorkerThread(yamlConfig.getScaling().getWorkerThread());
         if (null != yamlConfig.getMode()) {
