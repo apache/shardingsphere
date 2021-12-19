@@ -76,7 +76,6 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
             return new SQLCheckResult(false, String.format("Unknown database '%s'", currentSchema));
         }
         PrivilegeType privilegeType = getPrivilege(sqlStatement);
-        // TODO add error msg
         if (null == privilegeType) {
             return new SQLCheckResult(true, "");
         }
