@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
@@ -65,6 +64,8 @@ public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
+    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+    
     private static final AtomicBoolean ENABLED = new AtomicBoolean(false);
     
     /**
@@ -78,10 +79,18 @@ public final class RuleAlteredJobWorker {
     }
     
     private void initIfNecessary(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        if (ENABLED.compareAndSet(false, true)) {
-            ShardingSphereEventBus.getInstance().register(INSTANCE);
-            new FinishedCheckJobExecutor().start();
-            new PipelineJobExecutor().start();
+        if (!INITIALIZED.get()) {
+            synchronized (INITIALIZED) {
+                if (INITIALIZED.get()) {
+                    return;
+                }
+                ShardingSphereEventBus.getInstance().register(INSTANCE);
+                new FinishedCheckJobExecutor().start();
+                new PipelineJobExecutor().start();
+                RuleAlteredContext.getInstance().init(onRuleAlteredActionConfig);
+                INITIALIZED.set(true);
+                ENABLED.set(true);
+            }
         }
     }
     
