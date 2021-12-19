@@ -68,18 +68,6 @@ public final class RuleAlteredJobWorker {
     
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
     
-    private static final AtomicBoolean ENABLED = new AtomicBoolean(false);
-    
-    /**
-     * Is job worker enabled.
-     *
-     * @return enabled or not
-     */
-    // TODO update ProxyContext.isScalingEnabled impl
-    public static boolean isEnabled() {
-        return ENABLED.get();
-    }
-    
     private void initIfNecessary(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         if (!INITIALIZED.get()) {
             synchronized (INITIALIZED) {
@@ -91,7 +79,6 @@ public final class RuleAlteredJobWorker {
                 new PipelineJobExecutor().start();
                 RuleAlteredContext.getInstance().init(onRuleAlteredActionConfig);
                 INITIALIZED.set(true);
-                ENABLED.set(true);
             }
         }
     }
