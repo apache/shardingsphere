@@ -78,7 +78,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         PrivilegeType privilegeType = getPrivilege(sqlStatement);
         // TODO add error msg
         if (null == privilegeType) {
-            return new SQLCheckResult(false, "");
+            return new SQLCheckResult(true, "");
         }
         // TODO add error msg
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(privilegeType)), 
