@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.schedule;
 
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
@@ -34,7 +34,15 @@ import java.util.Optional;
  */
 public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetector {
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper ON_RULE_ALTERED_ACTION_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    @Override
+    public String getYamlRuleConfigClassName() {
+        return YamlShardingRuleConfiguration.class.getName();
+    }
+    
+    @Override
+    public String getRuleConfigClassName() {
+        return ShardingRuleConfiguration.class.getName();
+    }
     
     @Override
     public boolean isRuleAltered(final YamlRuleConfiguration sourceRuleConfig, final YamlRuleConfiguration targetRuleConfig) {
@@ -61,24 +69,16 @@ public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetec
     }
     
     @Override
-    public Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(final YamlRuleConfiguration sourceRuleConfig) {
+    public Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(final RuleConfiguration sourceRuleConfig) {
         if (null == sourceRuleConfig) {
             return Optional.empty();
         }
-        YamlShardingRuleConfiguration shardingRuleConfig = (YamlShardingRuleConfiguration) sourceRuleConfig;
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) sourceRuleConfig;
         String scalingName = shardingRuleConfig.getScalingName();
         if (null == scalingName) {
             return Optional.empty();
         }
-        YamlOnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
-        if (null == result) {
-            return Optional.empty();
-        }
-        return Optional.of(ON_RULE_ALTERED_ACTION_YAML_SWAPPER.swapToObject(result));
-    }
-    
-    @Override
-    public String getType() {
-        return YamlShardingRuleConfiguration.class.getName();
+        OnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
+        return Optional.ofNullable(result);
     }
 }

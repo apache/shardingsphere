@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -36,8 +37,11 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Rule definition backend handler.
@@ -49,7 +53,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
+        ShardingSphereServiceLoader.register(JobRuleAlteredDetector.class);
     }
+    
+    private static final Map<String, JobRuleAlteredDetector> TYPE_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(JobRuleAlteredDetector.class).stream()
+            .collect(Collectors.toMap(JobRuleAlteredDetector::getRuleConfigClassName, Function.identity()));
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
@@ -65,7 +73,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
                 new Properties());
-        if (ProxyContext.getInstance().isScalingEnabled() && preprocessor.isPresent()) {
+        if (isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
             processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
@@ -81,6 +89,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isOnRuleAlteredActionEnabled(final RuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            return false;
+        }
+        JobRuleAlteredDetector detector = TYPE_DETECTOR_MAP.get(currentRuleConfig.getClass().getName());
+        return null != detector && detector.getOnRuleAlteredActionConfig(currentRuleConfig).isPresent();
     }
     
     @SuppressWarnings("rawtypes")

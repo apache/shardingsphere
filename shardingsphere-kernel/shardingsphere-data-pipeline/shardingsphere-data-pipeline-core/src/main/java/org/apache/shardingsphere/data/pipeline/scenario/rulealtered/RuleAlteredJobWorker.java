@@ -37,11 +37,11 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -63,6 +63,8 @@ public final class RuleAlteredJobWorker {
     }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
+    
+    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
     
@@ -117,7 +119,7 @@ public final class RuleAlteredJobWorker {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
         Map<String, JobRuleAlteredDetector> typeDetectorMap = ShardingSphereServiceLoader.getSingletonServiceInstances(JobRuleAlteredDetector.class).stream()
-                .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+                .collect(Collectors.toMap(JobRuleAlteredDetector::getYamlRuleConfigClassName, Function.identity()));
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             String type = each.getClass().getName();
             JobRuleAlteredDetector detector = typeDetectorMap.get(type);
@@ -125,7 +127,7 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             boolean ruleAltered = detector.isRuleAltered(each.getLeft(), each.getRight());
-            Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(each.getLeft());
+            Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(SWAPPER_ENGINE.swapToRuleConfiguration(each.getLeft()));
             log.info("type={}, ruleAltered={}, onRuleAlteredActionEnabled={}", type, ruleAltered, onRuleAlteredActionConfigOptional.isPresent());
             if (ruleAltered) {
                 if (!onRuleAlteredActionConfigOptional.isPresent()) {
