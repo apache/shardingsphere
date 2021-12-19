@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -34,8 +33,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
@@ -48,8 +45,6 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     
     @Before
     public void before() {
-        ServerConfiguration serverConfiguration = mock(ServerConfiguration.class);
-        when(serverConfiguration.getWorkerThread()).thenReturn(1);
         RuleAlteredContext.getInstance().init(new OnRuleAlteredActionConfiguration(1000, 5, null, null));
     }
     
