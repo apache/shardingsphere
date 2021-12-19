@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -58,6 +59,8 @@ public final class RuleAlteredContext {
     private ExecuteEngine incrementalDumperExecuteEngine;
     
     private ExecuteEngine importerExecuteEngine;
+    
+    private volatile ModeConfiguration modeConfig;
     
     /**
      * Get instance of context.
@@ -94,6 +97,15 @@ public final class RuleAlteredContext {
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+    }
+    
+    /**
+     * Initialize mode configuration.
+     *
+     * @param modeConfig configuration
+     */
+    public void init(final ModeConfiguration modeConfig) {
+        this.modeConfig = modeConfig;
     }
     
     /**

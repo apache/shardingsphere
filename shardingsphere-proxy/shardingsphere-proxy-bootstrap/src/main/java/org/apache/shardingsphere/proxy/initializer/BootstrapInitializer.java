@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.initializer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -63,6 +64,7 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         initContext(yamlConfig, modeConfig, port);
+        RuleAlteredContext.getInstance().init(modeConfig);
         setDatabaseServerInfo();
     }
     
