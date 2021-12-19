@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,11 +51,6 @@ public final class RuleAlteredJobTest {
         Map<String, RuleAlteredJobScheduler> jobSchedulerMap = ReflectionUtil.getStaticFieldValue(RuleAlteredJobSchedulerCenter.class, "JOB_SCHEDULER_MAP", Map.class);
         assertNotNull(jobSchedulerMap);
         assertFalse(jobSchedulerMap.isEmpty());
-    }
-    
-    @AfterClass
-    public static void afterClass() throws Exception {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
     }
     
     private ShardingContext mockShardingContext() {

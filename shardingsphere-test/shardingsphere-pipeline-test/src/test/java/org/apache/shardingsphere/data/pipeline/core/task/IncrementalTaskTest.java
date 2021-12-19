@@ -37,7 +37,7 @@ public final class IncrementalTaskTest {
     
     @BeforeClass
     public static void beforeClass() {
-        RuleAlteredContextUtil.rawMockContextConfig();
+        RuleAlteredContextUtil.initAndMockContextConfig();
     }
     
     @Before

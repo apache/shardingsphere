@@ -29,11 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -129,7 +126,7 @@ public final class PipelineJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(), is(false));
+        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(), is(true));
     }
     
     @Test
@@ -139,7 +136,7 @@ public final class PipelineJobAPIImplTest {
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
-        assertThat(checkResultMap.size(), is(0));
+        assertThat(checkResultMap.size(), is(1));
     }
     
     @Test
@@ -187,11 +184,6 @@ public final class PipelineJobAPIImplTest {
         pipelineJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
-    }
-    
-    @AfterClass
-    public static void afterClass() throws Exception {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
     }
     
     @SneakyThrows(SQLException.class)

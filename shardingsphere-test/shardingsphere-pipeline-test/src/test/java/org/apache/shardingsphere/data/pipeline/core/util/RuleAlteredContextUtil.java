@@ -45,6 +45,7 @@ public final class RuleAlteredContextUtil {
     @SneakyThrows
     public static void initAndMockContextConfig() {
         RuleAlteredContext context = RuleAlteredContext.getInstance();
+        ReflectionUtil.setFieldValue(context, "onRuleAlteredActionConfig", null);
         ReflectionUtil.setFieldValue(context, "modeConfig", null);
         context.init(createOnRuleAlteredActionConfig());
         context.init(createModeConfig());

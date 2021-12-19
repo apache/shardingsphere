@@ -23,8 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -80,10 +78,5 @@ public final class FinishedCheckJobTest {
         when(pipelineJobAPI.list()).thenReturn(jobInfos);
         when(pipelineJobAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         finishedCheckJob.execute(null);
-    }
-    
-    @AfterClass
-    public static void afterClass() throws Exception {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
     }
 }
