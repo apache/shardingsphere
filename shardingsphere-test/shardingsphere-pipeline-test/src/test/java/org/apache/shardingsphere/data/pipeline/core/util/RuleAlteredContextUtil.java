@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Properties;
@@ -30,35 +32,32 @@ import java.util.Properties;
 public final class RuleAlteredContextUtil {
     
     /**
-     * Create server configuration.
-     *
-     * @return configuration
+     * Raw mock context configuration.
      */
-    public static ServerConfiguration createServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setCompletionDetectAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true));
-        return result;
+    @SneakyThrows
+    public static void rawMockContextConfig() {
+        RuleAlteredContext context = RuleAlteredContext.getInstance();
+        ReflectionUtil.setFieldValue(context, "onRuleAlteredActionConfig", createOnRuleAlteredActionConfig());
+        ReflectionUtil.setFieldValue(context, "modeConfig", createModeConfig());
     }
     
     /**
-     * Raw mock server configuration.
-     *
-     * @param serverConfig configuration
+     * Initialize and mock context configuration.
      */
     @SneakyThrows
-    public static void rawMockServerConfig(final ServerConfiguration serverConfig) {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", serverConfig);
+    public static void initAndMockContextConfig() {
+        RuleAlteredContext context = RuleAlteredContext.getInstance();
+        ReflectionUtil.setFieldValue(context, "modeConfig", null);
+        context.init(createOnRuleAlteredActionConfig());
+        context.init(createModeConfig());
     }
     
-    /**
-     * Initialize and mock server configuration.
-     *
-     * @param serverConfig configuration
-     */
-    @SneakyThrows
-    public static void initAndMockServerConfig(final ServerConfiguration serverConfig) {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
-        RuleAlteredContext.getInstance().init(serverConfig);
+    private static OnRuleAlteredActionConfiguration createOnRuleAlteredActionConfig() {
+        return new OnRuleAlteredActionConfiguration(1000, 5, new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()),
+                new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()));
+    }
+    
+    private static ModeConfiguration createModeConfig() {
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true);
     }
 }

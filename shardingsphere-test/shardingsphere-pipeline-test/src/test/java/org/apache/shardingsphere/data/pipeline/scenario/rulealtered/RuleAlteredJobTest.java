@@ -40,7 +40,7 @@ public final class RuleAlteredJobTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.rawMockServerConfig(RuleAlteredContextUtil.createServerConfig());
+        RuleAlteredContextUtil.rawMockContextConfig();
         ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "inventoryDumperExecuteEngine", mock(ExecuteEngine.class));
     }
     

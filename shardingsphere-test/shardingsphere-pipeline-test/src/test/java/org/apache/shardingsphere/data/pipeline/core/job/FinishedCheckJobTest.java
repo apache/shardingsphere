@@ -46,9 +46,9 @@ public final class FinishedCheckJobTest {
     private PipelineJobAPI pipelineJobAPI;
     
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.initAndMockServerConfig(RuleAlteredContextUtil.createServerConfig());
+        RuleAlteredContextUtil.initAndMockContextConfig();
         finishedCheckJob = new FinishedCheckJob();
     }
     

@@ -34,6 +34,6 @@ public final class FixtureRuleAlteredJobCompletionDetectAlgorithm implements Rul
     
     @Override
     public String getType() {
-        return "Fixture";
+        return "FIXTURE";
     }
 }

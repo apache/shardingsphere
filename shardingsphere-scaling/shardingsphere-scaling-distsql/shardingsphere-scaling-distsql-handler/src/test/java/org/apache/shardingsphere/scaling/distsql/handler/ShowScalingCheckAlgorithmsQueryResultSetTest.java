@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
@@ -49,7 +50,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     public void before() {
         ServerConfiguration serverConfiguration = mock(ServerConfiguration.class);
         when(serverConfiguration.getWorkerThread()).thenReturn(1);
-        RuleAlteredContext.getInstance().init(serverConfiguration);
+        RuleAlteredContext.getInstance().init(new OnRuleAlteredActionConfiguration(1000, 5, null, null));
     }
     
     @Test

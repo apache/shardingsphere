@@ -59,7 +59,7 @@ public final class PipelineJobAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.initAndMockServerConfig(RuleAlteredContextUtil.createServerConfig());
+        RuleAlteredContextUtil.initAndMockContextConfig();
         pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
     }
     

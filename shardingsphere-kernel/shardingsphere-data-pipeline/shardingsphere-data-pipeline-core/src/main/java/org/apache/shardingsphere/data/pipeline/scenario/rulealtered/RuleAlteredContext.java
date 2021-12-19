@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
@@ -46,9 +45,6 @@ public final class RuleAlteredContext {
     private static final RuleAlteredContext INSTANCE = new RuleAlteredContext();
     
     private volatile OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
-    
-    // TODO replace serverConfig
-    private volatile ServerConfiguration serverConfig;
     
     private volatile RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm;
     
@@ -94,9 +90,9 @@ public final class RuleAlteredContext {
             }
             this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         }
-        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
-        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
     }
     
     /**
@@ -106,17 +102,5 @@ public final class RuleAlteredContext {
      */
     public void init(final ModeConfiguration modeConfig) {
         this.modeConfig = modeConfig;
-    }
-    
-    /**
-     * Initialize context.
-     *
-     * @param serverConfig server configuration
-     */
-    public void init(final ServerConfiguration serverConfig) {
-        if (null != this.serverConfig) {
-            return;
-        }
-        this.serverConfig = serverConfig;
     }
 }

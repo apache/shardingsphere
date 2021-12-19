@@ -62,7 +62,7 @@ public final class GovernanceRepositoryAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.rawMockServerConfig(RuleAlteredContextUtil.createServerConfig());
+        RuleAlteredContextUtil.rawMockContextConfig();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     

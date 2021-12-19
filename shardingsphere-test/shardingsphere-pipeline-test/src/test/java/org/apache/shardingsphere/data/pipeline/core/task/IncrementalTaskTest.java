@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +37,7 @@ public final class IncrementalTaskTest {
     
     @BeforeClass
     public static void beforeClass() {
-        RuleAlteredContext.getInstance().init(new ServerConfiguration());
+        RuleAlteredContextUtil.rawMockContextConfig();
     }
     
     @Before
