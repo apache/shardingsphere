@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -32,9 +31,8 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,7 +46,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -60,10 +57,9 @@ public final class PipelineJobAPIImplTest {
     private static PipelineJobAPI pipelineJobAPI;
     
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
-        RuleAlteredContext.getInstance().init(mockServerConfig());
+        RuleAlteredContextUtil.initAndMockServerConfig(RuleAlteredContextUtil.createServerConfig());
         pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
     }
     
@@ -196,12 +192,6 @@ public final class PipelineJobAPIImplTest {
     @AfterClass
     public static void afterClass() throws Exception {
         ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
-    }
-    
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true));
-        return result;
     }
     
     @SneakyThrows(SQLException.class)

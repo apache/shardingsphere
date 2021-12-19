@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.impl;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -31,13 +30,10 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgres
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.BeforeClass;
@@ -64,9 +60,9 @@ public final class GovernanceRepositoryAPIImplTest {
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", mockServerConfig());
+        RuleAlteredContextUtil.rawMockServerConfig(RuleAlteredContextUtil.createServerConfig());
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     
@@ -118,12 +114,6 @@ public final class GovernanceRepositoryAPIImplTest {
         DataChangedEvent event = eventReference.get();
         assertNotNull(event);
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
-    }
-    
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
-        return result;
     }
     
     private RuleAlteredJobContext mockJobContext() {
