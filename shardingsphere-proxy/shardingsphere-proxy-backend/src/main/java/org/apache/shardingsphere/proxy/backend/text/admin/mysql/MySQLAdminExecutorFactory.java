@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTab
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.util.CurrentUserEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -95,8 +96,11 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowVersionExecutor.FUNCTION_NAME)) {
                 return Optional.of(new ShowVersionExecutor());
             }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME)) {
-                return Optional.of(new ShowCurrentUserExecutor());
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, CurrentUserEnum.CURRENT_USER_BRACKETS.getValue())) {
+                return Optional.of(new ShowCurrentUserExecutor(CurrentUserEnum.CURRENT_USER_BRACKETS.getValue()));
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, CurrentUserEnum.CURRENT_USER.getValue())) {
+                return Optional.of(new ShowCurrentUserExecutor(CurrentUserEnum.CURRENT_USER.getValue()));
             }
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
                 return Optional.of(new ShowCurrentDatabaseExecutor());

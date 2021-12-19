@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.CurrentUserEnum;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,7 +75,7 @@ public final class ShowCurrentUserExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor();
+        ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor(CurrentUserEnum.CURRENT_USER_BRACKETS.getValue());
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
