@@ -49,7 +49,7 @@ public final class RuleAlteredContext {
     // TODO replace serverConfig
     private volatile ServerConfiguration serverConfig;
     
-    private volatile RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm;
+    private volatile RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm;
     
     private volatile DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
@@ -83,7 +83,7 @@ public final class RuleAlteredContext {
             }
             ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
             if (null != completionDetector) {
-                clusterAutoSwitchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, RuleAlteredJobCompletionDetectAlgorithm.class);
+                completionDetectAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, RuleAlteredJobCompletionDetectAlgorithm.class);
             }
             ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
             if (null != dataConsistencyChecker) {

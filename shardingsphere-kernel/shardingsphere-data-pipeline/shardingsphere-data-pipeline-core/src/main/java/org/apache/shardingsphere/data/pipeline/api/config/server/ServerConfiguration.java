@@ -33,7 +33,7 @@ public final class ServerConfiguration {
     
     private int workerThread = 30;
     
-    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    private ShardingSphereAlgorithmConfiguration completionDetectAlgorithm;
     
     private ShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
     

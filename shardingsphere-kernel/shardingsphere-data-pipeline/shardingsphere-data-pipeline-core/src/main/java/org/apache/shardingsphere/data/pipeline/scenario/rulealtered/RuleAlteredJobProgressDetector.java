@@ -66,8 +66,8 @@ public final class RuleAlteredJobProgressDetector {
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
-        RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm = RuleAlteredContext.getInstance().getClusterAutoSwitchAlgorithm();
-        return clusterAutoSwitchAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
+        RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm = RuleAlteredContext.getInstance().getCompletionDetectAlgorithm();
+        return completionDetectAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
     }
     
     /**

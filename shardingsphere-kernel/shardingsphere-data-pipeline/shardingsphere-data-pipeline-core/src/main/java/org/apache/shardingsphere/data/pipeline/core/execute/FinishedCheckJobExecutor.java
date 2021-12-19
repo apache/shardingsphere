@@ -39,9 +39,9 @@ public final class FinishedCheckJobExecutor extends AbstractLifecycleExecutor {
     @Override
     public void start() {
         super.start();
-        RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm = RuleAlteredContext.getInstance().getClusterAutoSwitchAlgorithm();
-        if (null == clusterAutoSwitchAlgorithm) {
-            log.info("clusterAutoSwitchAlgorithm not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
+        RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm = RuleAlteredContext.getInstance().getCompletionDetectAlgorithm();
+        if (null == completionDetectAlgorithm) {
+            log.info("completionDetectAlgorithm not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
             return;
         }
         log.info("Start finished check job executor.");
