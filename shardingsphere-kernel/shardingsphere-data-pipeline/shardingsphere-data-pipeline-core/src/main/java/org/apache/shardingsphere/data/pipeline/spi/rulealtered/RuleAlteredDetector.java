@@ -24,10 +24,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import java.util.Optional;
 
 /**
- * Job rule altered detector, SPI interface.
+ * Rule altered detector, SPI interface.
  */
-// TODO rename
-public interface JobRuleAlteredDetector {
+public interface RuleAlteredDetector {
     
     /**
      * Get YAML rule configuration class name.

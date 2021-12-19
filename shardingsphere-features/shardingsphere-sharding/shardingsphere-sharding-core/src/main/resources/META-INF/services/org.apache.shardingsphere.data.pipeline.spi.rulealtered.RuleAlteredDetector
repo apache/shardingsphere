@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.schedule.JobShardingRuleAlteredDetector
+org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector

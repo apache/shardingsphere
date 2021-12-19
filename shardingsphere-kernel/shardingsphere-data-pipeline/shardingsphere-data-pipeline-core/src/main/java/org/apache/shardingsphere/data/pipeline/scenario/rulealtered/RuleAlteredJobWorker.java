@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 public final class RuleAlteredJobWorker {
     
     static {
-        ShardingSphereServiceLoader.register(JobRuleAlteredDetector.class);
+        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
     }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
@@ -118,11 +118,11 @@ public final class RuleAlteredJobWorker {
     private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
-        Map<String, JobRuleAlteredDetector> typeDetectorMap = ShardingSphereServiceLoader.getSingletonServiceInstances(JobRuleAlteredDetector.class).stream()
-                .collect(Collectors.toMap(JobRuleAlteredDetector::getYamlRuleConfigClassName, Function.identity()));
+        Map<String, RuleAlteredDetector> typeDetectorMap = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+                .collect(Collectors.toMap(RuleAlteredDetector::getYamlRuleConfigClassName, Function.identity()));
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             String type = each.getClass().getName();
-            JobRuleAlteredDetector detector = typeDetectorMap.get(type);
+            RuleAlteredDetector detector = typeDetectorMap.get(type);
             if (null == detector) {
                 continue;
             }

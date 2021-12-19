@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -53,11 +53,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
-        ShardingSphereServiceLoader.register(JobRuleAlteredDetector.class);
+        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
     }
     
-    private static final Map<String, JobRuleAlteredDetector> TYPE_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(JobRuleAlteredDetector.class).stream()
-            .collect(Collectors.toMap(JobRuleAlteredDetector::getRuleConfigClassName, Function.identity()));
+    private static final Map<String, RuleAlteredDetector> TYPE_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+            .collect(Collectors.toMap(RuleAlteredDetector::getRuleConfigClassName, Function.identity()));
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
@@ -95,7 +95,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         if (null == currentRuleConfig) {
             return false;
         }
-        JobRuleAlteredDetector detector = TYPE_DETECTOR_MAP.get(currentRuleConfig.getClass().getName());
+        RuleAlteredDetector detector = TYPE_DETECTOR_MAP.get(currentRuleConfig.getClass().getName());
         return null != detector && detector.getOnRuleAlteredActionConfig(currentRuleConfig).isPresent();
     }
     

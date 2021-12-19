@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.schedule;
 
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -30,9 +30,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Job sharding rule altered detector.
+ * Sharding rule altered detector.
  */
-public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetector {
+public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     
     @Override
     public String getYamlRuleConfigClassName() {
