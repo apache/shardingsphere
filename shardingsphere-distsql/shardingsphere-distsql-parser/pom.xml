@@ -52,6 +52,12 @@
     <build>
         <plugins>
             <plugin>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.antlr</groupId>
+                        <artifactId>antlr4</artifactId>
+                    </dependency>
+                </dependencies>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <executions>
