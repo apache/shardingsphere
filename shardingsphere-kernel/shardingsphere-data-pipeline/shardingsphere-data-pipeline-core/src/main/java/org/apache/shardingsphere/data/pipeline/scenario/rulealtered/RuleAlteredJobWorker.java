@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
@@ -63,49 +64,84 @@ public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
+    private static final Map<String, RuleAlteredDetector> YAML_RULE_CLASS_NAME_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+            .collect(Collectors.toMap(RuleAlteredDetector::getYamlRuleConfigClassName, Function.identity()));
+    
+    // TODO refactor
     private static final Map<String, RuleAlteredDetector> RULE_CLASS_NAME_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
             .collect(Collectors.toMap(RuleAlteredDetector::getRuleConfigClassName, Function.identity()));
+    
+    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
     
     /**
      * Is on rule altered action enabled.
      *
-     * @param currentRuleConfig current rule configuration
+     * @param ruleConfig rule configuration
      * @return enabled or not
      */
-    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
+    public static boolean isOnRuleAlteredActionEnabled(final YamlRuleConfiguration ruleConfig) {
+        if (null == ruleConfig) {
             return false;
         }
-        RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(currentRuleConfig.getClass().getName());
-        return null != detector && detector.getOnRuleAlteredActionConfig(currentRuleConfig).isPresent();
+        RuleAlteredDetector detector = YAML_RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
+        return null != detector && detector.getOnRuleAlteredActionConfig(SWAPPER_ENGINE.swapToRuleConfiguration(ruleConfig)).isPresent();
+    }
+    
+    /**
+     * Is on rule altered action enabled.
+     *
+     * @param ruleConfig rule configuration
+     * @return enabled or not
+     */
+    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig) {
+        if (null == ruleConfig) {
+            return false;
+        }
+        RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
+        return null != detector && detector.getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
     
     /**
      * Initialize if necessary.
      *
-     * @param targetRuleConfig target rule configuration
+     * @param yamlRuleConfig YAML rule configuration
+     * @return initialization success or not
      */
-    public static void initIfNecessary(final org.apache.shardingsphere.infra.config.RuleConfiguration targetRuleConfig) {
+    public static boolean initIfNecessary(final YamlRuleConfiguration yamlRuleConfig) {
+        return initIfNecessary(SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig));
+    }
+    
+    /**
+     * Initialize if necessary.
+     *
+     * @param ruleConfig rule configuration
+     * @return initialization success or not
+     */
+    public static boolean initIfNecessary(final org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig) {
         if (!INITIALIZED.get()) {
             synchronized (INITIALIZED) {
                 if (INITIALIZED.get()) {
-                    return;
+                    return true;
                 }
+                log.info("start initialization...");
                 ShardingSphereEventBus.getInstance().register(INSTANCE);
                 new FinishedCheckJobExecutor().start();
                 new PipelineJobExecutor().start();
-                RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(targetRuleConfig.getClass().getName());
-                Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(targetRuleConfig);
+                RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
+                Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(ruleConfig);
                 if (!onRuleAlteredActionConfigOptional.isPresent()) {
                     log.error("rule altered action enabled but actor is not configured, ignored");
-                    return;
+                    return false;
                 }
                 RuleAlteredContext.getInstance().init(onRuleAlteredActionConfigOptional.get());
                 INITIALIZED.set(true);
+                log.info("initialization done");
+                return true;
             }
         }
+        return true;
     }
     
     /**

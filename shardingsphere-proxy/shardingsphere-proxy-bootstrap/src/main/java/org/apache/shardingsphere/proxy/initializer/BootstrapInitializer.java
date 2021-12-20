@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.version.ProxyVersion;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -64,7 +67,7 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         initContext(yamlConfig, modeConfig, port);
-        RuleAlteredContext.getInstance().init(modeConfig);
+        initRuleAlteredJobWorker(yamlConfig, modeConfig);
         setDatabaseServerInfo();
     }
     
@@ -84,6 +87,20 @@ public final class BootstrapInitializer {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
+    }
+    
+    private void initRuleAlteredJobWorker(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
+        RuleAlteredContext.getInstance().init(modeConfig);
+        for (Entry<String, YamlProxyRuleConfiguration> entry : yamlConfig.getRuleConfigurations().entrySet()) {
+            for (YamlRuleConfiguration each : entry.getValue().getRules()) {
+                if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(each)) {
+                    continue;
+                }
+                if (RuleAlteredJobWorker.initIfNecessary(each)) {
+                    return;
+                }
+            }
+        }
     }
     
     private void setDatabaseServerInfo() {
