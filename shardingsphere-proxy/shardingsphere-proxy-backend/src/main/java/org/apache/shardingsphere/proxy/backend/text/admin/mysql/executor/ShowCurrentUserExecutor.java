@@ -42,13 +42,11 @@ import java.util.Optional;
 @Getter
 public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor {
     
+    public static final String FUNCTION_NAME = "current_user()";
+    
+    public static final String FUNCTION_NAME_ALIAS = "current_user";
+    
     private MergedResult mergedResult;
-    
-    private String showName;
-    
-    public ShowCurrentUserExecutor(final String showName) {
-        this.showName = showName;
-    }
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
@@ -61,6 +59,6 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", showName, showName, Types.VARCHAR, "VARCHAR", 100, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0)));
     }
 }
