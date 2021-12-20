@@ -63,6 +63,7 @@ chapter = true
     <li><a href="https://m.51tiangou.com/">大商天狗电子商务有限责任公司</a></li>
     <li><a href="http://www.dusto.cn/">浙江大东鞋业有限公司</a></li>
     <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
+    <li><a href="https://www.wandougongzhu.cn">豌豆公主</a></li>
 </ul>
 
 ### 数字化与云服务
