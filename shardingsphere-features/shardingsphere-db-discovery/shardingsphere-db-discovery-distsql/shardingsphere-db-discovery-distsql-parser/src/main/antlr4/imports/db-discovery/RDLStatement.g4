@@ -35,6 +35,26 @@ createDatabaseDiscoveryType
     : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
     ;
 
+createDatabaseDiscoveryHeartbeat
+    : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+    
+alterDatabaseDiscoveryHeartbeat
+    : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+
+dropDatabaseDiscoveryType
+    : DROP DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
+    ;
+
+dropDatabaseDiscoveryHeartbeat
+    : DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    ;
+    
+alterDatabaseDiscoveryType
+    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
 databaseDiscoveryRule
     : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
     ;
@@ -51,6 +71,10 @@ databaseDiscoveryTypeDefinition
     : discoveryTypeName LP typeDefinition RP
     ;
 
+heartbeatDefinition
+    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
+    ;
+
 ruleName
     : IDENTIFIER
     ;
@@ -64,22 +88,18 @@ resourceName
     ;
 
 typeDefinition
-    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP typeProperties RP)? RP
+    : TYPE LP NAME EQ discoveryTypeName (COMMA PROPERTIES LP properties RP)? RP
     ;
 
 discoveryHeartbeat
-    : HEARTBEAT LP PROPERTIES LP typeProperties RP RP
+    : HEARTBEAT LP PROPERTIES LP properties RP RP
     ;
 
-typeName
-    : IDENTIFIER
+properties
+    : property (COMMA property)*
     ;
 
-typeProperties
-    : typeProperty (COMMA typeProperty)*
-    ;
-
-typeProperty
+property
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;
 

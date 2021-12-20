@@ -44,7 +44,7 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_DB_CREATE_EXISTS_ERROR(1007, "HY000", "Can't create database '%s'; database exists"),
     
-    ER_DB_DROP_EXISTS_ERROR(1008, "HY000", "Can't drop database '%s'; database doesn't exist"),
+    ER_DB_DROP_NOT_EXISTS_ERROR(1008, "HY000", "Can't drop database '%s'; database doesn't exist"),
     
     ER_TABLE_EXISTS_ERROR(1050, "42S01", "Table '%s' already exists"),
     

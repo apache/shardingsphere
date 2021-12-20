@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 import java.util.BitSet;
 import java.util.Deque;

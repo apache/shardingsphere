@@ -11,11 +11,11 @@ JAVA，JDK 1.8+.
 
 The migration scene we support:
 
-| Source                     | Target               |
-| -------------------------- | -------------------- |
-| MySQL(5.1.15 ~ 5.7.x)      | MySQL                |
-| PostgreSQL(9.4 ~ )         | PostgreSQL           |
-| openGauss(2.1.0)           | openGauss            |
+| Source                     | Target                  |
+| -------------------------- | ----------------------- |
+| MySQL(5.1.15 ~ 5.7.x)      | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )         | PostgreSQL(9.4 ~ )      |
+| openGauss(2.1.0)           | openGauss(2.1.0)        |
 
 **Attention**: 
 
@@ -43,6 +43,15 @@ For RDBMS which `Create table automatically` feature is not supported, we need t
 
 We need to enable `binlog` for MySQL. Privileges of users scaling used should include Replication privileges.
 
+Execute the following SQL to confirm whether binlog is turned on or not:
+
+```sql
+show variables like '%log_bin%';
+show variables like '%binlog%';
+```
+
+As shown below, it means binlog has been turned on:
+
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -51,7 +60,15 @@ We need to enable `binlog` for MySQL. Privileges of users scaling used should in
 | binlog_format                           | ROW                                   |
 | binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
+```
 
+Execute the following SQL to confirm whether the user has migration permission or not:
+
+```sql
+SHOW GRANTS 'user';
+```
+
+```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
 +------------------------------------------------------------------------------+
@@ -62,9 +79,7 @@ We need to enable `binlog` for MySQL. Privileges of users scaling used should in
 
 PostgreSQL need to support and open [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) feature.
 
-### DistSQL API
-
-ShardingSphere-Scaling provides DistSQL API
+### DistSQL API for auto mode
 
 #### Preview current sharding rule
 
@@ -91,7 +106,7 @@ mysql> preview select count(1) from t_order;
 
 1. Add new data source resources
 
-Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/) for more details.
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for more details.
 
 Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
@@ -108,9 +123,15 @@ ADD RESOURCE ds_2 (
 
 2. Alter sharding table rule
 
-Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/) for more details.
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
-`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. For each logic table, we could not use mixture of these two types.
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. Following is a comparison of the two sharding rule types: 
+
+| Type         | AutoTableRule                                               | TableRule                                                    |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Definition   | [Auto Sharding Algorithm](/en/features/sharding/concept/sharding/#auto-sharding-algorithm) | [User-Defined Sharding Algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm)   |
+
+Meaning of fields in DistSQL is the same as YAML configuration, please refer to [YAML Configuration#Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) for more details.
 
 Example of alter `AutoTableRule`:
 ```sql
@@ -118,7 +139,7 @@ ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
@@ -126,19 +147,28 @@ If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted
 
 Uncompleted example of alter `TableRule`:
 ```sql
+ALTER SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+);
+
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
 GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+), t_order_item (
+DATANODES("ds_${2..4}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-**Attention**: We could not emit scaling job by altering `TableRule` in current version.
+If `algorithm-expression` of `database_inline` and `DATANODES` of `t_order` is changed, then scaling job will be emitted.
 
 #### List scaling jobs
 
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
 Example:
 ```sql
@@ -186,10 +216,12 @@ Current scaling job is finished, new sharding rule should take effect, and not i
 | EXECUTE_INVENTORY_TASK                            | inventory task running                                       |
 | EXECUTE_INCREMENTAL_TASK                          | incremental task running                                     |
 | ALMOST_FINISHED                                   | almost finished                                              |
-| FINISHED                                          | finished                                                     |
+| FINISHED                                          | finished (The whole process is completed, and the new rules have been taken effect) |
 | PREPARING_FAILURE                                 | preparation failed                                           |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | inventory task failed                                        |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | incremental task failed                                      |
+
+If `status` fails, you can check the log of `proxy` to view the error stack and analyze the problem.
 
 #### Preview new sharding rule
 
@@ -215,4 +247,10 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### Other DistSQL
-Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#scaling) for more details.
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
+
+### DistSQL API for manual mode
+
+Data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
+
+Attention: It's still under development.

@@ -33,5 +33,6 @@
         <module>shardingsphere-jdbc-memory-local-readwrite-splitting-example</module>
         <module>shardingsphere-jdbc-memory-local-encrypt-example</module>
         <module>shardingsphere-jdbc-memory-local-shadow-example</module>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-example</module>
     </modules>
 </project>

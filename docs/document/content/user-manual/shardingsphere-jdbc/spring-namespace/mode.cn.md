@@ -39,7 +39,7 @@ weight = 1
 
 #### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.0.0.xsd)
 
 <standalone:repository />
 
@@ -79,7 +79,7 @@ weight = 1
 
 #### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.0.0.xsd)
 
 <cluster:repository />
 

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.scaling.distsql.exception.ScalingJobOperateException;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.distsql.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public final class ResetScalingUpdater implements RALUpdater<ResetScalingStateme
     @Override
     public void executeUpdate(final ResetScalingStatement sqlStatement) {
         try {
-            ScalingAPIFactory.getScalingAPI().reset(sqlStatement.getJobId());
+            PipelineJobAPIFactory.getPipelineJobAPI().reset(sqlStatement.getJobId());
         } catch (final SQLException ex) {
             throw new ScalingJobOperateException(ex.getMessage());
         }

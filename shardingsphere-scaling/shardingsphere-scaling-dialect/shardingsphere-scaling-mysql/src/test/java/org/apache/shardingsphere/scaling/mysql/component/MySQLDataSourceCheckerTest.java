@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,12 +74,12 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckPrivilegeLackPrivileges() throws SQLException {
         new MySQLDataSourceChecker().checkPrivilege(dataSources);
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
         new MySQLDataSourceChecker().checkPrivilege(dataSources);
@@ -93,14 +93,14 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement, times(3)).executeQuery();
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
         new MySQLDataSourceChecker().checkVariable(dataSources);
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckVariableFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
         new MySQLDataSourceChecker().checkVariable(dataSources);

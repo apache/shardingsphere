@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -75,14 +75,17 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
-        if (cause instanceof NoDatabaseSelectedException || cause instanceof SchemaNotExistedException) {
+        if (cause instanceof SchemaNotExistedException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName());
+        }
+        if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
         }
-        if (cause instanceof DBDropExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_EXISTS_ERROR, ((DBDropExistsException) cause).getDatabaseName());
+        if (cause instanceof DBDropNotExistsException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) cause).getDatabaseName());
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
@@ -115,8 +118,8 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCKED, exception.getTableName(),
                     exception.getSchemaName());
         }
-        if (cause instanceof ScalingJobNotFoundException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
+        if (cause instanceof PipelineJobNotFoundException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof FrontendTooManyConnectionsException) {
             return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());

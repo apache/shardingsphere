@@ -98,7 +98,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (sqlStatement instanceof TCLStatement) {
             databaseCommunicationEngine = null;
             textProtocolBackendHandler =
-                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), connectionSession);
+                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
             return;
         }
         textProtocolBackendHandler = null;

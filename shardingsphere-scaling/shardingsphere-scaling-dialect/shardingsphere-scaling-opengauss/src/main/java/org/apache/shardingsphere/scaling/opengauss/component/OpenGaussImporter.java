@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.opengauss.component;
 
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -35,8 +35,8 @@ public final class OpenGaussImporter extends AbstractImporter {
     }
     
     @Override
-    protected ScalingSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        return new OpenGaussScalingSQLBuilder(shardingColumnsMap);
+    protected PipelineSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        return new OpenGaussPipelineSQLBuilder(shardingColumnsMap);
     }
 }
 

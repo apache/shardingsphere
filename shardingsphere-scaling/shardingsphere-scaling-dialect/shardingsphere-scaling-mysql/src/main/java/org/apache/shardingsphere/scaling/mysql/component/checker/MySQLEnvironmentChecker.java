@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.DataSourcePreparer;
 
 /**
  * MySQL environment checker.

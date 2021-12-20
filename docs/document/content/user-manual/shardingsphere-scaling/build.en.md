@@ -18,7 +18,13 @@ The binary packages:
 
 Or get binary package from [download page]( https://shardingsphere.apache.org/document/current/en/downloads/ ).
 
-2. Unzip the proxy distribution package, modify the configuration file `conf/server.yaml`, enable `scaling` and `mode`:
+> Scaling is an experimental feature, if scaling job fail, you could try nightly version, click here to [download latest version]( https://github.com/apache/shardingsphere#nightly-builds ).
+
+2. Unzip the proxy distribution package, modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/) for more details.
+
+3. Modify the configuration file `conf/server.yaml`. Type of `mode` must be `Cluster` for now, please start the registry center before running proxy.
+
+Configuration after enabling `scaling` and `mode`:
 ```yaml
 scaling:
   blockQueueSize: 10000
@@ -56,7 +62,13 @@ You could customize an auto switch algorithm by implementing `ScalingClusterAuto
 sh bin/start.sh
 ```
 
-4. See the proxy log file `logs/stdout.log`，ensure startup successfully.
+4. Check proxy log `logs/stdout.log`:
+
+```
+[INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
+```
+
+It means `proxy` start up successfully.
 
 ## Shutdown
 
@@ -68,7 +80,13 @@ sh bin/stop.sh
 
 The existing configuration items are as follows, we can modify them in `conf/server.yaml`:
 
-| Name           | Description                                                                               | Default value |
-| -------------- | ----------------------------------------------------------------------------------------- | ------------- |
-| blockQueueSize | Queue size of data transmission channel                                                   | 10000         |
-| workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 40            |
+| 1st key | 2nd key                       | 3rd key                                      | Desc                                                                                         | Default value   |
+| ------- | ----------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------- |
+| scaling |                               | blockQueueSize                               | Queue size of data transmission channel                                                      | 10000           |
+|         |                               | workerThread                                 | Worker thread pool size, the number of migration task threads allowed to run concurrently    | 40              |
+|         | clusterAutoSwitchAlgorithm    | type                                         | Enable automatic detection of task completion and switch configuration, currently the system provides IDLE type implementation |           |
+|         |                               | props:incremental-task-idle-minute-threshold | The maximum idle time of incremental synchronization, if it exceeds this value, enter the next state    | 30 (minutes) |
+|         | dataConsistencyCheckAlgorithm | type                                         | Configure the dataConsistencyCheckAlgorithm, configure it to enable data consistency check. At present, system provides `DEFAULT` type of implementation, only MySQL implement `DEFAULT` algorithm for now. Please refer to [Data consistency check algorithm](/en/dev-manual/scaling/#scalingdataconsistencycheckalgorithm) for more details. |           |
+| mode    | type                          | Cluster                                      |                                                                                              |                |
+|         | repository                    | type, props                                  | registry center, now support Zookeeper, Etcd                                                 |                |
+|         | overwrite                     |                                              | Control whether the configuration file covers the registry center metadata, which can generally be used during testing. | false     |

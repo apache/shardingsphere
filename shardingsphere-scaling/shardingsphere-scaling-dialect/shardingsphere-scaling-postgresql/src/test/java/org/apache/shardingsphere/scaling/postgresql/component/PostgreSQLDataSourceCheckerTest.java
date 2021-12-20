@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,14 +83,14 @@ public final class PostgreSQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckPrivilegeWithoutTable() throws SQLException {
         when(resultSet.next()).thenReturn(false);
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         dataSourceChecker.checkPrivilege(dataSources);
     }
     
-    @Test(expected = PrepareFailedException.class)
+    @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(3)).thenReturn("test");

@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-parser-api</module>
         <module>shardingsphere-parser-core</module>
+        <module>shardingsphere-parser-spring</module>
     </modules>
 
 </project>

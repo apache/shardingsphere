@@ -11,11 +11,11 @@ weight = 2
 
 支持迁移场景如下：
 
-| 源端                   | 目标端                |
-| --------------------- | -------------------- |
-| MySQL(5.1.15 ~ 5.7.x) | MySQL                |
-| PostgreSQL(9.4 ~ )    | PostgreSQL           |
-| openGauss(2.1.0)      | openGauss            |
+| 源端                   | 目标端                   |
+| --------------------- | ----------------------- |
+| MySQL(5.1.15 ~ 5.7.x) | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )    | PostgreSQL(9.4 ~ )      |
+| openGauss(2.1.0)      | openGauss(2.1.0)        |
 
 **注意**：
 
@@ -40,8 +40,16 @@ weight = 2
 还没开启`自动建表`的数据库需要手动创建分表。
 
 ### 权限要求
-
+#### MySQL
 MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replication 相关权限。
+执行以下命令，确认是否有开启binlog：
+
+```
+show variables like '%log_bin%';
+show variables like '%binlog%';
+```
+
+如以下显示，则说明binlog已开启
 
 ```
 +-----------------------------------------+---------------------------------------+
@@ -51,7 +59,14 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 | binlog_format                           | ROW                                   |
 | binlog_row_image                        | FULL                                  |
 +-----------------------------------------+---------------------------------------+
+```
 
+执行以下命令，查看该用户是否有迁移权限
+```
+SHOW GRANTS 'user';
+```
+
+```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
 +------------------------------------------------------------------------------+
@@ -60,11 +75,10 @@ MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replicatio
 +------------------------------------------------------------------------------+
 ```
 
+#### PostgreSQL
 PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
 
-### DistSQL 接口
-
-弹性迁移组件提供了 DistSQL 接口
+### DistSQL 自动模式接口
 
 #### 预览当前分片规则
 
@@ -91,7 +105,7 @@ mysql> preview select count(1) from t_order;
 
 1. 添加新的数据源
 
-详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-resource/)。
+详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
 
 先在底层数据库系统创建需要的分库，下面的 `DistSQL` 需要用到。
 
@@ -108,9 +122,15 @@ ADD RESOURCE ds_2 (
 
 2. 修改分片规则
 
-详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/rdl/rdl-sharding-rule/)。
+详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
-`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。对于同一个逻辑表，不能混合使用这2种格式。
+`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
+
+| 类型         | AutoTableRule（自动分片）                                      | TableRule（自定义分片）                                        |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 定义         | [自动化分片算法](/cn/features/sharding/concept/sharding/#自动化分片算法) | [自定义分片算法](/cn/features/sharding/concept/sharding/#自定义分片算法)   |
+
+DistSQL 字段含义和 YAML 配置保持一致，详情请参见[YAML配置#数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
 
 `AutoTableRule`修改示例：
 ```sql
@@ -118,27 +138,36 @@ ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-比如说`RESOURCES`和`sharding-count`修改了会触发迁移。
+比如说修改了 `RESOURCES` 和 `sharding-count` 会触发迁移。
 
-不完整的`TableRule`修改示例：
+`TableRule`修改示例：
 ```sql
+ALTER SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+);
+
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
 GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+), t_order_item (
+DATANODES("ds_${2..4}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-**注意**：当前版本不支持通过修改`TableRule`触发迁移。
+比如说修改了 `database_inline` 的 `algorithm-expression` 和 `t_order` 的 `DATANODES` 会触发迁移。
 
 #### 查询所有迁移任务
 
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 示例：
 ```sql
@@ -185,11 +214,12 @@ mysql> show scaling status 660152090995195904;
 | RUNNING                                           | 运行中                                                        |
 | EXECUTE_INVENTORY_TASK                            | 全量迁移中                                                     |
 | EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     |
-| ALMOST_FINISHED                                   | 基本完成                                                       |
-| FINISHED                                          | 已完成                                                         |
+| FINISHED                                          | 已完成（整个流程完成了，新规则已生效）                              |
 | PREPARING_FAILURE                                 | 准备阶段失败                                                    |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | 增量迁移阶段失败                                                 |
+
+如果`status`出现失败的情况，可以查看`proxy`的日志查看错误堆栈分析问题。
 
 #### 预览新的分片规则是否生效
 
@@ -215,4 +245,10 @@ mysql> preview select count(1) from t_order;
 ```
 
 #### 其他DistSQL
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+
+### DistSQL 手动模式接口
+
+数据校验、切换配置等操作可以手动执行。详情请参见：[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+
+注意：目前还在开发中，功能还不完善。
