@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 172 companies.
+Total: 173 companies.
 
 ### Infra
 <ul>
@@ -60,10 +60,10 @@ Total: 172 companies.
     <li><a href="http://cs.maifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
-    <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
-    <li><a href="http://www.dusto.cn/">DUSTO</a></li>
-    <li><a href="https://www.sourcingarts.com/">SourcingArts</a></li>
-    <li><a href="https://www.wandougongzhu.cn ">WanDouGongZhu</a></li>
+    <li><a href="https://m.51tiangou.com/" rel="nofollow">51tiangou</a></li>
+    <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
+    <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
+    <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -236,24 +236,24 @@ Total: 172 companies.
     <li><a href="https://www.garfiel-tech.com/" rel="nofollow">Garfiel-tech</a></li>
     <li><a href="https://wuyuan.io" rel="nofollow">Enhancer</a></li>
     <li><a href="https://www.sunyur.com/" rel="nofollow">Sunyur</a></li>
-    <li><a href="https://www.yunyuecloud.com/">Digital Yunyue</a></li>
-    <li><a href="https://t.itaojin.cn">itaojin</a></li>
-    <li><a href="http://www.hzsun.com">hzsun</a></li>
+    <li><a href="https://www.yunyuecloud.com/" rel="nofollow">Digital Yunyue</a></li>
+    <li><a href="https://t.itaojin.cn" rel="nofollow">itaojin</a></li>
+    <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
 </ul>
 
 ### Health Care
 <ul>
-    <li><a href="https://www.keep.com/">Keep</a></li>
-    <li><a href="http://www.dxy.cn/">DXY</a></li>
+    <li><a href="https://www.keep.com/" rel="nofollow">Keep</a></li>
+    <li><a href="http://www.dxy.cn/" rel="nofollow">DXY</a></li>
     <li><a href="https://www.ddky.com/" rel="nofollow">DDKY</a></li>
     <li><a href="https://www.myweimai.com/" rel="nofollow">MyWeiMai</a></li>
     <li><a href="http://www.gaojihealth.com/" rel="nofollow">GaoJiHealth</a></li>
     <li><a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a></li>
-    <li><a href="https://www.mytijian.com">Mytijian</a></li>
-    <li><a href="https://cloud.guahao.cn/">WeDoctor Cloud</a></li>
-    <li><a href="http://www.huxleymedical.tech/">Hualian Medical</a></li>
-    <li><a href="https://www.xingren.com/">xingren</a></li>
-    <li><a href="https://www.medbanks.cn/">Medbanks</a></li>
+    <li><a href="https://www.mytijian.com" rel="nofollow">Mytijian</a></li>
+    <li><a href="https://cloud.guahao.cn/" rel="nofollow">WeDoctor Cloud</a></li>
+    <li><a href="http://www.huxleymedical.tech/" rel="nofollow">Hualian Medical</a></li>
+    <li><a href="https://www.xingren.com/" rel="nofollow">xingren</a></li>
+    <li><a href="https://www.medbanks.cn/" rel="nofollow">Medbanks</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
