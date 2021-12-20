@@ -54,7 +54,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        if (1 == queryResults.size()) {
+        if (1 == queryResults.size() && !(sqlStatementContext instanceof SelectStatementContext)) {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
