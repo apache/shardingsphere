@@ -12,6 +12,7 @@ rules:
     <data-source-name> (+): # 逻辑数据源名称
       dataSourceNames: # 数据源名称列表
         - <data-source>
+        - <data-source>
       discoveryHeartbeatName: # 检测心跳名称
       discoveryTypeName: # 高可用类型名称
   
