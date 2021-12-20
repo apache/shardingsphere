@@ -48,12 +48,11 @@ public final class DatabaseTypeRecognizer {
         return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
     }
     
-    @SuppressWarnings("ReturnOfNull")
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
-            return null;
+            throw new IllegalArgumentException("An error occurred when open datasource connection!", ex);
         }
     }
 }
