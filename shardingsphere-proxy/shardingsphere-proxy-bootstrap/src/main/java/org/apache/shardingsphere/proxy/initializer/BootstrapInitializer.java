@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -38,7 +37,6 @@ import org.apache.shardingsphere.proxy.backend.version.ProxyVersion;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -67,7 +65,7 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         initContext(yamlConfig, modeConfig, port);
-        initRuleAlteredJobWorker(yamlConfig, modeConfig);
+        initRuleAlteredJobWorker(modeConfig);
         setDatabaseServerInfo();
     }
     
@@ -89,18 +87,10 @@ public final class BootstrapInitializer {
         return result;
     }
     
-    private void initRuleAlteredJobWorker(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
-        RuleAlteredContext.getInstance().init(modeConfig);
-        for (Entry<String, YamlProxyRuleConfiguration> entry : yamlConfig.getRuleConfigurations().entrySet()) {
-            for (YamlRuleConfiguration each : entry.getValue().getRules()) {
-                if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(each)) {
-                    continue;
-                }
-                if (RuleAlteredJobWorker.initIfNecessary(each)) {
-                    return;
-                }
-            }
-        }
+    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+        RuleAlteredContext.initModeConfig(modeConfig);
+        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
+        RuleAlteredJobWorker.initWorkerIfNecessary();
     }
     
     private void setDatabaseServerInfo() {

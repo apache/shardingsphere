@@ -93,7 +93,7 @@ public final class PipelineAPIFactory {
     }
     
     private static void checkServerConfig() {
-        ModeConfiguration modeConfig = RuleAlteredContext.getInstance().getModeConfig();
+        ModeConfiguration modeConfig = RuleAlteredContext.getModeConfig();
         Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
         Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
     }
@@ -119,7 +119,7 @@ public final class PipelineAPIFactory {
         
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getInstance().getModeConfig().getRepository();
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
             ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
             repository.init(repositoryConfig);
             return new GovernanceRepositoryAPIImpl(repository);
@@ -139,7 +139,7 @@ public final class PipelineAPIFactory {
         
         private ElasticJobAPIHolder() {
             checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getInstance().getModeConfig().getRepository();
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
             String namespace = repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -181,7 +181,7 @@ public final class PipelineAPIFactory {
         
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getInstance().getModeConfig().getRepository();
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
             ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT);
             Properties props = repositoryConfig.getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));

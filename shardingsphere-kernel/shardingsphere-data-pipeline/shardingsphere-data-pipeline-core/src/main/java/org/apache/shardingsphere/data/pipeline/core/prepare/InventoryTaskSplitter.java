@@ -29,8 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -60,13 +60,15 @@ public final class InventoryTaskSplitter {
      * @param jobContext job context
      * @param taskConfig task configuration
      * @param dataSourceManager data source manager
+     * @param importerExecuteEngine execute engine
      * @return split inventory data task
      */
     // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - batchSize
-    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
+    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager,
+                                                  final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(PipelineTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
+            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), importerExecuteEngine));
         }
         return result;
     }

@@ -126,7 +126,7 @@ public final class PipelineJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(), is(true));
+        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(1L), is(true));
     }
     
     @Test

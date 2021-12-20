@@ -283,7 +283,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     private void mockScalingContext() {
         ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
         when(modeConfiguration.getType()).thenReturn("Cluster");
-        RuleAlteredContext.getInstance().init(modeConfiguration);
+        RuleAlteredContext.getInstance().initModeConfig(modeConfiguration);
         RuleAlteredContext.getInstance().init(new OnRuleAlteredActionConfiguration(1000, 5, null, null));
     }
     

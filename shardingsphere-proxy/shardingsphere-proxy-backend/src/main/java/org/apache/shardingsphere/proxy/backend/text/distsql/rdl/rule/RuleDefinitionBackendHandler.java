@@ -72,7 +72,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                 new Properties());
         if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
             RuleConfiguration alteredRuleConfig = createAlteredRuleConfig(sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
-            RuleAlteredJobWorker.initIfNecessary(alteredRuleConfig);
             processCache(shardingSphereMetaData, currentRuleConfig, alteredRuleConfig);
             return new UpdateResponseHeader(sqlStatement);
         }

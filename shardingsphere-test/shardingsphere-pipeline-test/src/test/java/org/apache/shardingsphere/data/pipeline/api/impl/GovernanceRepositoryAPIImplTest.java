@@ -25,11 +25,11 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -52,6 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class GovernanceRepositoryAPIImplTest {
     
@@ -130,12 +131,12 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
         dumperConfig.setShardingItem(0);
-        return PipelineTaskFactory.createInventoryTask(dumperConfig, taskConfig.getImporterConfig());
+        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), mock(ExecuteEngine.class));
     }
     
     private IncrementalTask mockIncrementalTask(final TaskConfiguration taskConfig) {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
-        return PipelineTaskFactory.createIncrementalTask(3, dumperConfig, taskConfig.getImporterConfig());
+        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), mock(ExecuteEngine.class));
     }
 }
