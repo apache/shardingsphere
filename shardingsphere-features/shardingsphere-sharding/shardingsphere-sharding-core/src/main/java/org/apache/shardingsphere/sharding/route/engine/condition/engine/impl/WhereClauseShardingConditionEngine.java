@@ -134,11 +134,8 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
                 ColumnProjection projection = buildColumnProjection(columnSegment);
                 Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
-                if (!tableName.isPresent()) {
-                    continue;
-                }
-                Optional<String> shardingColumn = shardingRule.findShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get());
-                if (!shardingColumn.isPresent()) {
+                Optional<String> shardingColumn = tableName.flatMap(optional -> shardingRule.findShardingColumn(columnSegment.getIdentifier().getValue(), optional));
+                if (!tableName.isPresent() || !shardingColumn.isPresent()) {
                     continue;
                 }
                 Column column = new Column(shardingColumn.get(), tableName.get());
