@@ -19,27 +19,36 @@ package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ComposeConstructorAdviceTest {
-
-    private ComposeConstructorAdvice composeConstructorAdvice;
-
+public final class ComposeConstructorAdviceTest {
+    
+    @Mock
+    private ConstructorAdvice constructorAdvice;
+    
+    private ComposeConstructorAdvice actual;
+    
+    @Before
+    public void setUp() {
+        actual = new ComposeConstructorAdvice(new ArrayList<>(Collections.singletonList(constructorAdvice)));
+    }
+    
     @Test
-    public void onConstructorTest() {
-        ConstructorAdvice advice = mock(ConstructorAdvice.class);
+    public void assertOnConstructor() {
         AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
-        List<ConstructorAdvice> adviceList = new ArrayList<>(Arrays.asList(advice));
-        composeConstructorAdvice = new ComposeConstructorAdvice(adviceList);
-        composeConstructorAdvice.onConstructor(adviceTargetObject, new Object[2]);
+        Object[] args = new Object[2];
+        actual.onConstructor(adviceTargetObject, args);
+        verify(constructorAdvice).onConstructor(adviceTargetObject, args);
     }
 }
