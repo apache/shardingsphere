@@ -44,14 +44,12 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand" db-types="MySQL">
         <input sql="SELECT * FROM t_account" />
-        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount`, `t_account_0`.`status` FROM t_account_0" />
-        <output sql="SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount`, `t_account_1`.`status` FROM t_account_1" />
+        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount`, `t_account_0`.`status` FROM t_account_0 UNION ALL SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount`, `t_account_1`.`status` FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_0 a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_1 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_0 a UNION ALL SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_1 a" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_sharding_qualified_shorthand_join_table" db-types="MySQL">
@@ -88,13 +86,11 @@
                 
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account_0 a" />
-        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account_1 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account_0 a UNION ALL SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account_1 a" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_table_qualified_shorthand" db-types="MySQL">
         <input sql="SELECT t_account.* FROM t_account" />
-        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount`, `t_account_0`.`status` FROM t_account_0" />
-        <output sql="SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount`, `t_account_1`.`status` FROM t_account_1" />
+        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS `password`, `t_account_0`.`cipher_amount` AS `amount`, `t_account_0`.`status` FROM t_account_0 UNION ALL SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS `password`, `t_account_1`.`cipher_amount` AS `amount`, `t_account_1`.`status` FROM t_account_1" />
     </rewrite-assertion>
 </rewrite-assertions>

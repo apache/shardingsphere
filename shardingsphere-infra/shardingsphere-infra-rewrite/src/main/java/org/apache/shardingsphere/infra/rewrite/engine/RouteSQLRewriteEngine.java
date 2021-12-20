@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -27,12 +29,15 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Route SQL rewrite engine.
@@ -48,10 +53,58 @@ public final class RouteSQLRewriteEngine {
      */
     public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
+        for (Entry<String, Collection<RouteUnit>> entry : aggregateRouteUnitGroups(routeContext.getRouteUnits()).entrySet()) {
+            Collection<RouteUnit> routeUnits = entry.getValue();
+            if (isNeedAggregateRewrite(sqlRewriteContext.getSqlStatementContext(), routeUnits)) {
+                result.put(routeUnits.iterator().next(), createSQLRewriteUnit(sqlRewriteContext, routeContext, routeUnits));
+            } else {
+                result.putAll(createSQLRewriteUnits(sqlRewriteContext, routeContext, routeUnits));
+            }
         }
         return new RouteSQLRewriteResult(result);
+    }
+    
+    private SQLRewriteUnit createSQLRewriteUnit(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
+        Collection<String> sql = new LinkedList<>();
+        List<Object> parameters = new LinkedList<>();
+        for (RouteUnit each : routeUnits) {
+            sql.add(SQLUtil.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext, each).toSQL()));
+            parameters.addAll(getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each));
+        }
+        return new SQLRewriteUnit(String.join(" UNION ALL ", sql), parameters);
+    }
+    
+    private Map<RouteUnit, SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
+        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
+        for (RouteUnit each : routeUnits) {
+            result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
+        }
+        return result;
+    }
+    
+    private boolean isNeedAggregateRewrite(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) || routeUnits.size() == 1) {
+            return false;
+        }
+        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
+        boolean containsSubqueryJoinQuery = statementContext.isContainsSubquery() || statementContext.isContainsJoinQuery();
+        boolean containsOrderByLimitClause = !statementContext.getOrderByContext().getItems().isEmpty() || statementContext.getPaginationContext().isHasPagination();
+        boolean containsLockClause = SelectStatementHandler.getLockSegment(statementContext.getSqlStatement()).isPresent();
+        boolean needAggregateRewrite = !containsSubqueryJoinQuery && !containsOrderByLimitClause && !containsLockClause;
+        statementContext.setNeedAggregateRewrite(needAggregateRewrite);
+        return needAggregateRewrite;
+    }
+    
+    private Map<String, Collection<RouteUnit>> aggregateRouteUnitGroups(final Collection<RouteUnit> routeUnits) {
+        Map<String, Collection<RouteUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
+        for (RouteUnit each : routeUnits) {
+            String dataSourceName = each.getDataSourceMapper().getActualName();
+            if (!result.containsKey(dataSourceName)) {
+                result.put(dataSourceName, new LinkedList<>());
+            }
+            result.get(dataSourceName).add(each);
+        }
+        return result;
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {

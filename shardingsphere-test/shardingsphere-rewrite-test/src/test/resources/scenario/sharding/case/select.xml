@@ -64,8 +64,7 @@
 
     <rewrite-assertion id="select_with_schema">
         <input sql="SELECT * FROM sharding_db.t_account" />
-        <output sql="SELECT * FROM t_account_0"/>
-        <output sql="SELECT * FROM t_account_1"/>
+        <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery" db-types="MySQL">
@@ -105,14 +104,12 @@
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters">
         <input sql="SELECT * FROM sharding_db.t_account WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = ? UNION ALL SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000, 1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_literals">
         <input sql="SELECT * FROM sharding_db.t_account WHERE amount = 1000" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000" />
-        <output sql="SELECT * FROM t_account_1 WHERE amount = 1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_for_literals_with_order_by" db-types="MySQL">
@@ -162,8 +159,7 @@
     
     <rewrite-assertion id="select_avg_with_multiple_route">
         <input sql="SELECT AVG(amount) FROM t_account WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_0 WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_1 WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_0 WHERE amount = ? UNION ALL SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_1 WHERE amount = ?" parameters="1000, 1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_distinct_with_single_route">
@@ -173,14 +169,12 @@
     
     <rewrite-assertion id="select_distinct_with_alias_with_multiple_route">
         <input sql="SELECT COUNT(DISTINCT account_id) a, SUM(DISTINCT account_id) b FROM t_account" />
-        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_0" />
-        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_1" />
+        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_0 UNION ALL SELECT DISTINCT account_id a, account_id b FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_distinct_without_alias_with_multiple_route">
         <input sql="SELECT COUNT(DISTINCT account_id), SUM(DISTINCT account_id) FROM t_account" />
-        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_0" />
-        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_1" />
+        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_0 UNION ALL SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_account_by_with_single_route">
@@ -498,8 +492,7 @@
 
     <rewrite-assertion id="select_with_or_and_condition">
         <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
-        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
-        <output sql="SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=? UNION ALL SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3, 1, 2, 3"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
