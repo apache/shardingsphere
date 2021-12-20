@@ -24,6 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.factorybean.DatabaseDiscoveryAlgorithmFactoryBean;
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryHeartbeatBeanDefinitionTag;
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryRuleBeanDefinitionTag;
+import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryTypeBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -63,22 +64,6 @@ public final class DatabaseDiscoveryRuleBeanDefinitionParser extends AbstractBea
         return result;
     }
     
-    private Map<String, BeanDefinition> parseDiscoveryHeartbeatsConfigurations(final Element element, final ParserContext parserContext) {
-        List<Element> heartbeatElements = DomUtils.getChildElementsByTagName(element, DatabaseDiscoveryHeartbeatBeanDefinitionTag.ROOT_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(heartbeatElements.size());
-        for (Element each : heartbeatElements) {
-            result.put(each.getAttribute(DatabaseDiscoveryHeartbeatBeanDefinitionTag.HEARTBEAT_ID_ATTRIBUTE),
-                    parseDiscoveryHeartbeatConfigurations(element, parserContext));
-        }
-        return result;
-    }
-    
-    private BeanDefinition parseDiscoveryHeartbeatConfigurations(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(DatabaseDiscoveryHeartBeatConfiguration.class);
-        factory.addConstructorArgValue(parseProperties(element, parserContext, DatabaseDiscoveryHeartbeatBeanDefinitionTag.PROPS_TAG));
-        return factory.getBeanDefinition();
-    }
-    
     private BeanDefinition parseDatabaseDiscoveryDataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(DatabaseDiscoveryDataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(DatabaseDiscoveryRuleBeanDefinitionTag.DB_DISCOVERY_DATA_SOURCE_ID_ATTRIBUTE));
@@ -95,6 +80,36 @@ public final class DatabaseDiscoveryRuleBeanDefinitionParser extends AbstractBea
         return result;
     }
     
+    private Map<String, BeanDefinition> parseDiscoveryHeartbeatsConfigurations(final Element element, final ParserContext parserContext) {
+        List<Element> heartbeatElements = DomUtils.getChildElementsByTagName(element, DatabaseDiscoveryHeartbeatBeanDefinitionTag.ROOT_TAG);
+        Map<String, BeanDefinition> result = new ManagedMap<>(heartbeatElements.size());
+        for (Element each : heartbeatElements) {
+            result.put(each.getAttribute(DatabaseDiscoveryHeartbeatBeanDefinitionTag.HEARTBEAT_ID_ATTRIBUTE), parseDiscoveryHeartbeatConfigurations(each, parserContext));
+        }
+        return result;
+    }
+    
+    private BeanDefinition parseDiscoveryHeartbeatConfigurations(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(DatabaseDiscoveryHeartBeatConfiguration.class);
+        factory.addConstructorArgValue(parseProperties(element, parserContext, DatabaseDiscoveryHeartbeatBeanDefinitionTag.HEARTBEAT_PROPS_TAG));
+        return factory.getBeanDefinition();
+    }
+    
+//    private Map<String, BeanDefinition> parseDiscoveryTypesConfigurations(final Element element, final ParserContext parserContext) {
+//        List<Element> types = DomUtils.getChildElementsByTagName(element, DatabaseDiscoveryTypeBeanDefinitionTag.ROOT_TAG);
+//        Map<String, BeanDefinition> result = new ManagedMap<>(types.size());
+//        for (Element each : types) {
+//            result.put(each.getAttribute(DatabaseDiscoveryTypeBeanDefinitionTag.DISCOVERY_TYPE_ID_ATTRIBUTE), parseDiscoveryTypeConfigurations(each, parserContext));
+//        }
+//        return result;
+//    }
+//
+//    private BeanDefinition parseDiscoveryTypeConfigurations(final Element element, final ParserContext parserContext) {
+//        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(DatabaseDiscoveryHeartBeatConfiguration.class);
+//        factory.addConstructorArgValue(parseProperties(element, parserContext, DatabaseDiscoveryTypeBeanDefinitionTag.DISCOVERY_TYPE_PROPS_TAG));
+//        return factory.getBeanDefinition();
+//    }
+//
     private Properties parseProperties(final Element element, final ParserContext parserContext, final String propsTag) {
         Element propsElement = DomUtils.getChildElementByTagName(element, propsTag);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
