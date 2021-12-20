@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
@@ -64,11 +63,31 @@ public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
-    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
+    private static final Map<String, RuleAlteredDetector> RULE_CLASS_NAME_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+            .collect(Collectors.toMap(RuleAlteredDetector::getRuleConfigClassName, Function.identity()));
     
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
     
-    private void initIfNecessary(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+    /**
+     * Is on rule altered action enabled.
+     *
+     * @param currentRuleConfig current rule configuration
+     * @return enabled or not
+     */
+    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            return false;
+        }
+        RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(currentRuleConfig.getClass().getName());
+        return null != detector && detector.getOnRuleAlteredActionConfig(currentRuleConfig).isPresent();
+    }
+    
+    /**
+     * Initialize if necessary.
+     *
+     * @param targetRuleConfig target rule configuration
+     */
+    public static void initIfNecessary(final org.apache.shardingsphere.infra.config.RuleConfiguration targetRuleConfig) {
         if (!INITIALIZED.get()) {
             synchronized (INITIALIZED) {
                 if (INITIALIZED.get()) {
@@ -77,7 +96,13 @@ public final class RuleAlteredJobWorker {
                 ShardingSphereEventBus.getInstance().register(INSTANCE);
                 new FinishedCheckJobExecutor().start();
                 new PipelineJobExecutor().start();
-                RuleAlteredContext.getInstance().init(onRuleAlteredActionConfig);
+                RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(targetRuleConfig.getClass().getName());
+                Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(targetRuleConfig);
+                if (!onRuleAlteredActionConfigOptional.isPresent()) {
+                    log.error("rule altered action enabled but actor is not configured, ignored");
+                    return;
+                }
+                RuleAlteredContext.getInstance().init(onRuleAlteredActionConfigOptional.get());
                 INITIALIZED.set(true);
             }
         }
@@ -93,7 +118,6 @@ public final class RuleAlteredJobWorker {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<Long> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
-        // TODO do not switch immediately
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
@@ -114,14 +138,8 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             boolean ruleAltered = detector.isRuleAltered(each.getLeft(), each.getRight());
-            Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(SWAPPER_ENGINE.swapToRuleConfiguration(each.getLeft()));
-            log.info("type={}, ruleAltered={}, onRuleAlteredActionEnabled={}", type, ruleAltered, onRuleAlteredActionConfigOptional.isPresent());
+            log.info("type={}, ruleAltered={}", type, ruleAltered);
             if (ruleAltered) {
-                if (!onRuleAlteredActionConfigOptional.isPresent()) {
-                    log.error("rule altered but action is not enabled, ignored");
-                    return Optional.empty();
-                }
-                initIfNecessary(onRuleAlteredActionConfigOptional.get());
                 break;
             }
         }
