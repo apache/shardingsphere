@@ -134,8 +134,6 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
                 .filter(each -> each.getName().equals(toBeDroppedRuleNames)).findAny();
         Preconditions.checkState(toBeDroppedDataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(toBeDroppedDataSourceRuleConfig.get());
-        currentRuleConfig.getDiscoveryTypes().remove(toBeDroppedDataSourceRuleConfig.get().getDiscoveryTypeName());
-        currentRuleConfig.getDiscoveryHeartbeats().remove(toBeDroppedDataSourceRuleConfig.get().getDiscoveryHeartbeatName());
     }
     
     private void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
