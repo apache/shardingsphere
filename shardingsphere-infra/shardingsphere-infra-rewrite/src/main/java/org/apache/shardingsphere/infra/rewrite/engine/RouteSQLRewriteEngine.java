@@ -90,7 +90,9 @@ public final class RouteSQLRewriteEngine {
         boolean containsSubqueryJoinQuery = statementContext.isContainsSubquery() || statementContext.isContainsJoinQuery();
         boolean containsOrderByLimitClause = !statementContext.getOrderByContext().getItems().isEmpty() || statementContext.getPaginationContext().isHasPagination();
         boolean containsLockClause = SelectStatementHandler.getLockSegment(statementContext.getSqlStatement()).isPresent();
-        return !containsSubqueryJoinQuery && !containsOrderByLimitClause && !containsLockClause;
+        boolean needAggregateRewrite = !containsSubqueryJoinQuery && !containsOrderByLimitClause && !containsLockClause;
+        statementContext.setNeedAggregateRewrite(needAggregateRewrite);
+        return needAggregateRewrite;
     }
     
     private Map<String, Collection<RouteUnit>> aggregateRouteUnitGroups(final Collection<RouteUnit> routeUnits) {
