@@ -393,35 +393,39 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge whether given logic table column is sharding column or not.
+     * Find sharding column.
      *
      * @param columnName column name
      * @param tableName table name
-     * @return whether given logic table column is sharding column or not
+     * @return sharding column
      */
-    public boolean isShardingColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isShardingColumn(each, columnName)).isPresent();
+    public Optional<String> findShardingColumn(final String columnName, final String tableName) {
+        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).flatMap(optional -> findShardingColumn(optional, columnName));
     }
     
-    private boolean isShardingColumn(final TableRule tableRule, final String columnName) {
-        return isShardingColumn(getDatabaseShardingStrategyConfiguration(tableRule), columnName) || isShardingColumn(getTableShardingStrategyConfiguration(tableRule), columnName);
+    private Optional<String> findShardingColumn(final TableRule tableRule, final String columnName) {
+        Optional<String> databaseShardingColumn = findShardingColumn(getDatabaseShardingStrategyConfiguration(tableRule), columnName);
+        if (databaseShardingColumn.isPresent()) {
+            return databaseShardingColumn;
+        }
+        return findShardingColumn(getTableShardingStrategyConfiguration(tableRule), columnName);
     }
     
-    private boolean isShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
+    private Optional<String> findShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String columnName) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
             String shardingColumn = null == ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn()
                     ? defaultShardingColumn : ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
-            return shardingColumn.equalsIgnoreCase(columnName);
+            return shardingColumn.equalsIgnoreCase(columnName) ? Optional.of(shardingColumn) : Optional.empty();
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
             List<String> shardingColumns = Splitter.on(",").trimResults().splitToList(((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns());
             for (String each : shardingColumns) {
                 if (each.equalsIgnoreCase(columnName)) {
-                    return true;
+                    return Optional.of(each);
                 }
             }
         }
-        return false;
+        return Optional.empty();
     } 
     
     /**
@@ -606,7 +610,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                     ? getDatabaseShardingStrategyConfiguration(leftTableRule.get()) : getTableShardingStrategyConfiguration(leftTableRule.get());
             ShardingStrategyConfiguration rightConfiguration = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(rightTableRule.get()) : getTableShardingStrategyConfiguration(rightTableRule.get());
-            if (isShardingColumn(leftConfiguration, leftColumn.getName()) && isShardingColumn(rightConfiguration, rightColumn.getName())) {
+            if (findShardingColumn(leftConfiguration, leftColumn.getName()).isPresent() && findShardingColumn(rightConfiguration, rightColumn.getName()).isPresent()) {
                 result.add(columnTableNames.get(leftColumn.getExpression()));
                 result.add(columnTableNames.get(rightColumn.getExpression()));
             }
