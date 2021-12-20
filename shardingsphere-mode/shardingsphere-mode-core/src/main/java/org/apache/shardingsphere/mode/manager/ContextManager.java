@@ -239,6 +239,18 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param table table                  
+     * @param tableMetaData table meta data
+     */
+    public void alterSchema(final String schemaName, final String table, final TableMetaData tableMetaData) {
+        metaDataContexts.getMetaData(schemaName).getSchema().put(table, tableMetaData);
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).put(tableMetaData);
+    }
+    
+    /**
      * Alter global rule configuration.
      * 
      * @param ruleConfigurations global rule configuration

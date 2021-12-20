@@ -54,4 +54,9 @@ public class SchemaMetaDataNodeTest {
     public void assertGetSchemaNameBySchemaPath() {
         assertThat(SchemaMetaDataNode.getSchemaNameBySchemaPath("/metadata/logic_db"), is(DefaultSchema.LOGIC_NAME));
     }
+    
+    @Test
+    public void assertGetTableName() {
+        assertThat(SchemaMetaDataNode.getTableName("logic_db", "/metadata/logic_db/tables/t_order"), is("t_order"));
+    }
 }
