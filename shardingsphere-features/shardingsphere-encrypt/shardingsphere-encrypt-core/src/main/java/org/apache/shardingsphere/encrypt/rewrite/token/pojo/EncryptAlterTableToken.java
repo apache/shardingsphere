@@ -43,6 +43,10 @@ public final class EncryptAlterTableToken extends SQLToken implements Substituta
     
     @Override
     public String toString() {
+        if (null == operationType) {
+            return columnName;
+        }
+        // TODO refactor alter table token
         return String.format(" %s %s ", operationType, columnName);
     }
 }
