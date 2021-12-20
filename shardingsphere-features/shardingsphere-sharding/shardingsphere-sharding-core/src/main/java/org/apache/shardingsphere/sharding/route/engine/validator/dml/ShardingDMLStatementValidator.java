@@ -121,7 +121,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (AssignmentSegment each : assignments) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
-            if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
+            if (shardingRule.findShardingColumn(shardingColumn, tableName).isPresent()) {
                 Optional<Object> assignmentValue = getShardingColumnAssignmentValue(each, parameters);
                 assignmentValue.ifPresent(optional -> values.add(new ListShardingConditionValue(shardingColumn, tableName, Collections.singletonList(optional))));
             }
