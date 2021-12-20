@@ -18,9 +18,9 @@ ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition [, databaseDiscoveryType
 
 DROP DB_DISCOVERY TYPE discoveryTypeName [, discoveryTypeName] ...
 
-CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition [, heartbeatDefinition] ...
+CREATE DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
 
-ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition [, heartbeatDefinition] ...
+ALTER DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
 
 DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName [, discoveryHeartbeatName] ...
 
@@ -28,7 +28,7 @@ ruleDefinition:
     (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
 
 databaseDiscoveryRuleDefinition
-    ruleName (resources, typeDefinition, discoveryHeartbeat)
+    ruleName (resources, typeDefinition, heartbeatDefinition)
 
 databaseDiscoveryRuleConstruction
     ruleName (resources, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
@@ -36,14 +36,17 @@ databaseDiscoveryRuleConstruction
 databaseDiscoveryTypeDefinition
     discoveryTypeName (typeDefinition)
 
-heartbeatDefinition
-    discoveryHeartbeatName (PROPERTIES (properties))  
+databaseDiscoveryHeartbaetDefinition
+    discoveryHeartbeatName (PROPERTIES (properties)) 
 
 resources:
     RESOURCES(resourceName [, resourceName] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
+
+heartbeatDefinition
+    HEARTBEAT (PROPERTIES (properties)) 
 
 properties:
     property [, property] ...
