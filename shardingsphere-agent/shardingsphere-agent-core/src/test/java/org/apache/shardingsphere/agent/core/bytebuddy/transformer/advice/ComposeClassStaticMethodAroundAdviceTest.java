@@ -19,48 +19,56 @@ package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ComposeClassStaticMethodAroundAdviceTest {
-
-    private ComposeClassStaticMethodAroundAdvice composeClassStaticMethodAroundAdvice;
-
-    @Test
-    public void beforeMethodTest() {
-        ClassStaticMethodAroundAdvice advice = mock(ClassStaticMethodAroundAdvice.class);
-        Method method = mock(Method.class);
-        MethodInvocationResult methodInvocationResult = mock(MethodInvocationResult.class);
-        List<ClassStaticMethodAroundAdvice> adviceList = new ArrayList<>(Arrays.asList(advice));
-        composeClassStaticMethodAroundAdvice = new ComposeClassStaticMethodAroundAdvice(adviceList);
-        composeClassStaticMethodAroundAdvice.beforeMethod(String.class, method, new Object[2], methodInvocationResult);
+public final class ComposeClassStaticMethodAroundAdviceTest {
+    
+    @Mock
+    private ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
+    
+    private ComposeClassStaticMethodAroundAdvice actual;
+    
+    @Before
+    public void setUp() {
+        actual = new ComposeClassStaticMethodAroundAdvice(new ArrayList<>(Collections.singletonList(classStaticMethodAroundAdvice)));
     }
-
+    
     @Test
-    public void afterMethodTest() {
-        ClassStaticMethodAroundAdvice advice = mock(ClassStaticMethodAroundAdvice.class);
+    public void assertBeforeMethod() {
         Method method = mock(Method.class);
+        Object[] args = new Object[2];
         MethodInvocationResult methodInvocationResult = mock(MethodInvocationResult.class);
-        List<ClassStaticMethodAroundAdvice> adviceList = new ArrayList<>(Arrays.asList(advice));
-        composeClassStaticMethodAroundAdvice = new ComposeClassStaticMethodAroundAdvice(adviceList);
-        composeClassStaticMethodAroundAdvice.afterMethod(String.class, method, new Object[2], methodInvocationResult);
+        actual.beforeMethod(String.class, method, args, methodInvocationResult);
+        verify(classStaticMethodAroundAdvice).beforeMethod(String.class, method, args, methodInvocationResult);
     }
-
+    
     @Test
-    public void onThrowingTest() {
-        ClassStaticMethodAroundAdvice advice = mock(ClassStaticMethodAroundAdvice.class);
+    public void assertAfterMethod() {
         Method method = mock(Method.class);
-        List<ClassStaticMethodAroundAdvice> adviceList = new ArrayList<>(Arrays.asList(advice));
-        composeClassStaticMethodAroundAdvice = new ComposeClassStaticMethodAroundAdvice(adviceList);
-        composeClassStaticMethodAroundAdvice.onThrowing(String.class, method, new Object[2], new NullPointerException("Null Pointer"));
+        Object[] args = new Object[2];
+        MethodInvocationResult methodInvocationResult = mock(MethodInvocationResult.class);
+        actual.afterMethod(String.class, method, args, methodInvocationResult);
+        verify(classStaticMethodAroundAdvice).afterMethod(String.class, method, args, methodInvocationResult);
+    }
+    
+    @Test
+    public void assertOnThrowing() {
+        Method method = mock(Method.class);
+        Object[] args = new Object[2];
+        NullPointerException exception = new NullPointerException("");
+        actual.onThrowing(String.class, method, args, exception);
+        verify(classStaticMethodAroundAdvice).onThrowing(String.class, method, args, exception);
     }
 }
