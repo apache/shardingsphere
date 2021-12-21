@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Abstract data source pool creator.
@@ -54,6 +56,10 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     
     private static final String SETTER_PREFIX = "set";
     
+    private static final String URL = "url";
+
+    private static final Pattern DANGEROUS_FIELDS = Pattern.compile("(autoDeserialize)|(RUNSCRIPT FROM)|(@groovy)|(//javascript)|(clientRerouteServerListJNDIName)|(mysql:fabric:)|(jcr:jndi)|(startMaster)",Pattern.CASE_INSENSITIVE);
+
     @Override
     public final DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
@@ -119,6 +125,12 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     }
     
     private boolean isInvalidProperty(final String key, final Object value) {
+        if (key.equals(URL)) {
+            Matcher matcher = DANGEROUS_FIELDS.matcher(value.toString());
+            if (matcher.find()) {
+                throw new ShardingSphereConfigurationException("Disallowed JDBC URL fields %s", matcher.group());
+            }
+        }
         return getInvalidProperties().containsKey(key) && null != value && value.equals(getInvalidProperties().get(key));
     }
     
