@@ -49,7 +49,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 
 **Notice**
 
-* If you want to import external jar packages, whose directory is supposed to volume to /opt/shardingsphere-proxy/ext-lib.
+* If you need to import external jar packages (such as MySQL/openGauss JDBC driver, custom algorithm, etc.), you may bind mount a volume to `/opt/shardingsphere-proxy/ext-lib`.
 
 ## Access ShardingSphere-Proxy
 

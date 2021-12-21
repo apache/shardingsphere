@@ -22,14 +22,14 @@ weight = 1
 
 ### 使用 openGauss
 
-1. 将 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
+1. 将以 `org.opengauss` 包名为前缀的 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
 1. 使用任何 openGauss 的客户端连接。如: `gsql -U root -h 127.0.0.1 -p 3307`
 
 ## 选择元数据持久化仓库
 
 ### 使用 ZooKeeper
 
-默认集成。
+默认集成 ZooKeeper Curator 客户端。
 
 ### 使用 Etcd
 
