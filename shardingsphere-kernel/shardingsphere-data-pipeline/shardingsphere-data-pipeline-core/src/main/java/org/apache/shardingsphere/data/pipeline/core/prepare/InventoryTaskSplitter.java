@@ -64,7 +64,7 @@ public final class InventoryTaskSplitter {
      * @param importerExecuteEngine execute engine
      * @return split inventory data task
      */
-    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - batchSize - rateLimitAlgorithm
+    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - batchSize - readBatchSize - rateLimitAlgorithm
     public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager,
                                                   final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();
@@ -99,6 +99,7 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
             final RuleAlteredJobContext jobContext, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
+        int readBatchSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getReadBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataManager);
         int i = 0;
@@ -108,6 +109,7 @@ public final class InventoryTaskSplitter {
             splitDumperConfig.setShardingItem(i++);
             splitDumperConfig.setTableName(dumperConfig.getTableName());
             splitDumperConfig.setPrimaryKey(dumperConfig.getPrimaryKey());
+            splitDumperConfig.setReadBatchSize(readBatchSize);
             splitDumperConfig.setRateLimitAlgorithm(rateLimitAlgorithm);
             result.add(splitDumperConfig);
         }

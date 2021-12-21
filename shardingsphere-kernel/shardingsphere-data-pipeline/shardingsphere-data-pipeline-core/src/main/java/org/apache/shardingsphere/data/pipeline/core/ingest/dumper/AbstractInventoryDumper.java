@@ -47,6 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Abstract JDBC dumper implement.
@@ -56,6 +57,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
+    
+    private final int readBatchSize;
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
@@ -71,6 +74,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardJDBCDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
+        this.readBatchSize = inventoryDumperConfig.getReadBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
@@ -89,28 +93,15 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void dump() {
+        String sql = getDumpSQL();
+        PrimaryKeyPosition position = (PrimaryKeyPosition) inventoryDumperConfig.getPosition();
+        log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
-            if (null != rateLimitAlgorithm) {
-                rateLimitAlgorithm.onQuery();
+            Number startPrimaryValue = position.getBeginValue();
+            Optional<Number> maxPrimaryValue;
+            while ((maxPrimaryValue = dump0(conn, sql, startPrimaryValue)).isPresent()) {
+                startPrimaryValue = maxPrimaryValue.orElse(null);
             }
-            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfig.getTableName(), getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPosition()));
-            log.info("inventory dump, sql={}", sql);
-            PreparedStatement ps = createPreparedStatement(conn, sql);
-            ResultSet rs = ps.executeQuery();
-            ResultSetMetaData metaData = rs.getMetaData();
-            int rowCount = 0;
-            while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
-                record.setType(IngestDataChangeType.INSERT);
-                record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
-                }
-                pushRecord(record);
-                rowCount++;
-            }
-            log.info("dump, rowCount={}", rowCount);
-            pushRecord(new FinishedRecord(new FinishedPosition()));
         } catch (final SQLException ex) {
             stop();
             channel.close();
@@ -120,12 +111,45 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private String getWhereCondition(final String primaryKey, final IngestPosition<?> position) {
-        if (null == primaryKey || null == position) {
-            return "";
+    private String getDumpSQL() {
+        String tableName = inventoryDumperConfig.getTableName();
+        String primaryKey = inventoryDumperConfig.getPrimaryKey();
+        return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " BETWEEN ? AND ? ORDER BY " + primaryKey + " ASC LIMIT ?";
+    }
+    
+    private Optional<Number> dump0(final Connection conn, final String sql, final Number startPrimaryValue) throws SQLException {
+        if (null != rateLimitAlgorithm) {
+            rateLimitAlgorithm.onQuery();
         }
-        PrimaryKeyPosition primaryKeyPosition = (PrimaryKeyPosition) position;
-        return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, primaryKeyPosition.getBeginValue(), primaryKeyPosition.getEndValue());
+        try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
+            preparedStatement.setObject(1, startPrimaryValue);
+            PrimaryKeyPosition position = (PrimaryKeyPosition) inventoryDumperConfig.getPosition();
+            preparedStatement.setObject(2, position.getEndValue());
+            preparedStatement.setInt(3, readBatchSize);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int rowCount = 0;
+                Number maxPrimaryValue = null;
+                while (isRunning() && resultSet.next()) {
+                    DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
+                    record.setType(IngestDataChangeType.INSERT);
+                    record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
+                        Object value = readValue(resultSet, i);
+                        if (isPrimaryKey) {
+                            maxPrimaryValue = (Number) value;
+                        }
+                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isPrimaryKey));
+                    }
+                    pushRecord(record);
+                    rowCount++;
+                }
+                log.info("dump, rowCount={}, maxPrimaryValue={}", rowCount, maxPrimaryValue);
+                pushRecord(new FinishedRecord(new FinishedPosition()));
+                return Optional.ofNullable(maxPrimaryValue);
+            }
+        }
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
