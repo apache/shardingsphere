@@ -869,17 +869,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-variables")
     private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
-<<<<<<< HEAD
 
     @XmlElement(name = "show-sharding-key-generators")
     private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
-
-=======
     
     @XmlElement(name = "delimiter")
     private final List<DelimiterStatementTestCase> delimiterStatementTestCases = new LinkedList<>();
     
->>>>>>> d724f54c9f73ee6048453b85a730fa4a946d4d39
     /**
      * Get all SQL parser test cases.
      *
@@ -1096,11 +1092,8 @@ public final class SQLParserTestCases {
         putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
-<<<<<<< HEAD
         putAll(showShardingKeyGeneratorsStatementTestCases,result);
-=======
         putAll(delimiterStatementTestCases, result);
->>>>>>> d724f54c9f73ee6048453b85a730fa4a946d4d39
         return result;
     }
     // CHECKSTYLE:ON
