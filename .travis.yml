@@ -24,6 +24,10 @@ services:
   - mysql
   - postgresql
 
+cache:
+  directories:
+    - $HOME/.m2/repository
+
 install: true
 
 before_script:
