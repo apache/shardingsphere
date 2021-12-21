@@ -167,6 +167,16 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
         byteBuf.skipBytes(length);
     }
     
+    /**
+     * Check if there has complete packet in ByteBuf.
+     * PostgreSQL Message: (byte1) message type + (int4) length + (length - 4) payload
+     *
+     * @return has complete packet
+     */
+    public boolean hasCompletePacket() {
+        return byteBuf.readableBytes() >= 5 && byteBuf.readableBytes() - 1 >= byteBuf.getInt(byteBuf.readerIndex() + 1);
+    }
+    
     @Override
     public void close() {
         byteBuf.release();

@@ -63,7 +63,6 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     
     @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause, final ConnectionSession connectionSession) {
-        PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId()).getPendingExecutors().clear();
         return OpenGaussErrorPacketFactory.newInstance(cause);
     }
     

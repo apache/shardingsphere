@@ -22,17 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe.PostgreSQLComDescribeExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute.PostgreSQLComExecuteExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
@@ -48,11 +43,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,21 +63,6 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
         when(connectionSession.getConnectionId()).thenReturn(1);
-    }
-    
-    @Test
-    public void assertPendingCommandExecutors() throws SQLException {
-        PostgreSQLConnectionContext connectionContext = mock(PostgreSQLConnectionContext.class);
-        Collection<CommandExecutor> pendingCommandExecutors = new LinkedList<>();
-        when(connectionContext.getPendingExecutors()).thenReturn(pendingCommandExecutors);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, mock(PostgreSQLComClosePacket.class), connectionSession, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, mock(PostgreSQLComBindPacket.class), connectionSession, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, connectionSession, connectionContext);
-        assertThat(pendingCommandExecutors.size(), is(3));
-        Iterator<CommandExecutor> commandExecutorIterator = pendingCommandExecutors.iterator();
-        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComCloseExecutor.class));
-        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComBindExecutor.class));
-        assertThat(commandExecutorIterator.next(), instanceOf(PostgreSQLComDescribeExecutor.class));
     }
     
     @Test

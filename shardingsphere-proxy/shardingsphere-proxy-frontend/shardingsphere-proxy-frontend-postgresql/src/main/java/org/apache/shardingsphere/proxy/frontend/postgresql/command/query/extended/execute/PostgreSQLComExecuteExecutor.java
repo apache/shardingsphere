@@ -51,17 +51,12 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
-        for (CommandExecutor each : connectionContext.getPendingExecutors()) {
-            result.addAll(each.execute());
-        }
-        connectionContext.getPendingExecutors().clear();
-        result.addAll(doExecute());
+        Collection<DatabasePacket<?>> result = doExecute();
         result.add(createExecutionCompletedPacket());
         return result;
     }
     
-    private Collection<? extends DatabasePacket<?>> doExecute() throws SQLException {
+    private Collection<DatabasePacket<?>> doExecute() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         while (!isPortalSuspended()) {
             Optional<DatabasePacket<?>> packet = getPacketFromPortal();

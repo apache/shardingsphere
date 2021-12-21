@@ -35,6 +35,8 @@ import java.util.Set;
 @Getter
 public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQLIdentifierTag {
     
+    PASSWORD('p'),
+    
     SIMPLE_QUERY('Q'),
     
     PARSE_COMMAND('P'),

@@ -40,12 +40,10 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrPacketFactory;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -60,27 +58,17 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public PostgreSQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId());
-        connectionContext.setCurrentPacketType((PostgreSQLCommandPacketType) type);
         return PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLPacketPayload) payload, connectionSession.getConnectionId());
     }
     
     @Override
     public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) throws SQLException {
         PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId());
-        if (connectionContext.isErrorOccurred() && PostgreSQLCommandPacketType.isExtendedProtocolPacketType((PostgreSQLCommandPacketType) type) && PostgreSQLCommandPacketType.SYNC_COMMAND != type) {
-            return Collections::emptyList;
-        }
         return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, connectionSession, connectionContext);
     }
     
     @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause, final ConnectionSession connectionSession) {
-        PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId());
-        if (PostgreSQLCommandPacketType.isExtendedProtocolPacketType(connectionContext.getCurrentPacketType())) {
-            connectionContext.setErrorOccurred(true);
-            connectionContext.getPendingExecutors().clear();
-        }
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }
     
@@ -91,17 +79,12 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
-        PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId());
-        return PostgreSQLCommandPacketType.isExtendedProtocolPacketType(connectionContext.getCurrentPacketType()) ? Optional.empty()
-                : Optional.of(new PostgreSQLReadyForQueryPacket(connectionSession.getTransactionStatus().isInTransaction()));
+        return Optional.of(new PostgreSQLReadyForQueryPacket(connectionSession.getTransactionStatus().isInTransaction()));
     }
     
     @Override
     public boolean writeQueryData(final ChannelHandlerContext context,
                                   final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (queryCommandExecutor instanceof PostgreSQLComSyncExecutor) {
-            return true;
-        }
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0));
             return true;

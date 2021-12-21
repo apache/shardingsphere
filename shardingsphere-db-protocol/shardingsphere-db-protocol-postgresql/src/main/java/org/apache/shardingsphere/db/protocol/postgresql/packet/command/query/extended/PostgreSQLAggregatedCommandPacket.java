@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import lombok.ToString;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-/**
- * Command sync executor for PostgreSQL.
- */
 @RequiredArgsConstructor
-public final class PostgreSQLComSyncExecutor implements CommandExecutor {
+@Getter
+@ToString
+public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPacket {
     
-    private final ConnectionSession connectionSession;
+    private final List<PostgreSQLCommandPacket> packets;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
-        return Collections.singleton(new PostgreSQLReadyForQueryPacket(connectionSession.getTransactionStatus().isInTransaction()));
+    public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return () -> '?';
     }
 }

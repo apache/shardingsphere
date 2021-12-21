@@ -45,8 +45,6 @@ import java.util.List;
 @ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
-    private final PostgreSQLPacketPayload payload;
-    
     private final String portal;
     
     private final String statementId;
@@ -56,7 +54,6 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     private final List<PostgreSQLValueFormat> resultFormats;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
-        this.payload = payload;
         payload.readInt4();
         portal = payload.readStringNul();
         statementId = payload.readStringNul();

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
@@ -29,6 +30,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Command packet factory for PostgreSQL.
@@ -45,6 +49,17 @@ public final class PostgreSQLCommandPacketFactory {
      * @return command packet for PostgreSQL
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
+        if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
+            return getPostgreSQLCommandPacket(commandPacketType, payload, connectionId);
+        }
+        List<PostgreSQLCommandPacket> result = new LinkedList<>();
+        while (payload.hasCompletePacket()) {
+            result.add(getPostgreSQLCommandPacket(PostgreSQLCommandPacketType.valueOf(payload.readInt1()), payload, connectionId));
+        }
+        return new PostgreSQLAggregatedCommandPacket(result);
+    }
+    
+    private static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryPacket(payload);
