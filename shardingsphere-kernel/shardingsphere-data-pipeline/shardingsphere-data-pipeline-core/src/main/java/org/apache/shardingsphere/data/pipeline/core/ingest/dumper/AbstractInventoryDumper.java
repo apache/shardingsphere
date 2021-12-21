@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -56,6 +57,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
+    
     private final DataSourceManager dataSourceManager;
     
     private final TableMetaData tableMetaData;
@@ -68,6 +71,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardJDBCDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
+        this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
     }
@@ -86,6 +90,9 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private void dump() {
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
+            if (null != rateLimitAlgorithm) {
+                rateLimitAlgorithm.onQuery();
+            }
             String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfig.getTableName(), getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPosition()));
             log.info("inventory dump, sql={}", sql);
             PreparedStatement ps = createPreparedStatement(conn, sql);
