@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Transaction type.
+ * MySQL delimiter statement.
  */
-public enum TransactionType {
-    
-    LOCAL, XA, BASE, MANUALXA;
-    
-    /**
-     * Judge whether distributed transaction.
-     * 
-     * @param transactionType transaction type
-     * @return is distributed transaction or not
-     */
-    public static boolean isDistributedTransaction(final TransactionType transactionType) {
-        return XA == transactionType || BASE == transactionType || MANUALXA == transactionType;
-    }
+@ToString
+@Getter
+@Setter
+public final class MySQLDelimiterStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+
+    private String delimiterName;
 }

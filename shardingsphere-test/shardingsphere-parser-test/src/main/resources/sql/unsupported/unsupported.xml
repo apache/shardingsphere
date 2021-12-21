@@ -32,7 +32,6 @@
     <sql-case id="select_with_comment8" value="select 4 as expected, /*!99998 1 + /*!01000 8 + */ 2 + */ 4 as result;" db-types="MySQL"/>
     <sql-case id="select_with_comment9" value="select 7 as expected, /*!01000 1 + /*!01000 8 + /*!01000 error */ 16 + */ 2 + */ 4 as result;" db-types="MySQL"/>
     <sql-case id="select_with_comment10" value="select 4 as expected, /* 1 + /*!01000 8 + */ 2 + */ 4;" db-types="MySQL"/>
-    <sql-case id="delimiter" value="DELIMITER |;" db-types="MySQL"/>
     <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL"/>
     <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL"/>
     <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL"/>

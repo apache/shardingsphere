@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Transaction type.
+ * delimiter statement test case.
  */
-public enum TransactionType {
-    
-    LOCAL, XA, BASE, MANUALXA;
-    
-    /**
-     * Judge whether distributed transaction.
-     * 
-     * @param transactionType transaction type
-     * @return is distributed transaction or not
-     */
-    public static boolean isDistributedTransaction(final TransactionType transactionType) {
-        return XA == transactionType || BASE == transactionType || MANUALXA == transactionType;
-    }
+@Getter
+public final class DelimiterStatementTestCase extends SQLParserTestCase {
+
+    @XmlAttribute
+    private String delimiterName;
 }
