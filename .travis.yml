@@ -26,10 +26,6 @@ services:
 
 install: true
 
-cache:
-  directories:
-    - "$HOME/.m2"
-
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxMetaspaceSize=256m'" > ~/.mavenrc
   - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
