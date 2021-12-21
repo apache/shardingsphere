@@ -21,20 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Database discovery rule bean definition tag.
+ * Database discovery heartbeat bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseDiscoveryRuleBeanDefinitionTag {
+public final class DatabaseDiscoveryHeartbeatBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "rule";
+    public static final String ROOT_TAG = "discovery-heartbeat";
     
-    public static final String DATA_SOURCE_TAG = "data-source-rule";
+    public static final String HEARTBEAT_ID_ATTRIBUTE = "id";
     
-    public static final String DB_DISCOVERY_DATA_SOURCE_ID_ATTRIBUTE = "id";
-    
-    public static final String DB_DISCOVERY_DATASOURCE_NAMES_ATTRIBUTE = "data-source-names";
-    
-    public static final String DB_DISCOVERY_HEARTBEAT_NAME_ATTRIBUTE = "discovery-heartbeat-name";
-    
-    public static final String DB_DISCOVERY_TYPE_NAME_ATTRIBUTE = "discovery-type-name";
+    public static final String HEARTBEAT_PROPS_TAG = "props";
 }

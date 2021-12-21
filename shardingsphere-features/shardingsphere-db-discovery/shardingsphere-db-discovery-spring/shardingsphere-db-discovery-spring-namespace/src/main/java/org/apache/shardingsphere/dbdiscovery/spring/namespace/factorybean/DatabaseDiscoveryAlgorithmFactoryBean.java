@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spring.namespace.tag;
+package org.apache.shardingsphere.dbdiscovery.spring.namespace.factorybean;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
+
+import java.util.Properties;
 
 /**
- * Database discovery rule bean definition tag.
+ * Database discovery algorithm factory bean.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseDiscoveryRuleBeanDefinitionTag {
+public final class DatabaseDiscoveryAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<DatabaseDiscoveryType> {
     
-    public static final String ROOT_TAG = "rule";
+    static {
+        ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
+    }
     
-    public static final String DATA_SOURCE_TAG = "data-source-rule";
-    
-    public static final String DB_DISCOVERY_DATA_SOURCE_ID_ATTRIBUTE = "id";
-    
-    public static final String DB_DISCOVERY_DATASOURCE_NAMES_ATTRIBUTE = "data-source-names";
-    
-    public static final String DB_DISCOVERY_HEARTBEAT_NAME_ATTRIBUTE = "discovery-heartbeat-name";
-    
-    public static final String DB_DISCOVERY_TYPE_NAME_ATTRIBUTE = "discovery-type-name";
+    public DatabaseDiscoveryAlgorithmFactoryBean(final String type, final Properties props) {
+        super(DatabaseDiscoveryType.class, type, props);
+    }
 }
