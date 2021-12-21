@@ -24,6 +24,6 @@ rules:
   discoveryTypes:
     <discovery-type-name> (+): # Highly available type name
       type: # Highly available type, such as: MGR、openGauss
-      props:
-        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for high-availability types, such as MGR 's group-name ：b13df29e-90b6-11e8-8d1b-525400fc3996
+      props (?):
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for high-availability types, such as MGR's group-name
 ```

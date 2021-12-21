@@ -26,6 +26,6 @@ rules:
   discoveryTypes:
     <discovery-type-name> (+): # 高可用类型名称
       type: # 高可用类型，如： MGR、openGauss 
-      props:
-        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # 高可用类型必要参数，如 MGR 的 group-name ：b13df29e-90b6-11e8-8d1b-525400fc3996
+      props (?):
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # 高可用类型必要参数，如 MGR 的 group-name
 ```
