@@ -47,4 +47,4 @@ Attributes：
 | *Name*                     | *DataType*             | *Description*                                                                   | *Default Value*       |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------- | ------------- |
 | type (+)                   | String                 | Highly available type, such as: MGR、openGauss                                  | -             |
-| props (+)                  | Properties             | Required parameters for high-availability types, such as MGR's group-name       | -             |
+| props (?)                  | Properties             | Required parameters for high-availability types, such as MGR's group-name       | -             |
