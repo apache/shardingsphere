@@ -110,6 +110,7 @@ rules:
     default_scaling:
       blockQueueSize: 10000
       workerThread: 40
+      readBatchSize: 1000
       completionDetector:
         type: IDLE
         props:

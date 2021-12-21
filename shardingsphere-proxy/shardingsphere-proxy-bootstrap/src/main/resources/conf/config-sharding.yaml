@@ -99,10 +99,10 @@
 #    default_scaling:
 #      blockQueueSize: 10000
 #      workerThread: 40
+#      readBatchSize: 1000
 #      rateLimiter:
 #        type: SOURCE
 #        props:
-#          batch-size: 1000
 #          qps: 50
 #      completionDetector:
 #        type: IDLE
