@@ -21,68 +21,70 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
  * Privilege type enum.
  */
 public enum PrivilegeTypeEnum {
+
+    SELECT,
+
+    INSERT,
+
+    UPDATE,
     
-    SELECT_ACL,
+    DELETE,
     
-    INSERT_ACL,
+    USAGE,
     
-    UPDATE_ACL,
+    CREATE,
+
+    DROP,
+
+    RELOAD,
+
+    SHUTDOWN,
+
+    PROCESS,
+
+    FILE,
+
+    GRANT,
+
+    REFERENCES,
+
+    INDEX,
+
+    ALTER,
+
+    SHOW_DB,
+
+    SUPER,
+
+    CREATE_TMP,
+
+    LOCK_TABLES,
+
+    EXECUTE,
+
+    REPL_SLAVE,
+
+    REPL_CLIENT,
+
+    CREATE_VIEW,
+
+    SHOW_VIEW,
+
+    CREATE_PROC,
+
+    ALTER_PROC,
+
+    CREATE_USER,
     
-    DELETE_ACL,
-    
-    USAGE_ACL,
-    
-    CREATE_ACL,
-    
-    DROP_ACL,
-    
-    RELOAD_ACL,
-    
-    SHUTDOWN_ACL,
-    
-    PROCESS_ACL,
-    
-    FILE_ACL,
-    
-    GRANT_ACL,
-    
-    REFERENCES_ACL,
-    
-    INDEX_ACL,
-    
-    ALTER_ACL,
-    
-    SHOW_DB_ACL,
-    
-    SUPER_ACL,
-    
-    CREATE_TMP_ACL,
-    
-    LOCK_TABLES_ACL,
-    
-    EXECUTE_ACL,
-    
-    REPL_SLAVE_ACL,
-    
-    REPL_CLIENT_ACL,
-    
-    CREATE_VIEW_ACL,
-    
-    SHOW_VIEW_ACL,
-    
-    CREATE_PROC_ACL,
-    
-    ALTER_PROC_ACL,
-    
-    CREATE_USER_ACL,
-    
-    EVENT_ACL,
-    
-    TRIGGER_ACL,
-    
-    CREATE_TABLESPACE_ACL,
-    
-    CREATE_ROLE_ACL,
-    
-    DROP_ROLE_ACL
+    DROP_USER,
+
+    EVENT,
+
+    TRIGGER,
+
+    CREATE_TABLESPACE,
+
+    CREATE_ROLE,
+
+    DROP_ROLE
 }
