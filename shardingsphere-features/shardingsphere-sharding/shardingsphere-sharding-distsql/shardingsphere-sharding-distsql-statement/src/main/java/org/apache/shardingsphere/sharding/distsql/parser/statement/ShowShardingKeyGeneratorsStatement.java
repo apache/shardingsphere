@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  * Show sharding key generators statement.
  */
 public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement {
+    
     public ShowShardingKeyGeneratorsStatement(final SchemaSegment schema) {
         super(schema);
     }

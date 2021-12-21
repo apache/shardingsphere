@@ -1092,7 +1092,7 @@ public final class SQLParserTestCases {
         putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
-        putAll(showShardingKeyGeneratorsStatementTestCases,result);
+        putAll(showShardingKeyGeneratorsStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
         return result;
     }

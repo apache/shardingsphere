@@ -367,10 +367,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment(final KeyGeneratorDefinationContext ctx) {
         return new ShardingKeyGeneratorSegment(getIdentifierValue(ctx.keyGeneratorName()), (AlgorithmSegment) visitAlgorithmDefinition(ctx.algorithmDefinition()));
     }
-
+    
     @Override
     public ASTNode visitShowShardingKeyGenerators(final ShardingDistSQLStatementParser.ShowShardingKeyGeneratorsContext ctx) {
-        return new ShowShardingKeyGeneratorsStatement(Objects.nonNull(ctx.schemaName())
-                ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowShardingKeyGeneratorsStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
 }
