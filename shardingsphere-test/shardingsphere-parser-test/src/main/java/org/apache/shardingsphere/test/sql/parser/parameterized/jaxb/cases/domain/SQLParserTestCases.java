@@ -116,6 +116,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
@@ -469,6 +470,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-domain")
+    private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-triggers")
     private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
@@ -1089,6 +1093,7 @@ public final class SQLParserTestCases {
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
+        putAll(dropDomainStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
