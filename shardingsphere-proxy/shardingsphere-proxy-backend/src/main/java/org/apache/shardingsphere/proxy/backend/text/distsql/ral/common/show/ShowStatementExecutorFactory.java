@@ -22,10 +22,12 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 
@@ -56,6 +58,9 @@ public final class ShowStatementExecutorFactory {
         }
         if (sqlStatement instanceof ShowVariableStatement) {
             return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof ShowSQLParserRuleStatement) {
+            return new ShowSQLParserRuleExecutor((ShowSQLParserRuleStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
