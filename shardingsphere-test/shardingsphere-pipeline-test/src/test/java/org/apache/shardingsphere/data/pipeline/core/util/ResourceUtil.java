@@ -71,7 +71,7 @@ public final class ResourceUtil {
      */
     public static JobConfiguration mockStandardJdbcTargetJobConfig() {
         JobConfiguration result = new JobConfiguration();
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singleton(YamlShardingRuleConfiguration.class.getName()), "id1");
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "id1");
         result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);

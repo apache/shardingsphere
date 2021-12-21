@@ -45,6 +45,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -183,13 +184,19 @@ public final class RuleAlteredJobWorker {
             }
             boolean ruleAltered = detector.isRuleAltered(each.getLeft(), each.getRight());
             log.info("type={}, ruleAltered={}", type, ruleAltered);
-            alteredRuleYamlClassNames.add(type);
+            if (ruleAltered) {
+                alteredRuleYamlClassNames.add(type);
+            }
+        }
+        if (alteredRuleYamlClassNames.isEmpty()) {
+            log.error("no altered rule");
+            throw new PipelineJobCreationException("no altered rule");
         }
         if (alteredRuleYamlClassNames.size() > 1) {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), alteredRuleYamlClassNames, event.getRuleCacheId());
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getRuleCacheId());
         RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
         return Optional.of(new JobConfiguration(workflowConfig, ruleConfig));
     }

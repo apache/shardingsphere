@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Set;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -34,11 +34,11 @@ public final class WorkflowConfiguration {
     
     private String schemaName;
     
-    private Set<String> alteredRuleYamlClassNames;
+    private List<String> alteredRuleYamlClassNames;
     
     private String ruleCacheId;
     
-    public WorkflowConfiguration(final String schemaName, final Set<String> alteredRuleYamlClassNames, final String ruleCacheId) {
+    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final String ruleCacheId) {
         this.schemaName = schemaName;
         this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
         this.ruleCacheId = ruleCacheId;

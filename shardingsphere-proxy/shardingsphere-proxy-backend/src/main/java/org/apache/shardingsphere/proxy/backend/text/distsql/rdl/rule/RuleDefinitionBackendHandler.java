@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -53,7 +52,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
-        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
     }
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
@@ -71,8 +69,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
                 new Properties());
         if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
-            RuleConfiguration alteredRuleConfig = createAlteredRuleConfig(sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
-            processCache(shardingSphereMetaData, currentRuleConfig, alteredRuleConfig);
+            processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
         processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
@@ -126,15 +123,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
-    private RuleConfiguration createAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
+    private void processCache(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
                               final RuleDefinitionAlterPreprocessor preprocessor) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        RuleConfiguration result = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
-        updater.updateCurrentRuleConfiguration(result, toBeAlteredRuleConfig);
-        return result;
-    }
-    
-    private void processCache(final ShardingSphereMetaData shardingSphereMetaData, final RuleConfiguration currentRuleConfig, final RuleConfiguration alteredRuleConfig) {
+        RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
+        updater.updateCurrentRuleConfiguration(alteredRuleConfig, toBeAlteredRuleConfig);
         Collection<RuleConfiguration> alteredConfigs = new LinkedList<>(shardingSphereMetaData.getRuleMetaData().getConfigurations());
         alteredConfigs.remove(currentRuleConfig);
         alteredConfigs.add(alteredRuleConfig);
