@@ -1,9 +1,9 @@
 +++
-title = "PostgreSQL"
+title = "openGauss"
 weight = 2
 +++
 
-PostgreSQL 不支持的 SQL 清单如下：
+The unsupported SQL list for openGauss are as follows:
 
 | SQL                                                                                                       |
 | --------------------------------------------------------------------------------------------------------- |
@@ -21,4 +21,3 @@ PostgreSQL 不支持的 SQL 清单如下：
 | CREATE RULE def_view_test_ins AS ON INSERT TO def_view_test DO INSTEAD INSERT INTO def_test SELECT new.*  |
 | ALTER TABLE alterlock SET (toast.autovacuum_enabled = off)                                                |
 | CREATE PUBLICATION pub1 FOR TABLE alter1.t1, ALL TABLES IN SCHEMA alter2                                  |
-
