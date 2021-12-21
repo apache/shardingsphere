@@ -51,7 +51,7 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
             <version>${antlr4.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     
