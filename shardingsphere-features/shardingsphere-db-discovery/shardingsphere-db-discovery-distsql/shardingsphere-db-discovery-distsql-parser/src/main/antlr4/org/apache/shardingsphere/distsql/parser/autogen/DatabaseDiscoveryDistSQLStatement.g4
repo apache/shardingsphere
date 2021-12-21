@@ -27,5 +27,10 @@ execute
     | showDatabaseDiscoveryHeartbeats
     | showDatabaseDiscoveryRules
     | createDatabaseDiscoveryType
+    | createDatabaseDiscoveryHeartbeat
+    | alterDatabaseDiscoveryHeartbeat
+    | dropDatabaseDiscoveryType
+    | dropDatabaseDiscoveryHeartbeat
+    | alterDatabaseDiscoveryType
     ) SEMI?
     ;

@@ -128,7 +128,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
                 newMetaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName));
         metaDataContexts.getMetaDataMap().put(schemaName, newMetaDataContexts.getMetaData(schemaName));
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName, null));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName));
     }
     
     /**
@@ -236,6 +236,18 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName,
                 new FederationSchemaMetaData(schemaName, schema.getTables()));
         renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
+    }
+    
+    /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param table table                  
+     * @param tableMetaData table meta data
+     */
+    public void alterSchema(final String schemaName, final String table, final TableMetaData tableMetaData) {
+        metaDataContexts.getMetaData(schemaName).getSchema().put(table, tableMetaData);
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).put(tableMetaData);
     }
     
     /**

@@ -34,5 +34,5 @@ sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh
 
 - [功能#弹性伸缩](/cn/features/scaling/)：核心概念、使用规范
 - [用户手册#弹性伸缩](/cn/user-manual/shardingsphere-scaling/)：运行部署、使用手册
-- [RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/usage/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)：弹性伸缩的DistSQL
+- [RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)：弹性伸缩的DistSQL
 - [开发者手册#弹性伸缩](/cn/dev-manual/scaling/)：SPI接口及实现类

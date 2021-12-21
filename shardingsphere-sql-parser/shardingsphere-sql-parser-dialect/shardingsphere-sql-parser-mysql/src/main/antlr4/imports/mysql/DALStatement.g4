@@ -417,6 +417,10 @@ formatName
     : TRADITIONAL | JSON | TREE
     ;
 
+delimiter
+    : DELIMITER  delimiterName
+    ;
+    
 show
     : showDatabases
     | showTables

@@ -74,7 +74,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(dataSourceMap.get(null)).thenReturn(dataSource);
-        mgrHaType.getProps().setProperty("groupName", "group_name");
+        mgrHaType.getProps().setProperty("group-name", "group_name");
         mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
@@ -108,7 +108,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrHaType.getProps().setProperty("groupName", "group_name");
+        mgrHaType.getProps().setProperty("group-name", "group_name");
         mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
     }

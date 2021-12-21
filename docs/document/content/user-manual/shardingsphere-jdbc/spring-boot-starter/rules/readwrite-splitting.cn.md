@@ -8,6 +8,7 @@ weight = 2
 ```properties
 spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.auto-aware-data-source-name= # 自动发现数据源名称(与数据库发现配合使用)
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.write-data-source-name= # 写数据源名称
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.read-data-source-names= # 读数据源名称，多个从数据源用逗号分隔
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # 负载均衡算法名称

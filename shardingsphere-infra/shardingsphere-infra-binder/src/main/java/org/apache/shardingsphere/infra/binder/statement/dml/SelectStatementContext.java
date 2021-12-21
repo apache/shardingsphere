@@ -89,6 +89,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     @Setter
     private SubqueryType subqueryType;
     
+    @Setter
+    private boolean needAggregateRewrite;
+    
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);

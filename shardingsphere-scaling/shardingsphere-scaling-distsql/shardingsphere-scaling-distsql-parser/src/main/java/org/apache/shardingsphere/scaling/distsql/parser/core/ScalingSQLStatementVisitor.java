@@ -39,8 +39,8 @@ import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgor
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StartScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;

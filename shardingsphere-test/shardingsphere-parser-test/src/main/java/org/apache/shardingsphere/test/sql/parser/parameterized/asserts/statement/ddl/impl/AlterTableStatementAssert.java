@@ -24,10 +24,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.charset.CharsetAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.charset.CollateAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnPositionAssert;
@@ -70,6 +74,19 @@ public final class AlterTableStatementAssert {
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
+        assertConvertTable(assertContext, actual, expected);
+    }
+    
+    private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<ConvertTableDefinitionSegment> convertTable = actual.getConvertTableDefinition();
+        if (null != expected.getConvertTable()) {
+            assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
+            CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
+            CollateAssert.assertIs(assertContext, convertTable.get().getCollateClause(), expected.getConvertTable().getCollate());
+            SQLSegmentAssert.assertIs(assertContext, convertTable.get(), expected.getConvertTable());
+        } else {
+            assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());
+        }
     }
     
     private static void assertRenameTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {

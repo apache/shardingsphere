@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -69,9 +69,9 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Source data source check privileges failed.", ex);
+            throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
         }
-        throw new PrepareFailedException("Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
+        throw new PipelineJobPrepareFailedException("Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
     }
     
     private boolean matchPrivileges(final String privilege) {
@@ -91,7 +91,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 checkVariable(connection, entry.getKey(), entry.getValue());
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Source data source check variables failed.", ex);
+            throw new PipelineJobPrepareFailedException("Source data source check variables failed.", ex);
         }
     }
     
@@ -102,14 +102,14 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 resultSet.next();
                 String actualValue = resultSet.getString(2);
                 if (!toBeCheckedValue.equalsIgnoreCase(actualValue)) {
-                    throw new PrepareFailedException(String.format("Source data source required `%s = %s`, now is `%s`", key, toBeCheckedValue, actualValue));
+                    throw new PipelineJobPrepareFailedException(String.format("Source data source required `%s = %s`, now is `%s`", key, toBeCheckedValue, actualValue));
                 }
             }
         }
     }
     
     @Override
-    protected MySQLScalingSQLBuilder getSQLBuilder() {
-        return new MySQLScalingSQLBuilder(new HashMap<>());
+    protected MySQLPipelineSQLBuilder getSQLBuilder() {
+        return new MySQLPipelineSQLBuilder(new HashMap<>());
     }
 }

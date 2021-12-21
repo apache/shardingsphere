@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Savepoint statement test case.
  */
+@Getter
+@Setter
 public final class SavepointStatementTestCase extends SQLParserTestCase {
+
+    @XmlAttribute
+    private String name;
 }

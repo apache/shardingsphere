@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.scaling.core.api.DataCalculateParameter;
-import org.apache.shardingsphere.scaling.core.api.impl.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.scaling.core.api.impl.ScalingDefaultDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,7 +42,7 @@ public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleT
     
     @Override
     public String getAlgorithmType() {
-        return ScalingDefaultDataConsistencyCheckAlgorithm.TYPE;
+        return DefaultDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override
@@ -53,7 +53,7 @@ public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleT
     @Override
     public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
-        MySQLScalingSQLBuilder scalingSQLBuilder = new MySQLScalingSQLBuilder(new HashMap<>());
+        MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());
         try (DataSourceWrapper dataSource = getDataSource(dataCalculateParameter.getDataSourceConfig())) {
             return dataCalculateParameter.getColumnNames().stream().map(each -> {
                 String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);

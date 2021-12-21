@@ -42,10 +42,11 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     @Override
     public void execute(final ConnectionSession connectionSession) {
         String schemaName = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), connectionSession.getGrantee())) {
-            throw new UnknownDatabaseException(schemaName);
+        if (ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), connectionSession.getGrantee())) {
+            connectionSession.setCurrentSchema(schemaName);
+            return;
         }
-        connectionSession.setCurrentSchema(schemaName);
+        throw new UnknownDatabaseException(schemaName);
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {

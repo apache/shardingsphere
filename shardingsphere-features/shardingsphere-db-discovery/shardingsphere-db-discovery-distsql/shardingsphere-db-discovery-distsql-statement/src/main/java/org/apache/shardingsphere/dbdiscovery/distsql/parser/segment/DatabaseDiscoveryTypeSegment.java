@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Database discovery type.
+ * Database discovery type segment.
  */
 @RequiredArgsConstructor
 @Getter

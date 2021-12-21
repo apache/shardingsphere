@@ -17,7 +17,7 @@
 
 mode: memory
 transaction: local
-feature: shadow
+feature: db-discovery
 framework: jdbc
 
 host: localhost

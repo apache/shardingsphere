@@ -205,7 +205,7 @@ public final class ShardingInsertStatementValidatorTest {
         TableRule tableRule = mock(TableRule.class);
         when(tableRule.getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
-        when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
+        when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);
         StandardShardingStrategyConfiguration databaseStrategyConfiguration = mock(StandardShardingStrategyConfiguration.class);
         when(databaseStrategyConfiguration.getShardingColumn()).thenReturn("id");

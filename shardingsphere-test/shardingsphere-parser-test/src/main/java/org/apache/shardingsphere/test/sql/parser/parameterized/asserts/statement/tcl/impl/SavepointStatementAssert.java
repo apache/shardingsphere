@@ -20,8 +20,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Savepoint statement assert.
@@ -37,5 +40,8 @@ public final class SavepointStatementAssert {
      * @param expected expected savepoint statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SavepointStatement actual, final SavepointStatementTestCase expected) {
+        if (actual instanceof MySQLSavepointStatement) {
+            assertEquals(expected.getName(), ((MySQLSavepointStatement) actual).getSavepointName());
+        }
     }
 }

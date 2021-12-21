@@ -67,14 +67,8 @@ public final class ShardingSphereJDBCDataSourceConfiguration extends JDBCDataSou
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
     }
     
-    /**
-     * Get jdbc url from parameters, the key can be url or jdbcUrl.
-     *
-     * @param parameters parameters
-     * @return jdbc url
-     */
-    private String getJdbcUrl(final Map<String, Object> parameters) {
-        Object result = parameters.getOrDefault("url", parameters.get("jdbcUrl"));
+    private String getJdbcUrl(final Map<String, Object> props) {
+        Object result = props.getOrDefault("url", props.get("jdbcUrl"));
         Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
         return result.toString();
     }
@@ -113,8 +107,8 @@ public final class ShardingSphereJDBCDataSourceConfiguration extends JDBCDataSou
     /**
      * YAML parameter configuration.
      */
-    @NoArgsConstructor
     @AllArgsConstructor
+    @NoArgsConstructor
     @Getter
     @Setter
     private static class YamlParameterConfiguration implements YamlConfiguration {

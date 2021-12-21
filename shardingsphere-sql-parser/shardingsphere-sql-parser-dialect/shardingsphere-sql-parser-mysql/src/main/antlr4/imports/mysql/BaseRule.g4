@@ -615,7 +615,7 @@ schemaNames
     ;
     
 charsetName
-    : textOrIdentifier | BINARY
+    : textOrIdentifier | BINARY | DEFAULT
     ;
     
 schemaPairs
@@ -641,6 +641,10 @@ indexName
 constraintName
     : identifier
     ;
+
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
 
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?

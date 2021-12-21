@@ -44,6 +44,8 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     
     public static final String FUNCTION_NAME = "current_user()";
     
+    public static final String FUNCTION_NAME_ALIAS = "current_user";
+    
     private MergedResult mergedResult;
     
     @Override

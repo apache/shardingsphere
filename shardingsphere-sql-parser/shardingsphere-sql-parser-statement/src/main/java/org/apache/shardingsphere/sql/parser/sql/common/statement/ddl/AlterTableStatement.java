@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -45,6 +46,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private SimpleTableSegment table;
     
     private SimpleTableSegment renameTable;
+    
+    private ConvertTableDefinitionSegment convertTableDefinition;
     
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
@@ -68,4 +71,14 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     public Optional<SimpleTableSegment> getRenameTable() {
         return Optional.ofNullable(renameTable);
     }
+    
+    /**
+     * Get convert table definition.
+     *
+     * @return convert table definition
+     */
+    public Optional<ConvertTableDefinitionSegment> getConvertTableDefinition() {
+        return Optional.ofNullable(convertTableDefinition);
+    }
+    
 }

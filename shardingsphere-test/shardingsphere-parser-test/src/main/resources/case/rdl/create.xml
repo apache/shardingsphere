@@ -224,6 +224,15 @@
         </type>
     </create-database-discovery-type>
 
+
+    <create-database-discovery-heartbeat sql-case-id="create-database-discovery-heartbeat">
+        <rule heartbeat-name="mgr_heartbeat" >
+            <properties>
+                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            </properties>
+        </rule>
+    </create-database-discovery-heartbeat>
+
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
         <rule rule-name="ha_group_0" type="mgr">
             <data-source>resource0</data-source>

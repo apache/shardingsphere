@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -69,6 +70,9 @@ public final class TransactionBackendHandlerFactory {
         }
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+        }
+        if (tclStatement instanceof XAStatement) {
+            return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
         return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
     }

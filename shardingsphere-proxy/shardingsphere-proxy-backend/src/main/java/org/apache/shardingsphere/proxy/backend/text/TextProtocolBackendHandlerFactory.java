@@ -56,6 +56,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Text protocol backend handler factory.
@@ -72,18 +73,22 @@ public final class TextProtocolBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sql SQL to be executed
+     * @param sqlStatementSupplier optional SQL statement supplier
      * @param connectionSession connection session
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final Supplier<Optional<SQLStatement>> sqlStatementSupplier,
+                                                         final ConnectionSession connectionSession) throws SQLException {
         String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sql, false);
+        SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
+            Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+            return new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sql, false);
+        });
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
@@ -102,14 +107,16 @@ public final class TextProtocolBackendHandlerFactory {
         if (extraHandler.isPresent()) {
             return extraHandler.get();
         }
-        String schemaName = connectionSession.getSchemaName();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
+        Optional<TextProtocolBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
+        if (databaseOperateHandler.isPresent()) {
+            return databaseOperateHandler.get();
+        }
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().isPresent()
+                ? sqlStatementContext.getTablesContext().getSchemaName().get() : connectionSession.getSchemaName();
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
-        }
-        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
         }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
@@ -123,6 +130,13 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
+    }
+    
+    private static Optional<TextProtocolBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession));
+        }
+        return Optional.empty();
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
