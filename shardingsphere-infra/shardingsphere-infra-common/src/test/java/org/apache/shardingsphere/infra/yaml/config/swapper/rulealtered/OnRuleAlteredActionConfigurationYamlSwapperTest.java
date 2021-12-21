@@ -35,6 +35,10 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         YamlOnRuleAlteredActionConfiguration yamlConfig = new YamlOnRuleAlteredActionConfiguration();
         yamlConfig.setBlockQueueSize(1000);
         yamlConfig.setWorkerThread(20);
+        Properties rateLimiterProps = new Properties();
+        rateLimiterProps.setProperty("batch-size", "1000");
+        rateLimiterProps.setProperty("qps", "50");
+        yamlConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("SOURCE", rateLimiterProps));
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
