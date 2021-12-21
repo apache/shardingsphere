@@ -180,7 +180,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private Collection<ColumnProjection> generateTableSubqueryProjections(final String tableName, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(processForDuplicatedOwner(new ColumnProjection(column.getOwner(), getEncryptRule().getCipherColumn(tableName, column.getName()), null), shorthand));
+        result.add(distinctOwner(new ColumnProjection(column.getOwner(), getEncryptRule().getCipherColumn(tableName, column.getName()), null), shorthand));
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, column.getName());
         assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column.getName());
