@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showSQLParserRule
-    ) SEMI?
-    ;
+/**
+ * Show SQL parser rule statement.
+ */
+public final class ShowSQLParserRuleStatement extends ShowDistSQLStatement {
+}

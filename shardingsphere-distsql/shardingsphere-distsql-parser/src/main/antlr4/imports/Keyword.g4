@@ -170,3 +170,7 @@ REFRESH
 METADATA
     : M E T A D A T A
     ;
+    
+SQL_PARSER
+    : S Q L UL_ P A R S E R
+    ;
