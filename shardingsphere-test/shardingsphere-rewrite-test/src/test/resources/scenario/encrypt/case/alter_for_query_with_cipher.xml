@@ -26,4 +26,14 @@
         <input sql="ALTER TABLE t_account CHANGE COLUMN amount amountA text"/>
         <output sql="ALTER TABLE t_account CHANGE COLUMN cipher_amount amountA_cipher text"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="add_column_with_position_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account ADD COLUMN status text AFTER amount"/>
+        <output sql="ALTER TABLE t_account ADD COLUMN status text AFTER cipher_amount"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="modify_column_with_position_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER amount"/>
+        <output sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER cipher_amount"/>
+    </rewrite-assertion>
 </rewrite-assertions>
