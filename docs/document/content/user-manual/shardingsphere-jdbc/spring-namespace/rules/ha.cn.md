@@ -31,7 +31,7 @@ weight = 3
 | id                          | 属性  | 监听心跳名称                                  |
 | props                       | 标签  | 监听心跳属性配置，keep-alive-cron 属性配置 cron 表达式，如：'0/5 * * * * ?'  |
 
-\<readwrite-splitting:discovery-type />
+\<database-discovery:discovery-type />
 
 | *名称*     | *类型* | *说明*                                    |
 | --------- | ----- | ----------------------------------------- |

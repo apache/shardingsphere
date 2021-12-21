@@ -31,7 +31,7 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-dis
 | id                          | Attribute  | Detect heartbeat Id                                |
 | props                       | tag        | Detect heartbeat attribute configuration, keep-alive-cron configuration, cron expression. Such as: '0/5 * * * * ?'  |
 
-\<readwrite-splitting:discovery-type />
+\<database-discovery:discovery-type />
 
 | *Name*     | *Type*    | *Description*                                                    |
 | --------- | ---------- | ---------------------------------------------------------------- |
