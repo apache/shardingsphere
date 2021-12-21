@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTra
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
@@ -58,11 +57,10 @@ public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        if (null == ctx.savepointClause().savepointName()) {
-            return new OracleRollbackStatement();
+        OracleRollbackStatement result = new OracleRollbackStatement();
+        if (null != ctx.savepointClause().savepointName()) {
+            result.setSavepointName(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
         }
-        OracleRollbackToSavepointStatement result = new OracleRollbackToSavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
         return result;
     }
     

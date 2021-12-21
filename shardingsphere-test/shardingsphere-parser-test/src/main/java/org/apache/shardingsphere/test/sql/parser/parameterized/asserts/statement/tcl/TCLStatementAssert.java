@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.BeginTransactionStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.CommitStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.RollbackStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.RollbackToSavepointStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SavepointStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetAutoCommitStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetConstraintsStatementAssert;
@@ -70,8 +68,6 @@ public final class TCLStatementAssert {
             CommitStatementAssert.assertIs(assertContext, (CommitStatement) actual, (CommitStatementTestCase) expected);
         } else if (actual instanceof RollbackStatement) {
             RollbackStatementAssert.assertIs(assertContext, (RollbackStatement) actual, (RollbackStatementTestCase) expected);
-        } else if (actual instanceof RollbackToSavepointStatement) {
-            RollbackToSavepointStatementAssert.assertIs(assertContext, (RollbackToSavepointStatement) actual, (RollbackStatementTestCase) expected);
         } else if (actual instanceof SavepointStatement) {
             SavepointStatementAssert.assertIs(assertContext, (SavepointStatement) actual, (SavepointStatementTestCase) expected);
         } else if (actual instanceof SetConstraintsStatement) {
