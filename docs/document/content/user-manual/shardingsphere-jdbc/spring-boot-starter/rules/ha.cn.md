@@ -15,6 +15,5 @@ spring.shardingsphere.rules.database-discovery.data-sources.<database-discovery-
 spring.shardingsphere.rules.database-discovery.discovery-heartbeats.<discovery-heartbeat-name>.props.keep-alive-cron= # cron 表达式，如：'0/5 * * * * ?'
 
 spring.shardingsphere.rules.database-discovery.discovery-types.<discovery-type-name>.type= # 高可用类型，如： MGR、openGauss
-spring.shardingsphere.rules.database-discovery.discovery-types.<discovery-type-name>.props.group-name= # 高可用类型必要参数，如 MGR 的 group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
-
+spring.shardingsphere.rules.database-discovery.discovery-types.<discovery-type-name>.props.group-name= # 高可用类型必要参数，如 MGR 的 group-name
 ```
