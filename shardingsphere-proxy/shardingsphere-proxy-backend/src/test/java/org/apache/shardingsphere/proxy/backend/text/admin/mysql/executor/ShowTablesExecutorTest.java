@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -35,6 +36,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,8 +69,11 @@ public final class ShowTablesExecutorTest {
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
+            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+            when(schema.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail", "test"));
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.isComplete()).thenReturn(false);
+            when(metaData.getSchema()).thenReturn(schema);
+            when(metaData.isComplete()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
@@ -79,9 +84,14 @@ public final class ShowTablesExecutorTest {
     public void assertExecute() throws SQLException {
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        while (showTablesExecutor.getMergedResult().next()) {
-            assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is(1));
-        }
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("test"));
     }
     
     private ConnectionSession mockConnectionSession() {
@@ -91,3 +101,4 @@ public final class ShowTablesExecutorTest {
         return result;
     }
 }
+
