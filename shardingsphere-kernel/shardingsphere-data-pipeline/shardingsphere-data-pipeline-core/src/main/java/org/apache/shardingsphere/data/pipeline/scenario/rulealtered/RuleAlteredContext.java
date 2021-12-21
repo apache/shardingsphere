@@ -86,18 +86,6 @@ public final class RuleAlteredContext {
     }
     
     /**
-     * Get instance of context.
-     *
-     * @return instance of context
-     */
-    public static RuleAlteredContext getInstance() {
-        return null;
-    }
-    
-        public void init(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        }
-    
-    /**
      * Initialize mode configuration.
      *
      * @param modeConfig configuration

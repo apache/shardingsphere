@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExec
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -116,7 +117,7 @@ public final class RuleAlteredJobWorker {
      * @return rule altered context
      */
     public static RuleAlteredContext createRuleAlteredContext(final JobConfiguration jobConfig) {
-        YamlRootConfiguration targetRootConfig = ((ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap()).getRootConfig();
+        YamlRootConfiguration targetRootConfig = getYamlRootConfig(jobConfig);
         YamlRuleConfiguration yamlRuleConfig = null;
         for (YamlRuleConfiguration each : targetRootConfig.getRules()) {
             if (jobConfig.getWorkflowConfig().getAlteredRuleYamlClassNames().contains(each.getClass().getName())) {
@@ -135,6 +136,21 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
         return new RuleAlteredContext(onRuleAlteredActionConfigOptional.get());
+    }
+    
+    /**
+     * Get YAML root configuration, which should include rule altered action configuration.
+     *
+     * @param jobConfig job configuration
+     * @return YAML root configuration
+     */
+    private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
+        JDBCDataSourceConfiguration targetDataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
+        if (targetDataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
+            return ((ShardingSphereJDBCDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
+        }
+        JDBCDataSourceConfiguration sourceDataSourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
+        return ((ShardingSphereJDBCDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
     /**

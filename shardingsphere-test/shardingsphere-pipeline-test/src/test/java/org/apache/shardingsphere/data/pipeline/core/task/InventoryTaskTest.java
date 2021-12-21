@@ -44,7 +44,7 @@ public final class InventoryTaskTest {
     
     @BeforeClass
     public static void beforeClass() {
-        RuleAlteredContextUtil.initAndMockContextConfig();
+        RuleAlteredContextUtil.mockModeConfig();
         taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
     }
     

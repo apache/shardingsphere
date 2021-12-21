@@ -46,7 +46,7 @@ public final class FinishedCheckJobTest {
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.initAndMockContextConfig();
+        RuleAlteredContextUtil.mockModeConfig();
         finishedCheckJob = new FinishedCheckJob();
     }
     

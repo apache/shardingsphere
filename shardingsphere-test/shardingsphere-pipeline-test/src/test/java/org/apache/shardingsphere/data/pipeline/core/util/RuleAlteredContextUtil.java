@@ -20,9 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Properties;
@@ -30,30 +28,11 @@ import java.util.Properties;
 public final class RuleAlteredContextUtil {
     
     /**
-     * Raw mock context configuration.
+     * Mock mode configuration.
      */
     @SneakyThrows
-    public static void rawMockContextConfig() {
-        RuleAlteredContext context = RuleAlteredContext.getInstance();
-        ReflectionUtil.setFieldValue(context, "onRuleAlteredActionConfig", createOnRuleAlteredActionConfig());
-        ReflectionUtil.setFieldValue(context, "modeConfig", createModeConfig());
-    }
-    
-    /**
-     * Initialize and mock context configuration.
-     */
-    @SneakyThrows
-    public static void initAndMockContextConfig() {
-        RuleAlteredContext context = RuleAlteredContext.getInstance();
-        ReflectionUtil.setFieldValue(context, "onRuleAlteredActionConfig", null);
-        ReflectionUtil.setFieldValue(context, "modeConfig", null);
-        context.init(createOnRuleAlteredActionConfig());
-        context.initModeConfig(createModeConfig());
-    }
-    
-    private static OnRuleAlteredActionConfiguration createOnRuleAlteredActionConfig() {
-        return new OnRuleAlteredActionConfiguration(1000, 5, new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()),
-                new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()));
+    public static void mockModeConfig() {
+        RuleAlteredContext.initModeConfig(createModeConfig());
     }
     
     private static ModeConfiguration createModeConfig() {

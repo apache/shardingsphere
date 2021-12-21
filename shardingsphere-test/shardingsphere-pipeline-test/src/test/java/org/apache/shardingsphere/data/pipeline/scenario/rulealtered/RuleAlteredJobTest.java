@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
@@ -32,15 +31,13 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 public final class RuleAlteredJobTest {
     
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.rawMockContextConfig();
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "inventoryDumperExecuteEngine", mock(ExecuteEngine.class));
+        RuleAlteredContextUtil.mockModeConfig();
     }
     
     @Test
