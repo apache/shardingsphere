@@ -49,7 +49,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 
 **说明**
 
-* 如需使用外部 jar 包，可将其所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
+* 如需使用外部 jar 包（例如 MySQL/openGauss JDBC 驱动、自定义算法等），可将其所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
 
 ## 访问 ShardingSphere-Proxy
 

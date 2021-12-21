@@ -45,5 +45,6 @@ execute
     | showShardingTableNodes
     | createShardingKeyGenerator
     | alterShardingKeyGenerator
+    | showShardingKeyGenerators
     ) SEMI?
     ;

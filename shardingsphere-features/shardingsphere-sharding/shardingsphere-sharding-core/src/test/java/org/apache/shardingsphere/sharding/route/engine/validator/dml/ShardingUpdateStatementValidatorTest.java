@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
@@ -116,7 +117,7 @@ public final class ShardingUpdateStatementValidatorTest {
         TableRule tableRule = mock(TableRule.class);
         when(tableRule.getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
-        when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
+        when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);
         StandardShardingStrategyConfiguration databaseStrategyConfiguration = mock(StandardShardingStrategyConfiguration.class);
         when(databaseStrategyConfiguration.getShardingColumn()).thenReturn("id");

@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.example.db.discovery.jdbc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-/**
- * DB drop exists exception.
- */
-@RequiredArgsConstructor
-@Getter
-public final class DBDropExistsException extends BackendException {
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
+public class MemoryLocalDbDiscoveryJdbcExample {
     
-    private static final long serialVersionUID = 6088272565526510361L;
-    
-    private final String databaseName;
+    public static void main(final String[] args) throws SQLException {
+        MemoryLocalDbDiscoveryJdbcConfiguration configuration = new MemoryLocalDbDiscoveryJdbcConfiguration();
+        DataSource dataSource = configuration.getDataSource();
+        MemoryLocalDbDiscoveryJdbcExampleService exampleService = new MemoryLocalDbDiscoveryJdbcExampleService(dataSource);
+        exampleService.run();
+    }
 }

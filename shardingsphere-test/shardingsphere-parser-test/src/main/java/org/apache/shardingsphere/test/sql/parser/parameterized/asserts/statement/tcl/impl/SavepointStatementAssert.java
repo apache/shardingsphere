@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointSt
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * Savepoint statement assert.
  */
@@ -37,5 +40,6 @@ public final class SavepointStatementAssert {
      * @param expected expected savepoint statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SavepointStatement actual, final SavepointStatementTestCase expected) {
+        assertThat(assertContext.getText("Savepoint name assertion error."), actual.getSavepointName(), is(expected.getSavepointName()));
     }
 }

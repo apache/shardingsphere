@@ -57,6 +57,7 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 |SQLServer |支持     |
 |Oracle    |支持     |
 |SQL92     |支持     |
+|openGauss |支持     |
 * 提供 SQL 格式化功能（开发中）
 * 提供 SQL 模板化功能（开发中）
 

@@ -75,6 +75,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         when(connectionSession.getSchemaName()).thenReturn("schema");
+        when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test
@@ -134,23 +135,21 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
     }
     
     private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-        when(result.getMetaData("schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
-        return result;
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        when(metaDataContexts.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(metaDataContexts.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        return metaDataContexts;
     }
     
     @After

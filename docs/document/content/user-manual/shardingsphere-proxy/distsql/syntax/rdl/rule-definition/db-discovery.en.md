@@ -6,42 +6,121 @@ weight = 4
 ## Syntax
 
 ```sql
-CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition [, databaseDiscoveryRuleDefinition] ...
+CREATE DB_DISCOVERY RULE ruleDefinition [, ruleDefinition] ...
 
-ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition [, databaseDiscoveryRuleDefinition] ...
+ALTER DB_DISCOVERY RULE ruleDefinition [, ruleDefinition] ...
 
 DROP DB_DISCOVERY RULE ruleName [, ruleName] ...
 
-databaseDiscoveryRuleDefinition:
-    ruleName(resources, discoveryTypeDefinition)
+CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition [, databaseDiscoveryTypeDefinition] ...
+
+ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition [, databaseDiscoveryTypeDefinition] ...
+
+DROP DB_DISCOVERY TYPE discoveryTypeName [, discoveryTypeName] ...
+
+CREATE DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
+
+ALTER DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
+
+DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName [, discoveryHeartbeatName] ...
+
+ruleDefinition:
+    (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
+
+databaseDiscoveryRuleDefinition
+    ruleName (resources, typeDefinition, heartbeatDefinition)
+
+databaseDiscoveryRuleConstruction
+    ruleName (resources, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
+
+databaseDiscoveryTypeDefinition
+    discoveryTypeName (typeDefinition)
+
+databaseDiscoveryHeartbaetDefinition
+    discoveryHeartbeatName (PROPERTIES (properties)) 
 
 resources:
     RESOURCES(resourceName [, resourceName] ...)
 
-discoveryTypeDefinition:
-    TYPE(NAME=discoveryType [, PROPERTIES([algorithmProperties] )] )
+typeDefinition:
+    TYPE(NAME=typeName [, PROPERTIES([properties] )] )
 
-algorithmProperties:
-    algorithmProperty [, algorithmProperty] ...
+heartbeatDefinition
+    HEARTBEAT (PROPERTIES (properties)) 
 
-algorithmProperty:
+properties:
+    property [, property] ...
+
+property:
     key=value                          
 ```
+
 - `discoveryType` specifies the database discovery service type, `ShardingSphere` has built-in support for `MGR`
 - Duplicate `ruleName` will not be created
+- The `discoveryType` and `discoveryHeartbeat` being used cannot be deleted
+- Names with `-` need to use `" "` when changing
+- When removing the `discoveryRule`, the `discoveryType` and `discoveryHeartbeat` used by the `discoveryRule` will not be removed
+
 
 ## Example
 
+### When creating a `discoveryRule`, create both `discoveryType` and `discoveryHeartbeat`
+
 ```sql
 CREATE DB_DISCOVERY RULE ha_group_0 (
-RESOURCES(resource_0,resource_1),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
+RESOURCES(ds_0, ds_1, ds_2),
+TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE ha_group_0 (
-RESOURCES(resource_0,resource_1,resource_2),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
+RESOURCES(ds_0, ds_1, ds_2),
+TYPE(NAME=mgr,PROPERTIES('groupName'='246e9612-aaf1')),
+HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
 );
 
 DROP DB_DISCOVERY RULE ha_group_0;
+
+DROP DB_DISCOVERY TYPE ha_group_0_mgr;
+
+DROP DB_DISCOVERY HEARTBEAT ha_group_0_heartbeat;
+
+```
+
+### Use the existing `discoveryType` and `discoveryHeartbeat` to create a `discoveryRule`
+
+```sql
+CREATE DB_DISCOVERY TYPE ha_group_1_mgr(
+  TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec'))
+);
+
+CREATE DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
+  PROPERTIES('keepAliveCron'='0/5 * * * * ?')
+);
+
+CREATE DB_DISCOVERY RULE ha_group_1 (
+RESOURCES(ds_0, ds_1, ds_2),
+TYPE=ha_group_1_mgr,
+HEARTBEAT=ha_group_1_heartbeat
+);
+
+ALTER DB_DISCOVERY TYPE ha_group_1_mgr(
+  TYPE(NAME=mgr,PROPERTIES('groupName'='246e9612-aaf1'))
+);
+
+ALTER DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
+  PROPERTIES('keepAliveCron'='0/10 * * * * ?')
+);
+
+ALTER DB_DISCOVERY RULE ha_group_1 (
+RESOURCES(ds_0, ds_1),
+TYPE=ha_group_1_mgr,
+HEARTBEAT=ha_group_1_heartbeat
+);
+
+DROP DB_DISCOVERY RULE ha_group_1;
+
+DROP DB_DISCOVERY TYPE ha_group_1_mgr;
+
+DROP DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat;
 ```

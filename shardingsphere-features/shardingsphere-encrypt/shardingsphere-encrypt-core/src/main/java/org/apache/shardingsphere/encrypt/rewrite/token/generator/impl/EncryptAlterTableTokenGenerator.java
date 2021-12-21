@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.List;
@@ -107,6 +108,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
                 result.addAll(getAddColumnTokens(tableName, columnName, addColumnDefinitionSegment, each));
             }
         }
+        getAddColumnPositionToken(tableName, addColumnDefinitionSegment).ifPresent(result::add);
         return result;
     }
     
@@ -120,6 +122,20 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
+    private Optional<SQLToken> getAddColumnPositionToken(final String tableName, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
+        Optional<EncryptAlgorithm> encryptor = addColumnDefinitionSegment.getColumnPosition().filter(positionSegment -> null != positionSegment.getColumnName())
+                .flatMap(positionSegment -> getEncryptRule().findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
+        if (encryptor.isPresent()) {
+            return Optional.of(getPositionColumnToken(addColumnDefinitionSegment.getColumnPosition().get(), tableName));
+        }
+        return Optional.empty();
+    }
+    
+    private EncryptAlterTableToken getPositionColumnToken(final ColumnPositionSegment positionSegment, final String tableName) {
+        return new EncryptAlterTableToken(positionSegment.getColumnName().getStartIndex(), positionSegment.getStopIndex(), getEncryptRule()
+                .getCipherColumn(tableName, positionSegment.getColumnName().getIdentifier().getValue()), null);
+    }
+    
     private Collection<SQLToken> getModifyColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
@@ -131,6 +147,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
             if (encryptor.isPresent() || encryptorPrevious.isPresent()) {
                 result.addAll(getModifyColumnTokens(tableName, columnName, each, segment));
             }
+            getModifyColumnPositionToken(tableName, each).ifPresent(result::add);
         }
         return result;
     }
@@ -143,6 +160,15 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         getAssistedQueryColumn(tableName, columnName, modifyColumnDefinitionSegment, columnDefinitionSegment).ifPresent(result::add);
         getPlainColumn(tableName, columnName, modifyColumnDefinitionSegment, columnDefinitionSegment).ifPresent(result::add);
         return result;
+    }
+    
+    private Optional<SQLToken> getModifyColumnPositionToken(final String tableName, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
+        Optional<EncryptAlgorithm> encryptor = modifyColumnDefinitionSegment.getColumnPosition().filter(positionSegment -> null != positionSegment.getColumnName())
+                .flatMap(positionSegment -> getEncryptRule().findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
+        if (encryptor.isPresent()) {
+            return Optional.of(getPositionColumnToken(modifyColumnDefinitionSegment.getColumnPosition().get(), tableName));
+        }
+        return Optional.empty();
     }
     
     private Collection<SQLToken> getDropColumnTokens(final String tableName, final Collection<DropColumnDefinitionSegment> columnDefinitionSegments) {

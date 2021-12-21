@@ -15,13 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
+package org.apache.shardingsphere.dbdiscovery.spring.namespace.tag;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * OpenGauss rollback to savepoint statement.
+ * Database discovery heartbeat bean definition tag.
  */
-public final class OpenGaussRollbackToSavepointStatement extends RollbackToSavepointStatement implements OpenGaussStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryHeartbeatBeanDefinitionTag {
+    
+    public static final String ROOT_TAG = "discovery-heartbeat";
+    
+    public static final String HEARTBEAT_ID_ATTRIBUTE = "id";
+    
+    public static final String HEARTBEAT_PROPS_TAG = "props";
 }

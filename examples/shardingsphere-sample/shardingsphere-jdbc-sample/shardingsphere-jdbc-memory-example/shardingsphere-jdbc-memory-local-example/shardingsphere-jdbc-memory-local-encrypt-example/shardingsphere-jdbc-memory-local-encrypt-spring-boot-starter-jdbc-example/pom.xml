@@ -25,7 +25,7 @@
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-jdbc-memory-local-encrypt-springboot-starter-jdbc-example</artifactId>
+    <artifactId>shardingsphere-jdbc-memory-local-encrypt-spring-boot-starter-jdbc-example</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

@@ -142,7 +142,7 @@ public final class FilterableTableScanExecutor {
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
-            setParameters(executionGroupContext.getInputGroups(), logicSQL.getParameters());
+            setParameters(executionGroupContext.getInputGroups());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
@@ -162,13 +162,13 @@ public final class FilterableTableScanExecutor {
     }
     
     @SneakyThrows
-    private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups, final List<Object> parameters) {
+    private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
             for (JDBCExecutionUnit executionUnit : each.getInputs()) {
                 if (!(executionUnit.getStorageResource() instanceof PreparedStatement)) {
                     continue;
                 }
-                setParameters((PreparedStatement) executionUnit.getStorageResource(), parameters);
+                setParameters((PreparedStatement) executionUnit.getStorageResource(), executionUnit.getExecutionUnit().getSqlUnit().getParameters());
             }
         }
     }
