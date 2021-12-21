@@ -51,11 +51,8 @@ public final class ShowTablesExecutorTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private ShowTablesExecutor showTablesExecutor;
-    
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement());
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
@@ -81,7 +78,8 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertShowTablesExecutorWithoutFilter() throws SQLException {
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement());
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         showTablesExecutor.getMergedResult().next();
