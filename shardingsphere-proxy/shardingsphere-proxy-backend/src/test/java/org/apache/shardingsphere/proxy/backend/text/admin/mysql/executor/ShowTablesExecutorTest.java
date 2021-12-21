@@ -30,6 +30,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +41,11 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -90,6 +94,53 @@ public final class ShowTablesExecutorTest {
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
         showTablesExecutor.getMergedResult().next();
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("test"));
+        assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithLikeFilter() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
+        showTablesExecutor.execute(mockConnectionSession());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
+        assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithSpecificTable() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
+        showTablesExecutor.execute(mockConnectionSession());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
+        assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithUpperCaseTableName() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "TEST")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
+        showTablesExecutor.execute(mockConnectionSession());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("test"));
+        assertFalse(showTablesExecutor.getMergedResult().next());
     }
     
     private ConnectionSession mockConnectionSession() {
@@ -99,4 +150,3 @@ public final class ShowTablesExecutorTest {
         return result;
     }
 }
-
