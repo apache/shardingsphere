@@ -102,6 +102,9 @@ public final class RuleAlteredJobWorker {
             return;
         }
         synchronized (WORKER_INITIALIZED) {
+            if (WORKER_INITIALIZED.get()) {
+                return;
+            }
             log.info("start worker initialization");
             ShardingSphereEventBus.getInstance().register(INSTANCE);
             new FinishedCheckJobExecutor().start();

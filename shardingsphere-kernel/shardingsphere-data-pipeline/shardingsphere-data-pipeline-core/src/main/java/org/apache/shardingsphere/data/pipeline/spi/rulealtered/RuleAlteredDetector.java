@@ -54,8 +54,8 @@ public interface RuleAlteredDetector {
     /**
      * Get on rule altered action configuration.
      *
-     * @param targetRuleConfig target rule configuration, may be null
+     * @param ruleConfig rule configuration, may be null
      * @return optional configuration
      */
-    Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(RuleConfiguration targetRuleConfig);
+    Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(RuleConfiguration ruleConfig);
 }

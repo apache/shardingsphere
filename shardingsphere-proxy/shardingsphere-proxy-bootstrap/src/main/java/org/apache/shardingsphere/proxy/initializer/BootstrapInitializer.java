@@ -88,6 +88,14 @@ public final class BootstrapInitializer {
     }
     
     private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+        if (null == modeConfig) {
+            return;
+        }
+        // TODO decouple "Cluster" to pluggable
+        if (!"Cluster".equals(modeConfig.getType())) {
+            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
+            return;
+        }
         RuleAlteredContext.initModeConfig(modeConfig);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
         RuleAlteredJobWorker.initWorkerIfNecessary();

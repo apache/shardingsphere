@@ -69,11 +69,11 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     }
     
     @Override
-    public Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(final RuleConfiguration targetRuleConfig) {
-        if (null == targetRuleConfig) {
+    public Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(final RuleConfiguration ruleConfig) {
+        if (null == ruleConfig) {
             return Optional.empty();
         }
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) targetRuleConfig;
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
         String scalingName = shardingRuleConfig.getScalingName();
         if (null == scalingName) {
             return Optional.empty();
