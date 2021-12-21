@@ -90,4 +90,9 @@
     <show-sharding-table-nodes sql-case-id="show-sharding-table-nodes" table="t_order">
         <schema name="sharding_db" start-index="39" stop-index="49"/>
     </show-sharding-table-nodes>
+
+    <show-sharding-key-generators sql-case-id="show-sharding-key-generators">
+        <schema name="sharding_db" start-index="34" stop-index="44"/>
+    </show-sharding-key-generators>
+
 </sql-parser-test-cases>

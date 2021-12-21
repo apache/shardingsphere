@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransa
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -62,14 +61,13 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof ReleaseSavepointStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
         }
-        if (tclStatement instanceof RollbackToSavepointStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession);
-        }
         if (tclStatement instanceof CommitStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
         }
         if (tclStatement instanceof RollbackStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+            return ((RollbackStatement) tclStatement).getSavepointName().isPresent() 
+                    ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
+                    : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession); 
         }
         if (tclStatement instanceof XAStatement) {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAuto
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
@@ -90,9 +91,8 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
         MySQLRollbackStatement result = new MySQLRollbackStatement();
-        if (ctx.getChildCount() > 1 && "TO".equals(ctx.getChild(1).getText())) {
-            String savepointName = ctx.getChild(2).getText();
-            result.setSavepointName(savepointName);
+        if (null != ctx.identifier()) {
+            result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         }
         return result;
     }
@@ -100,8 +100,7 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         MySQLSavepointStatement result = new MySQLSavepointStatement();
-        String savepointName = ctx.getChild(1).getText();
-        result.setSavepointName(savepointName);
+        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
     

@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * OpenGauss rollback to savepoint statement.
+ * Show sharding key generators statement.
  */
-public final class OpenGaussRollbackToSavepointStatement extends RollbackToSavepointStatement implements OpenGaussStatement {
+public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement {
+    public ShowShardingKeyGeneratorsStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

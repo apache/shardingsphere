@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.dbdiscovery.spring.namespace.tag;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Rollback to savepoint statement.
+ * Database discovery heartbeat bean definition tag.
  */
-@Getter
-@Setter
-public abstract class RollbackToSavepointStatement extends AbstractSQLStatement implements TCLStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryHeartbeatBeanDefinitionTag {
     
-    private String savepointName;
+    public static final String ROOT_TAG = "discovery-heartbeat";
+    
+    public static final String HEARTBEAT_ID_ATTRIBUTE = "id";
+    
+    public static final String HEARTBEAT_PROPS_TAG = "props";
 }

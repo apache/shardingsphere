@@ -15,13 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * PostgreSQL rollback to savepoint statement.
+ * Show sharding key generators statement test case.
  */
-public final class PostgreSQLRollbackToSavepointStatement extends RollbackToSavepointStatement implements PostgreSQLStatement {
+@Getter
+@Setter
+public final class ShowShardingKeyGeneratorsStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement
+    private ExpectedSchema schema;
 }

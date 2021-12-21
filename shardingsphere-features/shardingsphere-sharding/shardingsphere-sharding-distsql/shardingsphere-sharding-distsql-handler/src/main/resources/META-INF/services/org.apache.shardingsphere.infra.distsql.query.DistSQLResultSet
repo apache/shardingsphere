@@ -20,3 +20,4 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRul
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBroadcastTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorsQueryResultSet
