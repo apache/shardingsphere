@@ -52,7 +52,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         if (null == sourceRuleConfig) {
             return false;
         }
-        return isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig);
+        return !isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig);
     }
     
     // TODO more accurate comparison

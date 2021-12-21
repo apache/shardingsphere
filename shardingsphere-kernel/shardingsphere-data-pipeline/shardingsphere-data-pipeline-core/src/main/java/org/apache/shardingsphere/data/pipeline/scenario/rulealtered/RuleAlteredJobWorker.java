@@ -177,7 +177,7 @@ public final class RuleAlteredJobWorker {
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
         Set<String> alteredRuleYamlClassNames = new LinkedHashSet<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
-            String type = each.getClass().getName();
+            String type = (null != each.getLeft() ? each.getLeft() : each.getRight()).getClass().getName();
             RuleAlteredDetector detector = YAML_RULE_CLASS_NAME_DETECTOR_MAP.get(type);
             if (null == detector) {
                 continue;

@@ -56,7 +56,6 @@ public final class RuleAlteredContext {
     private final ExecuteEngine importerExecuteEngine;
     
     public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        log.info("start initialization");
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         if (null != completionDetector) {
@@ -73,7 +72,6 @@ public final class RuleAlteredContext {
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
-        log.info("initialization done");
     }
     
     /**
