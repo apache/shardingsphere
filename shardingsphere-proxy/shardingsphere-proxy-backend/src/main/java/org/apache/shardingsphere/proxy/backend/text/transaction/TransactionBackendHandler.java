@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
@@ -66,7 +66,11 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
                 break;
             case ROLLBACK_TO_SAVEPOINT:
-                backendTransactionManager.rollbackTo(((RollbackToSavepointStatement) tclStatement).getSavepointName());
+                if (((RollbackStatement) tclStatement).getSavepointName().isPresent()) {
+                    backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+                    break;
+                }
+                backendTransactionManager.rollback();
                 break;
             case RELEASE_SAVEPOINT:
                 backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
