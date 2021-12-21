@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Show variable executor.
+ * Show SQL parser rule executor.
  */
 @RequiredArgsConstructor
 @Getter

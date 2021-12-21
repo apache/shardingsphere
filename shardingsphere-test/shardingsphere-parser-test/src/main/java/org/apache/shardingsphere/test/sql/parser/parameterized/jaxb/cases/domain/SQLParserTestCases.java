@@ -146,6 +146,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
@@ -868,6 +869,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-variables")
     private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-sql-parser-rule")
+    private final List<ShowSQLParserRuleStatementTestCase> showSQLParserRuleStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1084,6 +1088,7 @@ public final class SQLParserTestCases {
         putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
+        putAll(showSQLParserRuleStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
