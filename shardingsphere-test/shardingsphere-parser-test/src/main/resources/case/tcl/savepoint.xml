@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <savepoint sql-case-id="savepoint" />
+    <savepoint sql-case-id="savepoint" name="savepoint1" />
     <savepoint sql-case-id="savepoint_transaction" />
 </sql-parser-test-cases>

@@ -89,12 +89,20 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new MySQLRollbackStatement();
+        MySQLRollbackStatement result = new MySQLRollbackStatement();
+        if (ctx.getChildCount() > 1 && "TO".equals(ctx.getChild(1).getText())) {
+            String savepointName = ctx.getChild(2).getText();
+            result.setSavepointName(savepointName);
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new MySQLSavepointStatement();
+        MySQLSavepointStatement result = new MySQLSavepointStatement();
+        String savepointName = ctx.getChild(1).getText();
+        result.setSavepointName(savepointName);
+        return result;
     }
     
     @Override
