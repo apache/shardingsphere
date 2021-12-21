@@ -27,8 +27,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="data-source-rule" maxOccurs="unbounded" />
-                <xsd:element ref="discovery-heart-beat" maxOccurs="unbounded" />
-                <xsd:element ref="discovery-type" maxOccurs="unbounded" />
+                <xsd:element ref="discovery-heartbeat" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
@@ -43,7 +42,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="discovery-heart-beat">
+    <xsd:element name="discovery-heartbeat">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
