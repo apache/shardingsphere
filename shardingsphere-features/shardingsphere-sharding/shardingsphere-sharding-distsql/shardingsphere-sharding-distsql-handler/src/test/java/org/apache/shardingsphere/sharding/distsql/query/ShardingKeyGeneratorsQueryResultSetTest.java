@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -42,7 +41,7 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(createRuleConfigurations());
+        when(metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(createRuleConfigurations());
         ShardingKeyGeneratorsQueryResultSet resultSet = new ShardingKeyGeneratorsQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingKeyGeneratorsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
@@ -52,12 +51,11 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
         assertThat(actual.get(2).toString(), is("{work-id=123}"));
     }
 
-    private Collection<RuleConfiguration> createRuleConfigurations() {
+    private Collection<ShardingRuleConfiguration> createRuleConfigurations() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("work-id", 123);
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props));
         return Collections.singleton(result);
     }
-
 }

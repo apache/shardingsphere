@@ -180,5 +180,5 @@ GENERATOR
     ;
 
 GENERATORS
-    : GENERATOR S
+    : G E N E R A T O R S
     ;

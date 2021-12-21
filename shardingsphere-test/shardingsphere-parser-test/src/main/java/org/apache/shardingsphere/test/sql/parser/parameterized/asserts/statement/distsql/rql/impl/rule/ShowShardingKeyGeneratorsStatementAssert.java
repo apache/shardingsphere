@@ -28,11 +28,16 @@ import static org.junit.Assert.assertTrue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShardingKeyGeneratorsStatementAssert {
-
+    
+    /**
+     * Assert show sharding key generators statement is correct with expected parser result.
+     * @param assertContext assert context
+     * @param actual actual show sharding key generators statement
+     * @param expected expected show sharding key generators statement test case
+     */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingKeyGeneratorsStatement actual,
                                 final ShowShardingKeyGeneratorsStatementTestCase expected) {
         assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
         SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
     }
-
 }

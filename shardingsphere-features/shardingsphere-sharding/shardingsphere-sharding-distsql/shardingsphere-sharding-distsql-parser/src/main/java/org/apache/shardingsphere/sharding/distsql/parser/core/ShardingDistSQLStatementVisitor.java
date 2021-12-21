@@ -373,5 +373,4 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         return new ShowShardingKeyGeneratorsStatement(Objects.nonNull(ctx.schemaName())
                 ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
-
 }

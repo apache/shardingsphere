@@ -33,5 +33,4 @@ public final class ShowShardingKeyGeneratorsStatementTestCase extends SQLParserT
 
     @XmlElement
     private ExpectedSchema schema;
-
 }
