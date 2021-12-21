@@ -19,23 +19,37 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
+
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Rollback statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RollbackStatementAssert {
+public final class RollbackToSavepointStatementAssert {
     
     /**
-     * Assert rollback statement is correct with expected parser result.
+     * Assert rollback to savepoint statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual rollback statement
-     * @param expected expected rollback statement test case
+     * @param actual actual rollback to savepoint statement
+     * @param expected expected rollback to savepoint statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStatement actual, final RollbackStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackToSavepointStatement actual, final RollbackStatementTestCase expected) {
+        Optional<String> savepointName = Optional.ofNullable(actual.getSavepointName());
+        if (null != expected.getSavepointName()) {
+            assertTrue(assertContext.getText("Actual savepoint name should exist."), savepointName.isPresent());
+            assertThat(assertContext.getText("Savepoint name assertion error."), savepointName.get(), is(expected.getSavepointName()));
+        } else {
+            assertFalse(assertContext.getText("Actual savepoint name should not exist."), savepointName.isPresent());
+        }
     }
 }

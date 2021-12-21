@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
@@ -90,10 +91,11 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        MySQLRollbackStatement result = new MySQLRollbackStatement();
-        if (null != ctx.identifier()) {
-            result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        if (null == ctx.identifier()) {
+            return new MySQLRollbackStatement();
         }
+        MySQLRollbackToSavepointStatement result = new MySQLRollbackToSavepointStatement();
+        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
     

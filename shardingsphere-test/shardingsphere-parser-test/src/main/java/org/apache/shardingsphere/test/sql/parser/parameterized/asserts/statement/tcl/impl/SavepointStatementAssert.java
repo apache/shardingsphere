@@ -23,12 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointSt
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Savepoint statement assert.
@@ -44,12 +40,6 @@ public final class SavepointStatementAssert {
      * @param expected expected savepoint statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SavepointStatement actual, final SavepointStatementTestCase expected) {
-        Optional<String> savepointName = Optional.ofNullable(actual.getSavepointName());
-        if (null != expected.getSavepointName()) {
-            assertTrue(assertContext.getText("Actual savepoint name should exist."), savepointName.isPresent());
-            assertThat(assertContext.getText("Savepoint name assertion error."), savepointName.get(), is(expected.getSavepointName()));
-        } else {
-            assertFalse(assertContext.getText("Actual savepoint name should not exist."), savepointName.isPresent());
-        }
+        assertThat(assertContext.getText("Savepoint name assertion error."), actual.getSavepointName(), is(expected.getSavepointName()));
     }
 }

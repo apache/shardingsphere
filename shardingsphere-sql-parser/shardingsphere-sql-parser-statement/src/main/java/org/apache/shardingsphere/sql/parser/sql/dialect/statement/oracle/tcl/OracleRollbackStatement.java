@@ -17,13 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+import java.util.Optional;
 
 /**
  * Oracle rollback statement.
  */
 @ToString
+@Getter
+@Setter
 public final class OracleRollbackStatement extends RollbackStatement implements OracleStatement {
+    
+    private String savepointName;
+    
+    /**
+     * Get save point name.
+     *
+     * @return save point name
+     */
+    public Optional<String> getSavepointName() {
+        return Optional.ofNullable(savepointName);
+    }
 }

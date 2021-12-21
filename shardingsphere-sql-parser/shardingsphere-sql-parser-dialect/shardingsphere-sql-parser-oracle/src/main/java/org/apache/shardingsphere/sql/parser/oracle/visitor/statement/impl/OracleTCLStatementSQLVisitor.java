@@ -26,8 +26,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Rollba
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
@@ -56,12 +58,19 @@ public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new OracleRollbackStatement();
+        if (null == ctx.savepointClause().savepointName()) {
+            return new OracleRollbackStatement();
+        }
+        OracleRollbackToSavepointStatement result = new OracleRollbackToSavepointStatement();
+        result.setSavepointName(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
+        return result;
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new OracleSavepointStatement();
+        OracleSavepointStatement result = new OracleSavepointStatement();
+        result.setSavepointName(((IdentifierValue) visit(ctx.savepointName())).getValue());
+        return result;
     }
 
     @Override

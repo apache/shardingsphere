@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss rollback to savepoint statement.
  */
+@ToString
 public final class OpenGaussRollbackToSavepointStatement extends RollbackToSavepointStatement implements OpenGaussStatement {
 }

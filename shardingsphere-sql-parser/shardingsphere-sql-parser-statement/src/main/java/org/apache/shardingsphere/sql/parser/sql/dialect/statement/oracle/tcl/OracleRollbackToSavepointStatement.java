@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * MySQL rollback statement.
+ * Oracle rollback to savepoint statement.
  */
 @ToString
-public final class MySQLRollbackStatement extends RollbackStatement implements MySQLStatement {
+public final class OracleRollbackToSavepointStatement extends RollbackToSavepointStatement implements OracleStatement {
 }
