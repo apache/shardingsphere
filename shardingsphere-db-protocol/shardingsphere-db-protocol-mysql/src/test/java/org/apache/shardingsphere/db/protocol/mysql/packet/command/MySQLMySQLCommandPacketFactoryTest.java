@@ -22,6 +22,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUns
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.ping.MySQLComPingPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit.MySQLComQuitPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.sleep.MySQLComSleepPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.statistics.MySQLComStatisticsPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
@@ -97,7 +99,7 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComSleepPacket() throws SQLException {
-        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SLEEP, payload, CONNECTION_ID), instanceOf(MySQLUnsupportedCommandPacket.class));
+        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SLEEP, payload, CONNECTION_ID), instanceOf(MySQLComSleepPacket.class));
     }
     
     @Test
@@ -122,7 +124,7 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComStatisticsPacket() throws SQLException {
-        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STATISTICS, payload, CONNECTION_ID), instanceOf(MySQLUnsupportedCommandPacket.class));
+        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STATISTICS, payload, CONNECTION_ID), instanceOf(MySQLComStatisticsPacket.class));
     }
     
     @Test

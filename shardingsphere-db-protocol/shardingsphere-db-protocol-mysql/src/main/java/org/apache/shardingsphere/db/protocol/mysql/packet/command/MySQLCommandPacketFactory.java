@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUns
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.ping.MySQLComPingPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit.MySQLComQuitPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.sleep.MySQLComSleepPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.statistics.MySQLComStatisticsPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
@@ -68,6 +70,10 @@ public final class MySQLCommandPacketFactory {
                 return new MySQLComStmtClosePacket(payload);
             case COM_PING:
                 return new MySQLComPingPacket();
+            case COM_STATISTICS:
+                return new MySQLComStatisticsPacket();
+            case COM_SLEEP:
+                return new MySQLComSleepPacket();
             default:
                 return new MySQLUnsupportedCommandPacket(commandPacketType);
         }
