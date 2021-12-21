@@ -31,5 +31,5 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class RollbackStatementTestCase extends SQLParserTestCase {
 
     @XmlAttribute
-    private String name;
+    private String savepointName;
 }

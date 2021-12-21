@@ -20,11 +20,16 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.tcl.RollbackStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Rollback statement assert.
@@ -40,8 +45,12 @@ public final class RollbackStatementAssert {
      * @param expected expected rollback statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStatement actual, final RollbackStatementTestCase expected) {
-        if (actual instanceof MySQLRollbackStatement && ((MySQLRollbackStatement) actual).getSavepointName() != null) {
-            assertEquals(expected.getName(), ((MySQLRollbackStatement) actual).getSavepointName());
+        Optional<String> savepointName = RollbackStatementHandler.getSavepointName(actual);
+        if (null != expected.getSavepointName()) {
+            assertTrue(assertContext.getText("Actual savepoint name should exist."), savepointName.isPresent());
+            assertThat(assertContext.getText("Savepoint name assertion error."), savepointName.get(), is(expected.getSavepointName()));
+        } else {
+            assertFalse(assertContext.getText("Actual savepoint name should not exist."), savepointName.isPresent());
         }
     }
 }

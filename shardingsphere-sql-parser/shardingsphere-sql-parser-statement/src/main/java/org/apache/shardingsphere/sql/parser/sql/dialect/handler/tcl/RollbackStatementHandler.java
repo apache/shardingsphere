@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
 
 import java.util.Optional;
 
 /**
- * MySQL rollback statement.
+ * Rollback statement handler for different dialect SQL statements.
  */
-@ToString
-@Getter
-@Setter
-public final class MySQLRollbackStatement extends RollbackStatement implements MySQLStatement {
-
-    private String savepointName;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RollbackStatementHandler implements SQLStatementHandler {
     
     /**
      * Get save point name.
      *
+     * @param rollbackStatement rollback statement
      * @return save point name
      */
-    public Optional<String> getSavepointName() {
-        return Optional.ofNullable(savepointName);
+    public static Optional<String> getSavepointName(final RollbackStatement rollbackStatement) {
+        if (rollbackStatement instanceof MySQLStatement) {
+            return ((MySQLRollbackStatement) rollbackStatement).getSavepointName();
+        }
+        return Optional.empty();
     }
 }
