@@ -105,7 +105,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     private SubstitutableColumnNameToken generateSQLTokens(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> actualColumns, 
                                                            final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
-        Collection<ColumnProjection> projections = new LinkedList<>();
+        List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
             if (null != tableName && getEncryptRule().findEncryptor(tableName, each.getName()).isPresent()) {
@@ -146,16 +146,16 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
-            result.add(processForDuplicatedOwner(generatePredicateSubqueryProjection(tableName, column), shorthand));
+            result.add(distinctOwner(generatePredicateSubqueryProjection(tableName, column), shorthand));
         } else if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType)) {
             result.addAll(generateTableSubqueryProjections(tableName, column, shorthand));
         } else {
-            result.add(processForDuplicatedOwner(generateCommonProjection(tableName, column, shorthand), shorthand));
+            result.add(distinctOwner(generateCommonProjection(tableName, column, shorthand), shorthand));
         }
         return result;
     }
     
-    private ColumnProjection processForDuplicatedOwner(final ColumnProjection column, final boolean shorthand) {
+    private ColumnProjection distinctOwner(final ColumnProjection column, final boolean shorthand) {
         if (shorthand || null == column.getOwner()) {
             return column;
         }
