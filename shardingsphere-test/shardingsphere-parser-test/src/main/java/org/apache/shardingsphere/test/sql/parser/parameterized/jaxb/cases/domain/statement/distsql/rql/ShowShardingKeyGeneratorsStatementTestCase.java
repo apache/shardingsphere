@@ -15,42 +15,22 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
-    ;
+import javax.xml.bind.annotation.XmlElement;
 
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
+/**
+ * Show sharding key generators statement test case.
+ */
+@Getter
+@Setter
+public final class ShowShardingKeyGeneratorsStatementTestCase extends SQLParserTestCase {
 
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingAlgorithms
-    : SHOW SHARDING ALGORITHMS (FROM schemaName)?
-    ;
-
-showShardingTableNodes
-    : SHOW SHARDING TABLE NODES tableName? (FROM schemaName)?
-    ;
-
-showShardingKeyGenerators
-    : SHOW SHARDING KEY GENERATORS (FROM schemaName)?
-    ;
-    
-tableRule
-    : RULE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    @XmlElement
+    private ExpectedSchema schema;
+}

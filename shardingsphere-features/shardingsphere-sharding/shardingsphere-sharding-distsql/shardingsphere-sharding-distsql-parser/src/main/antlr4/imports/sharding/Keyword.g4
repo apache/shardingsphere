@@ -178,3 +178,7 @@ KEY
 GENERATOR
     : G E N E R A T O R
     ;
+
+GENERATORS
+    : G E N E R A T O R S
+    ;

@@ -15,42 +15,16 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import Keyword, Literals, Symbol;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
-    ;
-
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingAlgorithms
-    : SHOW SHARDING ALGORITHMS (FROM schemaName)?
-    ;
-
-showShardingTableNodes
-    : SHOW SHARDING TABLE NODES tableName? (FROM schemaName)?
-    ;
-
-showShardingKeyGenerators
-    : SHOW SHARDING KEY GENERATORS (FROM schemaName)?
-    ;
-    
-tableRule
-    : RULE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Show sharding key generators statement.
+ */
+public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement {
+    public ShowShardingKeyGeneratorsStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}
