@@ -53,9 +53,12 @@ public final class RuleAlteredJobContext {
     
     private final JobConfiguration jobConfig;
     
+    private final RuleAlteredContext ruleAlteredContext;
+    
     private RuleAlteredJobPreparer jobPreparer;
     
     public RuleAlteredJobContext(final JobConfiguration jobConfig) {
+        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobConfig.buildHandleConfig();
         jobId = jobConfig.getHandleConfig().getJobId();

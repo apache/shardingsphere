@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.initializer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -39,9 +39,6 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -68,8 +65,8 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         initContext(yamlConfig, modeConfig, port);
+        initRuleAlteredJobWorker(modeConfig);
         setDatabaseServerInfo();
-        initScaling(yamlConfig, modeConfig);
     }
     
     private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
@@ -88,6 +85,20 @@ public final class BootstrapInitializer {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
+    }
+    
+    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+        if (null == modeConfig) {
+            return;
+        }
+        // TODO decouple "Cluster" to pluggable
+        if (!"Cluster".equals(modeConfig.getType())) {
+            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
+            return;
+        }
+        RuleAlteredContext.initModeConfig(modeConfig);
+        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
+        RuleAlteredJobWorker.initWorkerIfNecessary();
     }
     
     private void setDatabaseServerInfo() {
@@ -111,38 +122,5 @@ public final class BootstrapInitializer {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<ShardingSphereMetaData> metaData = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
         return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
-    }
-    
-    private void initScaling(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
-        Optional<ServerConfiguration> scalingConfig = findScalingConfiguration(yamlConfig);
-        if (!scalingConfig.isPresent()) {
-            return;
-        }
-        // TODO decouple "Cluster" to pluggable
-        if (null != modeConfig && "Cluster".equals(modeConfig.getType())) {
-            scalingConfig.get().setModeConfiguration(modeConfig);
-            RuleAlteredContext.getInstance().init(scalingConfig.get());
-            RuleAlteredJobWorker.init();
-        } else {
-            RuleAlteredContext.getInstance().init(scalingConfig.get());
-        }
-    }
-    
-    private Optional<ServerConfiguration> findScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
-        if (null == yamlConfig.getServerConfiguration().getScaling()) {
-            return Optional.empty();
-        }
-        ServerConfiguration result = new ServerConfiguration();
-        result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
-        result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
-        YamlShardingSphereAlgorithmConfiguration autoSwitchConfig = yamlConfig.getServerConfiguration().getScaling().getClusterAutoSwitchAlgorithm();
-        if (null != autoSwitchConfig) {
-            result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
-        }
-        YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckConfig = yamlConfig.getServerConfiguration().getScaling().getDataConsistencyCheckAlgorithm();
-        if (null != dataConsistencyCheckConfig) {
-            result.setDataConsistencyCheckAlgorithm(new ShardingSphereAlgorithmConfiguration(dataConsistencyCheckConfig.getType(), dataConsistencyCheckConfig.getProps()));
-        }
-        return Optional.of(result);
     }
 }

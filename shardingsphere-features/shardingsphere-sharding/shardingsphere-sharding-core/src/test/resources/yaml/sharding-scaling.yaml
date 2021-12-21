@@ -15,4 +15,16 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.schedule.JobShardingRuleAlteredDetector
+scalingName: default_scaling
+scaling:
+  default_scaling:
+    blockQueueSize: 10000
+    workerThread: 40
+    completionDetector:
+      type: IDLE
+      props:
+        incremental-task-idle-minute-threshold: 30
+    dataConsistencyChecker:
+      type: DATA_MATCH
+      props:
+        chunk-size: 1000

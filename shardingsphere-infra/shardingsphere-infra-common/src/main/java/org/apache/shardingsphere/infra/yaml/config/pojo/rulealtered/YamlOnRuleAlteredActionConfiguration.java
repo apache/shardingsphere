@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 /**
- * Job rule altered detector, SPI interface.
+ * YAML on rule altered action configuration.
  */
-public interface JobRuleAlteredDetector extends TypedSPI {
+@Getter
+@Setter
+public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
-    /**
-     * Is rule altered.
-     *
-     * @param sourceRuleConfig source YAML rule configuration, may be null
-     * @param targetRuleConfig target YAML rule configuration, may be null
-     * @return whether is rule altered or not
-     */
-    boolean isRuleAltered(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig);
+    private int blockQueueSize = 10000;
+    
+    private int workerThread = 40;
+    
+    private YamlShardingSphereAlgorithmConfiguration completionDetector;
+    
+    private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;
 }

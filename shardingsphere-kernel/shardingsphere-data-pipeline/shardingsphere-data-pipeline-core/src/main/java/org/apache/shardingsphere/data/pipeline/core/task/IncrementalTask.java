@@ -29,8 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.DistributionChannel;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
@@ -59,6 +59,8 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     private final ImporterConfiguration importerConfig;
     
+    private final ExecuteEngine incrementalDumperExecuteEngine;
+    
     private final DataSourceManager dataSourceManager;
     
     private Dumper dumper;
@@ -66,10 +68,11 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     @Getter
     private final IncrementalTaskProgress progress;
     
-    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig, final ExecuteEngine incrementalDumperExecuteEngine) {
         this.concurrency = concurrency;
         this.dumperConfig = dumperConfig;
         this.importerConfig = importerConfig;
+        this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         dataSourceManager = new DataSourceManager();
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
@@ -82,7 +85,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         dumper = DumperFactory.newInstanceLogDumper(dumperConfig, progress.getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
-        Future<?> future = RuleAlteredContext.getInstance().getIncrementalDumperExecuteEngine().submitAll(importers, getExecuteCallback());
+        Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
         dataSourceManager.close();

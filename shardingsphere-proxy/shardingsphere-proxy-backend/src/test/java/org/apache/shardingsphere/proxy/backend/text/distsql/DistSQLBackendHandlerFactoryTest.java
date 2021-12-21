@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -44,8 +45,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandle
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
@@ -283,10 +282,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     private void mockScalingContext() {
         ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
         when(modeConfiguration.getType()).thenReturn("Cluster");
-        ServerConfiguration serverConfiguration = mock(ServerConfiguration.class);
-        when(serverConfiguration.getModeConfiguration()).thenReturn(modeConfiguration);
-        when(serverConfiguration.getWorkerThread()).thenReturn(1);
-        RuleAlteredContext.getInstance().init(serverConfiguration);
+        RuleAlteredContext.initModeConfig(modeConfiguration);
     }
     
     @After

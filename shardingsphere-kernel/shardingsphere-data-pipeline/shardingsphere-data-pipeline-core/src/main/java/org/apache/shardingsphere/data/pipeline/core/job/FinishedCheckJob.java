@@ -23,7 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -47,12 +49,16 @@ public final class FinishedCheckJob implements SimpleJob {
             try {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
-                if (!RuleAlteredJobProgressDetector.almostFinished(pipelineJobAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
+                RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+                if (!RuleAlteredJobProgressDetector.almostFinished(pipelineJobAPI.getProgress(jobId), jobConfig.getHandleConfig(), ruleAlteredContext)) {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
+                if (null == ruleAlteredContext.getCompletionDetectAlgorithm()) {
+                    log.info("completionDetector not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
+                }
                 // TODO lock proxy
-                if (!pipelineJobAPI.isDataConsistencyCheckNeeded()) {
+                if (!pipelineJobAPI.isDataConsistencyCheckNeeded(jobId)) {
                     log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
                     pipelineJobAPI.switchClusterConfiguration(jobId);
                     continue;
