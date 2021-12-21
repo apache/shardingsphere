@@ -26,6 +26,9 @@ services:
 
 install: true
 
+before_cache:
+  - rm -fr $HOME/.m2/repository/org/antlr/
+
 cache:
   directories:
     - "$HOME/.m2"
