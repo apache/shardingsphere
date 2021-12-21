@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CloneStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DelimiterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.FlushStatementTestCase;
@@ -868,6 +869,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-variables")
     private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "delimiter")
+    private final List<DelimiterStatementTestCase> delimiterStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1084,6 +1088,7 @@ public final class SQLParserTestCases {
         putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
+        putAll(delimiterStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
