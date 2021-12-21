@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -283,8 +282,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     private void mockScalingContext() {
         ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
         when(modeConfiguration.getType()).thenReturn("Cluster");
-        RuleAlteredContext.getInstance().initModeConfig(modeConfiguration);
-        RuleAlteredContext.getInstance().init(new OnRuleAlteredActionConfiguration(1000, 5, null, null));
+        RuleAlteredContext.initModeConfig(modeConfiguration);
     }
     
     @After

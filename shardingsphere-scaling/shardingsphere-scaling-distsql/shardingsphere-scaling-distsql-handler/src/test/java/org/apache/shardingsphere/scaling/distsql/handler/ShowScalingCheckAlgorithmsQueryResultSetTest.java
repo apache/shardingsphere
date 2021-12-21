@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,11 +39,6 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     
     @Mock
     private ShowScalingCheckAlgorithmsStatement showScalingCheckAlgorithmsStatement;
-    
-    @Before
-    public void before() {
-        RuleAlteredContext.getInstance().init(new OnRuleAlteredActionConfiguration(1000, 5, null, null));
-    }
     
     @Test
     public void assertGetRowData() {

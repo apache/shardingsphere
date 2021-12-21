@@ -76,7 +76,6 @@ public final class FinishedCheckJobTest {
                 + "ruleConfig:\n");
         List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
         when(pipelineJobAPI.list()).thenReturn(jobInfos);
-        when(pipelineJobAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         finishedCheckJob.execute(null);
     }
 }

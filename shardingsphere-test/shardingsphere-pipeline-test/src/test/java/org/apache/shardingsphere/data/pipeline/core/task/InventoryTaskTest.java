@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
@@ -36,7 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 
 public final class InventoryTaskTest {
     
@@ -52,7 +50,7 @@ public final class InventoryTaskTest {
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_non_exist");
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), mock(ExecuteEngine.class))) {
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
     }
@@ -63,7 +61,7 @@ public final class InventoryTaskTest {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_order");
         inventoryDumperConfig.setPosition(taskConfig.getDumperConfig().getPosition());
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), mock(ExecuteEngine.class))) {
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
         }

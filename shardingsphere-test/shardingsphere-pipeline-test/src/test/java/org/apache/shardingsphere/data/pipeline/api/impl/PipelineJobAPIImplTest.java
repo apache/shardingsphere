@@ -126,7 +126,9 @@ public final class PipelineJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(1L), is(true));
+        Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
     }
     
     @Test

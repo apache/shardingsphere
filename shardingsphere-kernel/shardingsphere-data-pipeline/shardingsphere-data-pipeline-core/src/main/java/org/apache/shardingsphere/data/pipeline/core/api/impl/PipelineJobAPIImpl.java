@@ -74,6 +74,10 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
+    static {
+        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+    }
+    
     @Override
     public boolean isDefault() {
         return true;
