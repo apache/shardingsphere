@@ -42,7 +42,11 @@ disableInstance
 showInstance
     : SHOW INSTANCE LIST
     ;
-
+    
+showSQLParserRule
+    : SHOW SQL_PARSER RULE
+    ;
+    
 clearHint
     : CLEAR HINT
     ;

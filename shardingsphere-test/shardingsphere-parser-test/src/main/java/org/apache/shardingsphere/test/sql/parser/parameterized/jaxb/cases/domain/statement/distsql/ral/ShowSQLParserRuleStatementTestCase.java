@@ -15,76 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Privilege type enum.
+ * Show SQL parser rule statement test case.
  */
-public enum PrivilegeTypeEnum {
-    
-    SELECT,
-    
-    INSERT,
-    
-    UPDATE,
-    
-    DELETE,
-    
-    USAGE,
-    
-    CREATE,
-    
-    DROP,
-    
-    RELOAD,
-    
-    SHUTDOWN,
-    
-    PROCESS,
-    
-    FILE,
-    
-    GRANT,
-    
-    REFERENCES,
-    
-    INDEX,
-    
-    ALTER,
-    
-    SHOW_DB,
-    
-    SUPER,
-    
-    CREATE_TMP,
-    
-    LOCK_TABLES,
-    
-    EXECUTE,
-    
-    REPL_SLAVE,
-    
-    REPL_CLIENT,
-    
-    CREATE_VIEW,
-    
-    SHOW_VIEW,
-    
-    CREATE_PROC,
-    
-    ALTER_PROC,
-    
-    CREATE_USER,
-    
-    DROP_USER,
-    
-    EVENT,
-    
-    TRIGGER,
-    
-    CREATE_TABLESPACE,
-    
-    CREATE_ROLE,
-    
-    DROP_ROLE
+public final class ShowSQLParserRuleStatementTestCase extends SQLParserTestCase {
 }
