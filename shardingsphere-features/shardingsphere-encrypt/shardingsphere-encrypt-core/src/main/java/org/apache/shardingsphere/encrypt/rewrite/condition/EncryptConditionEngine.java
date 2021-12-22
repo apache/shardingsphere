@@ -118,11 +118,7 @@ public final class EncryptConditionEngine {
         if (expression instanceof BinaryOperationExpression) {
             String operator = ((BinaryOperationExpression) expression).getOperator();
             if (!LOGICAL_OPERATOR.contains(operator)) {
-                ExpressionSegment rightValue = ((BinaryOperationExpression) expression).getRight();
-                if (isSupportedOperator(operator)) {
-                    return createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue);
-                }
-                throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
+                return createEncryptCondition(expression, tableName, operator, ((BinaryOperationExpression) expression).getRight());
             }
         }
         if (expression instanceof InExpression) {
@@ -132,6 +128,13 @@ public final class EncryptConditionEngine {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.empty();
+    }
+    
+    private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName, final String operator, final ExpressionSegment rightValue) {
+        if (isSupportedOperator(operator)) {
+            return createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue);
+        }
+        throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
     }
     
     private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
