@@ -116,10 +116,7 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            if (!LOGICAL_OPERATOR.contains(operator)) {
-                return createEncryptCondition(expression, tableName, operator, ((BinaryOperationExpression) expression).getRight());
-            }
+            return createEncryptCondition((BinaryOperationExpression) expression, tableName);
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
@@ -130,11 +127,15 @@ public final class EncryptConditionEngine {
         return Optional.empty();
     }
     
-    private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName, final String operator, final ExpressionSegment rightValue) {
-        if (isSupportedOperator(operator)) {
-            return createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue);
+    private Optional<EncryptCondition> createEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
+        String operator = expression.getOperator();
+        if (!LOGICAL_OPERATOR.contains(operator)) {
+            if (isSupportedOperator(operator)) {
+                return createCompareEncryptCondition(tableName, expression, expression.getRight());
+            }
+            throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
         }
-        throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
+        return Optional.empty();
     }
     
     private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
