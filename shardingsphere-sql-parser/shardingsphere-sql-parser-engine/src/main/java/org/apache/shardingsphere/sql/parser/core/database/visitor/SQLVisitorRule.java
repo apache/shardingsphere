@@ -358,7 +358,9 @@ public enum SQLVisitorRule {
 
     DROP_SERVICE("DropService", SQLStatementType.DDL),
     
-    DROP_DOMAIN("DropDomain", SQLStatementType.DDL);
+    DROP_DOMAIN("DropDomain", SQLStatementType.DDL),
+    
+    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL);
 
     private final String name;
     
