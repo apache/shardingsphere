@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.yaml;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Scaling configuration for YAML.
+ * Show SQL parser rule statement.
  */
-@Getter
-@Setter
-public final class YamlScalingConfiguration implements YamlConfiguration {
-    
-    private int blockQueueSize;
-    
-    private int workerThread;
-    
-    private YamlShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
+public final class ShowSQLParserRuleStatement extends ShowDistSQLStatement {
 }

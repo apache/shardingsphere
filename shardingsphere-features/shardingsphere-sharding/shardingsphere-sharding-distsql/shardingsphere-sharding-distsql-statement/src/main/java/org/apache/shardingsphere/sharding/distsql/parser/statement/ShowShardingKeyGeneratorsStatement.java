@@ -15,32 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.server.yaml;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Global server configuration.
+ * Show sharding key generators statement.
  */
-@Getter
-@Setter
-public final class YamlServerConfiguration implements YamlConfiguration {
+public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement {
     
-    private YamlScalingConfiguration scaling = new YamlScalingConfiguration();
-    
-    private YamlModeConfiguration mode;
-    
-    @Getter
-    @Setter
-    public static final class YamlScalingConfiguration {
-    
-        private int port = 8080;
-    
-        private int blockQueueSize = 10000;
-    
-        private int workerThread = 30;
+    public ShowShardingKeyGeneratorsStatement(final SchemaSegment schema) {
+        super(schema);
     }
 }

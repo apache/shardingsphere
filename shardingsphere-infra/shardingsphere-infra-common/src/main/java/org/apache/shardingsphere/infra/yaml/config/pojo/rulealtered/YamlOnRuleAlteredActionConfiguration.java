@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 /**
- * Rollback to savepoint statement.
+ * YAML on rule altered action configuration.
  */
 @Getter
 @Setter
-public abstract class RollbackToSavepointStatement extends AbstractSQLStatement implements TCLStatement {
+public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
-    private String savepointName;
+    private int blockQueueSize = 10000;
+    
+    private int workerThread = 40;
+    
+    private YamlShardingSphereAlgorithmConfiguration completionDetector;
+    
+    private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;
 }

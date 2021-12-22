@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.server;
+package org.apache.shardingsphere.infra.config.rulealtered;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 
 /**
- * Global server configuration.
+ * On rule altered action configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ServerConfiguration {
+public final class OnRuleAlteredActionConfiguration {
     
-    private int port = 8080;
+    private final int blockQueueSize;
     
-    private int blockQueueSize = 10000;
+    private final int workerThread;
     
-    private int workerThread = 30;
+    private final ShardingSphereAlgorithmConfiguration completionDetector;
     
-    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private ShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
-    
-    private ModeConfiguration modeConfiguration;
+    private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
 }

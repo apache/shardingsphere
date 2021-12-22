@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class SavepointStatementTestCase extends SQLParserTestCase {
 
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "savepoint-name")
+    private String savepointName;
 }

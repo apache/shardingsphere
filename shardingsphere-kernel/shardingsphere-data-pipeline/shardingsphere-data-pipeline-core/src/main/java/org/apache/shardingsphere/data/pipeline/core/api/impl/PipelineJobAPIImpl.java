@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredC
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
@@ -72,6 +73,10 @@ import java.util.stream.Stream;
 public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    
+    static {
+        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+    }
     
     @Override
     public boolean isDefault() {
@@ -203,31 +208,41 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded() {
-        return null != RuleAlteredContext.getInstance().getDataConsistencyCheckAlgorithm();
+    public boolean isDataConsistencyCheckNeeded(final long jobId) {
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        return isDataConsistencyCheckNeeded(ruleAlteredContext);
+    }
+    
+    private boolean isDataConsistencyCheckNeeded(final RuleAlteredContext ruleAlteredContext) {
+        return null != ruleAlteredContext.getDataConsistencyCheckAlgorithm();
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
         log.info("Data consistency check for job {}", jobId);
-        if (!isDataConsistencyCheckNeeded()) {
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        if (!isDataConsistencyCheckNeeded(jobContext.getRuleAlteredContext())) {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck0(jobId, RuleAlteredContext.getInstance().getDataConsistencyCheckAlgorithm());
+        return dataConsistencyCheck0(jobContext, jobContext.getRuleAlteredContext().getDataConsistencyCheckAlgorithm());
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         DataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, DataConsistencyCheckAlgorithm.class);
-        return dataConsistencyCheck0(jobId, checkAlgorithm);
+        return dataConsistencyCheck0(jobContext, checkAlgorithm);
     }
     
-    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final long jobId, final DataConsistencyCheckAlgorithm checkAlgorithm) {
-        JobConfiguration jobConfig = getJobConfig(jobId);
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new RuleAlteredJobContext(jobConfig));
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final RuleAlteredJobContext jobContext, final DataConsistencyCheckAlgorithm checkAlgorithm) {
+        long jobId = jobContext.getJobId();
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
@@ -257,13 +272,14 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void switchClusterConfiguration(final long jobId) {
         log.info("Switch cluster configuration for job {}", jobId);
-        if (isDataConsistencyCheckNeeded()) {
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             Optional<Boolean> checkResultOptional = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
             if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
                 throw new DataCheckFailException("Data consistency check not finished or failed.");
             }
         }
-        JobConfiguration jobConfig = getJobConfig(jobId);
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
         JDBCDataSourceConfigurationWrapper targetConfig = jobConfig.getRuleConfig().getTarget();

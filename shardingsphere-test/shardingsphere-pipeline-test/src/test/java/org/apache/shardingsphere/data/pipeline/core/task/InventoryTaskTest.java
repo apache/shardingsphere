@@ -20,18 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -42,11 +40,9 @@ public final class InventoryTaskTest {
     
     private static TaskConfiguration taskConfig;
     
-    private final DataSourceManager dataSourceManager = new DataSourceManager();
-    
     @BeforeClass
     public static void beforeClass() {
-        RuleAlteredContext.getInstance().init(new ServerConfiguration());
+        RuleAlteredContextUtil.mockModeConfig();
         taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
     }
     
@@ -54,8 +50,9 @@ public final class InventoryTaskTest {
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_non_exist");
-        InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
-        inventoryTask.start();
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
+            inventoryTask.start();
+        }
     }
     
     @Test
@@ -64,19 +61,16 @@ public final class InventoryTaskTest {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_order");
         inventoryDumperConfig.setPosition(taskConfig.getDumperConfig().getPosition());
-        InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
-        inventoryTask.start();
-        assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
-    }
-    
-    @After
-    public void tearDown() {
-        dataSourceManager.close();
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
+            inventoryTask.start();
+            assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
+        }
     }
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        try (Connection connection = dataSource.getConnection();
+        try (DataSourceManager dataSourceManager = new DataSourceManager();
+             DataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+             Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");

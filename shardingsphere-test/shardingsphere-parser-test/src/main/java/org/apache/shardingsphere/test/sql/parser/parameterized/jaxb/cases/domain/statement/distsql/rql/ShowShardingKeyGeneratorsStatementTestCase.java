@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Job rule altered detector, SPI interface.
+ * Show sharding key generators statement test case.
  */
-public interface JobRuleAlteredDetector extends TypedSPI {
-    
-    /**
-     * Is rule altered.
-     *
-     * @param sourceRuleConfig source YAML rule configuration, may be null
-     * @param targetRuleConfig target YAML rule configuration, may be null
-     * @return whether is rule altered or not
-     */
-    boolean isRuleAltered(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig);
+@Getter
+@Setter
+public final class ShowShardingKeyGeneratorsStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement
+    private ExpectedSchema schema;
 }

@@ -19,15 +19,10 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.junit.AfterClass;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,7 +32,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static org.mockito.Mockito.when;
 
@@ -50,10 +44,9 @@ public final class FinishedCheckJobTest {
     private PipelineJobAPI pipelineJobAPI;
     
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
-        RuleAlteredContext.getInstance().init(mockServerConfig());
+        RuleAlteredContextUtil.mockModeConfig();
         finishedCheckJob = new FinishedCheckJob();
     }
     
@@ -83,19 +76,6 @@ public final class FinishedCheckJobTest {
                 + "ruleConfig:\n");
         List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
         when(pipelineJobAPI.list()).thenReturn(jobInfos);
-        when(pipelineJobAPI.getProgress(1L)).thenReturn(Collections.emptyMap());
         finishedCheckJob.execute(null);
-    }
-    
-    @AfterClass
-    public static void afterClass() throws Exception {
-        ReflectionUtil.setFieldValue(RuleAlteredContext.getInstance(), "serverConfig", null);
-    }
-    
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration("Fixture", new Properties()));
-        result.setModeConfiguration(new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), null), true));
-        return result;
     }
 }
