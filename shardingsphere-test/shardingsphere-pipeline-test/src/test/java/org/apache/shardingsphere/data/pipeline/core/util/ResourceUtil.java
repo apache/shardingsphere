@@ -23,8 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
@@ -51,20 +52,6 @@ public final class ResourceUtil {
     }
     
     /**
-     * Mock ShardingSphere-JDBC as target job configuration.
-     *
-     * @return ShardingSphere-JDBC target job configuration
-     */
-    public static JobConfiguration mockShardingSphereJdbcTargetJobConfig() {
-        RuleConfiguration ruleConfig = new RuleConfiguration();
-        ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
-        ruleConfig.setTarget(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_target.yaml")).wrap());
-        JobConfiguration result = new JobConfiguration();
-        result.setRuleConfig(ruleConfig);
-        return result;
-    }
-    
-    /**
      * Mock standard JDBC as target job configuration.
      *
      * @return standard JDBC as target job configuration
@@ -75,8 +62,10 @@ public final class ResourceUtil {
         result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);
-        ruleConfig.setSource(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml")).wrap());
-        ruleConfig.setTarget(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml")).wrap());
+        JDBCDataSourceConfiguration sourceConfig = new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"));
+        ruleConfig.setSource(new JDBCDataSourceConfigurationWrapper(sourceConfig.getType(), sourceConfig.getParameter()));
+        JDBCDataSourceConfiguration targetConfig = new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"));
+        ruleConfig.setTarget(new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter()));
         result.buildHandleConfig();
         return result;
     }

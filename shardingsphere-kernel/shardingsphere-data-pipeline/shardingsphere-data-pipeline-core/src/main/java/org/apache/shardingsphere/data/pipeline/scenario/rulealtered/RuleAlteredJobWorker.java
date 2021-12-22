@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -223,9 +224,14 @@ public final class RuleAlteredJobWorker {
     
     private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         RuleConfiguration result = new RuleConfiguration();
-        result.setSource(new ShardingSphereJDBCDataSourceConfiguration(sourceRootConfig).wrap());
-        result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(targetRootConfig).wrap());
+        result.setSource(createWrapper(sourceRootConfig));
+        result.setTarget(createWrapper(targetRootConfig));
         return result;
+    }
+    
+    private JDBCDataSourceConfigurationWrapper createWrapper(final YamlRootConfiguration yamlConfig) {
+        ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(yamlConfig);
+        return new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter());
     }
     
     @SuppressWarnings("unchecked")
