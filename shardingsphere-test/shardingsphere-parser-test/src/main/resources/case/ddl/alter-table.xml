@@ -514,7 +514,7 @@
         <drop-column name="user_id" start-index="25" stop-index="31" />
         <drop-column name="column5" start-index="39" stop-index="45" />
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_change_column">
         <table name="t_order" start-index="12" stop-index="18" />
         <change-column>
