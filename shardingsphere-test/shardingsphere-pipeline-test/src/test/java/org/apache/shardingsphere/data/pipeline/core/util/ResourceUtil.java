@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowCo
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
@@ -64,7 +65,7 @@ public final class ResourceUtil {
         result.setRuleConfig(ruleConfig);
         JDBCDataSourceConfiguration sourceConfig = new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"));
         ruleConfig.setSource(new JDBCDataSourceConfigurationWrapper(sourceConfig.getType(), sourceConfig.getParameter()));
-        JDBCDataSourceConfiguration targetConfig = new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"));
+        JDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"));
         ruleConfig.setTarget(new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter()));
         result.buildHandleConfig();
         return result;
