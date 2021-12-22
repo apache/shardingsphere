@@ -64,7 +64,7 @@ public final class InventoryTaskSplitter {
      * @param importerExecuteEngine execute engine
      * @return split inventory data task
      */
-    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - batchSize - readBatchSize - rateLimitAlgorithm
+    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - readBatchSize - rateLimitAlgorithm
     public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager,
                                                   final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();

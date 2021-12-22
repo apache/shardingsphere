@@ -64,7 +64,7 @@ public final class DistributionChannelTest {
     private void execute(final AckCallback ackCallback, final int count, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(count);
         AtomicBoolean acknowledged = new AtomicBoolean();
-        DistributionChannel distributionChannel = new DistributionChannel(2, ackRecords -> {
+        DistributionChannel distributionChannel = new DistributionChannel(2, 10000, ackRecords -> {
             ackCallback.onAck(ackRecords);
             acknowledged.set(true);
         });
