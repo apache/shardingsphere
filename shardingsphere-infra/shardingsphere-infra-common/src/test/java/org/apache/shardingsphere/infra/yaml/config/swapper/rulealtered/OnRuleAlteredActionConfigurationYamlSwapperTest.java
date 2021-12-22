@@ -43,6 +43,8 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
+        Properties sourceWritingStopperProps = new Properties();
+        yamlConfig.setSourceWritingStopper(new YamlShardingSphereAlgorithmConfiguration("DEFAULT", sourceWritingStopperProps));
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
         yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));

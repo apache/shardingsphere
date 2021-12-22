@@ -108,6 +108,8 @@
 #        type: IDLE
 #        props:
 #          incremental-task-idle-minute-threshold: 30
+#      sourceWritingStopper:
+#        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DEFAULT
 

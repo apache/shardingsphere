@@ -39,5 +39,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     
     private YamlShardingSphereAlgorithmConfiguration completionDetector;
     
+    private YamlShardingSphereAlgorithmConfiguration sourceWritingStopper;
+    
     private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;
 }
