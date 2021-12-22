@@ -360,7 +360,9 @@ public enum SQLVisitorRule {
     
     DROP_DOMAIN("DropDomain", SQLStatementType.DDL),
     
-    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL);
+    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
+    
+    CREATE_RULE("CreateRule", SQLStatementType.DDL);
 
     private final String name;
     
