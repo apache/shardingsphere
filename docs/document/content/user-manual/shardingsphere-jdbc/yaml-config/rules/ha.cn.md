@@ -14,7 +14,7 @@ rules:
         - <data-source>
         - <data-source>
       discoveryHeartbeatName: # 检测心跳名称
-      discoveryTypeName: # 高可用类型名称
+      discoveryTypeName: # 数据库发现类型名称
   
   # 心跳检测配置
   discoveryHeartbeats:
@@ -22,10 +22,10 @@ rules:
       props:
         keep-alive-cron: # cron 表达式，如：'0/5 * * * * ?'
   
-  # 高可用类型配置
+  # 数据库发现类型配置
   discoveryTypes:
-    <discovery-type-name> (+): # 高可用类型名称
-      type: # 高可用类型，如： MGR、openGauss 
+    <discovery-type-name> (+): # 数据库发现类型名称
+      type: # 数据库发现类型，如： MGR、openGauss 
       props (?):
-        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # 高可用类型必要参数，如 MGR 的 group-name
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # 数据库发现类型必要参数，如 MGR 的 group-name
 ```
