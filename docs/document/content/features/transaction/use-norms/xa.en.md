@@ -19,6 +19,7 @@ weight = 2
 * When using XA START to open a XA Transaction, ShardingSphere will pass it to backend database directly, you have to manage this transaction by yourself;
 * When recover from a crush, you have to call XA RECOVER to check unfinished transaction, and choose to commit or rollback using xid. Or you can use ONE PHASE commit without PREPARE.
 
+```sql
 MySQL [(none)]> use test1                                                                               │MySQL [(none)]> use test2
 Reading table information for completion of table and column names                                      │Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A                                          │You can turn off this feature to get a quicker startup with -A
@@ -111,3 +112,4 @@ Query OK, 0 rows affected (0.029 sec)
 
 MySQL [test1]> XA RECOVER;
 Empty set (0.011 sec)
+```
