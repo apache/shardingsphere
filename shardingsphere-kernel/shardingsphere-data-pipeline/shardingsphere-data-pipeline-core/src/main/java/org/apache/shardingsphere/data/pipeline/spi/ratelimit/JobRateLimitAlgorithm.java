@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rulealtered;
+package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * On rule altered action configuration.
+ * Job rate limit algorithm, SPI.
  */
-@RequiredArgsConstructor
-@Getter
-public final class OnRuleAlteredActionConfiguration {
+public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    private final int blockQueueSize;
-    
-    private final int workerThread;
-    
-    private final int readBatchSize;
-    
-    private final ShardingSphereAlgorithmConfiguration rateLimiter;
-    
-    private final ShardingSphereAlgorithmConfiguration completionDetector;
-    
-    private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    /**
+     * Action before query.
+     */
+    void onQuery();
 }

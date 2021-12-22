@@ -37,6 +37,8 @@ public class DumperConfiguration {
     
     private JDBCDataSourceConfiguration dataSourceConfig;
     
+    private int blockQueueSize = 10000;
+    
     private IngestPosition<?> position;
     
     /**

@@ -15,35 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.ingest;
+package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
+import com.google.common.base.Strings;
+import com.google.common.util.concurrent.RateLimiter;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
+import java.util.Properties;
+
 /**
- * Inventory dumper configuration.
+ * Source rule altered job rate limit algorithm for SPI.
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class InventoryDumperConfiguration extends DumperConfiguration {
+public final class SourceJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
-    private String tableName;
+    private static final String QPS_KEY = "qps";
     
-    private String primaryKey;
+    private int qps = 50;
     
-    private Integer shardingItem;
+    private RateLimiter rateLimiter;
     
-    private int readBatchSize = 1000;
+    @Getter
+    @Setter
+    private Properties props = new Properties();
     
-    private JobRateLimitAlgorithm rateLimitAlgorithm;
+    @Override
+    public void init() {
+        String qpsValue = props.getProperty(QPS_KEY);
+        if (!Strings.isNullOrEmpty(qpsValue)) {
+            qps = Integer.parseInt(qpsValue);
+        }
+        rateLimiter = RateLimiter.create(qps);
+    }
     
-    public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
-        setDataSourceName(dumperConfig.getDataSourceName());
-        setDataSourceConfig(dumperConfig.getDataSourceConfig());
-        setTableNameMap(dumperConfig.getTableNameMap());
-        setBlockQueueSize(dumperConfig.getBlockQueueSize());
+    @Override
+    public String getType() {
+        return "SOURCE";
+    }
+    
+    @Override
+    public void onQuery() {
+        rateLimiter.acquire();
     }
 }
