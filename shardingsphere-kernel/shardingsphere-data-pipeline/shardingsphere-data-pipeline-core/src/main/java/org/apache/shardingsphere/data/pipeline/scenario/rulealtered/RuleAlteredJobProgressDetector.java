@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -67,7 +68,8 @@ public final class RuleAlteredJobProgressDetector {
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
-        return completionDetectAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
+        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(incrementalTaskIdleMinutes).build();
+        return completionDetectAlgorithm.allIncrementalTasksAlmostFinished(parameter);
     }
     
     /**

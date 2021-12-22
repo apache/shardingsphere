@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.detect;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Collection;
 
 /**
- * Rule altered job completion detect algorithm for SPI.
+ * All incremental tasks almost finished parameter.
  */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@Getter
+@Setter
+@Builder
+@ToString
+public final class AllIncrementalTasksAlmostFinishedParameter {
     
-    /**
-     * All incremental tasks is almost finished.
-     *
-     * @param parameter parameter
-     * @return Almost finished or not
-     */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    private Collection<Long> incrementalTaskIdleMinutes;
 }

@@ -87,6 +87,7 @@ public final class FinishedCheckJob implements SimpleJob {
                         sourceWritingStopAlgorithm.resumeSourceWriting(schemaName, jobId + "");
                     }
                 }
+                log.info("job {} finished", jobId);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
