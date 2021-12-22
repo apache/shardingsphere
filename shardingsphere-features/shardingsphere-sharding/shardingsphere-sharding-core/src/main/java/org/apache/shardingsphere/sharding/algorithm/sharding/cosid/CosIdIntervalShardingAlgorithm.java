@@ -82,7 +82,7 @@ public final class CosIdIntervalShardingAlgorithm implements StandardShardingAlg
         IntervalTimeline intervalTimeline = new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
         boolean isSecondTs = getProps().containsKey(TIMESTAMP_TYPE_KEY)
                 && TIMESTAMP_SECOND_TYPE.equalsIgnoreCase(getProps().getProperty(TIMESTAMP_TYPE_KEY));
-        final String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
+        String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
         ZoneId zoneId = ZoneId.systemDefault();
         if (getProps().containsKey(ZONE_ID_KEY)) {
