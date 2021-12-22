@@ -42,7 +42,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", mock(DataSource.class));
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertNewWithEmptyDataSourceRule() {
         new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
