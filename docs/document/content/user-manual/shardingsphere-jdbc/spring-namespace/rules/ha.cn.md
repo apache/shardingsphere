@@ -22,7 +22,7 @@ weight = 3
 | id                          | 属性  | 数据源规则名称                                |
 | data-source-names           | 属性  | 数据源名称，多个数据源用逗号分隔 如：ds_0, ds_1  |
 | discovery-heartbeat-name    | 属性  | 检测心跳名称                                 |
-| discovery-type-name         | 属性  | 高可用类型名称                               |
+| discovery-type-name         | 属性  | 数据库发现类型名称                               |
 
 \<database-discovery:discovery-heartbeat />
 
@@ -35,6 +35,6 @@ weight = 3
 
 | *名称*     | *类型* | *说明*                                    |
 | --------- | ----- | ----------------------------------------- |
-| id        | 属性  | 高可用类型名称                               |
-| type      | 属性  | 高可用类型，如： MGR、openGauss               |
-| props (?) | 标签  | 高可用类型配置，如 MGR 的 group-name 属性配置   |
+| id        | 属性  | 数据库发现类型名称                               |
+| type      | 属性  | 数据库发现类型，如： MGR、openGauss               |
+| props (?) | 标签  | 数据库发现类型配置，如 MGR 的 group-name 属性配置   |
