@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetect
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -150,11 +151,13 @@ public final class RuleAlteredJobWorker {
      * @return YAML root configuration
      */
     private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
-        JDBCDataSourceConfiguration targetDataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
+        JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceConfigurationWrapper(
+                jobConfig.getRuleConfig().getTarget().getType(), jobConfig.getRuleConfig().getTarget().getParameter()).unwrap();
         if (targetDataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return ((ShardingSphereJDBCDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
-        JDBCDataSourceConfiguration sourceDataSourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
+        JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceConfigurationWrapper(
+                jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()).unwrap();
         return ((ShardingSphereJDBCDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
@@ -224,14 +227,18 @@ public final class RuleAlteredJobWorker {
     
     private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         RuleConfiguration result = new RuleConfiguration();
-        result.setSource(createWrapper(sourceRootConfig));
-        result.setTarget(createWrapper(targetRootConfig));
+        result.setSource(createYamlJDBCDataSourceConfiguration(sourceRootConfig));
+        result.setTarget(createYamlJDBCDataSourceConfiguration(targetRootConfig));
         return result;
     }
     
-    private JDBCDataSourceConfigurationWrapper createWrapper(final YamlRootConfiguration yamlConfig) {
+    private YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
         ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(yamlConfig);
-        return new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter());
+        JDBCDataSourceConfigurationWrapper wrapper = new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter());
+        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
+        result.setType(wrapper.getType());
+        result.setParameter(wrapper.getParameter());
+        return result;
     }
     
     @SuppressWarnings("unchecked")

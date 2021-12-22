@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,15 +45,18 @@ public final class DataSourceManagerTest {
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(jobConfig.getRuleConfig().getSource().unwrap());
+        DataSource actual = dataSourceManager.getDataSource(
+                new JDBCDataSourceConfigurationWrapper(jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()).unwrap());
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
-            dataSourceManager.createSourceDataSource(jobConfig.getRuleConfig().getSource().unwrap());
-            dataSourceManager.createTargetDataSource(jobConfig.getRuleConfig().getTarget().unwrap());
+            dataSourceManager.createSourceDataSource(
+                    new JDBCDataSourceConfigurationWrapper(jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()).unwrap());
+            dataSourceManager.createTargetDataSource(
+                    new JDBCDataSourceConfigurationWrapper(jobConfig.getRuleConfig().getTarget().getType(), jobConfig.getRuleConfig().getTarget().getParameter()).unwrap());
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));

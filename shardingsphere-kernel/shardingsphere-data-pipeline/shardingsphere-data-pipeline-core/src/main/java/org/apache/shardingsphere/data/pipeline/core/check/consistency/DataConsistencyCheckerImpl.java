@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
@@ -81,8 +82,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
-        JDBCDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
-        JDBCDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfigurationWrapper(
+                jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter()).unwrap();
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfigurationWrapper(
+                jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter()).unwrap();
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
@@ -109,9 +112,11 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     @Override
     public Map<String, Boolean> dataCheck(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        JDBCDataSourceConfiguration sourceConfig = jobContext.getJobConfig().getRuleConfig().getSource().unwrap();
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfigurationWrapper(
+                jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter()).unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        JDBCDataSourceConfiguration targetConfig = jobContext.getJobConfig().getRuleConfig().getTarget().unwrap();
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfigurationWrapper(
+                jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter()).unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
                 .distinct().collect(Collectors.toList());

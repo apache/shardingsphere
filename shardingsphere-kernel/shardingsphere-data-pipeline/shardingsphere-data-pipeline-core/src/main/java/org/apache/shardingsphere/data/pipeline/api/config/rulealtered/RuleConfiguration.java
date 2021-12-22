@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 
 /**
  * Rule configuration.
@@ -27,24 +27,18 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 @Getter
 public final class RuleConfiguration {
     
-    private JDBCDataSourceConfigurationWrapper source;
+    private YamlJDBCDataSourceConfiguration source;
     
-    private JDBCDataSourceConfigurationWrapper target;
+    private YamlJDBCDataSourceConfiguration target;
     
     /**
      * Set source.
      *
      * @param source source configuration
      */
-    public void setSource(final JDBCDataSourceConfigurationWrapper source) {
+    public void setSource(final YamlJDBCDataSourceConfiguration source) {
         checkParameters(source);
         this.source = source;
-    }
-    
-    private void checkParameters(final JDBCDataSourceConfigurationWrapper wrapper) {
-        Preconditions.checkNotNull(wrapper);
-        Preconditions.checkNotNull(wrapper.getType());
-        Preconditions.checkNotNull(wrapper.getParameter());
     }
     
     /**
@@ -52,8 +46,14 @@ public final class RuleConfiguration {
      *
      * @param target target configuration
      */
-    public void setTarget(final JDBCDataSourceConfigurationWrapper target) {
+    public void setTarget(final YamlJDBCDataSourceConfiguration target) {
         checkParameters(target);
         this.target = target;
+    }
+    
+    private void checkParameters(final YamlJDBCDataSourceConfiguration yamlConfig) {
+        Preconditions.checkNotNull(yamlConfig);
+        Preconditions.checkNotNull(yamlConfig.getType());
+        Preconditions.checkNotNull(yamlConfig.getParameter());
     }
 }

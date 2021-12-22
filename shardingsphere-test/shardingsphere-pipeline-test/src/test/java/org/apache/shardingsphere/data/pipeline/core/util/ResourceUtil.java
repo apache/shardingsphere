@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -63,11 +64,17 @@ public final class ResourceUtil {
         result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);
-        JDBCDataSourceConfiguration sourceConfig = new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"));
-        ruleConfig.setSource(new JDBCDataSourceConfigurationWrapper(sourceConfig.getType(), sourceConfig.getParameter()));
-        JDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"));
-        ruleConfig.setTarget(new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter()));
+        ruleConfig.setSource(createYamlJDBCDataSourceConfiguration(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
+        ruleConfig.setTarget(createYamlJDBCDataSourceConfiguration(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
         result.buildHandleConfig();
+        return result;
+    }
+    
+    private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration jdbcDataSourceConfig) {
+        JDBCDataSourceConfigurationWrapper targetWrapper = new JDBCDataSourceConfigurationWrapper(jdbcDataSourceConfig.getType(), jdbcDataSourceConfig.getParameter());
+        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
+        result.setType(targetWrapper.getType());
+        result.setParameter(targetWrapper.getParameter());
         return result;
     }
     

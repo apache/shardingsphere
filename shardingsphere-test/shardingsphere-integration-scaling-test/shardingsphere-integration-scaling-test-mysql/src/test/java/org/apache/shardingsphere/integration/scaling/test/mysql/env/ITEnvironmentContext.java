@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.config.SourceConfiguration;
@@ -82,12 +83,18 @@ public final class ITEnvironmentContext {
     
     private static String createScalingConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
         RuleConfiguration ruleConfig = new RuleConfiguration();
-        JDBCDataSourceConfiguration sourceConfig = SourceConfiguration.getDockerConfiguration(tableRules);
-        ruleConfig.setSource(new JDBCDataSourceConfigurationWrapper(sourceConfig.getType(), sourceConfig.getParameter()));
-        JDBCDataSourceConfiguration targetConfig = TargetConfiguration.getDockerConfiguration();
-        ruleConfig.setTarget(new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter()));
+        ruleConfig.setSource(createYamlJDBCDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
+        ruleConfig.setTarget(createYamlJDBCDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
         JobConfiguration jobConfig = new JobConfiguration();
         jobConfig.setRuleConfig(ruleConfig);
         return new Gson().toJson(jobConfig);
+    }
+    
+    private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration targetConfig) {
+        JDBCDataSourceConfigurationWrapper targetWrapper = new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter());
+        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
+        result.setType(targetWrapper.getType());
+        result.setParameter(targetWrapper.getParameter());
+        return result;
     }
 }
