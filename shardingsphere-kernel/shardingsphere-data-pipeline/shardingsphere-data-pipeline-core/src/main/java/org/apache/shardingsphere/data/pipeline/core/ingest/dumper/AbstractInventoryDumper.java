@@ -94,10 +94,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private void dump() {
         String sql = getDumpSQL();
-        PrimaryKeyPosition position = (PrimaryKeyPosition) inventoryDumperConfig.getPosition();
+        IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
-            Number startPrimaryValue = position.getBeginValue() - 1;
+            Number startPrimaryValue = getPositionBeginValue(position) - 1;
             Optional<Number> maxPrimaryValue;
             while ((maxPrimaryValue = dump0(conn, sql, startPrimaryValue)).isPresent()) {
                 startPrimaryValue = maxPrimaryValue.get();
@@ -123,8 +123,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
             preparedStatement.setObject(1, startPrimaryValue);
-            PrimaryKeyPosition position = (PrimaryKeyPosition) inventoryDumperConfig.getPosition();
-            preparedStatement.setObject(2, position.getEndValue());
+            preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
             preparedStatement.setInt(3, readBatchSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
@@ -150,6 +149,26 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 return Optional.ofNullable(maxPrimaryValue);
             }
         }
+    }
+    
+    private long getPositionBeginValue(final IngestPosition<?> position) {
+        if (null == position) {
+            return 0;
+        }
+        if (!(position instanceof PrimaryKeyPosition)) {
+            return 0;
+        }
+        return ((PrimaryKeyPosition) position).getBeginValue();
+    }
+    
+    private long getPositionEndValue(final IngestPosition<?> position) {
+        if (null == position) {
+            return Integer.MAX_VALUE;
+        }
+        if (!(position instanceof PrimaryKeyPosition)) {
+            return Integer.MAX_VALUE;
+        }
+        return ((PrimaryKeyPosition) position).getEndValue();
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
