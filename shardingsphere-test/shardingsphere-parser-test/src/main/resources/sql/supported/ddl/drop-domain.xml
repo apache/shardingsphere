@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_domain" value="drop domain mytype cascade" db-types="PostgreSQL" />
+    <sql-case id="drop_domain" value="drop domain mytype cascade" db-types="PostgreSQL,openGauss" />
 </sql-cases>

@@ -72,6 +72,7 @@ execute
     | dropTrigger
     | dropView
     | dropSequence
+    | dropDomain
     | vacuum
     | prepare
     | executeStmt

@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDomainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Drop domain statement.
+ * OpenGauss drop domain statement.
  */
 @ToString
-public abstract class DropDomainStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OpenGaussDropDomainStatement extends DropDomainStatement implements OpenGaussStatement {
 }

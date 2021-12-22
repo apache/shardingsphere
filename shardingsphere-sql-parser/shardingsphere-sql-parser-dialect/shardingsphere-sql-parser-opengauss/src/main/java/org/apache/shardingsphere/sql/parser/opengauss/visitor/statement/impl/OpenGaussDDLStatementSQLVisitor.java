@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dea
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropProcedureContext;
@@ -121,6 +122,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDomainStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -548,5 +550,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
         return new OpenGaussDropTablespaceStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropDomain(final DropDomainContext ctx) {
+        return new PostgreSQLDropDomainStatement();
     }
 }
