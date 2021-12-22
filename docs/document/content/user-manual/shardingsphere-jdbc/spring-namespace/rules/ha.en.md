@@ -22,7 +22,7 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-dis
 | id                          | Attribute  | Data source rule Id                                                                      |
 | data-source-names           | Attribute  | Data source names, multiple data source names separated with comma. Such as: ds_0, ds_1  |
 | discovery-heartbeat-name    | Attribute  | Detect heartbeat name                                                                    |
-| discovery-type-name         | Attribute  | Highly available type name                                                               |
+| discovery-type-name         | Attribute  | Database discovery type name                                                               |
 
 \<database-discovery:discovery-heartbeat />
 
@@ -35,6 +35,6 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-dis
 
 | *Name*     | *Type*    | *Description*                                                    |
 | --------- | ---------- | ---------------------------------------------------------------- |
-| id        | Attribute  | Highly available type Id                                         |
-| type      | Attribute  | Highly available type, such as: MGR、openGauss                   |
-| props (?) | tag        | Required parameters for high-availability types, such as MGR's group-name   |
+| id        | Attribute  | Database discovery type Id                                         |
+| type      | Attribute  | Database discovery type, such as: MGR、openGauss                   |
+| props (?) | tag        | Required parameters for database discovery types, such as MGR's group-name   |

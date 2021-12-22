@@ -48,9 +48,9 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
     
-    private static final String DISCOVER_TYPE = "discover_type";
+    private static final String DISCOVER_TYPE = "discovery_type";
     
-    private static final String HEARTBEAT = "heartbeat";
+    private static final String HEARTBEAT = "discovery_heartbeat";
     
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
     

@@ -9,9 +9,9 @@ chapter = true
 
 | *SPI Name*                            | *Description*                                           |
 | ------------------------------------- | ------------------------------------------------------- |
-| DatabaseDiscoveryType                 | Highly available type                                   |
+| DatabaseDiscoveryType                 | Database discovery type                                 |
 
 | *Implementation Class*                | *Description*                                           |
 | ------------------------------------- | ------------------------------------------------------- |
-| MGRDatabaseDiscoveryType              | Highly available of MySQL's MGR                         |
-| OpenGaussDatabaseDiscoveryType        | Highly available of openGauss                           |
+| MGRDatabaseDiscoveryType              | Database discovery of MySQL's MGR                       |
+| OpenGaussDatabaseDiscoveryType        | Database discovery of openGauss                         |

@@ -13,7 +13,7 @@ Attributes：
 | -------------------------  | ------------------------------------------------------------- | ------------------------------------ |
 | dataSources (+)            | Collection\<DatabaseDiscoveryDataSourceRuleConfiguration\>    | Data source configuration            |
 | discoveryHeartbeats (+)    | Map\<String, DatabaseDiscoveryHeartBeatConfiguration\>        | Detect heartbeat configuration       |
-| discoveryTypes (+)         | Map\<String, ShardingSphereAlgorithmConfiguration\>            | Highly available type configuration  |
+| discoveryTypes (+)         | Map\<String, ShardingSphereAlgorithmConfiguration\>           | Database discovery type configuration  |
 
 ## Data Source Configuration
 
@@ -26,7 +26,7 @@ Attributes：
 | name (+)                   | String               | Data source name                                                                         | -             |
 | dataSourceNames (+)        | Collection\<String\> | Data source names, multiple data source names separated with comma. Such as: ds_0, ds_1  | -             |
 | discoveryHeartbeatName (+) | String               | Detect heartbeat name                                                                    | -             |
-| discoveryTypeName (+)      | String               | Highly available type name                                                               | -             |
+| discoveryTypeName (+)      | String               | Database discovery type name                                                             | -             |
 
 ## Detect Heartbeat Configuration
 
@@ -38,7 +38,7 @@ Attributes：
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------- |
 | props (+)                  | Properties             | Detect heartbeat attribute configuration, keep-alive-cron configuration, cron expression. Such as: '0/5 * * * * ?'  | -             |
 
-## Highly Available Type Configuration
+## Database Discovery Type Configuration
 
 Class name：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
@@ -46,5 +46,5 @@ Attributes：
 
 | *Name*                     | *DataType*             | *Description*                                                                   | *Default Value*       |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------- | ------------- |
-| type (+)                   | String                 | Highly available type, such as: MGR、openGauss                                  | -             |
+| type (+)                   | String                 | Database discovery type, such as: MGR、openGauss                                  | -             |
 | props (?)                  | Properties             | Required parameters for high-availability types, such as MGR's group-name       | -             |

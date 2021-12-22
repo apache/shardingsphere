@@ -28,5 +28,5 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | proxy-frontend-max-connections (?)  | int         | The maximum permitted number of client connections to Proxy. The default value is 0 and less than or equal to 0 means no limitation.                                                                                                                                                                    | 0               | true             |
 | sql-federation-enabled (?)          | boolean     | Whether enable sql federation.                                                                                                                                                                                                                                                                          | false           | true             |
 
-Properties can be updated by [DistSQL](/cn/user-manual/shardingsphere-proxy/distsql/usage/).
+Properties can be updated by [DistSQL](/en/user-manual/shardingsphere-proxy/distsql/).
 Dynamic update can take effect immediately, static update can take effect after restarted.

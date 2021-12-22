@@ -21,7 +21,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -37,6 +40,7 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 public final class RuleAlteredContext {
     
     static {
+        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleAlteredJobCompletionDetectAlgorithm.class);
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
     }
@@ -45,9 +49,15 @@ public final class RuleAlteredContext {
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
+    
     private final RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm;
     
+    private final RuleAlteredSourceWritingStopAlgorithm sourceWritingStopAlgorithm;
+    
     private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
+    
+    private final RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm;
     
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -57,17 +67,35 @@ public final class RuleAlteredContext {
     
     public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
+        ShardingSphereAlgorithmConfiguration rateLimiter = onRuleAlteredActionConfig.getRateLimiter();
+        if (null != rateLimiter) {
+            rateLimitAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(rateLimiter, JobRateLimitAlgorithm.class);
+        } else {
+            rateLimitAlgorithm = null;
+        }
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         if (null != completionDetector) {
             completionDetectAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, RuleAlteredJobCompletionDetectAlgorithm.class);
         } else {
             completionDetectAlgorithm = null;
         }
+        ShardingSphereAlgorithmConfiguration sourceWritingStopper = onRuleAlteredActionConfig.getSourceWritingStopper();
+        if (null != sourceWritingStopper) {
+            sourceWritingStopAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(sourceWritingStopper, RuleAlteredSourceWritingStopAlgorithm.class);
+        } else {
+            sourceWritingStopAlgorithm = null;
+        }
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
         if (null != dataConsistencyChecker) {
             dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class);
         } else {
             dataConsistencyCheckAlgorithm = null;
+        }
+        ShardingSphereAlgorithmConfiguration checkoutLocker = onRuleAlteredActionConfig.getCheckoutLocker();
+        if (null != checkoutLocker) {
+            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleAlteredCheckoutLockAlgorithm.class);
+        } else {
+            checkoutLockAlgorithm = null;
         }
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();

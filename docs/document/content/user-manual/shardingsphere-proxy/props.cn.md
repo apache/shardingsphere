@@ -28,5 +28,5 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-frontend-max-connections (?) | int       | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                                                  | 0        | 是      |
 | sql-federation-enabled (?)         | boolean   | 是否开启 federation 查询。                                                                                                                                                         | false    | 是      |
 
-属性配置可以通过 [DistSQL](/cn/user-manual/shardingsphere-proxy/distsql/usage/) 修改。
+属性配置可以通过 [DistSQL](/cn/user-manual/shardingsphere-proxy/distsql/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。

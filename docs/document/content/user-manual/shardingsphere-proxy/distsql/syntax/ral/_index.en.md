@@ -47,7 +47,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                                                   | Function                                                                           | Example                                   |
 |:--------------------------------------------------------------------------- |:---------------------------------------------------------------------------------- |:----------------------------------------- |
-| set variable proxy_property_name = xx                                       | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/configuration/props/)  of proxy，name is split by underscore            | set variable sql_show = true            |  
+| set variable proxy_property_name = xx                                       | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/props/)  of proxy，name is split by underscore            | set variable sql_show = true            |  
 | set variable transaction_type = xx                                          | Modify transaction_type of the current connection, supports LOCAL, XA, BASE        | set variable transaction_type = XA        |
 | set variable agent_plugins_enabled = [true / false]                         | Set whether the agent plugins are enabled, the default value is false              | set variable agent_plugins_enabled = true |
 | show all variables                                                          | Query proxy all properties configuration                                           | show all variable                         |

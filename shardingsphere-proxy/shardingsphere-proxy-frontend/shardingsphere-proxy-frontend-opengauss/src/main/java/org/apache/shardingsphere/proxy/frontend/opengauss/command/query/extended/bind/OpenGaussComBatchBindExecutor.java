@@ -77,6 +77,9 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
                     updateCount += ((UpdateResponseHeader) responseHeader).getUpdateCount();
                 }
             } finally {
+                if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+                    ((JDBCBackendConnection) connectionSession.getBackendConnection()).closeConnections(false);
+                }
                 ((JDBCBackendConnection) connectionSession.getBackendConnection()).closeDatabaseCommunicationEngines(false);
             }
         }

@@ -32,7 +32,15 @@ public final class OnRuleAlteredActionConfiguration {
     
     private final int workerThread;
     
+    private final int readBatchSize;
+    
+    private final ShardingSphereAlgorithmConfiguration rateLimiter;
+    
     private final ShardingSphereAlgorithmConfiguration completionDetector;
     
+    private final ShardingSphereAlgorithmConfiguration sourceWritingStopper;
+    
     private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    
+    private final ShardingSphereAlgorithmConfiguration checkoutLocker;
 }

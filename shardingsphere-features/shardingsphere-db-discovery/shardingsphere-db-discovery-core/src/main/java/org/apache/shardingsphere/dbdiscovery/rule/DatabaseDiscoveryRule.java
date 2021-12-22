@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
@@ -79,7 +78,6 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
                                   final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryType> discoveryTypes) {
-        checkDataSourcesArguments(dataSourceMap, dataSourceRuleConfigs);
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
         findMasterSlaveRelation(schemaName, dataSourceMap);
@@ -94,28 +92,13 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void checkDataSourcesArguments(final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources) {
-        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        Preconditions.checkArgument(!dataSources.isEmpty(), "Database discovery rules can not be empty.");
-    }
-    
     private Map<String, DatabaseDiscoveryDataSourceRule> getDataSourceRules(final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources,
                                                                             final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeatConfig) {
         Map<String, DatabaseDiscoveryDataSourceRule> result = new HashMap<>(dataSources.size(), 1);
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : dataSources) {
-            checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(each, heartbeatConfig);
             result.put(each.getName(), new DatabaseDiscoveryDataSourceRule(each, heartbeatConfig.get(each.getDiscoveryHeartbeatName()).getProps(), discoveryTypes.get(each.getDiscoveryTypeName())));
         }
         return result;
-    }
-    
-    private void checkDatabaseDiscoveryDataSourceRuleConfigurationArguments(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig,
-                                                                            final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeatConfig) {
-        Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryHeartbeatName(), "Discovery heartbeat cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
-        Preconditions.checkArgument(heartbeatConfig.containsKey(dataSourceRuleConfig.getDiscoveryHeartbeatName()),
-                "Can not find discovery heartbeat of rule name `%s`.", dataSourceRuleConfig.getName());
-        Preconditions.checkNotNull(dataSourceRuleConfig.getDiscoveryTypeName(), "Discovery type cannot be null of rule name `%s`.", dataSourceRuleConfig.getName());
-        Preconditions.checkArgument(discoveryTypes.containsKey(dataSourceRuleConfig.getDiscoveryTypeName()), "Can not find discovery type of rule name `%s`.", dataSourceRuleConfig.getName());
     }
     
     private void findMasterSlaveRelation(final String schemaName, final Map<String, DataSource> dataSourceMap) {
