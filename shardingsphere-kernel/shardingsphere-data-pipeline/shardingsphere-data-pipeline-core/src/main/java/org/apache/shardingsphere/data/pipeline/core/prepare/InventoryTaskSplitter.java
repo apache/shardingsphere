@@ -176,9 +176,13 @@ public final class InventoryTaskSplitter {
                 ps.setLong(1, beginId);
                 ps.setLong(2, jobContext.getJobConfig().getHandleConfig().getShardingSize());
                 try (ResultSet rs = ps.executeQuery()) {
-                    rs.next();
+                    if (!rs.next()) {
+                        log.info("getPositionByPrimaryKeyRange, rs.next false, break");
+                        break;
+                    }
                     long endId = rs.getLong(1);
                     if (endId == 0) {
+                        log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getTableName(), dumperConfig.getPrimaryKey(), beginId);
                         break;
                     }
                     result.add(new PrimaryKeyPosition(beginId, endId));

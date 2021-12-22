@@ -97,10 +97,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         PrimaryKeyPosition position = (PrimaryKeyPosition) inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
-            Number startPrimaryValue = position.getBeginValue();
+            Number startPrimaryValue = position.getBeginValue() - 1;
             Optional<Number> maxPrimaryValue;
             while ((maxPrimaryValue = dump0(conn, sql, startPrimaryValue)).isPresent()) {
-                startPrimaryValue = maxPrimaryValue.orElse(null);
+                startPrimaryValue = maxPrimaryValue.get();
             }
         } catch (final SQLException ex) {
             stop();
@@ -114,7 +114,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     private String getDumpSQL() {
         String tableName = inventoryDumperConfig.getTableName();
         String primaryKey = inventoryDumperConfig.getPrimaryKey();
-        return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " BETWEEN ? AND ? ORDER BY " + primaryKey + " ASC LIMIT ?";
+        return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
     }
     
     private Optional<Number> dump0(final Connection conn, final String sql, final Number startPrimaryValue) throws SQLException {
