@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Rule altered job completion detect algorithm for SPI.
+ * Rule altered source writing stop algorithm, SPI.
  */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface RuleAlteredSourceWritingStopAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
-     * All incremental tasks is almost finished.
+     * Stop source writing.
      *
-     * @param parameter parameter
-     * @return Almost finished or not
+     * @param schemaName schema name
+     * @param jobId job id
      */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    void stopSourceWriting(String schemaName, String jobId);
+    
+    /**
+     * Resume source writing.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void resumeSourceWriting(String schemaName, String jobId);
 }

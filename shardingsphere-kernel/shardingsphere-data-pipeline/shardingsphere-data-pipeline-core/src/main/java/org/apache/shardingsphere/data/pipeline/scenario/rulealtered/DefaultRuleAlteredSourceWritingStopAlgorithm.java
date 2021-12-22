@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 
 /**
- * Rule altered job completion detect algorithm for SPI.
+ * Default rule altered source writing stop algorithm.
  */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
     
-    /**
-     * All incremental tasks is almost finished.
-     *
-     * @param parameter parameter
-     * @return Almost finished or not
-     */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    @Override
+    public void init() {
+    }
+    
+    // TODO impl default sourceWritingStopAlgorithm
+    @Override
+    public void stopSourceWriting(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public void resumeSourceWriting(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public String getType() {
+        return "DEFAULT";
+    }
 }

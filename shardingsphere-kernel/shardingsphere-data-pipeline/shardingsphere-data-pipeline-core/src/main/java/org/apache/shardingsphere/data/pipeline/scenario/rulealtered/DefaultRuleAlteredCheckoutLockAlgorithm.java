@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 
 /**
- * Rule altered job completion detect algorithm for SPI.
+ * Default rule altered checkout lock algorithm.
  */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
     
-    /**
-     * All incremental tasks is almost finished.
-     *
-     * @param parameter parameter
-     * @return Almost finished or not
-     */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    @Override
+    public void init() {
+    }
+    
+    // TODO impl default checkoutLockAlgorithm
+    @Override
+    public void lock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public String getType() {
+        return "DEFAULT";
+    }
 }

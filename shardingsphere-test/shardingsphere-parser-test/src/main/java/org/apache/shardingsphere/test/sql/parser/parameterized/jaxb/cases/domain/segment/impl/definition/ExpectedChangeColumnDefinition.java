@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rulealtered;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * On rule altered action configuration.
+ * Expected change column definition.
  */
-@RequiredArgsConstructor
 @Getter
-public final class OnRuleAlteredActionConfiguration {
+@Setter
+public final class ExpectedChangeColumnDefinition extends AbstractExpectedSQLSegment {
     
-    private final int blockQueueSize;
+    @XmlElement(name = "column-definition")
+    private ExpectedColumnDefinition columnDefinition;
     
-    private final int workerThread;
+    @XmlElement(name = "column-position")
+    private ExpectedColumnPosition columnPosition;
     
-    private final int readBatchSize;
-    
-    private final ShardingSphereAlgorithmConfiguration rateLimiter;
-    
-    private final ShardingSphereAlgorithmConfiguration completionDetector;
-    
-    private final ShardingSphereAlgorithmConfiguration sourceWritingStopper;
-    
-    private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
-    
-    private final ShardingSphereAlgorithmConfiguration checkoutLocker;
+    @XmlElement(name = "previousColumn")
+    private ExpectedColumn previousColumn;
 }

@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Rule altered job completion detect algorithm for SPI.
+ * Rule altered checkout lock algorithm, SPI.
  */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface RuleAlteredCheckoutLockAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
-     * All incremental tasks is almost finished.
+     * Lock to protect checkout (switch configuration).
      *
-     * @param parameter parameter
-     * @return Almost finished or not
+     * @param schemaName schema name
+     * @param jobId job id
      */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    void lock(String schemaName, String jobId);
+    
+    /**
+     * Release lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void releaseLock(String schemaName, String jobId);
 }
