@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -42,6 +43,7 @@ public final class FinishedCheckJob implements SimpleJob {
     
     static {
         ShardingSphereServiceLoader.register(RuleAlteredSourceWritingStopAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleAlteredCheckoutLockAlgorithm.class);
     }
     
     @Override
@@ -78,7 +80,8 @@ public final class FinishedCheckJob implements SimpleJob {
                         log.error("data consistency check failed, job {}", jobId);
                         continue;
                     }
-                    pipelineJobAPI.switchClusterConfiguration(jobId);
+                    RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
+                    switchClusterConfiguration(schemaName, jobId, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
                         sourceWritingStopAlgorithm.resumeSourceWriting(schemaName, jobId + "");
@@ -95,5 +98,18 @@ public final class FinishedCheckJob implements SimpleJob {
     private boolean dataConsistencyCheck(final long jobId) {
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId);
         return pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
+    }
+    
+    private void switchClusterConfiguration(final String schemaName, final long jobId, final RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm) {
+        try {
+            if (null != checkoutLockAlgorithm) {
+                checkoutLockAlgorithm.lock(schemaName, jobId + "");
+            }
+            pipelineJobAPI.switchClusterConfiguration(jobId);
+        } finally {
+            if (null != checkoutLockAlgorithm) {
+                checkoutLockAlgorithm.releaseLock(schemaName, jobId + "");
+            }
+        }
     }
 }

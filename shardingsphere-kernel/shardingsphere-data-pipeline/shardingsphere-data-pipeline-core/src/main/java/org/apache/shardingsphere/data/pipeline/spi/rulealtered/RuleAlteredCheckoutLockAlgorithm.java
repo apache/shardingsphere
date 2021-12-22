@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Default rule altered source writing stop algorithm.
+ * Rule altered checkout lock algorithm, SPI.
  */
-public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
+public interface RuleAlteredCheckoutLockAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    @Override
-    public void init() {
-    }
+    /**
+     * Lock to protect checkout (switch configuration).
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void lock(String schemaName, String jobId);
     
-    // TODO impl default sourceWritingStopAlgorithm
-    @Override
-    public void stopSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public void resumeSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public String getType() {
-        return "DEFAULT";
-    }
+    /**
+     * Release lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void releaseLock(String schemaName, String jobId);
 }

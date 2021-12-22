@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 
 /**
- * Default rule altered source writing stop algorithm.
+ * Default rule altered checkout lock algorithm.
  */
-public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
+public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
     
     @Override
     public void init() {
     }
     
-    // TODO impl default sourceWritingStopAlgorithm
+    // TODO impl default checkoutLockAlgorithm
     @Override
-    public void stopSourceWriting(final String schemaName, final String jobId) {
+    public void lock(final String schemaName, final String jobId) {
     }
     
     @Override
-    public void resumeSourceWriting(final String schemaName, final String jobId) {
+    public void releaseLock(final String schemaName, final String jobId) {
     }
     
     @Override

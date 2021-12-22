@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -56,6 +57,8 @@ public final class RuleAlteredContext {
     
     private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
+    private final RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm;
+    
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
     private final ExecuteEngine incrementalDumperExecuteEngine;
@@ -87,6 +90,12 @@ public final class RuleAlteredContext {
             dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class);
         } else {
             dataConsistencyCheckAlgorithm = null;
+        }
+        ShardingSphereAlgorithmConfiguration checkoutLocker = onRuleAlteredActionConfig.getCheckoutLocker();
+        if (null != checkoutLocker) {
+            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleAlteredCheckoutLockAlgorithm.class);
+        } else {
+            checkoutLockAlgorithm = null;
         }
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
