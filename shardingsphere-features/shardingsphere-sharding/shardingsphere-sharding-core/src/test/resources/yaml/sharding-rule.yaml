@@ -125,6 +125,8 @@ rules:
         type: DATA_MATCH
         props:
           chunk-size: 1000
+      checkoutLocker:
+        type: DEFAULT
 
 props:
   sql-show: true

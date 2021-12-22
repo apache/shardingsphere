@@ -35,3 +35,5 @@ dataConverters:
       type: DATA_MATCH
       props:
         chunk-size: 10000
+    checkoutLocker:
+      type: DEFAULT

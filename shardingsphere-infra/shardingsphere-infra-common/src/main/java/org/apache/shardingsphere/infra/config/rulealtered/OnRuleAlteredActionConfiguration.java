@@ -41,4 +41,6 @@ public final class OnRuleAlteredActionConfiguration {
     private final ShardingSphereAlgorithmConfiguration sourceWritingStopper;
     
     private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    
+    private final ShardingSphereAlgorithmConfiguration checkoutLocker;
 }

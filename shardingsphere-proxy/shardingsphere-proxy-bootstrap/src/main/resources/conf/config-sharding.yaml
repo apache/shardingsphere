@@ -112,6 +112,8 @@
 #        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DEFAULT
+#      checkoutLocker:
+#        type: DEFAULT
 
 ######################################################################################################
 #

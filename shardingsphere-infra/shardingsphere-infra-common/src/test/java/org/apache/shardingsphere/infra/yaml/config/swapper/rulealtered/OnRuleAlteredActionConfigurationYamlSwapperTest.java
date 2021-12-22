@@ -48,6 +48,8 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
         yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
+        Properties checkoutLockerProps = new Properties();
+        yamlConfig.setCheckoutLocker(new YamlShardingSphereAlgorithmConfiguration("DEFAULT", checkoutLockerProps));
         OnRuleAlteredActionConfigurationYamlSwapper yamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
         OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
         YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);
