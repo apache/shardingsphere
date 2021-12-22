@@ -99,8 +99,8 @@ public final class MetaDataContextsBuilder {
         return new MetaDataContexts(metaDataPersistService, metaData, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaData, globalMetaData));
     }
     
-    private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {
-        return new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, mataDataMap));
+    private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        return new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataMap));
     }
     
     private ShardingSphereResource buildResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
