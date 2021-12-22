@@ -22,10 +22,13 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -33,23 +36,33 @@ import java.util.stream.Collectors;
  */
 public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements RuleDefinitionDropUpdater<DropDatabaseDiscoveryHeartbeatStatement, DatabaseDiscoveryRuleConfiguration> {
     
+    private static final String RULE_TYPE = "database discovery";
+    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, 
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeDroppedHeartbeatNames(schemaName, sqlStatement, currentRuleConfig);
+        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
+        checkIsInUse(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException("Database discovery", schemaName));
+        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
     }
     
-    private void checkToBeDroppedHeartbeatNames(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
-                                                final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
+                              final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Collection<String> currentRuleNames = currentRuleConfig.getDiscoveryHeartbeats().keySet();
         Collection<String> notExistedRuleNames = sqlStatement.getHeartbeatNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException("Database discovery", schemaName, notExistedRuleNames));
+        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName, notExistedRuleNames));
+    }
+    
+    private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
+                              final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Set<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName).collect(Collectors.toSet());
+        List<String> invalid = sqlStatement.getHeartbeatNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
     }
     
     @Override
@@ -61,13 +74,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String heartbeatName) {
-        if (isNotInUse(currentRuleConfig, heartbeatName)) {
-            currentRuleConfig.getDiscoveryHeartbeats().remove(heartbeatName);
-        }
-    }
-    
-    private boolean isNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
-        return currentRuleConfig.getDataSources().stream().noneMatch(each -> each.getDiscoveryHeartbeatName().equals(toBeDroppedDiscoveryTypeName));
+        currentRuleConfig.getDiscoveryHeartbeats().remove(heartbeatName);
     }
     
     @Override

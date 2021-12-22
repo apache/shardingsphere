@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -32,12 +33,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,6 +54,8 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     @Mock
     private EncryptRuleConfiguration ruleConfig;
+    
+    private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
     
     @Test
     public void assertSwapToYamlConfiguration() {
@@ -83,5 +90,15 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     private EncryptRuleConfigurationYamlSwapper getSwapper() {
         return (EncryptRuleConfigurationYamlSwapper) OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
+    }
+    
+    @Test
+    public void assertDataConvertersSwap() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/encrypt-dataConverters.yaml");
+        assertNotNull(url);
+        YamlEncryptRuleConfiguration yamlConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
+        EncryptRuleConfiguration actualConfig = encryptRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
+        YamlEncryptRuleConfiguration actualYamlConfig = encryptRuleConfigurationYamlSwapper.swapToYamlConfiguration(actualConfig);
+        assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
 }

@@ -30,10 +30,17 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class BlockingQueueChannel extends AbstractBitSetChannel {
     
-    // TODO persist blockQueueSize into registry center and transfer it here by construction
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
+    private final BlockingQueue<Record> queue;
     
     private long fetchedIndex;
+    
+    public BlockingQueueChannel() {
+        this(10000);
+    }
+    
+    public BlockingQueueChannel(final int blockQueueSize) {
+        this.queue = new ArrayBlockingQueue<>(blockQueueSize);
+    }
     
     @Override
     public void pushRecord(final Record dataRecord, final long index) throws InterruptedException {

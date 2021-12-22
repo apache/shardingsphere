@@ -16,9 +16,10 @@
   ~ limitations under the License.
   -->
 
-<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/ha"
+<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/ha"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     
@@ -26,6 +27,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="data-source-rule" maxOccurs="unbounded" />
+                <xsd:element ref="discovery-heartbeat" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
@@ -34,6 +36,28 @@
     <xsd:element name="data-source-rule">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="discovery-heartbeat-name" type="xsd:string" use="required" />
+            <xsd:attribute name="discovery-type-name" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="discovery-heartbeat">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="discovery-type">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

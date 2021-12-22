@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -103,8 +103,9 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
         }
-        if (isSchemaChangedEvent(schemaName, event.getKey())) {
-            return Optional.of(createSchemaChangedEvent(schemaName, event));
+        String table = SchemaMetaDataNode.getTableName(schemaName, event.getKey());
+        if (!Strings.isNullOrEmpty(table)) {
+            return Optional.of(createSchemaChangedEvent(schemaName, table, event));
         }
         return Optional.empty();
     }
@@ -141,12 +142,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     
-    private boolean isSchemaChangedEvent(final String schemaName, final String key) {
-        // TODO refresh meta data
-        return false;
-    }
-    
-    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
-        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
+    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final String table, final DataChangedEvent event) {
+        return new SchemaChangedEvent(schemaName, table, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)));
     }
 }

@@ -332,6 +332,8 @@ public enum SQLVisitorRule {
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
+    DELIMITER("Delimiter", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
@@ -354,7 +356,13 @@ public enum SQLVisitorRule {
 
     ALTER_SERVICE("AlterService", SQLStatementType.DDL),
 
-    DROP_SERVICE("DropService", SQLStatementType.DDL);
+    DROP_SERVICE("DropService", SQLStatementType.DDL),
+    
+    DROP_DOMAIN("DropDomain", SQLStatementType.DDL),
+    
+    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
+    
+    CREATE_RULE("CreateRule", SQLStatementType.DDL);
 
     private final String name;
     

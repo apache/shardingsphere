@@ -96,14 +96,20 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            for (ExpressionSegment expressionSegment : each.getPredicates()) {
-                for (ColumnSegment columnSegment : ColumnExtractor.extract(expressionSegment)) {
-                    ColumnProjection columnProjection = buildColumnProjection(columnSegment);
-                    result.add(columnProjection);
-                }
+            for (ExpressionSegment expression : each.getPredicates()) {
+                result.addAll(createColumnProjections(expression));
             }
         }
         return sqlStatementContext.getTablesContext().findTableName(result, schema);
+    }
+    
+    private Collection<ColumnProjection> createColumnProjections(final ExpressionSegment expression) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (ColumnSegment each : ColumnExtractor.extract(expression)) {
+            ColumnProjection columnProjection = buildColumnProjection(each);
+            result.add(columnProjection);
+        }
+        return result;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
@@ -128,10 +134,11 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
                 ColumnProjection projection = buildColumnProjection(columnSegment);
                 Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
-                if (!tableName.isPresent() || !shardingRule.isShardingColumn(columnSegment.getIdentifier().getValue(), tableName.get())) {
+                Optional<String> shardingColumn = tableName.flatMap(optional -> shardingRule.findShardingColumn(columnSegment.getIdentifier().getValue(), optional));
+                if (!tableName.isPresent() || !shardingColumn.isPresent()) {
                     continue;
                 }
-                Column column = new Column(projection.getName(), tableName.get());
+                Column column = new Column(shardingColumn.get(), tableName.get());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
                 if (!shardingConditionValue.isPresent()) {
                     continue;

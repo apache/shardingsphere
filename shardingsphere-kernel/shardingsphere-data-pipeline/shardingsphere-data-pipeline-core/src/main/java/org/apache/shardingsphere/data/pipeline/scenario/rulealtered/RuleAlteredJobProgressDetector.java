@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -45,12 +46,13 @@ public final class RuleAlteredJobProgressDetector {
      *
      * @param jobProgressMap job progress map
      * @param handleConfig handle configuration
+     * @param ruleAlteredContext rule altered context
      * @return almost finished or not
      */
-    public static boolean almostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
+    public static boolean almostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig, final RuleAlteredContext ruleAlteredContext) {
         return isProgressCompleted(jobProgressMap, handleConfig)
                 && allInventoryTasksFinished(jobProgressMap)
-                && allIncrementalTasksAlmostFinished(jobProgressMap);
+                && allIncrementalTasksAlmostFinished(jobProgressMap, ruleAlteredContext.getCompletionDetectAlgorithm());
     }
     
     private static boolean isProgressCompleted(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
@@ -58,7 +60,7 @@ public final class RuleAlteredJobProgressDetector {
                 && jobProgressMap.values().stream().allMatch(Objects::nonNull);
     }
     
-    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap) {
+    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm) {
         long currentTimeMillis = System.currentTimeMillis();
         Collection<Long> incrementalTaskIdleMinutes = jobProgressMap.values().stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .map(each -> {
@@ -66,8 +68,8 @@ public final class RuleAlteredJobProgressDetector {
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
-        RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm = RuleAlteredContext.getInstance().getClusterAutoSwitchAlgorithm();
-        return clusterAutoSwitchAlgorithm.allIncrementalTasksAlmostFinished(incrementalTaskIdleMinutes);
+        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(incrementalTaskIdleMinutes).build();
+        return completionDetectAlgorithm.allIncrementalTasksAlmostFinished(parameter);
     }
     
     /**

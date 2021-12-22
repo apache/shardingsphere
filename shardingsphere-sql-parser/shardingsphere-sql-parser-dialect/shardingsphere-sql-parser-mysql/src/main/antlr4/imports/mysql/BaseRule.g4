@@ -642,6 +642,10 @@ constraintName
     : identifier
     ;
 
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;

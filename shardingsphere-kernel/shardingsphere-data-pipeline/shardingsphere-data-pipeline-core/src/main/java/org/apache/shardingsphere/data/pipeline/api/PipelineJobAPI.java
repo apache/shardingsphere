@@ -33,6 +33,7 @@ import java.util.Optional;
 /**
  * Pipeline job API.
  */
+// TODO separate dedicated methods for rule altered job
 public interface PipelineJobAPI extends RequiredSPI {
     
     /**
@@ -104,9 +105,10 @@ public interface PipelineJobAPI extends RequiredSPI {
     /**
      * Is data consistency check needed.
      *
+     * @param jobId job id
      * @return data consistency check needed or not
      */
-    boolean isDataConsistencyCheckNeeded();
+    boolean isDataConsistencyCheckNeeded(long jobId);
     
     /**
      * Do data consistency check.

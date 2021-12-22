@@ -63,20 +63,13 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         for (String each : sqlStatement.getRuleNames()) {
             dropRule(currentRuleConfig, each);
         }
-        return currentRuleConfig.getDataSources().isEmpty();
+        return false;
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getName().equals(ruleName)).findAny();
         Preconditions.checkState(dataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
-        if (isDiscoveryTypeNotInUse(currentRuleConfig, dataSourceRuleConfig.get().getDiscoveryTypeName())) {
-            currentRuleConfig.getDiscoveryTypes().remove(dataSourceRuleConfig.get().getDiscoveryTypeName());
-        }
-    }
-    
-    private boolean isDiscoveryTypeNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
-        return !currentRuleConfig.getDataSources().stream().filter(each -> each.getDiscoveryTypeName().equals(toBeDroppedDiscoveryTypeName)).findAny().isPresent();
     }
     
     @Override

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
-
-import java.util.Collection;
 
 public final class FixtureRuleAlteredJobCompletionDetectAlgorithm implements RuleAlteredJobCompletionDetectAlgorithm {
     
@@ -28,12 +27,12 @@ public final class FixtureRuleAlteredJobCompletionDetectAlgorithm implements Rul
     }
     
     @Override
-    public boolean allIncrementalTasksAlmostFinished(final Collection<Long> incrementalTaskIdleMinutes) {
+    public boolean allIncrementalTasksAlmostFinished(final AllIncrementalTasksAlmostFinishedParameter parameter) {
         return true;
     }
     
     @Override
     public String getType() {
-        return "Fixture";
+        return "FIXTURE";
     }
 }

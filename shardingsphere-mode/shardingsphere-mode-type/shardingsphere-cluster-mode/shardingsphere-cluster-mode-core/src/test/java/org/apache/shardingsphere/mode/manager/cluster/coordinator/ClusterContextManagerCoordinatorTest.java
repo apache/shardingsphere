@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -78,8 +79,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -149,18 +152,11 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaChanged() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData("schema");
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", "t_order", mock(TableMetaData.class));
+        TableMetaData tableMetaData = contextManager.getMetaDataContexts().getMetaData("schema").getSchema().get("t_order");
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
-    }
-    
-    @Test
-    public void assertSchemaChangedWithExistSchema() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        coordinator.renew(event);
-        assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getTableMetaData()));
     }
     
     @Test
@@ -237,9 +233,17 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getName()).thenReturn("schema");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(metaData.getResource()).thenReturn(resource);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.get("t_order")).thenReturn(mock(TableMetaData.class));
+        when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
-}
+    
+    private Map<String, TableMetaData> createTableMetaData() {
+        Map<String, TableMetaData> result = new HashMap<>(1, 1);
+        result.put("t_order", mock(TableMetaData.class));
+        return result;
+    }
+} 
