@@ -111,14 +111,22 @@ rules:
       blockQueueSize: 10000
       workerThread: 40
       readBatchSize: 1000
+      rateLimiter:
+        type: SOURCE
+        props:
+          qps: 50
       completionDetector:
         type: IDLE
         props:
           incremental-task-idle-minute-threshold: 30
+      sourceWritingStopper:
+        type: DEFAULT
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
           chunk-size: 1000
+      checkoutLocker:
+        type: DEFAULT
 
 props:
   sql-show: true

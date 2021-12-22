@@ -29,7 +29,11 @@ dataConverters:
       type: IDLE
       props:
         incremental-task-idle-minute-threshold: 1
+    sourceWritingStopper:
+      type: DEFAULT
     dataConsistencyChecker:
       type: DATA_MATCH
       props:
         chunk-size: 10000
+    checkoutLocker:
+      type: DEFAULT

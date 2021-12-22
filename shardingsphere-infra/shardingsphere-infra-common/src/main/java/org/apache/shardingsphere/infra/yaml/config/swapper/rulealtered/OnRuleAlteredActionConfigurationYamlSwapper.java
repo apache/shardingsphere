@@ -37,7 +37,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         result.setReadBatchSize(data.getReadBatchSize());
         result.setRateLimiter(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
         result.setCompletionDetector(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getCompletionDetector()));
+        result.setSourceWritingStopper(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getSourceWritingStopper()));
         result.setDataConsistencyChecker(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getDataConsistencyChecker()));
+        result.setCheckoutLocker(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getCheckoutLocker()));
         return result;
     }
     
@@ -46,6 +48,8 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         return new OnRuleAlteredActionConfiguration(yamlConfig.getBlockQueueSize(), yamlConfig.getWorkerThread(), yamlConfig.getReadBatchSize(),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getCompletionDetector()),
-                ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getDataConsistencyChecker()));
+                ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getSourceWritingStopper()),
+                ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getDataConsistencyChecker()),
+                ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getCheckoutLocker()));
     }
 }
