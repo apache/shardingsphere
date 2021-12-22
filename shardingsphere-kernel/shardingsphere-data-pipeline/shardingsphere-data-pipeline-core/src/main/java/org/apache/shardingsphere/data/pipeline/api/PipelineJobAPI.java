@@ -33,6 +33,7 @@ import java.util.Optional;
 /**
  * Pipeline job API.
  */
+// TODO separate dedicated methods for rule altered job
 public interface PipelineJobAPI extends RequiredSPI {
     
     /**
