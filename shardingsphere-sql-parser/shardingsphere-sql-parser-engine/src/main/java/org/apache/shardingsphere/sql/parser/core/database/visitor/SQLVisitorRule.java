@@ -362,9 +362,7 @@ public enum SQLVisitorRule {
     
     CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
     
-    CREATE_RULE("CreateRule", SQLStatementType.DDL);
-    
-    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
+    CREATE_RULE("CreateRule", SQLStatementType.DDL),
     
     create_language("CreateLanguage", SQLStatementType.DDL);
 
