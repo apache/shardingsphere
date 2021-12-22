@@ -23,22 +23,25 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Optional;
 
 /**
- * Modify column definition segment.
+ * Change column definition segment.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegment {
+public final class ChangeColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
     private final ColumnDefinitionSegment columnDefinition;
+    
+    private ColumnSegment previousColumn;
     
     private ColumnPositionSegment columnPosition;
     

@@ -47,6 +47,6 @@ public final class EncryptAlterTableToken extends SQLToken implements Substituta
             return columnName;
         }
         // TODO refactor alter table token
-        return String.format(" %s %s ", operationType, columnName);
+        return String.format("%s %s", operationType, columnName);
     }
 }
