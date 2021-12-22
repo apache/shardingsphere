@@ -39,6 +39,7 @@ import java.util.Collections;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// FIX test cases
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLDataSourcePreparerTest {
     
