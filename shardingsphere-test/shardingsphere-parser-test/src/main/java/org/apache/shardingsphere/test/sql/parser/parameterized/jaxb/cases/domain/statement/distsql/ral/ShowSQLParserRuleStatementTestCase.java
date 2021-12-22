@@ -15,32 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.server.yaml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Global server configuration.
+ * Show SQL parser rule statement test case.
  */
-@Getter
-@Setter
-public final class YamlServerConfiguration implements YamlConfiguration {
-    
-    private YamlScalingConfiguration scaling = new YamlScalingConfiguration();
-    
-    private YamlModeConfiguration mode;
-    
-    @Getter
-    @Setter
-    public static final class YamlScalingConfiguration {
-    
-        private int port = 8080;
-    
-        private int blockQueueSize = 10000;
-    
-        private int workerThread = 30;
-    }
+public final class ShowSQLParserRuleStatementTestCase extends SQLParserTestCase {
 }

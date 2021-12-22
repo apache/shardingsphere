@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.yaml;
+package org.apache.shardingsphere.infra.config.rulealtered;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 /**
- * Scaling configuration for YAML.
+ * On rule altered action configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlScalingConfiguration implements YamlConfiguration {
+public final class OnRuleAlteredActionConfiguration {
     
-    private int blockQueueSize;
+    private final int blockQueueSize;
     
-    private int workerThread;
+    private final int workerThread;
     
-    private YamlShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
+    private final ShardingSphereAlgorithmConfiguration completionDetector;
     
-    private YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
+    private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
 }

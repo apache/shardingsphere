@@ -12,7 +12,7 @@ rules:
         - <data-source>
         - <data-source>
       discoveryHeartbeatName: # Detect heartbeat name
-      discoveryTypeName: # Highly available type name
+      discoveryTypeName: # Database discovery type name
   
   # Heartbeat Configuration
   discoveryHeartbeats:
@@ -20,10 +20,10 @@ rules:
       props:
         keep-alive-cron: # This is cron expression, such as：'0/5 * * * * ?'
   
-  # Highly available Configuration
+  # Database Discovery Configuration
   discoveryTypes:
-    <discovery-type-name> (+): # Highly available type name
-      type: # Highly available type, such as: MGR、openGauss
+    <discovery-type-name> (+): # Database discovery type name
+      type: # Database discovery type, such as: MGR、openGauss
       props (?):
-        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for high-availability types, such as MGR's group-name
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for database discovery types, such as MGR's group-name
 ```

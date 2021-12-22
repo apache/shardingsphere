@@ -51,3 +51,12 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order_$->{order_id % 2}
+  scaling:
+    default_scaling:
+      blockQueueSize: 1000
+      completionDetector:
+        type: FIXTURE
+      dataConsistencyChecker:
+        type: FIXTURE
+      workerThread: 5
+  scalingName: default_scaling

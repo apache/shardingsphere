@@ -116,6 +116,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
@@ -147,6 +148,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
@@ -470,6 +472,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-domain")
+    private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-triggers")
     private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
@@ -876,6 +881,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "delimiter")
     private final List<DelimiterStatementTestCase> delimiterStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-sql-parser-rule")
+    private final List<ShowSQLParserRuleStatementTestCase> showSQLParserRuleStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1094,6 +1102,8 @@ public final class SQLParserTestCases {
         putAll(showVariablesStatementTestCases, result);
         putAll(showShardingKeyGeneratorsStatementTestCases,result);
         putAll(delimiterStatementTestCases, result);
+        putAll(dropDomainStatementTestCases, result);
+        putAll(showSQLParserRuleStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

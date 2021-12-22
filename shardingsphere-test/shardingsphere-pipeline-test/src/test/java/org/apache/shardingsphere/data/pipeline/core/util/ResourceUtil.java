@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +71,7 @@ public final class ResourceUtil {
      */
     public static JobConfiguration mockStandardJdbcTargetJobConfig() {
         JobConfiguration result = new JobConfiguration();
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", "id1");
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "id1");
         result.setWorkflowConfig(workflowConfig);
         RuleConfiguration ruleConfig = new RuleConfiguration();
         result.setRuleConfig(ruleConfig);

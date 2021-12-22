@@ -15,29 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.server;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDomainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Global server configuration.
+ * PostgreSQL drop domain statement.
  */
-@Getter
-@Setter
-public final class ServerConfiguration {
-    
-    private int port = 8080;
-    
-    private int blockQueueSize = 10000;
-    
-    private int workerThread = 30;
-    
-    private ShardingSphereAlgorithmConfiguration clusterAutoSwitchAlgorithm;
-    
-    private ShardingSphereAlgorithmConfiguration dataConsistencyCheckAlgorithm;
-    
-    private ModeConfiguration modeConfiguration;
+@ToString
+public final class PostgreSQLDropDomainStatement extends DropDomainStatement implements PostgreSQLStatement {
 }

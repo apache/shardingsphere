@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Job rule altered detector, SPI interface.
+ * Drop domain statement test case.
  */
-public interface JobRuleAlteredDetector extends TypedSPI {
-    
-    /**
-     * Is rule altered.
-     *
-     * @param sourceRuleConfig source YAML rule configuration, may be null
-     * @param targetRuleConfig target YAML rule configuration, may be null
-     * @return whether is rule altered or not
-     */
-    boolean isRuleAltered(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig);
+public final class DropDomainStatementTestCase extends SQLParserTestCase {
 }

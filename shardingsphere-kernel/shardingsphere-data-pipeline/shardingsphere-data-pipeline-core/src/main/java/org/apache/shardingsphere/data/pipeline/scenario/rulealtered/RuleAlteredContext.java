@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
  * Rule altered context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Slf4j
 // TODO extract Pipeline Context
 public final class RuleAlteredContext {
     
@@ -40,47 +41,54 @@ public final class RuleAlteredContext {
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
     }
     
-    private static final RuleAlteredContext INSTANCE = new RuleAlteredContext();
+    private static volatile ModeConfiguration modeConfig;
     
-    private volatile ServerConfiguration serverConfig;
+    private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
-    private volatile RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm;
+    private final RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm;
     
-    private volatile DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
+    private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
-    private ExecuteEngine inventoryDumperExecuteEngine;
+    private final ExecuteEngine inventoryDumperExecuteEngine;
     
-    private ExecuteEngine incrementalDumperExecuteEngine;
+    private final ExecuteEngine incrementalDumperExecuteEngine;
     
-    private ExecuteEngine importerExecuteEngine;
+    private final ExecuteEngine importerExecuteEngine;
     
-    /**
-     * Get instance of context.
-     *
-     * @return instance of context
-     */
-    public static RuleAlteredContext getInstance() {
-        return INSTANCE;
+    public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
+        ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
+        if (null != completionDetector) {
+            completionDetectAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, RuleAlteredJobCompletionDetectAlgorithm.class);
+        } else {
+            completionDetectAlgorithm = null;
+        }
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
+        if (null != dataConsistencyChecker) {
+            dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class);
+        } else {
+            dataConsistencyCheckAlgorithm = null;
+        }
+        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
+        incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
+        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
     }
     
     /**
-     * Initialize context.
+     * Get mode configuration.
      *
-     * @param serverConfig server configuration
+     * @return mode configuration
      */
-    public void init(final ServerConfiguration serverConfig) {
-        if (null != this.serverConfig) {
-            return;
-        }
-        this.serverConfig = serverConfig;
-        if (null != serverConfig.getClusterAutoSwitchAlgorithm()) {
-            clusterAutoSwitchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getClusterAutoSwitchAlgorithm(), RuleAlteredJobCompletionDetectAlgorithm.class);
-        }
-        if (null != serverConfig.getDataConsistencyCheckAlgorithm()) {
-            dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getDataConsistencyCheckAlgorithm(), DataConsistencyCheckAlgorithm.class);
-        }
-        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
-        incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
-        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+    public static ModeConfiguration getModeConfig() {
+        return modeConfig;
+    }
+    
+    /**
+     * Initialize mode configuration.
+     *
+     * @param modeConfig configuration
+     */
+    public static void initModeConfig(final ModeConfiguration modeConfig) {
+        RuleAlteredContext.modeConfig = modeConfig;
     }
 }

@@ -17,18 +17,32 @@
 
 package org.apache.shardingsphere.sharding.schedule;
 
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.JobRuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Job sharding rule altered detector.
+ * Sharding rule altered detector.
  */
-public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetector {
+public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
+    
+    @Override
+    public String getYamlRuleConfigClassName() {
+        return YamlShardingRuleConfiguration.class.getName();
+    }
+    
+    @Override
+    public String getRuleConfigClassName() {
+        return ShardingRuleConfiguration.class.getName();
+    }
     
     @Override
     public boolean isRuleAltered(final YamlRuleConfiguration sourceRuleConfig, final YamlRuleConfiguration targetRuleConfig) {
@@ -38,7 +52,7 @@ public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetec
         if (null == sourceRuleConfig) {
             return false;
         }
-        return isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig);
+        return !isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig);
     }
     
     // TODO more accurate comparison
@@ -55,7 +69,16 @@ public final class JobShardingRuleAlteredDetector implements JobRuleAlteredDetec
     }
     
     @Override
-    public String getType() {
-        return YamlShardingRuleConfiguration.class.getName();
+    public Optional<OnRuleAlteredActionConfiguration> getOnRuleAlteredActionConfig(final RuleConfiguration ruleConfig) {
+        if (null == ruleConfig) {
+            return Optional.empty();
+        }
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
+        String scalingName = shardingRuleConfig.getScalingName();
+        if (null == scalingName) {
+            return Optional.empty();
+        }
+        OnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
+        return Optional.ofNullable(result);
     }
 }
