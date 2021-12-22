@@ -119,7 +119,10 @@ public final class EncryptConditionEngine {
             String operator = ((BinaryOperationExpression) expression).getOperator();
             if (!LOGICAL_OPERATOR.contains(operator)) {
                 ExpressionSegment rightValue = ((BinaryOperationExpression) expression).getRight();
-                return isSupportedOperator(operator) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue) : Optional.empty();
+                if (isSupportedOperator(operator)) {
+                    return createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue);
+                }
+                throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
             }
         }
         if (expression instanceof InExpression) {
