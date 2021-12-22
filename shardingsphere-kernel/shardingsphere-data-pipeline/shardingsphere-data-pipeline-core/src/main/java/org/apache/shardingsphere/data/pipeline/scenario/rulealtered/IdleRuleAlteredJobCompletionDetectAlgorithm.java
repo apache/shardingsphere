@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
 
 import java.util.Collection;
@@ -51,7 +52,8 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAl
     }
     
     @Override
-    public boolean allIncrementalTasksAlmostFinished(final Collection<Long> incrementalTaskIdleMinutes) {
+    public boolean allIncrementalTasksAlmostFinished(final AllIncrementalTasksAlmostFinishedParameter parameter) {
+        Collection<Long> incrementalTaskIdleMinutes = parameter.getIncrementalTaskIdleMinutes();
         if (null == incrementalTaskIdleMinutes || incrementalTaskIdleMinutes.isEmpty()) {
             return false;
         }
