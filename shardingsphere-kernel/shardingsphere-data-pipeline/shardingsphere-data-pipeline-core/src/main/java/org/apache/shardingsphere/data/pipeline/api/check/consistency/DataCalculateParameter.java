@@ -66,4 +66,9 @@ public final class DataCalculateParameter {
      * Chunk size of limited records to be calculated in a batch.
      */
     private Integer chunkSize;
+    
+    /**
+     * If {@link #chunkSize} exists, previous calculated result will be transferred to next call.
+     */
+    private Object previousCalculatedResult;
 }

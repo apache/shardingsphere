@@ -71,28 +71,31 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, DataConsistencyCheckResult> countCheck() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        try {
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             return jobContext.getTaskConfigs()
-                    .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
-                    .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, executor), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
+                .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
+                    (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        } catch (final SQLException ex) {
+            throw new DataCheckFailException("count check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
-            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
-            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetConfig.getDatabaseType()));
+    private DataConsistencyCheckResult countCheck(final String table, final DataSourceWrapper sourceDataSource, final DataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
+        try {
+            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
+            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
             long sourceCount = sourceFuture.get();
             long targetCount = targetFuture.get();
             return new DataConsistencyCheckResult(sourceCount, targetCount);
-        } catch (final SQLException | InterruptedException | ExecutionException ex) {
-            throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
+        } catch (final InterruptedException | ExecutionException ex) {
+            throw new DataCheckFailException("count check failed, table=" + table, ex);
         }
     }
     
@@ -115,7 +118,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
-                .distinct().collect(Collectors.toList());
+            .distinct().collect(Collectors.toList());
         Map<String, Collection<String>> tablesColumnNamesMap = getTablesColumnNamesMap(sourceConfig);
         logicTableNames.forEach(each -> {
             //TODO put to preparer
@@ -137,10 +140,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 // TODO now build param: chunkSize
                 // TODO rate limit if it's chunked
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(sourceConfig).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
-                        .logicTableName(each).columnNames(columnNames).build();
+                    .logicTableName(each).columnNames(columnNames).build();
                 Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceCalculateParameter));
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(targetConfig).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
-                        .logicTableName(each).columnNames(columnNames).build();
+                    .logicTableName(each).columnNames(columnNames).build();
                 Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetCalculateParameter));
                 Object sourceCalculateResult = sourceFuture.get();
                 Object targetCalculateResult = targetFuture.get();
