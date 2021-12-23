@@ -132,7 +132,7 @@ public final class EncryptConditionEngine {
         String operator = expression.getOperator();
         if (!LOGICAL_OPERATOR.contains(operator)) {
             if (isSupportedOperator(operator)) {
-                return createCompareEncryptCondition(tableName, expression, expression.getRight());
+                return createCompareEncryptCondition(tableName, expression, operator, expression.getRight());
             }
             throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
         }
@@ -165,12 +165,13 @@ public final class EncryptConditionEngine {
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
+    private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final String operator, 
+                                                                     final ExpressionSegment compareRightValue) {
         if (!(expression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
         }
         return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
-                ? Optional.of(new EncryptEqualCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), tableName, compareRightValue.getStartIndex(),
+                ? Optional.of(new EncryptEqualCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), isSortableOperator(operator), tableName, compareRightValue.getStartIndex(),
                 expression.getStopIndex(), compareRightValue))
                 : Optional.empty();
     }
@@ -188,12 +189,17 @@ public final class EncryptConditionEngine {
         if (expressionSegments.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(),
+        return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(), isSortableOperator("IN"),
                 tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {
         Collection<String> operators = Arrays.asList("=", "<>", "!=", ">", "<", ">=", "<=");
+        return operators.contains(operator);
+    }
+    
+    private static boolean isSortableOperator(final String operator) {
+        Collection<String> operators = Arrays.asList(">", "<", ">=", "<=");
         return operators.contains(operator);
     }
 }

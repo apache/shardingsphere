@@ -33,7 +33,7 @@ public final class EncryptInConditionTest {
     @Test
     public void assertGetConditionValues() {
         List<Object> actual = new EncryptInCondition(
-                "col", null, 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
+                "col", false, null, 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is(1));
         assertThat(actual.get(1), is(2));
