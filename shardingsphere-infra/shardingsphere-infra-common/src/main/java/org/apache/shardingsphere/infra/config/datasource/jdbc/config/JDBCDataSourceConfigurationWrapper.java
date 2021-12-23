@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
@@ -30,13 +30,13 @@ import java.util.Map;
 /**
  * JDBC data source configuration wrapper.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class JDBCDataSourceConfigurationWrapper {
     
-    private String type;
+    private final String type;
     
-    private String parameter;
+    private final String parameter;
     
     /**
      * Unwrap.

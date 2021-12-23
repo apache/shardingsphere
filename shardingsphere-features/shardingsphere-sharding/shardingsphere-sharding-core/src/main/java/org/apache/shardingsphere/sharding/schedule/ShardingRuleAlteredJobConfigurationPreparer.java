@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -90,7 +91,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
      * @return map(logic table name, DataNode of each logic table)
      */
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration sourceConfig = ruleConfig.getSource().unwrap();
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfigurationWrapper(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()).unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source TypedDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
@@ -151,13 +152,13 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration result = ruleConfig.getSource().unwrap();
+        JDBCDataSourceConfiguration result = new JDBCDataSourceConfigurationWrapper(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()).unwrap();
         Preconditions.checkArgument(result instanceof ShardingSphereJDBCDataSourceConfiguration, "Only support ShardingSphere source data source.");
         return (ShardingSphereJDBCDataSourceConfiguration) result;
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration dataSourceConfig = ruleConfig.getTarget().unwrap();
+        JDBCDataSourceConfiguration dataSourceConfig = new JDBCDataSourceConfigurationWrapper(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()).unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return Optional.of(
                     ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
@@ -281,7 +282,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static ImporterConfiguration createImporterConfig(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig, final Map<String, Set<String>> shardingColumnsMap) {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(ruleConfig.getTarget().unwrap());
+        result.setDataSourceConfig(new JDBCDataSourceConfigurationWrapper(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()).unwrap());
         result.setShardingColumnsMap(shardingColumnsMap);
         result.setRetryTimes(handleConfig.getRetryTimes());
         return result;
