@@ -62,7 +62,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitDropEncryptRule(final DropEncryptRuleContext ctx) {
-        return new DropEncryptRuleStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new DropEncryptRuleStatement(null != ctx.ifExists(), ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override

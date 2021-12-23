@@ -106,3 +106,11 @@ TRUE
 FALSE
     : F A L S E
     ;    
+
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;

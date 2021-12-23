@@ -51,6 +51,9 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     
     private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
                                                    final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
