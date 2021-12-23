@@ -71,6 +71,6 @@ public abstract class JDBCDataSourceConfiguration {
      * @throws SQLException SQL exception
      */
     public DataSource toDataSource() throws SQLException {
-        return JDBCDataSourceCreatorFactory.getInstance(getType()).createDataSource(getParameter(), getDataSourceConfiguration());
+        return JDBCDataSourceCreatorFactory.getInstance(getType()).createDataSource(getDataSourceConfiguration());
     }
 }
