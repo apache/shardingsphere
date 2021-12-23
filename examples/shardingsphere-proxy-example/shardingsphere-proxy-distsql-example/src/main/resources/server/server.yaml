@@ -45,6 +45,8 @@ rules:
   - !TRANSACTION
     defaultType: XA
     providerType: Atomikos
+  - !SQL_PARSER
+    sqlCommentParseEnabled: true
 
 props:
   max-connections-size-per-query: 1
