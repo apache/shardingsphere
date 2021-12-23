@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -48,7 +45,7 @@ public abstract class JDBCDataSourceConfiguration {
      *
      * @return data source configuration
      */
-    protected abstract Object getDataSourceConfiguration();
+    public abstract Object getDataSourceConfiguration();
     
     /**
      * Append JDBC parameters.
@@ -63,14 +60,4 @@ public abstract class JDBCDataSourceConfiguration {
      * @return database type
      */
     public abstract DatabaseType getDatabaseType();
-    
-    /**
-     * To data source.
-     *
-     * @return data source
-     * @throws SQLException SQL exception
-     */
-    public DataSource toDataSource() throws SQLException {
-        return JDBCDataSourceCreatorFactory.getInstance(getType()).createDataSource(getDataSourceConfiguration());
-    }
 }

@@ -79,7 +79,7 @@ public final class ShardingSphereJDBCDataSourceConfiguration extends JDBCDataSou
     }
     
     @Override
-    protected Object getDataSourceConfiguration() {
+    public Object getDataSourceConfiguration() {
         return rootConfig;
     }
     
