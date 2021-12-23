@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
@@ -72,10 +74,12 @@ public final class JobConfiguration {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
-            handleConfig.setSourceDatabaseType(getRuleConfig().getSource().unwrap().getDatabaseType().getName());
+            JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceConfigurationWrapper(getRuleConfig().getSource().getType(), getRuleConfig().getSource().getParameter()).unwrap();
+            handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            handleConfig.setTargetDatabaseType(getRuleConfig().getTarget().unwrap().getDatabaseType().getName());
+            JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceConfigurationWrapper(getRuleConfig().getTarget().getType(), getRuleConfig().getTarget().getParameter()).unwrap();
+            handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);
