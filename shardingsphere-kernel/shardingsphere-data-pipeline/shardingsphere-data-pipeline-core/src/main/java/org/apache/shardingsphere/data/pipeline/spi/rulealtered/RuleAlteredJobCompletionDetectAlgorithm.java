@@ -17,23 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-
-import java.util.Collection;
 
 /**
  * Rule altered job completion detect algorithm for SPI.
  */
-// TODO extract JobCompletionDetectAlgorithm
 public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * All incremental tasks is almost finished.
      *
-     * @param incrementalTaskIdleMinutes incremental task idle minutes
+     * @param parameter parameter
      * @return Almost finished or not
      */
-    // TODO parameter
-    boolean allIncrementalTasksAlmostFinished(Collection<Long> incrementalTaskIdleMinutes);
+    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
 }

@@ -36,4 +36,10 @@
         <input sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER amount"/>
         <output sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER cipher_amount"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="add_column_with_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account ADD COLUMN amount INT"/>
+        <output sql="ALTER TABLE t_account ADD COLUMN cipher_amount INT"/>
+    </rewrite-assertion>
+
 </rewrite-assertions>

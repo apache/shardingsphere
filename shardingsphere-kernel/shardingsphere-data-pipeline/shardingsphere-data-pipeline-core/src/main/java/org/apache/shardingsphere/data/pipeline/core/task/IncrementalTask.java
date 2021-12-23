@@ -100,7 +100,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private void instanceChannel(final Collection<Importer> importers) {
-        DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
+        DistributionChannel channel = new DistributionChannel(importers.size(), dumperConfig.getBlockQueueSize(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());

@@ -65,6 +65,8 @@ execute
     | createTrigger
     | createView
     | createSequence
+    | createDomain
+    | createRule
     | dropDatabase
     | dropFunction
     | dropProcedure

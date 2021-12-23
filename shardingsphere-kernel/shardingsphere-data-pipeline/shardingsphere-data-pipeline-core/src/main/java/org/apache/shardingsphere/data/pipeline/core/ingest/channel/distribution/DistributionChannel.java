@@ -61,12 +61,12 @@ public final class DistributionChannel implements Channel {
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
-    public DistributionChannel(final int channelNumber, final AckCallback ackCallback) {
+    public DistributionChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new BlockingQueueChannel();
+            channels[i] = new BlockingQueueChannel(blockQueueSize);
         }
         scheduleAckRecords();
     }

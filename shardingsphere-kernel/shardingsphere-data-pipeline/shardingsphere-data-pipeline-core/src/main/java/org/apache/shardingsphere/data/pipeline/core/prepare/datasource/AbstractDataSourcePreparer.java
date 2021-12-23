@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefin
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,11 +51,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     protected DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getSource().unwrap());
+        return dataSourceFactory.newInstance(new JDBCDataSourceConfigurationWrapper(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()).unwrap());
     }
     
     protected DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getTarget().unwrap());
+        return dataSourceFactory.newInstance(new JDBCDataSourceConfigurationWrapper(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()).unwrap());
     }
     
     protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

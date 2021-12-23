@@ -19,9 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,9 +32,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,23 +61,20 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        JobInfo jobInfo = new JobInfo(1L);
-        jobInfo.setActive(false);
-        List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
+        Optional<Long> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
+        jobInfos.forEach(each -> each.setActive(false));
         when(pipelineJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
     
     @Test
     public void assertExecuteActiveJob() {
-        JobInfo jobInfo = new JobInfo(1L);
-        jobInfo.setActive(true);
-        jobInfo.setJobParameter("handleConfig:\n"
-                + "  concurrency: 2\n"
-                + "  shardingTables:\n"
-                + "  - ds_0.t_order_$->{0..1}\n"
-                + "ruleConfig:\n");
-        List<JobInfo> jobInfos = Collections.singletonList(jobInfo);
+        Optional<Long> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
+        jobInfos.forEach(each -> each.setActive(true));
         when(pipelineJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }

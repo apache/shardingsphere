@@ -65,18 +65,6 @@ public abstract class JDBCDataSourceConfiguration {
     public abstract DatabaseType getDatabaseType();
     
     /**
-     * Wrap.
-     *
-     * @return JDBC data source configuration wrapper
-     */
-    public JDBCDataSourceConfigurationWrapper wrap() {
-        JDBCDataSourceConfigurationWrapper result = new JDBCDataSourceConfigurationWrapper();
-        result.setType(getType());
-        result.setParameter(getParameter());
-        return result;
-    }
-    
-    /**
      * To data source.
      *
      * @return data source

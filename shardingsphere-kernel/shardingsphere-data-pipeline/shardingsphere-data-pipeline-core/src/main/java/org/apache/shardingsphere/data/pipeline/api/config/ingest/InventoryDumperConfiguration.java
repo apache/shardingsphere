@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 /**
  * Inventory dumper configuration.
@@ -35,9 +36,14 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private Integer shardingItem;
     
+    private int readBatchSize = 1000;
+    
+    private JobRateLimitAlgorithm rateLimitAlgorithm;
+    
     public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());
+        setBlockQueueSize(dumperConfig.getBlockQueueSize());
     }
 }
