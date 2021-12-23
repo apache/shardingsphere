@@ -19,12 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Command describe for PostgreSQL.
@@ -36,16 +39,22 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private final PostgreSQLComDescribePacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     @Override
     public Collection<DatabasePacket<?>> execute() {
         switch (packet.getType()) {
             case 'S':
-                // TODO Unsupported yet. Refer to https://github.com/apache/shardingsphere/issues/10814
-                return Collections.emptyList();
+                return describePreparedStatement();
             case 'P':
                 return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
             default:
                 throw new UnsupportedOperationException("Unsupported describe type: " + packet.getType());
         }
+    }
+    
+    private List<DatabasePacket<?>> describePreparedStatement() {
+        // TODO Unsupported yet. Refer to https://github.com/apache/shardingsphere/issues/10814
+        return Collections.singletonList(PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getName()).describeParameters());
     }
 }

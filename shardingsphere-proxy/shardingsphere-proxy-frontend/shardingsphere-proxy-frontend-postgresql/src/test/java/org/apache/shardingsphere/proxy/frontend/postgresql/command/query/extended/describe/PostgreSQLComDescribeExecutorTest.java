@@ -18,21 +18,29 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +52,9 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Mock
     private PostgreSQLComDescribePacket packet;
     
+    @Mock
+    private ConnectionSession connectionSession;
+    
     @Test
     public void assertDescribePortal() {
         when(packet.getType()).thenReturn('P');
@@ -52,7 +63,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
         when(connectionContext.getPortal("P_1")).thenReturn(portal);
-        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
+        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));
     }
@@ -60,12 +71,22 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Test
     public void assertDescribePreparedStatement() {
         when(packet.getType()).thenReturn('S');
-        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
-        assertTrue(actual.isEmpty());
+        when(packet.getName()).thenReturn("S_1");
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "S_1", "", new PostgreSQLSelectStatement(), Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
+        assertThat(actual.size(), is(1));
+        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actual.iterator().next();
+        assertThat(actualParameterDescription, instanceOf(PostgreSQLParameterDescriptionPacket.class));
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        actualParameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(1);
+        verify(mockPayload).writeInt4(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue());
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertDescribeUnknownType() {
-        new PostgreSQLComDescribeExecutor(connectionContext, packet).execute();
+        new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
     }
 }
