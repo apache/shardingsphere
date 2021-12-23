@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLPipelineSQLBuilder;
 
@@ -56,24 +55,22 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());
-        try (DataSourceWrapper dataSource = getDataSource(dataCalculateParameter.getDataSourceConfig())) {
-            return dataCalculateParameter.getColumnNames().stream().map(each -> {
-                String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
-                return sumCrc32(dataSource, sql);
-            }).collect(Collectors.toList());
-        } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
-        }
+        return dataCalculateParameter.getColumnNames().stream().map(each -> {
+            String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
+            try {
+                return sumCrc32(dataCalculateParameter.getDataSource(), sql);
+            } catch (final SQLException ex) {
+                throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
+            }
+        }).collect(Collectors.toList());
     }
     
-    private long sumCrc32(final DataSource dataSource, final String sql) {
+    private long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
-        } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("execute %s failed.", sql), ex);
         }
     }
 }

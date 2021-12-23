@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -57,14 +56,14 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         Integer chunkSize = dataCalculateParameter.getChunkSize();
         String sql = sqlBuilder.buildQuerySQL(logicTableName, uniqueKey, null != chunkSize);
-        try (DataSourceWrapper dataSource = getDataSource(dataCalculateParameter.getDataSourceConfig())) {
-            return query(dataSource, sql, chunkSize);
+        try {
+            return query(dataCalculateParameter.getDataSource(), sql, chunkSize);
         } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
     
-    private Collection<Collection<Object>> query(final DataSource dataSource, final String sql, final Integer chunkSize) {
+    private Collection<Collection<Object>> query(final DataSource dataSource, final String sql, final Integer chunkSize) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             if (null != chunkSize) {
@@ -83,8 +82,6 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
                 }
             }
             return result;
-        } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("execute %s failed.", sql), ex);
         }
     }
 }

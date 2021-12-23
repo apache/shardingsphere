@@ -133,16 +133,17 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        try {
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tablesColumnNamesMap.get(each);
                 // TODO now build param: uniqueKey
                 // TODO now build param: chunkSize
                 // TODO rate limit if it's chunked
-                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(sourceConfig).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
+                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();
                 Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceCalculateParameter));
-                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(targetConfig).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
+                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();
                 Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetCalculateParameter));
                 Object sourceCalculateResult = sourceFuture.get();
@@ -150,7 +151,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
                 result.put(each, calculateResultsEquals);
             }
-        } catch (final ExecutionException | InterruptedException ex) {
+        } catch (final ExecutionException | InterruptedException | SQLException ex) {
             throw new DataCheckFailException("data check failed");
         } finally {
             executor.shutdown();
