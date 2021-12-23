@@ -43,6 +43,9 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     private void checkBroadCastTableRuleExist(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                               final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
             LinkedList<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));

@@ -177,14 +177,14 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
-        return new DropShardingTableRuleStatement(ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
+        return new DropShardingTableRuleStatement(null != ctx.ifExists(), ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitDropShardingBindingTableRules(final DropShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList()
                 : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
-        return new DropShardingBindingTableRulesStatement(tableNames);
+        return new DropShardingBindingTableRulesStatement(null != ctx.ifExists(), tableNames);
     }
     
     @Override
@@ -225,12 +225,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
         Collection<String> tableNames = ctx.tableName() == null ? Collections.emptyList()
                 : ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
-        return new DropShardingBroadcastTableRulesStatement(tableNames);
+        return new DropShardingBroadcastTableRulesStatement(null != ctx.ifExists(), tableNames);
     }
     
     @Override
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
-        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new DropShardingAlgorithmStatement(null != ctx.ifExists(), ctx.algorithmName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
     }
     
     @Override

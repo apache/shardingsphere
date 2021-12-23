@@ -59,6 +59,9 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     
     private void checkToBeDroppedShardingTableNames(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);
         Collection<String> notExistedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
@@ -27,9 +26,18 @@ import java.util.Collection;
 /**
  * Drop sharding table rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShardingTableRuleStatement extends DropRuleStatement {
     
     private final Collection<TableNameSegment> tableNames;
+    
+    public DropShardingTableRuleStatement(final boolean allowNotExist, final Collection<TableNameSegment> tableNames) {
+        super(allowNotExist);
+        this.tableNames = tableNames;
+    }
+    
+    public DropShardingTableRuleStatement(final Collection<TableNameSegment> tableNames) {
+        super(false);
+        this.tableNames = tableNames;
+    }
 }

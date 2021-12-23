@@ -179,6 +179,14 @@ GENERATOR
     : G E N E R A T O R
     ;
 
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;
+
 GENERATORS
     : G E N E R A T O R S
     ;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding key generator statement updater.
  */
-public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefinitionCreateUpdater<AlterShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
+public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingKeyGeneratorStatement sqlStatement,
@@ -74,7 +74,7 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final AlterShardingKeyGeneratorStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingKeyGeneratorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getKeyGeneratorSegments().stream()
                 .collect(Collectors.toMap(ShardingKeyGeneratorSegment::getKeyGeneratorName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));

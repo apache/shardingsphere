@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 
@@ -28,11 +27,20 @@ import java.util.LinkedList;
 /**
  * Drop sharding binding table rules statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
     
     private final Collection<BindingTableRuleSegment> rules;
+    
+    public DropShardingBindingTableRulesStatement(final boolean allowNotExist, final Collection<BindingTableRuleSegment> rules) {
+        super(allowNotExist);
+        this.rules = rules;
+    }
+    
+    public DropShardingBindingTableRulesStatement(final Collection<BindingTableRuleSegment> rules) {
+        super(false);
+        this.rules = rules;
+    }
     
     /**
      * Get binding groups.

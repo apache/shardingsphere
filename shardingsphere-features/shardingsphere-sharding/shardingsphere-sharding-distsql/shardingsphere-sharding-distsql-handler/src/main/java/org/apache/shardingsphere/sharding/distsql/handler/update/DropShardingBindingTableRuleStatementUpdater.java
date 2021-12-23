@@ -47,6 +47,9 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     private void checkBindingTableRuleExist(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement,
                                             final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
         LinkedList<String> notExistBindingGroup = sqlStatement.getBindingGroups().stream().filter(each -> !bindingTableGroups.contains(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistBindingGroup.isEmpty(), new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroup));

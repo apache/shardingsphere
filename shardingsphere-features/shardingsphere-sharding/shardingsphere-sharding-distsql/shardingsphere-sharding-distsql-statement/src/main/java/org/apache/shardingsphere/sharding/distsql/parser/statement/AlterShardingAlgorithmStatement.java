@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingAlgorithmStatement extends DropRuleStatement {
+public final class AlterShardingAlgorithmStatement extends AlterRuleStatement {
     
     private final Collection<ShardingAlgorithmSegment> algorithmSegments;
 }

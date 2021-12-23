@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,9 +25,18 @@ import java.util.Collection;
 /**
  * Drop sharding algorithm statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShardingAlgorithmStatement extends DropRuleStatement {
     
     private final Collection<String> algorithmNames;
+    
+    public DropShardingAlgorithmStatement(final boolean allowNotExist, final Collection<String> algorithmNames) {
+        super(allowNotExist);
+        this.algorithmNames = algorithmNames;
+    }
+    
+    public DropShardingAlgorithmStatement(final Collection<String> algorithmNames) {
+        super(false);
+        this.algorithmNames = algorithmNames;
+    }
 }
