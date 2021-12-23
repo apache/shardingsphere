@@ -165,7 +165,7 @@ ALTER SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 
 DROP SHARDING TABLE RULE t_order_item;
@@ -188,7 +188,7 @@ ALTER SHARDING KEY GENERATOR snowflake_key_generator (
 TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
 );
 
-DROP SHARDING KEY GENERATOR uuid_key_generator;
+DROP SHARDING KEY GENERATOR snowflake_key_generator;
 ```
 
 ### Sharding Binding Table Rule
