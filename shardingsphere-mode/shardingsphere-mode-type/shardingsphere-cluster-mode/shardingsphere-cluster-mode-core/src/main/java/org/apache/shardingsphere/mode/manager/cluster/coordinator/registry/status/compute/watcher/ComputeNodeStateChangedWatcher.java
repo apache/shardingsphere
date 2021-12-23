@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.mode.instance.Instance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
@@ -53,6 +53,6 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     
     private boolean isCircuitBreaker(final String dataChangedPath) {
         return dataChangedPath.startsWith(ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER))
-                && dataChangedPath.substring(dataChangedPath.lastIndexOf("/") + 1).equals(ClusterInstance.getInstance().getId());
+                && dataChangedPath.substring(dataChangedPath.lastIndexOf("/") + 1).equals(Instance.getInstance().getId());
     }
 }
