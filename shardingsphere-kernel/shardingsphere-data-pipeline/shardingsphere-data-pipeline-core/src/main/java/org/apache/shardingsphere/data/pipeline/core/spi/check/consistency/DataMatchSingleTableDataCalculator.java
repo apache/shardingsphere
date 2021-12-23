@@ -31,6 +31,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Data match implementation of single table data calculator.
@@ -50,11 +51,12 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
     }
     
     @Override
-    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         Integer chunkSize = dataCalculateParameter.getChunkSize();
+        // TODO reuse previousCalculatedResult
         String sql = sqlBuilder.buildQuerySQL(logicTableName, uniqueKey, null != chunkSize);
         try {
             return query(dataCalculateParameter.getDataSource(), sql, chunkSize);
@@ -63,12 +65,13 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
         }
     }
     
-    private Collection<Collection<Object>> query(final DataSource dataSource, final String sql, final Integer chunkSize) throws SQLException {
+    private Optional<Object> query(final DataSource dataSource, final String sql, final Integer chunkSize) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             if (null != chunkSize) {
                 preparedStatement.setInt(1, chunkSize);
             }
+            // TODO define a result pojo, record maxUniqueKey
             Collection<Collection<Object>> result = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -81,7 +84,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
                     result.add(record);
                 }
             }
-            return result;
+            return result.isEmpty() ? Optional.empty() : Optional.of(result);
         }
     }
 }

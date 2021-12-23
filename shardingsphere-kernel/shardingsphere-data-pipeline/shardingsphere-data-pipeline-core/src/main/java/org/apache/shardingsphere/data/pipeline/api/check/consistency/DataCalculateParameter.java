@@ -71,5 +71,5 @@ public final class DataCalculateParameter {
     /**
      * If {@link #chunkSize} exists, previous calculated result will be transferred to next call.
      */
-    private Object previousCalculatedResult;
+    private volatile Object previousCalculatedResult;
 }

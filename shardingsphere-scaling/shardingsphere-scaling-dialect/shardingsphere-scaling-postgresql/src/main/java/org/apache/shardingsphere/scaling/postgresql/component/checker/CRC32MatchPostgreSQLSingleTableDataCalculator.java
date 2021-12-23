@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * CRC32 match PostgreSQL implementation of single table data calculator.
@@ -43,8 +44,8 @@ public final class CRC32MatchPostgreSQLSingleTableDataCalculator extends Abstrac
     }
     
     @Override
-    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
         //TODO PostgreSQL dataCalculate
-        return true;
+        return Optional.empty();
     }
 }

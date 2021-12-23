@@ -49,5 +49,5 @@ public interface SingleTableDataCalculator {
      * @param dataCalculateParameter data calculate parameter
      * @return calculated result, it will be used to check equality.
      */
-    Object dataCalculate(DataCalculateParameter dataCalculateParameter);
+    Iterable<Object> dataCalculate(DataCalculateParameter dataCalculateParameter);
 }

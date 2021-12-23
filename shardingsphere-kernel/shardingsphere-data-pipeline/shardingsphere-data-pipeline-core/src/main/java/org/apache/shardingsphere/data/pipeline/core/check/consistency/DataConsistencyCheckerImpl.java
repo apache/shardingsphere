@@ -42,6 +42,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -142,13 +143,21 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 // TODO rate limit if it's chunked
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();
-                Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceCalculateParameter));
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();
-                Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetCalculateParameter));
-                Object sourceCalculateResult = sourceFuture.get();
-                Object targetCalculateResult = targetFuture.get();
-                boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
+                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.dataCalculate(sourceCalculateParameter).iterator();
+                Iterator<Object> targetCalculatedResultIterator = targetCalculator.dataCalculate(targetCalculateParameter).iterator();
+                boolean calculateResultsEquals = true;
+                while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
+                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
+                    Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
+                    Object sourceCalculatedResult = sourceFuture.get();
+                    Object targetCalculatedResult = targetFuture.get();
+                    calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
+                    if (!calculateResultsEquals) {
+                        break;
+                    }
+                }
                 result.put(each, calculateResultsEquals);
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {

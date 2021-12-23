@@ -32,6 +32,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,10 +54,11 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     }
     
     @Override
-    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
+        // TODO support chunk, reuse previousCalculatedResult
         String logicTableName = dataCalculateParameter.getLogicTableName();
         MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());
-        return dataCalculateParameter.getColumnNames().stream().map(each -> {
+        List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
             String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
             try {
                 return sumCrc32(dataCalculateParameter.getDataSource(), sql);
@@ -63,14 +66,19 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
                 throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
             }
         }).collect(Collectors.toList());
+        return null == result.get(0) ? Optional.empty() : Optional.of(result);
     }
     
-    private long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
+    private Long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return resultSet.getLong(1);
+            long result = resultSet.getLong(1);
+            if (0 != result) {
+                return result;
+            }
+            return resultSet.wasNull() ? null : result;
         }
     }
 }
