@@ -53,6 +53,9 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         Collection<String> currentRuleNames = currentRuleConfig.getDiscoveryHeartbeats().keySet();
         Collection<String> notExistedRuleNames = sqlStatement.getHeartbeatNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName, notExistedRuleNames));

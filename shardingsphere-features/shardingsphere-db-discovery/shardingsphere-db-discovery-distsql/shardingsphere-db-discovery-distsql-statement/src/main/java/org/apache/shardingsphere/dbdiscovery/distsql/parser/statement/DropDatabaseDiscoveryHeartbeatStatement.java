@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,9 +25,18 @@ import java.util.Collection;
 /**
  * Drop database discovery heartbeat statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropDatabaseDiscoveryHeartbeatStatement extends DropRuleStatement {
     
     private final Collection<String> heartbeatNames;
+    
+    public DropDatabaseDiscoveryHeartbeatStatement(final boolean allowNotExist, final Collection<String> heartbeatNames) {
+        super(allowNotExist);
+        this.heartbeatNames = heartbeatNames;
+    }
+    
+    public DropDatabaseDiscoveryHeartbeatStatement(final Collection<String> heartbeatNames) {
+        super(false);
+        this.heartbeatNames = heartbeatNames;
+    }
 }
