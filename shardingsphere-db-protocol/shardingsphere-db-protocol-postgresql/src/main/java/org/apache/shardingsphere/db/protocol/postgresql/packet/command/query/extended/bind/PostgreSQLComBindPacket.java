@@ -63,7 +63,12 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
             parameterFormats.add(payload.readInt2());
         }
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId);
-        parameters = preparedStatement.getSql().isEmpty() ? Collections.emptyList() : getParameters(payload, parameterFormats, preparedStatement.getColumnTypes());
+        if (preparedStatement.getSql().isEmpty()) {
+            payload.skipReserved(2);
+            parameters = Collections.emptyList();
+        } else {
+            parameters = getParameters(payload, parameterFormats, preparedStatement.getColumnTypes());
+        }
         int resultFormatsLength = payload.readInt2();
         resultFormats = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {

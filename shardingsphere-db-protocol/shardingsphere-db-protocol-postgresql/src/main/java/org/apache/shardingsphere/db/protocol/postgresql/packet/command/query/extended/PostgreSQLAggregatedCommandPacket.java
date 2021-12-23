@@ -24,14 +24,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Getter
 @ToString
 public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPacket {
     
-    private final List<PostgreSQLCommandPacket> packets;
+    private final PostgreSQLPacketPayload payload;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -179,6 +180,13 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
     
     @Override
     public void close() {
+        if (byteBuf instanceof CompositeByteBuf) {
+            int remainBytes = byteBuf.readableBytes();
+            if (remainBytes > 0) {
+                byteBuf.skipBytes(remainBytes);
+            }
+            ((CompositeByteBuf) byteBuf).discardReadComponents();
+        }
         byteBuf.release();
     }
 }

@@ -43,8 +43,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Command executor factory for PostgreSQL.
@@ -66,19 +64,24 @@ public final class PostgreSQLCommandExecutorFactory {
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
-        if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
-            return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
+        if (commandPacket instanceof PostgreSQLAggregatedCommandPacket) {
+            return new PostgreSQLAggregatedCommandExecutor(((PostgreSQLAggregatedCommandPacket) commandPacket).getPayload(), connectionSession, connectionContext);
         }
-        PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
-        List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
-        for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
-            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
-        }
-        return new PostgreSQLAggregatedCommandExecutor(result);
+        return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
     }
     
-    private static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
-                                                      final PostgreSQLConnectionContext connectionContext) throws SQLException {
+    /**
+     * Get command executor.
+     *
+     * @param commandPacketType command packet type for PostgreSQL
+     * @param commandPacket command packet for PostgreSQL
+     * @param connectionSession connection session
+     * @param connectionContext PostgreSQL connection context
+     * @return command executor
+     * @throws SQLException SQL exception
+     */
+    public static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
+                                                     final PostgreSQLConnectionContext connectionContext) throws SQLException {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);

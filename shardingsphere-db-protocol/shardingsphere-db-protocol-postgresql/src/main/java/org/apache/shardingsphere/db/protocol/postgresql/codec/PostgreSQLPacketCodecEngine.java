@@ -98,8 +98,8 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     private void handlePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int payloadLength) {
         CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
-        result.addComponents(true, pendingMessages).addComponent(true, in.readSlice(MESSAGE_TYPE_LENGTH + payloadLength));
-        out.add(result.retain());
+        result.addComponents(true, pendingMessages).addComponent(true, in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
+        out.add(result);
         pendingMessages.clear();
     }
     
