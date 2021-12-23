@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Drop rule statement.
  */
+@RequiredArgsConstructor
 public abstract class DropRuleStatement extends RuleDefinitionStatement {
+    
+    @Getter
+    private final boolean allowNotExist;
 }

@@ -170,3 +170,11 @@ REFRESH
 METADATA
     : M E T A D A T A
     ;
+    
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;

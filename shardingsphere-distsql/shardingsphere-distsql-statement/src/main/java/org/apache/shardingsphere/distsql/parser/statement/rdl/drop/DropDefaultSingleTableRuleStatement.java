@@ -18,12 +18,18 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Drop default single table rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
+    
+    public DropDefaultSingleTableRuleStatement(final boolean allowNotExist) {
+        super(allowNotExist);
+    }
+    
+    public DropDefaultSingleTableRuleStatement() {
+        super(false);
+    }
 }
