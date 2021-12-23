@@ -73,7 +73,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (!privileges.isPresent()) {
             return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
         }
-        if (!privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
+        if (null != currentSchema && !privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
             return new SQLCheckResult(false, String.format("Unknown database '%s'", currentSchema));
         }
         PrivilegeType privilegeType = getPrivilege(sqlStatement);
@@ -105,7 +105,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         // TODO add more Privilege and SQL statement mapping
         return null;
     }
-
+    
     private PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return PrivilegeType.SELECT;
@@ -121,7 +121,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         }
         return null;
     }
-
+    
     private PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof AlterDatabaseStatement) {
             return PrivilegeType.ALTER_ANY_DATABASE;
