@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.utils;
+package org.apache.shardingsphere.mode.instance.utils;
 
 import org.junit.Test;
 
