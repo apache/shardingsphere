@@ -26,6 +26,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Show sharding key generators statement assert.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShardingKeyGeneratorsStatementAssert {
     

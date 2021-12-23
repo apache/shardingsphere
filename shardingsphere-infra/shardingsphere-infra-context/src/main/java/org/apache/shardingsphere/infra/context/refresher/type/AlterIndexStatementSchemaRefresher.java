@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -53,6 +55,9 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
+            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
+            event.getAlteredTables().add(tableMetaData);
+            ShardingSphereEventBus.getInstance().post(event);
         }
     }
     

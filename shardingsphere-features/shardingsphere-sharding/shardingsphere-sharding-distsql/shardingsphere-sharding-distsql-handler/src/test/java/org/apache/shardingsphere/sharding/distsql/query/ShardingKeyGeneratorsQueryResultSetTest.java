@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingKeyGeneratorsQueryResultSetTest {
-
+    
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -50,7 +50,7 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
         assertThat(actual.get(1), is("SNOWFLAKE"));
         assertThat(actual.get(2).toString(), is("{work-id=123}"));
     }
-
+    
     private Collection<ShardingRuleConfiguration> createRuleConfigurations() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();

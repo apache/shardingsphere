@@ -43,6 +43,8 @@ public final class JobProgress {
     
     private String sourceDatabaseType;
     
+    private boolean active;
+    
     private Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
     
     private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;

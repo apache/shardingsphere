@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourcePreparer;
 import org.junit.Before;
@@ -71,16 +71,10 @@ public final class MySQLDataSourcePreparerTest {
     public void setUp() throws SQLException {
         when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
-        YamlJDBCDataSourceConfiguration source = new YamlJDBCDataSourceConfiguration();
-        source.setType(sourceDataSourceConfigWrapper.getType());
-        source.setParameter(sourceDataSourceConfigWrapper.getParameter());
-        when(ruleConfig.getSource()).thenReturn(source);
+        when(ruleConfig.getSource()).thenReturn(new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(sourceDataSourceConfigWrapper));
         when(sourceDataSourceConfigWrapper.unwrap()).thenReturn(sourceScalingDataSourceConfig);
         when(sourceScalingDataSourceConfig.toDataSource()).thenReturn(sourceDataSource);
-        YamlJDBCDataSourceConfiguration target = new YamlJDBCDataSourceConfiguration();
-        target.setType(targetDataSourceConfigWrapper.getType());
-        target.setParameter(targetDataSourceConfigWrapper.getParameter());
-        when(ruleConfig.getTarget()).thenReturn(target);
+        when(ruleConfig.getTarget()).thenReturn(new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(targetDataSourceConfigWrapper));
         when(targetDataSourceConfigWrapper.unwrap()).thenReturn(targetScalingDataSourceConfig);
         when(targetScalingDataSourceConfig.toDataSource()).thenReturn(targetDataSource);
     }

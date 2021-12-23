@@ -5,12 +5,12 @@ weight = 2
 
 ## Supported
 
-* Note based shadow algorithm support all SQL;
+* Hint based shadow algorithm support all SQL;
 * Column based shadow algorithm support part of SQL.
 
 ## Unsupported
 
-### Note based shadow algorithm
+### Hint based shadow algorithm
 
 * None
 

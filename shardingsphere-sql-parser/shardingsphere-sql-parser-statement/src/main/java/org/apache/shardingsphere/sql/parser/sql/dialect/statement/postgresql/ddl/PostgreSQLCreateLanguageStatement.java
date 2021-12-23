@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.event;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Schema altered event.
+ * PostgreSQL create language statement.
  */
-@Getter
-public final class SchemaAlteredEvent {
-    
-    private final String schemaName;
-    
-    private final Collection<TableMetaData> alteredTables = new ArrayList<>();
-    
-    private final Collection<String> droppedTables = new ArrayList<>();
-    
-    public SchemaAlteredEvent(final String schemaName) {
-        this.schemaName = schemaName;
-    }
+@ToString
+public final class PostgreSQLCreateLanguageStatement extends CreateLanguageStatement implements PostgreSQLStatement {
 }

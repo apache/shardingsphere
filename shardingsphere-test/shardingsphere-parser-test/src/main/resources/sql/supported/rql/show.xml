@@ -35,5 +35,5 @@
     <distsql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" />
     <distsql-case id="show-single-table-rules" value="SHOW SINGLE TABLE RULES FROM single_table_db" />
     <distsql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" />
-    <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db"/>
+    <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" />
 </sql-cases>

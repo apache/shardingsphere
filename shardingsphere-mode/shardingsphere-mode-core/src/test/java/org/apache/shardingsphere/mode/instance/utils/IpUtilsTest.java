@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.event;
+package org.apache.shardingsphere.mode.instance.utils;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * Schema altered event.
- */
-@Getter
-public final class SchemaAlteredEvent {
+public final class IpUtilsTest {
     
-    private final String schemaName;
-    
-    private final Collection<TableMetaData> alteredTables = new ArrayList<>();
-    
-    private final Collection<String> droppedTables = new ArrayList<>();
-    
-    public SchemaAlteredEvent(final String schemaName) {
-        this.schemaName = schemaName;
+    @Test
+    public void getIp() {
+        assertNotNull(IpUtils.getIp());
     }
 }
