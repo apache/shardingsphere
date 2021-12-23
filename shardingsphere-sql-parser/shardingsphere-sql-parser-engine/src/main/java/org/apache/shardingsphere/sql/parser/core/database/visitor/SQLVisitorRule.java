@@ -364,7 +364,9 @@ public enum SQLVisitorRule {
     
     CREATE_RULE("CreateRule", SQLStatementType.DDL),
     
-    create_language("CreateLanguage", SQLStatementType.DDL);
+    create_language("CreateLanguage", SQLStatementType.DDL),
+    
+    alter_language("AlterLanguage", SQLStatementType.DDL);
 
     private final String name;
     

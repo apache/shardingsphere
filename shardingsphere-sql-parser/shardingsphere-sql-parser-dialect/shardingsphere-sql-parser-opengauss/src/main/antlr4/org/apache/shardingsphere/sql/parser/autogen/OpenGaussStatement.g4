@@ -88,5 +88,6 @@ execute
     | setConstraints
     | copy
     | createLanguage
+    | alterLanguage
     ) SEMI_?
     ;
