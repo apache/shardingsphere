@@ -34,7 +34,7 @@ import java.util.Collections;
 public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSourceCreator {
     
     @Override
-    public DataSource createDataSource(final String parameter, final Object dataSourceConfig) throws SQLException {
+    public DataSource createDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) dataSourceConfig;
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
                 rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
