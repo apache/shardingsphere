@@ -51,6 +51,9 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     
     private void checkToBeDroppedRuleNames(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
                                            final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+        if (sqlStatement.isAllowNotExist()) {
+            return;
+        }
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
