@@ -53,13 +53,14 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertLocalDateTimeValue() {
         LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
-        assertThat(ResultSetUtil.convertValue(localDateTime, Timestamp.class), is(new Timestamp(1640259000000L)));
+        assertThat(ResultSetUtil.convertValue(localDateTime, Timestamp.class), is(Timestamp.valueOf(localDateTime)));
     }
     
     @Test
     public void assertConvertTimestampValue() {
-        Timestamp timestamp = new Timestamp(1640259000000L);
-        assertThat(ResultSetUtil.convertValue(timestamp, LocalDateTime.class), is(LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30)));
+        LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
+        Timestamp timestamp = Timestamp.valueOf(localDateTime);
+        assertThat(ResultSetUtil.convertValue(timestamp, LocalDateTime.class), is(localDateTime));
         assertThat(ResultSetUtil.convertValue(timestamp, LocalDate.class), is(LocalDate.of(2021, Month.DECEMBER, 23)));
         assertThat(ResultSetUtil.convertValue(timestamp, LocalTime.class), is(LocalTime.of(19, 30)));
     }
