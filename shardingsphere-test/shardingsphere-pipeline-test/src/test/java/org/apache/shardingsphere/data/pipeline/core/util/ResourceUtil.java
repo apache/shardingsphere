@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
@@ -72,10 +73,7 @@ public final class ResourceUtil {
     
     private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration jdbcDataSourceConfig) {
         JDBCDataSourceConfigurationWrapper targetWrapper = new JDBCDataSourceConfigurationWrapper(jdbcDataSourceConfig.getType(), jdbcDataSourceConfig.getParameter());
-        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
-        result.setType(targetWrapper.getType());
-        result.setParameter(targetWrapper.getParameter());
-        return result;
+        return new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(targetWrapper);
     }
     
     @SneakyThrows(IOException.class)
