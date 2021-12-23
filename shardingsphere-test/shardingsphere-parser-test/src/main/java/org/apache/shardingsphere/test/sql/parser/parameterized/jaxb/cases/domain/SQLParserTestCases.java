@@ -1114,7 +1114,6 @@ public final class SQLParserTestCases {
         putAll(showVariablesStatementTestCases, result);
         putAll(showShardingKeyGeneratorsStatementTestCases,result);
         putAll(dropShardingKeyGeneratorStatementTestCases, result);
-        putAll(showShardingKeyGeneratorsStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
         putAll(dropDomainStatementTestCases, result);
         putAll(showSQLParserRuleStatementTestCases, result);
