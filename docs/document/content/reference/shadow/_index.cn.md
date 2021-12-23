@@ -44,8 +44,8 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 仅支持注解影子算法。在压测场景下，DDL 语句一般不需要测试。主要在初始化或者修改影子库中影子表时使用。
 
-影子判定会首先判断执行 SQL 是否包含注解。如果包含注解，影子规则中配置的注解影子算法依次判定。有任何一个判定成功。SQL 语句路由到影子库。
-执行 SQL 不包含注解或者注解影子算法判定不成功，SQL 语句路由到生产库。
+影子判定会首先判断执行 SQL 是否包含注解。如果包含注解，影子规则中配置的 HINT 影子算法依次判定。有任何一个判定成功。SQL 语句路由到影子库。
+执行 SQL 不包含注解或者 HINT 影子算法判定不成功，SQL 语句路由到生产库。
 
 ## 影子算法
 
@@ -77,7 +77,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
   user-id-value-match-algorithm:
     type: VALUE_MATCH
@@ -97,10 +96,10 @@ props:
 
 * 创建影子库 `ds_shadow`。
 
-* 创建影子表，表结构与生产环境必须一致。假设在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*shadow:true,foo:bar,...*/`。即：
+* 创建影子表，表结构与生产环境必须一致。假设在影子库创建 `t_order` 表。创建表语句需要添加 SQL 注释 `/*foo:bar,...*/`。即：
 
 ```sql
-CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/
+CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*foo:bar,...*/
 ``` 
 
 执行到影子库。
@@ -131,12 +130,12 @@ shadow-algorithms:
 
 **注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
 
-2. 使用HINT影子算法
+2. 使用 Hint 影子算法
 
-假设 `t_order` 表中不包含可以对值进行匹配的列。添加注解 `/*shadow:true,foo:bar,...*/` 到执行 SQL 中，即：
+假设 `t_order` 表中不包含可以对值进行匹配的列。添加注解 `/*foo:bar,...*/` 到执行 SQL 中，即：
 
 ```sql
-SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/ 
+SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/ 
 ```
 
 会执行到影子库，其他数据执行到生产库。
@@ -148,7 +147,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
 ```
 
@@ -159,7 +157,7 @@ shadow-algorithms:
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
-SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/;
 ```
 
 都会执行到影子库，其他数据执行到生产库。
@@ -177,22 +175,21 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
 ```
 
 4. 使用默认影子算法
 
-假设对 `t_order` 表压测使用列影子算法，其他相关其他表都需要使用注解影子算法。即,
+假设对 `t_order` 表压测使用列影子算法，其他相关其他表都需要使用 Hint 影子算法。即,
 
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
-INSERT INTO t_xxx_1 (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*shadow:true,foo:bar,...*/;
+INSERT INTO t_xxx_1 (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*foo:bar,...*/;
 
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar,...*/;
 
-SELECT * FROM t_xxx_3 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_3 WHERE order_id = xxx /*foo:bar,...*/;
 ```
 
 都会执行到影子库，其他数据执行到生产库。
@@ -216,7 +213,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
   user-id-value-match-algorithm:
     type: VALUE_MATCH
@@ -230,38 +226,38 @@ props:
 ```
 
 **注意**
-默认影子算法仅支持HINT影子算法。
-使用HINT，必须确保配置文件中 `props` 的配置项小于等于 SQL 注释中的配置项，且配置文件的具体配置要和 SQL 注释中写的配置一样，配置文件中配置项越少，匹配条件越宽松
+默认影子算法仅支持 Hint 影子算法。
+使用时必须确保配置文件中 `props` 的配置项小于等于 SQL 注释中的配置项，且配置文件的具体配置要和 SQL 注释中写的配置一样，配置文件中配置项越少，匹配条件越宽松
 
 ```yaml
 simple-note-algorithm:
   type: SIMPLE_HINT
   props:
-    shadow: true
-    user_id: 2
+    foo: bar
+    foo1: bar1
 ```
 
 如当前 `props` 项中配置了 `2` 条配置，在 SQL 中可以匹配的写法有如下：
 
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1*/
 ```
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1, foo2:bar2, ...*/
 ```
 
 ```yaml
 simple-note-algorithm:
   type: SIMPLE_HINT
   props:
-    shadow: false
+    foo: bar
 ```
 
 如当前 props 项中配置了 1 条配置，在sql中可以匹配的写法有如下：
 
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:foo*/
 ```
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:foo, foo1:bar1, ...*/
 ```
