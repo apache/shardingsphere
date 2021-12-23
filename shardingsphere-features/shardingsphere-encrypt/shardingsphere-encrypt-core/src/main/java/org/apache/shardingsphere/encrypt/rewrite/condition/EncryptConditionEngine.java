@@ -132,8 +132,9 @@ public final class EncryptConditionEngine {
         String operator = expression.getOperator();
         if (!LOGICAL_OPERATOR.contains(operator)) {
             if (isSupportedOperator(operator)) {
-                return createCompareEncryptCondition(tableName, expression, operator, expression.getRight());
+                return createCompareEncryptCondition(tableName, expression, expression.getRight());
             }
+            throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
         }
         return Optional.empty();
     }
