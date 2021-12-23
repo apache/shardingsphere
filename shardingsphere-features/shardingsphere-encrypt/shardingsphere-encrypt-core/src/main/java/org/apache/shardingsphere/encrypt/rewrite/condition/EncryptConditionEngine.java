@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -131,9 +132,8 @@ public final class EncryptConditionEngine {
         String operator = expression.getOperator();
         if (!LOGICAL_OPERATOR.contains(operator)) {
             if (isSupportedOperator(operator)) {
-                return createCompareEncryptCondition(tableName, expression, expression.getRight());
+                return createCompareEncryptCondition(tableName, expression, operator, expression.getRight());
             }
-            throw new ShardingSphereException(String.format("The SQL clause '%s' is unsupported in encrypt rule.", operator));
         }
         return Optional.empty();
     }
@@ -164,7 +164,7 @@ public final class EncryptConditionEngine {
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
+    private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
         if (!(expression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
         }
@@ -192,6 +192,7 @@ public final class EncryptConditionEngine {
     }
     
     private boolean isSupportedOperator(final String operator) {
-        return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
+        Collection<String> operators = Arrays.asList("=", "<>", "!=", ">", "<", ">=", "<=");
+        return operators.contains(operator);
     }
 }
