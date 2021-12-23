@@ -26,14 +26,12 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,14 +42,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class TransactionContextsBuilderTest {
     
     @Test
     public void assertNewInstanceWithEmptyEngines() {
         TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.emptyMap(), Collections.emptyList()).build();
-        Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
-        assertTrue(engines.isEmpty());
+        assertTrue(transactionContexts.getEngines().isEmpty());
     }
     
     @Test(expected = NullPointerException.class)
@@ -59,21 +55,20 @@ public final class TransactionContextsBuilderTest {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaData.getResource().getDataSources()).thenReturn(buildDataSource());
+        when(metaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
-        Collection<ShardingSphereRule> globalRules = new ArrayList<>();
+        Collection<ShardingSphereRule> globalRules = new LinkedList<>();
         globalRules.add(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataMap, globalRules).build();
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
-        ShardingSphereTransactionManagerEngine defaultEngine = transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME);
-        assertNotNull(defaultEngine);
+        assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));
     }
     
-    private Map<String, DataSource> buildDataSource() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", mock(DataSource.class));
-        dataSourceMap.put("ds_1", mock(DataSource.class));
-        return dataSourceMap;
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds_0", mock(DataSource.class));
+        result.put("ds_1", mock(DataSource.class));
+        return result;
     }
 }
