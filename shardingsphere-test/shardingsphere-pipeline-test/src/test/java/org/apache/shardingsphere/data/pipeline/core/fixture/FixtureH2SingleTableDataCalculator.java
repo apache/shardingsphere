@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public final class FixtureH2SingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
@@ -28,8 +31,8 @@ public final class FixtureH2SingleTableDataCalculator implements SingleTableData
     }
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
+    public Collection<String> getDatabaseTypes() {
+        return Collections.singletonList("H2");
     }
     
     @Override

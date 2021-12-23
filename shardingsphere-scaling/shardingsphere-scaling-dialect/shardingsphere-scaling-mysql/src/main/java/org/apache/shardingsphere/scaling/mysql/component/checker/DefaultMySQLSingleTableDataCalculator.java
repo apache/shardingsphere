@@ -30,6 +30,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
-    private static final String DATABASE_TYPE = new MySQLDatabaseType().getName();
+    private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
     public String getAlgorithmType() {
@@ -46,8 +48,8 @@ public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleT
     }
     
     @Override
-    public String getDatabaseType() {
-        return DATABASE_TYPE;
+    public Collection<String> getDatabaseTypes() {
+        return DATABASE_TYPES;
     }
     
     @Override

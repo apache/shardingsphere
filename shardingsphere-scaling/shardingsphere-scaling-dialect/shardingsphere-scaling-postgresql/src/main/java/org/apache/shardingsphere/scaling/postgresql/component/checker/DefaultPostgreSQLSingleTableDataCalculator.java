@@ -22,12 +22,15 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSi
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DefaultDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Default PostgreSQL single table data calculator.
  */
 public final class DefaultPostgreSQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
-    private static final String DATABASE_TYPE = new PostgreSQLDatabaseType().getName();
+    private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new PostgreSQLDatabaseType().getName());
     
     @Override
     public String getAlgorithmType() {
@@ -35,8 +38,8 @@ public final class DefaultPostgreSQLSingleTableDataCalculator extends AbstractSi
     }
     
     @Override
-    public String getDatabaseType() {
-        return DATABASE_TYPE;
+    public Collection<String> getDatabaseTypes() {
+        return DATABASE_TYPES;
     }
     
     @Override
