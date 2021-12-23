@@ -187,7 +187,8 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryHeartbeat(final DropDatabaseDiscoveryHeartbeatContext ctx) {
-        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.ifExists() != null, ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
+        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.ifExists() != null, 
+                ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
     }
     
     private Properties getProperties(final PropertiesContext ctx) {
