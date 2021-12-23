@@ -35,6 +35,7 @@ public final class DataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public DataSourceWrapper newInstance(final JDBCDataSourceConfiguration dataSourceConfig) {
+        // TODO cache and reuse, try DataSourceManager
         return new DataSourceWrapper(dataSourceConfig.toDataSource());
     }
 }

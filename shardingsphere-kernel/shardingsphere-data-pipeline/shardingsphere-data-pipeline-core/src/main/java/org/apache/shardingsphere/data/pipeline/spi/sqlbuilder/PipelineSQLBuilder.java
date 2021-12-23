@@ -84,6 +84,16 @@ public interface PipelineSQLBuilder {
     String buildCountSQL(String tableName);
     
     /**
+     * Build query SQL.
+     *
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @param hasLimit has limit clause or not
+     * @return query SQL
+     */
+    String buildQuerySQL(String tableName, String uniqueKey, boolean hasLimit);
+    
+    /**
      * Build check empty SQL.
      *
      * @param tableName table name

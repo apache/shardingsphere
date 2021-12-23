@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -141,6 +143,18 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     @Override
     public String buildCountSQL(final String tableName) {
         return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    }
+    
+    @Override
+    public String buildQuerySQL(final String tableName, final String uniqueKey, final boolean hasLimit) {
+        if (hasLimit) {
+            Preconditions.checkArgument(Strings.isNullOrEmpty(uniqueKey), "uniqueKey is empty when it's required");
+        }
+        String result = "SELECT * FROM " + quote(tableName);
+        if (hasLimit) {
+            result = result + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        }
+        return result;
     }
     
     @Override

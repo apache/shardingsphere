@@ -18,8 +18,19 @@
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -41,7 +52,39 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
     
     @Override
     public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
-        //TODO now dataCalculate
-        return true;
+        String logicTableName = dataCalculateParameter.getLogicTableName();
+        PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
+        String uniqueKey = dataCalculateParameter.getUniqueKey();
+        Integer chunkSize = dataCalculateParameter.getChunkSize();
+        String sql = sqlBuilder.buildQuerySQL(logicTableName, uniqueKey, null != chunkSize);
+        try (DataSourceWrapper dataSource = getDataSource(dataCalculateParameter.getDataSourceConfig())) {
+            return query(dataSource, sql, chunkSize);
+        } catch (final SQLException ex) {
+            throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
+        }
+    }
+    
+    private Collection<Collection<Object>> query(final DataSource dataSource, final String sql, final Integer chunkSize) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            if (null != chunkSize) {
+                preparedStatement.setInt(1, chunkSize);
+            }
+            Collection<Collection<Object>> result = new ArrayList<>();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                    int columnCount = resultSetMetaData.getColumnCount();
+                    Collection<Object> record = new ArrayList<>(columnCount);
+                    for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                        record.add(resultSet.getObject(columnIndex));
+                    }
+                    result.add(record);
+                }
+            }
+            return result;
+        } catch (final SQLException ex) {
+            throw new DataCheckFailException(String.format("execute %s failed.", sql), ex);
+        }
     }
 }

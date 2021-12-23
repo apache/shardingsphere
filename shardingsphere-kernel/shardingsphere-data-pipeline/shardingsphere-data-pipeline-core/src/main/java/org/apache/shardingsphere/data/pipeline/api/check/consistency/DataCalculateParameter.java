@@ -47,27 +47,23 @@ public final class DataCalculateParameter {
     private Collection<String> columnNames;
     
     /**
+     * Database type.
+     */
+    private String databaseType;
+    
+    /**
      * Peer database type.
      */
     private String peerDatabaseType;
     
     /**
+     * If {@link #chunkSize} exists, it could be used in order by clause.
+     * It could be primary key.
+     */
+    private String uniqueKey;
+    
+    /**
      * Chunk size of limited records to be calculated in a batch.
      */
     private Integer chunkSize;
-    
-    /**
-     * Ignored column names.
-     */
-    private Collection<String> ignoredColumnNames;
-    
-    /**
-     * If {@link #chunkSize} exists, it could be used in order by clause on first priority.
-     */
-    private Collection<String> primaryColumnNames;
-    
-    /**
-     * If {@link #chunkSize} exists, it could be used in order by clause on second priority.
-     */
-    private Collection<String> uniqueColumnNames;
 }
