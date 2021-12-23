@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DefaultDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -36,15 +36,15 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Default MySQL single table data calculator.
+ * CRC32 match MySQL implementation of single table data calculator.
  */
-public final class DefaultMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
     private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
     public String getAlgorithmType() {
-        return DefaultDataConsistencyCheckAlgorithm.TYPE;
+        return CRC32MatchDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override

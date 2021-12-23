@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.scaling.postgresql.component.checker.DefaultPostgreSQLSingleTableDataCalculator
+org.apache.shardingsphere.scaling.postgresql.component.checker.CRC32MatchPostgreSQLSingleTableDataCalculator

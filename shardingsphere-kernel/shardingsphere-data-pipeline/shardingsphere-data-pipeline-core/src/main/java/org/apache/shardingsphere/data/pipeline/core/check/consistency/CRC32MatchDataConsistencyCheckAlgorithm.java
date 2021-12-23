@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Scaling default data consistency check algorithm.
+ * CRC32 match implementation of data consistency check algorithm.
  */
-public final class DefaultDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
+public final class CRC32MatchDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
     
-    public static final String TYPE = "DEFAULT";
+    public static final String TYPE = "CRC32_MATCH";
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
@@ -39,7 +39,7 @@ public final class DefaultDataConsistencyCheckAlgorithm implements DataConsisten
     
     @Override
     public String getDescription() {
-        return "Default implementation with CRC32 of all records.";
+        return "Match CRC32 of records.";
     }
     
     @Override
