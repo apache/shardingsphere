@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
@@ -92,9 +93,6 @@ public final class ITEnvironmentContext {
     
     private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration targetConfig) {
         JDBCDataSourceConfigurationWrapper targetWrapper = new JDBCDataSourceConfigurationWrapper(targetConfig.getType(), targetConfig.getParameter());
-        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
-        result.setType(targetWrapper.getType());
-        result.setParameter(targetWrapper.getParameter());
-        return result;
+        return new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(targetWrapper);
     }
 }
