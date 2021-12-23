@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -191,8 +191,8 @@ public final class PipelineJobAPIImplTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final RuleConfiguration ruleConfig) {
-        initTableData(new JDBCDataSourceConfigurationWrapper(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()).unwrap().toDataSource());
-        initTableData(new JDBCDataSourceConfigurationWrapper(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()).unwrap().toDataSource());
+        initTableData(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).unwrap().toDataSource());
+        initTableData(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).unwrap().toDataSource());
     }
     
     private void initTableData(final DataSource dataSource) throws SQLException {

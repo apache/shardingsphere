@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.constant;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Readwrite-splitting rule constants.
+ * OpenGauss create language statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingRuleConstants {
-    
-    public static final String AUTO_AWARE_DATA_SOURCE_KEY = "auto_aware_data_source_key";
-    
-    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
-    
-    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
+@ToString
+public final class OpenGaussCreateLanguageStatement extends CreateLanguageStatement implements OpenGaussStatement {
 }

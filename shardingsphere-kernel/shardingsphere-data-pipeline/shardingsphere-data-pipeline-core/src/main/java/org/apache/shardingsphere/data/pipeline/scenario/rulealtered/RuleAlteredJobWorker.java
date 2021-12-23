@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetect
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -151,13 +152,11 @@ public final class RuleAlteredJobWorker {
      * @return YAML root configuration
      */
     private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
-        JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceConfigurationWrapper(
-                jobConfig.getRuleConfig().getTarget().getType(), jobConfig.getRuleConfig().getTarget().getParameter()).unwrap();
+        JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getTarget()).unwrap();
         if (targetDataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return ((ShardingSphereJDBCDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
-        JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceConfigurationWrapper(
-                jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()).unwrap();
+        JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap();
         return ((ShardingSphereJDBCDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
@@ -234,11 +233,7 @@ public final class RuleAlteredJobWorker {
     
     private YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
         ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(yamlConfig);
-        JDBCDataSourceConfigurationWrapper wrapper = new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter());
-        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
-        result.setType(wrapper.getType());
-        result.setParameter(wrapper.getParameter());
-        return result;
+        return new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter()));
     }
     
     @SuppressWarnings("unchecked")

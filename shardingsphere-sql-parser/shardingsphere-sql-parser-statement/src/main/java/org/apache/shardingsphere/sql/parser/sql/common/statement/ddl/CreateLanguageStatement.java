@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Show sharding key generators statement test case.
+ * Create language statement.
  */
-@Getter
-@Setter
-public final class ShowShardingKeyGeneratorsStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSchema schema;
+@ToString
+public abstract class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }
