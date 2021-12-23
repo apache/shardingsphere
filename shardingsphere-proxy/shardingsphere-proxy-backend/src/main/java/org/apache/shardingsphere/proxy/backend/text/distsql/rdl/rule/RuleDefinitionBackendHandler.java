@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.preprocess.RuleDefinitionAlterPreprocessor;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -65,7 +67,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
-        ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        checkSQLStatement(ruleDefinitionUpdater, shardingSphereMetaData, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
                 new Properties());
         if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
@@ -84,6 +86,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             }
         }
         return Optional.empty();
+    }
+    
+    private void checkSQLStatement(final RuleDefinitionUpdater ruleDefinitionUpdater, final ShardingSphereMetaData shardingSphereMetaData,
+                                   final T sqlStatement, final RuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (isSkipDropConfiguration(sqlStatement, currentRuleConfig)) {
+            return;
+        }
+        ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
     }
     
     @SuppressWarnings("rawtypes")
@@ -118,6 +128,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (isSkipDropConfiguration(sqlStatement, currentRuleConfig)) {
+            return;
+        }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             shardingSphereMetaData.getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
@@ -142,5 +155,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     private void cacheRuleConfigurationChange(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().cache(
                 schemaName, ruleConfigurations));
+    }
+    
+    private boolean isSkipDropConfiguration(final SQLStatement sqlStatement, final RuleConfiguration ruleConfiguration) {
+        if (sqlStatement instanceof DropRuleStatement) {
+            return ((DropRuleStatement) sqlStatement).isAllowNotExist() && null == ruleConfiguration;
+        }
+        return false;
     }
 }

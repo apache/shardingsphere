@@ -33,11 +33,12 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropDefaultSingleTableRuleStatement sqlStatement,
+                                               final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(!sqlStatement.isAllowNotExist() && null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
     }
     
     @Override
