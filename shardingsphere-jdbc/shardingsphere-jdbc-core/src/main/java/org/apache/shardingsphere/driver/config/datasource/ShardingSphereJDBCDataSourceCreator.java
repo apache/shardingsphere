@@ -36,8 +36,8 @@ public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSource
     @Override
     public DataSource createDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) dataSourceConfig;
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
-                rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
+        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
+                Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
     }
     
     @Override

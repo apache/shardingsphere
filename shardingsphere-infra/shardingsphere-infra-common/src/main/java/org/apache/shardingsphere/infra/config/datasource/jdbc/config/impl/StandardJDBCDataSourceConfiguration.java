@@ -91,7 +91,7 @@ public final class StandardJDBCDataSourceConfiguration extends JDBCDataSourceCon
     }
     
     @Override
-    protected Object getDataSourceConfiguration() {
+    public Object getDataSourceConfiguration() {
         return dataSourceConfig;
     }
     
