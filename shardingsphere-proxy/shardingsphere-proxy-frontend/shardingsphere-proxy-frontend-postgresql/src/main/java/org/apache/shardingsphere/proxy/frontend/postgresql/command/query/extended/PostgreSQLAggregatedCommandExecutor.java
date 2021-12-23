@@ -42,8 +42,6 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private final List<CommandExecutor> executors = new LinkedList<>();
-    
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         List<DatabasePacket<?>> result = new LinkedList<>();
@@ -51,28 +49,12 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
             PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(payload.readInt1());
             PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.getPostgreSQLCommandPacket(commandPacketType, payload, connectionSession.getConnectionId());
             CommandExecutor commandExecutor = PostgreSQLCommandExecutorFactory.getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
-            executors.add(commandExecutor);
-            result.addAll(commandExecutor.execute());
-        }
-        return result;
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (CommandExecutor each : executors) {
             try {
-                each.close();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+                result.addAll(commandExecutor.execute());
+            } finally {
+                commandExecutor.close();
             }
         }
-        executors.clear();
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException();
-        exceptions.forEach(ex::setNextException);
-        throw ex;
+        return result;
     }
 }

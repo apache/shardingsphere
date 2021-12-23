@@ -64,7 +64,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
                 return;
             }
             int payloadLength = in.getInt(in.readerIndex() + 1);
-            if (in.readableBytes() < payloadLength) {
+            if (in.readableBytes() < MESSAGE_TYPE_LENGTH + payloadLength) {
                 return;
             }
             byte type = in.getByte(in.readerIndex());
