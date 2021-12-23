@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -15,14 +16,19 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.datasource.names=ds-0
-
-spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.type=AES
-spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.props.aes-key-value=123456abc
-spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.type=assistedTest
-
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.assisted-query-column=assisted_query_pwd
+<configuration>
+    <property name="log.context.name" value="shardingsphere-example" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <contextName>${log.context.name}</contextName>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
