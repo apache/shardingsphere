@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Create language statement.
  */
-@Getter
-@Setter
 @ToString
 public abstract class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }
