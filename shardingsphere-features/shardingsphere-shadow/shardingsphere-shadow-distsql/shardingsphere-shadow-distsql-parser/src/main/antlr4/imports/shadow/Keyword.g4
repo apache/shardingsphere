@@ -114,3 +114,11 @@ CLEAR
 DEFAULT
     : D E F A U L T
     ;
+
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;

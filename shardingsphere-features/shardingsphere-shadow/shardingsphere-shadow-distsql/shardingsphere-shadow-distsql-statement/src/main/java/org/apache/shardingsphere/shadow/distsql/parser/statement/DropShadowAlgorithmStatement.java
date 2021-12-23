@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,9 +25,18 @@ import java.util.Collection;
 /**
  * Drop shadow algorithm statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShadowAlgorithmStatement extends DropRuleStatement {
     
     private final Collection<String> algorithmNames;
+    
+    public DropShadowAlgorithmStatement(final boolean allowNotExist, final Collection<String> algorithmNames) {
+        super(allowNotExist);
+        this.algorithmNames = algorithmNames;
+    }
+    
+    public DropShadowAlgorithmStatement(final Collection<String> algorithmNames) {
+        super(false);
+        this.algorithmNames = algorithmNames;
+    }
 }
