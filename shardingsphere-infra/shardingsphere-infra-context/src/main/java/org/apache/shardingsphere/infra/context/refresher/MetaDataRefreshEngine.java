@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationS
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -64,7 +63,6 @@ public final class MetaDataRefreshEngine {
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatement.getClass().getSuperclass().getCanonicalName(), null);
         if (schemaRefresher.isPresent()) {
             schemaRefresher.get().refresh(schemaMetaData, federationMetaData, logicDataSourceNames, sqlStatement, props);
-            ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getSchema()));
         }
         Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
         if (sqlStatementEventMapper.isPresent()) {

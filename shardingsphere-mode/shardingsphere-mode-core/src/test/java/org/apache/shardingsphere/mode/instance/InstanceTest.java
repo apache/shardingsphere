@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.instance;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
+import org.apache.shardingsphere.mode.instance.utils.IpUtils;
 import org.junit.Test;
 
 import java.lang.management.ManagementFactory;
@@ -26,30 +26,30 @@ import java.lang.management.ManagementFactory;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ClusterInstanceTest {
+public final class InstanceTest {
     
     private String ip = IpUtils.getIp();
     
     @Test
     public void assertGetIdWithPort() {
-        ClusterInstance.getInstance().init(3307);
-        String id = ClusterInstance.getInstance().getId();
+        Instance.getInstance().init(3307);
+        String id = Instance.getInstance().getId();
         assertThat(id.split("@").length, is(2));
         assertThat(id, is(Joiner.on("@").join(ip, 3307)));
     }
     
     @Test
     public void assertGetDefaultId() {
-        ClusterInstance.getInstance().init(null);
+        Instance.getInstance().init(null);
         String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-        String id = ClusterInstance.getInstance().getId();
+        String id = Instance.getInstance().getId();
         assertThat(id.split("@").length, is(2));
         assertThat(id, is(Joiner.on("@").join(ip, pid)));
     }
     
     @Test
     public void assertGetInstanceId() {
-        ClusterInstance.getInstance().init(null);
-        assertThat(ClusterInstance.getInstance().getInstanceId("127.0.0.1", "3307"), is("127.0.0.1@3307"));
+        Instance.getInstance().init(null);
+        assertThat(Instance.getInstance().getInstanceId("127.0.0.1", "3307"), is("127.0.0.1@3307"));
     }
 }

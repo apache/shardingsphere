@@ -44,7 +44,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -185,8 +184,14 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed()
-                .collect(LinkedHashMap::new, (map, each) -> map.put(each, PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
+            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+            if (jobProgress != null) {
+                jobProgress.setActive(!jobConfigPOJO.isDisabled());
+            }
+            map.put(each, jobProgress);
+        }, LinkedHashMap::putAll);
     }
     
     @Override
@@ -282,8 +287,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         }
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        JDBCDataSourceConfigurationWrapper targetConfig = jobConfig.getRuleConfig().getTarget();
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(targetConfig.getParameter(), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getRuleConfig().getTarget().getParameter(), YamlRootConfiguration.class);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();

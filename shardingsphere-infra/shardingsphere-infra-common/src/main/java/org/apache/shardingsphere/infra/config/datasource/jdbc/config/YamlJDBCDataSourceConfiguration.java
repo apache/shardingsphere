@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.constant;
+package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Readwrite-splitting rule constants.
+ * JDBC data source configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingRuleConstants {
+@Getter
+@Setter
+public final class YamlJDBCDataSourceConfiguration implements YamlConfiguration {
     
-    public static final String AUTO_AWARE_DATA_SOURCE_KEY = "auto_aware_data_source_key";
+    private String type;
     
-    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
-    
-    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
+    private String parameter;
 }

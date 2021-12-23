@@ -44,7 +44,7 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
                     list.add(each.getJobId());
                     list.add(each.getTables());
                     list.add(each.getShardingTotalCount());
-                    list.add(each.isActive() ? 1 : 0);
+                    list.add(each.isActive() ? "true" : "false");
                     list.add(each.getCreateTime());
                     list.add(each.getStopTime());
                     return list;

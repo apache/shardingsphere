@@ -242,12 +242,18 @@ public final class ContextManager implements AutoCloseable {
      * Alter schema.
      *
      * @param schemaName schema name
-     * @param table table                  
-     * @param tableMetaData table meta data
+     * @param changedTableMetaData changed table meta data                  
+     * @param deletedTable deleted table
      */
-    public void alterSchema(final String schemaName, final String table, final TableMetaData tableMetaData) {
-        metaDataContexts.getMetaData(schemaName).getSchema().put(table, tableMetaData);
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).put(tableMetaData);
+    public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
+        if (null != changedTableMetaData) {
+            metaDataContexts.getMetaData(schemaName).getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).put(changedTableMetaData);
+        }
+        if (null != deletedTable) {
+            metaDataContexts.getMetaData(schemaName).getSchema().remove(deletedTable);
+            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).remove(deletedTable);
+        }
     }
     
     /**

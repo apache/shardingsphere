@@ -35,37 +35,31 @@ import java.util.Map.Entry;
  * Result set for show sharding key generators.
  */
 public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
-
-    private static final String NAME = "name";
-
-    private static final String TYPE = "type";
-
-    private static final String PROPS = "props";
-
+    
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
-
+    
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)
                 .forEach(each -> data = each.getKeyGenerators().entrySet().iterator());
     }
-
+    
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, TYPE, PROPS);
+        return Arrays.asList("name", "type", "props");
     }
-
+    
     @Override
     public boolean next() {
         return data.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         Map.Entry<String, ShardingSphereAlgorithmConfiguration> entry = data.next();
         return Arrays.asList(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps());
     }
-
+    
     @Override
     public String getType() {
         return ShowShardingKeyGeneratorsStatement.class.getCanonicalName();

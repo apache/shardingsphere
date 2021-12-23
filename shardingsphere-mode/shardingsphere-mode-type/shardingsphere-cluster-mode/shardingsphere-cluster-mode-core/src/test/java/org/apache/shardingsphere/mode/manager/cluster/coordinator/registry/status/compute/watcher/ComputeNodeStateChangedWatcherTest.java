@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.mode.instance.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.After;
@@ -37,17 +37,17 @@ public final class ComputeNodeStateChangedWatcherTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        originalClusterInstanceId = ClusterInstance.getInstance().getId();
-        Field field = ClusterInstance.class.getDeclaredField("id");
+        originalClusterInstanceId = Instance.getInstance().getId();
+        Field field = Instance.class.getDeclaredField("id");
         field.setAccessible(true);
-        field.set(ClusterInstance.getInstance(), "127.0.0.1@3307");
+        field.set(Instance.getInstance(), "127.0.0.1@3307");
     }
     
     @After
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        Field field = ClusterInstance.class.getDeclaredField("id");
+        Field field = Instance.class.getDeclaredField("id");
         field.setAccessible(true);
-        field.set(ClusterInstance.getInstance(), originalClusterInstanceId);
+        field.set(Instance.getInstance(), originalClusterInstanceId);
     }
     
     @Test
