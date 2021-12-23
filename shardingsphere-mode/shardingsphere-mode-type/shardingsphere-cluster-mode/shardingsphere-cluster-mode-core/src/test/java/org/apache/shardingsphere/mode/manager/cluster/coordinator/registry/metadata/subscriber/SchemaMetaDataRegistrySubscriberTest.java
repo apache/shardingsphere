@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +50,12 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Test
     public void assertUpdateWithMetaDataAlteredEvent() {
-        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", mock(ShardingSphereSchema.class));
+        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db");
+        TableMetaData tableMetaData = new TableMetaData();
+        event.getAlteredTables().add(tableMetaData);
+        event.getDroppedTables().add("foo_table");
         schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).persist("foo_db", event.getSchema());
+        verify(persistService).persist("foo_db", tableMetaData);
+        verify(persistService).delete("foo_db", "foo_table");
     }
 }

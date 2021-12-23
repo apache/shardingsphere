@@ -152,11 +152,11 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaChanged() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", "t_order", mock(TableMetaData.class));
-        TableMetaData tableMetaData = contextManager.getMetaDataContexts().getMetaData("schema").getSchema().get("t_order");
+        TableMetaData changedTableMetaData = new TableMetaData("t_order");
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getTableMetaData()));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -234,16 +234,9 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("t_order")).thenReturn(mock(TableMetaData.class));
         when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
-    }
-    
-    private Map<String, TableMetaData> createTableMetaData() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
-        result.put("t_order", mock(TableMetaData.class));
-        return result;
     }
 } 
