@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateLanguageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTablespaceContext;
@@ -575,6 +576,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitCreateLanguage(final CreateLanguageContext ctx) {
+        return new OpenGaussCreateLanguageStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
         return new OpenGaussCreateLanguageStatement();
     }
 }

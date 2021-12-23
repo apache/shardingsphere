@@ -67,6 +67,7 @@ execute
     | createSequence
     | createDomain
     | createRule
+    | createSchema
     | dropDatabase
     | dropFunction
     | dropProcedure
