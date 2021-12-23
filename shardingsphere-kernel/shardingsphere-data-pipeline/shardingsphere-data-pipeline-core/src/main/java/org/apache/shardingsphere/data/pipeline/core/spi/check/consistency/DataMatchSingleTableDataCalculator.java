@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.Collection;

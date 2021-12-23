@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
