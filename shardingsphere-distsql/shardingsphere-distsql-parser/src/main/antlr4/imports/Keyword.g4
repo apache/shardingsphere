@@ -174,3 +174,7 @@ METADATA
 SQL_PARSER
     : S Q L UL_ P A R S E R
     ;
+
+AUTHORITY
+    : A U T H O R I T Y
+    ;
