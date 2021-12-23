@@ -47,10 +47,11 @@ sql> show single table rules;
 *single tables*
 ```sql
 mysql> show single tables;
-+------------+---------------+
-| table_name | resource_name |
-+------------+---------------+
-| t_single   | ds_0          |
-+------------+---------------+
-1 row in set (0.05 sec)
++--------------+---------------+
+| table_name   | resource_name |
++--------------+---------------+
+| t_single_0   | ds_0          |
+| t_single_1   | ds_1          |
++--------------+---------------+
+2 rows in set (0.02 sec)
 ```

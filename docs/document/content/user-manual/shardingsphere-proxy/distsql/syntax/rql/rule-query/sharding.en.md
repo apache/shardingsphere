@@ -66,7 +66,7 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | Column | Description          |
 | -------| ---------------------|
 | name   | Sharding rule name   |
-| nodes  | Sharding node        |
+| nodes  | Sharding nodes        |
 
 ### Sharding Binding Table Rule
 
