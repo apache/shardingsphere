@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.instance;
+package org.apache.shardingsphere.infra.instance;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.mode.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.junit.Test;
 
 import java.lang.management.ManagementFactory;

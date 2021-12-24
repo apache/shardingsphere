@@ -48,7 +48,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     @Test
     public void assertBuild() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "ha_heartbeat", "discoveryTypeName");
+        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "discoveryTypeName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         when(algorithmProvidedRuleConfig.getDiscoveryHeartbeats()).thenReturn(Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())));
         when(algorithmProvidedRuleConfig.getDiscoveryTypes()).thenReturn(Collections.singletonMap("discoveryTypeName", new TestDatabaseDiscoveryType()));
