@@ -183,11 +183,11 @@
             <data-source>resource1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec"/>
+                    <property key="group-name" value="92504d5b-6dec"/>
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+                <property key="keep-alive-cron" value="0/5 * * * * ?"/>
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
@@ -195,11 +195,11 @@
             <data-source>resource3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec-2"/>
+                    <property key="group-name" value="92504d5b-6dec-2"/>
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/6 * * * * ?"/>
+                <property key="keep-alive-cron" value="0/6 * * * * ?"/>
             </heartbeat>
         </rule>
     </create-database-discovery-definition-rule>
@@ -215,7 +215,7 @@
         <type discovery-type-name="primary_replica_ds_mgr">
             <algorithm algorithm-name="mgr">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec"/>
+                    <property key="group-name" value="92504d5b-6dec"/>
                 </properties>
             </algorithm>
         </type>
@@ -228,7 +228,7 @@
     <create-database-discovery-heartbeat sql-case-id="create-database-discovery-heartbeat">
         <rule heartbeat-name="mgr_heartbeat" >
             <properties>
-                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+                <property key="keep-alive-cron" value="0/5 * * * * ?"/>
             </properties>
         </rule>
     </create-database-discovery-heartbeat>
@@ -239,11 +239,11 @@
             <data-source>resource1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec"/>
+                    <property key="group-name" value="92504d5b-6dec"/>
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+                <property key="keep-alive-cron" value="0/5 * * * * ?"/>
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
@@ -251,11 +251,11 @@
             <data-source>resource3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec-2"/>
+                    <property key="group-name" value="92504d5b-6dec-2"/>
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/6 * * * * ?"/>
+                <property key="keep-alive-cron" value="0/6 * * * * ?"/>
             </heartbeat>
         </rule>
     </create-database-discovery-definition-rule>
