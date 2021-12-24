@@ -14,6 +14,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
+spring.shardingsphere.datasource.names=ds-0
+
 spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.props.aes-key-value=123456abc
 spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.type=assistedTest

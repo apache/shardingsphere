@@ -55,14 +55,11 @@ public final class ResultSetUtil {
         if (value.getClass() == convertType) {
             return value;
         }
-        if (LocalDateTime.class.equals(convertType)) {
-            return convertLocalDateTimeValue(value);
+        if (value instanceof LocalDateTime) {
+            return convertLocalDateTimeValue(value, convertType);
         }
-        if (LocalDate.class.equals(convertType)) {
-            return convertLocalDateValue(value);
-        }
-        if (LocalTime.class.equals(convertType)) {
-            return convertLocalTimeValue(value);
+        if (value instanceof Timestamp) {
+            return convertTimestampValue(value, convertType);
         }
         if (URL.class.equals(convertType)) {
             return convertURL(value);
@@ -124,22 +121,29 @@ public final class ResultSetUtil {
         }
         return value;
     }
-
-    private static Object convertLocalDateTimeValue(final Object value) {
-        Timestamp timestamp = (Timestamp) value;
-        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    
+    private static Object convertLocalDateTimeValue(final Object value, final Class<?> convertType) {
+        LocalDateTime localDateTime = (LocalDateTime) value;
+        if (Timestamp.class.equals(convertType)) {
+            return Timestamp.valueOf(localDateTime);
+        }
+        return value;
     }
-
-    private static Object convertLocalDateValue(final Object value) {
+    
+    private static Object convertTimestampValue(final Object value, final Class<?> convertType) {
         Timestamp timestamp = (Timestamp) value;
-        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (LocalDateTime.class.equals(convertType)) {
+            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        }
+        if (LocalDate.class.equals(convertType)) {
+            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+        if (LocalTime.class.equals(convertType)) {
+            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        }
+        return value;
     }
-
-    private static Object convertLocalTimeValue(final Object value) {
-        Timestamp timestamp = (Timestamp) value;
-        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-    }
-
+    
     private static Object convertNullValue(final Class<?> convertType) {
         switch (convertType.getName()) {
             case "boolean":

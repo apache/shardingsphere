@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * JDBC data source configuration for YAML.
+ * PostgreSQL create schema statement.
  */
-@Getter
-@Setter
-public final class YamlJDBCDataSourceConfiguration implements YamlConfiguration {
-    
-    private String type;
-    
-    private String parameter;
+@ToString
+public final class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
 }

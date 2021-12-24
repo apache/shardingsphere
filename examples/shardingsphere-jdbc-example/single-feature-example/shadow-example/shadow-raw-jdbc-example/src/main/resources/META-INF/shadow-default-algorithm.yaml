@@ -70,7 +70,8 @@ rules:
         props:
           shadow: true
           foo: bar
+  - !SQL_PARSER
+    sqlCommentParseEnabled: true
 
 props:
   sql-show: true
-  sql-comment-parse-enabled: true
