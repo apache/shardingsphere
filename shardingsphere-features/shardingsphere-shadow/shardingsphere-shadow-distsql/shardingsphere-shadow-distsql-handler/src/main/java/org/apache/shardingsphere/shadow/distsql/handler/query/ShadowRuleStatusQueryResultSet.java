@@ -56,7 +56,7 @@ public final class ShadowRuleStatusQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<Object> getRowData() {
-        return Collections.singletonList(data.next().toString());
+        return Collections.singletonList(data.next() ? "enabled" : "disabled");
     }
     
     @Override
