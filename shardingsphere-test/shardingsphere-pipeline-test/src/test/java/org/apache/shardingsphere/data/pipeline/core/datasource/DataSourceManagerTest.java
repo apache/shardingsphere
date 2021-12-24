@@ -45,15 +45,15 @@ public final class DataSourceManagerTest {
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap());
+        DataSource actual = dataSourceManager.getDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).newInstance());
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
-            dataSourceManager.createSourceDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap());
-            dataSourceManager.createTargetDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getTarget()).unwrap());
+            dataSourceManager.createSourceDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).newInstance());
+            dataSourceManager.createTargetDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getTarget()).newInstance());
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));

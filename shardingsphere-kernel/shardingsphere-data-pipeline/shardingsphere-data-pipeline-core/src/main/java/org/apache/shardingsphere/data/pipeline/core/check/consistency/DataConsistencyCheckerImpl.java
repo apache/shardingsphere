@@ -82,8 +82,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).newInstance();
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).newInstance();
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
@@ -111,9 +111,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, Boolean> dataCheck(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
         
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).newInstance();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).newInstance();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
                 .distinct().collect(Collectors.toList());

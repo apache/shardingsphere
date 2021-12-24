@@ -51,11 +51,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     protected final DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).unwrap());
+        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).newInstance());
     }
     
     protected final DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).unwrap());
+        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).newInstance());
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

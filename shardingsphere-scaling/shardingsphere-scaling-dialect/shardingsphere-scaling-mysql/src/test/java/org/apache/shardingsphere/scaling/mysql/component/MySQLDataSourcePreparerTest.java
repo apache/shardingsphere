@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
@@ -51,10 +51,10 @@ public final class MySQLDataSourcePreparerTest {
     private RuleConfiguration ruleConfig;
     
     @Mock
-    private JDBCDataSourceConfigurationWrapper sourceDataSourceConfigWrapper;
+    private JDBCDataSourceConfigurationFactory sourceDataSourceConfigWrapper;
     
     @Mock
-    private JDBCDataSourceConfigurationWrapper targetDataSourceConfigWrapper;
+    private JDBCDataSourceConfigurationFactory targetDataSourceConfigWrapper;
     
     @Mock
     private ShardingSphereJDBCDataSourceConfiguration sourceScalingDataSourceConfig;
@@ -73,7 +73,7 @@ public final class MySQLDataSourcePreparerTest {
         when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
         when(ruleConfig.getSource()).thenReturn(new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(sourceDataSourceConfigWrapper));
-        when(sourceDataSourceConfigWrapper.unwrap()).thenReturn(sourceScalingDataSourceConfig);
+        when(sourceDataSourceConfigWrapper.newInstance()).thenReturn(sourceScalingDataSourceConfig);
         when(JDBCDataSourceCreatorFactory.getInstance(
                 sourceScalingDataSourceConfig.getType()).createDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
         when(ruleConfig.getTarget()).thenReturn(new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(targetDataSourceConfigWrapper));

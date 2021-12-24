@@ -17,50 +17,35 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * JDBC data source configuration wrapper.
+ * JDBC data source configuration factory.
  */
 @RequiredArgsConstructor
 @Getter
-public final class JDBCDataSourceConfigurationWrapper {
+public final class JDBCDataSourceConfigurationFactory {
     
     private final String type;
     
     private final String parameter;
     
     /**
-     * Unwrap.
+     * Get new instance of JDBC data source configuration.
      *
-     * @return typed data source configuration
+     * @return new instance of JDBC data source configuration
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public JDBCDataSourceConfiguration unwrap() {
-        Map<String, Class<?>> classMap = DataSourceConfigurationHolder.getInstances();
-        Preconditions.checkArgument(classMap.containsKey(type.toLowerCase()), "Unsupported data source type '%s'", type);
-        return (JDBCDataSourceConfiguration) classMap.get(type.toLowerCase()).getConstructor(String.class).newInstance(parameter);
-    }
-    
-    private static class DataSourceConfigurationHolder {
-        
-        private static final Map<String, Class<?>> INSTANCES = new HashMap<>(2, 1);
-        
-        static {
-            INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
-            INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
-        }
-        
-        private static Map<String, Class<?>> getInstances() {
-            return INSTANCES;
+    public JDBCDataSourceConfiguration newInstance() {
+        switch (type) {
+            case StandardJDBCDataSourceConfiguration.TYPE:
+                return new StandardJDBCDataSourceConfiguration(parameter);
+            case ShardingSphereJDBCDataSourceConfiguration.TYPE:
+                return new ShardingSphereJDBCDataSourceConfiguration(parameter);
+            default:
+                throw new UnsupportedOperationException(String.format("Unsupported data source type '%s'", type));
         }
     }
 }

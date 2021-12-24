@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml;
 
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * JDBC data source YAML configuration swapper.
  */
-public final class JDBCDataSourceYamlConfigurationSwapper implements YamlConfigurationSwapper<YamlJDBCDataSourceConfiguration, JDBCDataSourceConfigurationWrapper> {
+public final class JDBCDataSourceYamlConfigurationSwapper implements YamlConfigurationSwapper<YamlJDBCDataSourceConfiguration, JDBCDataSourceConfigurationFactory> {
     
     @Override
-    public YamlJDBCDataSourceConfiguration swapToYamlConfiguration(final JDBCDataSourceConfigurationWrapper data) {
+    public YamlJDBCDataSourceConfiguration swapToYamlConfiguration(final JDBCDataSourceConfigurationFactory data) {
         YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
         result.setType(data.getType());
         result.setParameter(data.getParameter());
@@ -34,7 +34,7 @@ public final class JDBCDataSourceYamlConfigurationSwapper implements YamlConfigu
     }
     
     @Override
-    public JDBCDataSourceConfigurationWrapper swapToObject(final YamlJDBCDataSourceConfiguration yamlConfig) {
-        return new JDBCDataSourceConfigurationWrapper(yamlConfig.getType(), yamlConfig.getParameter());
+    public JDBCDataSourceConfigurationFactory swapToObject(final YamlJDBCDataSourceConfiguration yamlConfig) {
+        return new JDBCDataSourceConfigurationFactory(yamlConfig.getType(), yamlConfig.getParameter());
     }
 }
