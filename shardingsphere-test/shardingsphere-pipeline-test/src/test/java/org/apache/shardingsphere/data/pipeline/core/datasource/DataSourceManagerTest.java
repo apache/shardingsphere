@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
 import org.junit.Before;
 import org.junit.Test;
 
