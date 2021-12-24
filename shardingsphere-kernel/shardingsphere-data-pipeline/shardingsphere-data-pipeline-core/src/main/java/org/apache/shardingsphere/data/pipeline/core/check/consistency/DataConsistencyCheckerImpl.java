@@ -32,6 +32,9 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
@@ -39,8 +42,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -120,10 +123,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
             .distinct().collect(Collectors.toList());
-        Map<String, Collection<String>> tablesColumnNamesMap = getTablesColumnNamesMap(sourceConfig);
+        Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceConfig, logicTableNames);
         logicTableNames.forEach(each -> {
             //TODO put to preparer
-            if (!tablesColumnNamesMap.containsKey(each)) {
+            if (!tableMetaDataMap.containsKey(each)) {
                 throw new DataCheckFailException(String.format("could not get table columns for '%s'", each));
             }
         });
@@ -137,13 +140,13 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             for (String each : logicTableNames) {
-                Collection<String> columnNames = tablesColumnNamesMap.get(each);
-                // TODO now build param: uniqueKey
+                Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
+                String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
                 // TODO rate limit if it's chunked
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).build();
+                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).build();
+                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
                 Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.calculate(sourceCalculateParameter).iterator();
                 Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
@@ -174,14 +177,11 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private Map<String, Collection<String>> getTablesColumnNamesMap(final JDBCDataSourceConfiguration dataSourceConfig) {
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
-             Connection connection = dataSource.getConnection()) {
-            Map<String, Collection<String>> result = new LinkedHashMap<>();
-            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, "%", "%")) {
-                while (resultSet.next()) {
-                    result.computeIfAbsent(resultSet.getString("TABLE_NAME"), tableName -> new ArrayList<>()).add(resultSet.getString("COLUMN_NAME"));
-                }
+    private Map<String, TableMetaData> getTablesColumnsMap(final JDBCDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
+            Map<String, TableMetaData> result = new LinkedHashMap<>();
+            for (TableMetaData each : TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoaderMaterial(tableNames, dataSource)), dataSourceConfig.getDatabaseType())) {
+                result.put(each.getName(), each);
             }
             return result;
         } catch (final SQLException ex) {
