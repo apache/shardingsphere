@@ -64,12 +64,6 @@ public final class DataCalculateParameter {
     private String uniqueKey;
     
     /**
-     * Chunk size of limited records to be calculated in a batch.
-     */
-    // TODO remove chunkSize
-    private Integer chunkSize;
-    
-    /**
      * Previous calculated result will be transferred to next call.
      */
     private volatile Object previousCalculatedResult;

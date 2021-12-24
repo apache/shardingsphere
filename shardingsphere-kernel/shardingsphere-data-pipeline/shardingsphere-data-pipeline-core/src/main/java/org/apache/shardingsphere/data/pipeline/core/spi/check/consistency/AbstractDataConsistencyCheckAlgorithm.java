@@ -17,37 +17,42 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorRegistry;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 
 import java.util.Properties;
 
 /**
- * Abstract single table data calculator.
+ * Abstract data consistency check algorithm.
  */
-public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
+public abstract class AbstractDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private Properties props = new Properties();
     
-    private Properties algorithmProps;
-    
-    protected final DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
-        return dataSourceFactory.newInstance(dataSourceConfig);
+    @Override
+    public Properties getProps() {
+        return props;
     }
     
     @Override
-    public Properties getAlgorithmProps() {
-        return algorithmProps;
-    }
-    
-    @Override
-    public void setAlgorithmProps(final Properties algorithmProps) {
-        this.algorithmProps = algorithmProps;
+    public void setProps(final Properties props) {
+        this.props = props;
     }
     
     @Override
     public void init() {
+    }
+    
+    @Override
+    public String getProvider() {
+        return "ShardingSphere";
+    }
+    
+    @Override
+    public final SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
+        SingleTableDataCalculator result = SingleTableDataCalculatorRegistry.newServiceInstance(getType(), supportedDatabaseType);
+        result.setAlgorithmProps(props);
+        return result;
     }
 }

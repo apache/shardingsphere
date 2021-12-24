@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Single table data calculator interface, SPI.
@@ -42,6 +43,26 @@ public interface SingleTableDataCalculator {
      * @return database types
      */
     Collection<String> getDatabaseTypes();
+    
+    /**
+     * Get algorithm properties.
+     *
+     * @return properties
+     */
+    Properties getAlgorithmProps();
+    
+    /**
+     * Set algorithm properties.
+     * Used by data consistency check algorithm.
+     *
+     * @param algorithmProps algorithm properties
+     */
+    void setAlgorithmProps(Properties algorithmProps);
+    
+    /**
+     * Initialize create data calculator.
+     */
+    void init();
     
     /**
      * Calculate table data content, return checksum typically.

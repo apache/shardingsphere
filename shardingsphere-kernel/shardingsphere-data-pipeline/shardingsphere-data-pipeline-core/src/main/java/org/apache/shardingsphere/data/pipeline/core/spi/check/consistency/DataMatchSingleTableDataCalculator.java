@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -35,13 +37,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data match implementation of single table data calculator.
  */
+@Slf4j
 public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
     
     private static final Collection<String> DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
+    
+    private static final String CHUNK_SIZE_KEY = "chunk-size";
+    
+    private volatile int chunkSize = 1000;
     
     @Override
     public String getAlgorithmType() {
@@ -54,14 +62,23 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     }
     
     @Override
+    public void init() {
+        Properties algorithmProps = getAlgorithmProps();
+        String chunkSizeValue = algorithmProps.getProperty(CHUNK_SIZE_KEY);
+        if (!Strings.isNullOrEmpty(chunkSizeValue)) {
+            int chunkSize = Integer.parseInt(chunkSizeValue);
+            if (chunkSize <= 0) {
+                log.warn("invalid chunkSize={}, use default value", chunkSize);
+            }
+            this.chunkSize = chunkSize;
+        }
+    }
+    
+    @Override
     protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
-        Integer chunkSize = dataCalculateParameter.getChunkSize();
-        if (null == chunkSize) {
-            chunkSize = 1000;
-        }
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
         Number startUniqueValue = (null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueValue() : 0).longValue() - 1;
         String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueValue);

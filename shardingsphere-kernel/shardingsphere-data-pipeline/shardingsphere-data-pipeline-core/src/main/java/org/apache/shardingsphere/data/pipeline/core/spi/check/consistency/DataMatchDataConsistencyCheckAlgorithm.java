@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorRegistry;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.Collection;
@@ -27,15 +24,11 @@ import java.util.Collection;
 /**
  * Data match implementation of data consistency check algorithm.
  */
-public final class DataMatchDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
+public final class DataMatchDataConsistencyCheckAlgorithm extends AbstractDataConsistencyCheckAlgorithm {
     
     public static final String TYPE = "DATA_MATCH";
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
-    
-    @Override
-    public void init() {
-    }
     
     @Override
     public String getDescription() {
@@ -45,16 +38,6 @@ public final class DataMatchDataConsistencyCheckAlgorithm implements DataConsist
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
-    }
-    
-    @Override
-    public String getProvider() {
-        return "ShardingSphere";
-    }
-    
-    @Override
-    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        return SingleTableDataCalculatorRegistry.newServiceInstance(TYPE, supportedDatabaseType);
     }
     
     @Override
