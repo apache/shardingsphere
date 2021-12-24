@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCreateDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCurrentDatabaseExecutor;
@@ -100,10 +103,10 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
                     || isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
                 return Optional.of(new ShowCurrentUserExecutor());
             }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
+            if ((!hasSchemas() || !hasDatasource()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
                 return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
             }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
+            if (!hasSchemas() || !hasDatasource() && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
                 return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
             }
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
@@ -115,6 +118,9 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             if (isQueryPerformanceSchema((SelectStatement) sqlStatement)) {
                 // TODO
                 return Optional.empty();
+            }
+            if (!hasSchemas() || !hasDatasource()) {
+                return Optional.of(new NoResourceShowExecutor((SelectStatement) sqlStatement));
             }
         }
         return Optional.empty();
@@ -139,6 +145,14 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             return false;
         }
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
+    }
+    
+    private boolean hasSchemas() {
+        return !ProxyContext.getInstance().getAllSchemaNames().isEmpty();
+    }
+    
+    private boolean hasDatasource() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap().values().stream().anyMatch(ShardingSphereMetaData::hasDataSource);
     }
     
     @Override

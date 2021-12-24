@@ -31,7 +31,7 @@ import java.sql.Types;
 import java.util.Collections;
 
 /**
- * Show connection id executor.
+ * Show transaction executor.
  */
 @Getter
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public final class ShowTransactionExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String row = functionName.equals(TRANSACTION_ISOLATION) ? "0" : "REPEATABLE-READ";
+        String row = functionName.equals(TRANSACTION_ISOLATION) ? "REPEATABLE-READ" : "0";
         mergedResult = new SingleLocalDataMergedResult(Collections.singleton(row));
     }
     

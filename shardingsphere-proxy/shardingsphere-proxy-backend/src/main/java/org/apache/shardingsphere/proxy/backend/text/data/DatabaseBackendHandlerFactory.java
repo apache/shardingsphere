@@ -20,14 +20,17 @@ package org.apache.shardingsphere.proxy.backend.text.data;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceSetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
@@ -47,11 +50,22 @@ public final class DatabaseBackendHandlerFactory {
     public static DatabaseBackendHandler newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SetStatement || sqlStatement instanceof DCLStatement) {
+            if (!hasSchemas() || !hasDatasource()) {
+                return new NoResourceSetExecutor((SetStatement) sqlStatement);
+            }
             return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
             return new UnicastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         return new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
+    }
+    
+    private static boolean hasSchemas() {
+        return !ProxyContext.getInstance().getAllSchemaNames().isEmpty();
+    }
+    
+    private static boolean hasDatasource() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap().values().stream().anyMatch(ShardingSphereMetaData::hasDataSource);
     }
 }
