@@ -56,7 +56,6 @@
     <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL" />
     <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_language" value="DROP LANGUAGE alt_lang2 CASCADE" db-types="PostgreSQL" />
-    <sql-case id="drop_schema" value="DROP SCHEMA alt_nsp1 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
     <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
     <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />

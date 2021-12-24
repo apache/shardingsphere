@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-schema sql-case-id="drop_schema" />
+    <drop-schema sql-case-id="drop_schema_behavior" />
 </sql-parser-test-cases>
