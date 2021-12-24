@@ -76,7 +76,8 @@ public final class ShowTablesExecutorTest {
         tables.put("t_test", new TableMetaData("T_TEST"));
         ShardingSphereSchema schema = new ShardingSphereSchema(tables);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getSchema()).thenReturn(schema); when(metaData.isComplete()).thenReturn(true);
+        when(metaData.getSchema()).thenReturn(schema);
+        when(metaData.isComplete()).thenReturn(true);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return Collections.singletonMap(String.format(SCHEMA_PATTERN, 0), metaData);
     }
@@ -154,7 +155,6 @@ public final class ShowTablesExecutorTest {
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         assertFalse(showTablesExecutor.getMergedResult().next());
     }
-    
     
     @Test
     public void assertShowTablesExecutorWithUnexpectedUpperCase() throws SQLException {
