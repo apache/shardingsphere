@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | dropShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
-    | disableShadowRule
-    | enableShadowRule
-    | showShadowStatus
-    ) SEMI?
-    ;
+/**
+ * Show shadow rule status statement.
+ */
+@Getter
+public final class ShowShadowRuleStatusStatement extends ShowRulesStatement {
+    
+    public ShowShadowRuleStatusStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}
