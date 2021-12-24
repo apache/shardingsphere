@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
