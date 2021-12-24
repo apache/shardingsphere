@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
+// TODO extract abstract class
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
@@ -103,8 +104,8 @@ public abstract class AbstractSingleTableDataCalculator implements SingleTableDa
             if (!nextResult.isPresent()) {
                 log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
             }
-            if (calculationCount.incrementAndGet() > 100_0000) {
-                log.warn("seems infinite loop, break. calculationCount={}", calculationCount);
+            if (calculationCount.incrementAndGet() % 100_0000 == 0) {
+                log.warn("possible infinite loop, calculationCount={}", calculationCount);
             }
         }
     }

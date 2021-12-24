@@ -139,7 +139,6 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tablesColumnNamesMap.get(each);
                 // TODO now build param: uniqueKey
-                // TODO now build param: chunkSize
                 // TODO rate limit if it's chunked
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();

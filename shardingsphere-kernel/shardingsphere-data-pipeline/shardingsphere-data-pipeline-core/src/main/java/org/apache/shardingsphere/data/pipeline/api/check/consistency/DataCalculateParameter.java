@@ -58,18 +58,19 @@ public final class DataCalculateParameter {
     private String peerDatabaseType;
     
     /**
-     * If {@link #chunkSize} exists, it could be used in order by clause.
      * It could be primary key.
+     * It could be used in order by clause.
      */
     private String uniqueKey;
     
     /**
      * Chunk size of limited records to be calculated in a batch.
      */
+    // TODO remove chunkSize
     private Integer chunkSize;
     
     /**
-     * If {@link #chunkSize} exists, previous calculated result will be transferred to next call.
+     * Previous calculated result will be transferred to next call.
      */
     private volatile Object previousCalculatedResult;
 }
