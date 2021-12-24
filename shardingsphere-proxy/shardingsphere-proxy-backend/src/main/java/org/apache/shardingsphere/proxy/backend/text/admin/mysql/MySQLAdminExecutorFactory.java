@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowPro
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTransactionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -98,6 +99,12 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
                     || isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
                 return Optional.of(new ShowCurrentUserExecutor());
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
+                return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
+            }
+            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
+                return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
             }
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
                 return Optional.of(new ShowCurrentDatabaseExecutor());
