@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateLanguageContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTablespaceContext;
@@ -577,6 +578,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitCreateLanguage(final CreateLanguageContext ctx) {
+        return new PostgreSQLCreateLanguageStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
         return new PostgreSQLCreateLanguageStatement();
     }
     

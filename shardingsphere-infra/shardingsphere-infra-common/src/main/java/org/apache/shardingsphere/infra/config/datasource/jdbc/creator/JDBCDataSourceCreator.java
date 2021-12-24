@@ -30,10 +30,9 @@ public interface JDBCDataSourceCreator extends TypedSPI {
     /**
      * Create data source.
      *
-     * @param parameter data source configuration
      * @param dataSourceConfig data source configuration
      * @return data source
      * @throws SQLException if create data source failed
      */
-    DataSource createDataSource(String parameter, Object dataSourceConfig) throws SQLException;
+    DataSource createDataSource(Object dataSourceConfig) throws SQLException;
 }

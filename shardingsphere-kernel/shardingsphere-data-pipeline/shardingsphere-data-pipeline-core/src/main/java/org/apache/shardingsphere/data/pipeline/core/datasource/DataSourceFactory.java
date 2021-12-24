@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 
 import java.sql.SQLException;
 
@@ -35,6 +36,6 @@ public final class DataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public DataSourceWrapper newInstance(final JDBCDataSourceConfiguration dataSourceConfig) {
-        return new DataSourceWrapper(dataSourceConfig.toDataSource());
+        return new DataSourceWrapper(JDBCDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createDataSource(dataSourceConfig.getDataSourceConfiguration()));
     }
 }

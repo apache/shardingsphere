@@ -14,6 +14,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
+spring.shardingsphere.datasource.names=ds-0,ds-1
+
 spring.shardingsphere.rules.shadow.enable=true
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name=ds-0
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name=ds-1
