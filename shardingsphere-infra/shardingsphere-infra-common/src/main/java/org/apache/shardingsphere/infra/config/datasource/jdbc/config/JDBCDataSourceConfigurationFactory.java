@@ -17,28 +17,25 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 
 /**
  * JDBC data source configuration factory.
  */
-@RequiredArgsConstructor
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCDataSourceConfigurationFactory {
-    
-    private final String type;
-    
-    private final String parameter;
     
     /**
      * Get new instance of JDBC data source configuration.
      *
+     * @param type type of JDBC data source configuration
+     * @param parameter parameter of JDBC data source configuration
      * @return new instance of JDBC data source configuration
      */
-    public JDBCDataSourceConfiguration newInstance() {
+    public static JDBCDataSourceConfiguration newInstance(final String type, final String parameter) {
         switch (type) {
             case StandardJDBCDataSourceConfiguration.TYPE:
                 return new StandardJDBCDataSourceConfiguration(parameter);
