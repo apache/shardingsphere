@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
  * OpenGauss create schema statement.
  */
 @ToString
-public class OpenGaussCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
+public final class OpenGaussCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
 }

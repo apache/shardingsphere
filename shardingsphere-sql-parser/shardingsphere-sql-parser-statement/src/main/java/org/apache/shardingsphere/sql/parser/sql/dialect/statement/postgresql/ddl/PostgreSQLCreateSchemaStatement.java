@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  * PostgreSQL create schema statement.
  */
 @ToString
-public class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
 }
