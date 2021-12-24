@@ -65,18 +65,19 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        return getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
-                ? checkSortable(encryptCondition, getEncryptRule().getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues)) 
-                        : checkSortable(encryptCondition, getEncryptRule().getEncryptValues(schemaName, tableName, columnName, originalValues));
+        List<Object> result = getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
+                ? getEncryptRule().getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues) 
+                        : getEncryptRule().getEncryptValues(schemaName, tableName, columnName, originalValues);
+        checkSortable(encryptCondition, result);
+        return result;
     }
     
-    private List<Object> checkSortable(final EncryptCondition encryptCondition, final List<Object> values) {
+    private void checkSortable(final EncryptCondition encryptCondition, final List<Object> values) {
         values.stream().forEach(each -> {
             if (encryptCondition.isSortable() && !(each instanceof Number)) {
                 throw new ShardingSphereException("The SQL clause is unsupported in encrypt rule as not sortable encrypted values.");
             }
         });
-        return values;
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
