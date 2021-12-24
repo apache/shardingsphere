@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.utils;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class IpUtilsTest {
-    
-    @Test
-    public void getIp() {
-        assertNotNull(IpUtils.getIp());
-    }
+/**
+ * OpenGauss create language statement.
+ */
+@ToString
+public final class OpenGaussCreateLanguageStatement extends CreateLanguageStatement implements OpenGaussStatement {
 }

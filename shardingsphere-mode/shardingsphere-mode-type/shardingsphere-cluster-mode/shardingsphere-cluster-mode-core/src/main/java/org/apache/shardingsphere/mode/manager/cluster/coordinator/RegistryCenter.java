@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mode.instance.Instance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
@@ -51,7 +52,7 @@ public final class RegistryCenter {
     
     public RegistryCenter(final ClusterPersistRepository repository, final Integer port) {
         this.repository = repository;
-        ClusterInstance.getInstance().init(port);
+        Instance.getInstance().init(port);
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         lockService = new LockRegistryService(repository);

@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.instance;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
+import org.apache.shardingsphere.mode.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
 
 /**
- * Cluster instance.
+ * Instance.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ClusterInstance {
+public final class Instance {
     
     private static final String DELIMITER = "@";
     
-    private static final ClusterInstance INSTANCE = new ClusterInstance();
+    private static final Instance INSTANCE = new Instance();
     
     private volatile String id;
     
     /**
-     * Init cluster instance.
+     * Init instance.
      * 
      * @param port port
      */
@@ -62,7 +62,7 @@ public final class ClusterInstance {
      *
      * @return singleton instance
      */
-    public static ClusterInstance getInstance() {
+    public static Instance getInstance() {
         return INSTANCE;
     }
 }

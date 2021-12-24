@@ -38,14 +38,12 @@
     <sql-case id="create_type" value="create type avg_state as (total bigint, count bigint);" db-types="PostgreSQL" />
     <sql-case id="create_aggregate" value="create aggregate my_avg(int4) (stype = avg_state, sfunc = avg_transfn, finalfunc = avg_finalfn)" db-types="PostgreSQL"/>
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
-    <sql-case id="create_schema" value="CREATE SCHEMA alt_nsp1;" db-types="PostgreSQL" />
     <sql-case id="alter_aggregate" value="ALTER AGGREGATE alt_agg3(int) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
     <sql-case id="create_conversion" value="CREATE CONVERSION alt_conv1 FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;" db-types="PostgreSQL" />
     <sql-case id="alter_conversion" value="ALTER CONVERSION alt_conv1 RENAME TO alt_conv2;" db-types="PostgreSQL" />
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
-    <sql-case id="create_language" value="CREATE LANGUAGE alt_lang1 HANDLER plpgsql_call_handler" db-types="PostgreSQL" />
     <sql-case id="alter_language" value="ALTER LANGUAGE alt_lang1 OWNER TO regress_alter_generic_user1" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />

@@ -23,8 +23,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingRuleConstants;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -127,8 +127,8 @@ public final class ReadwriteSplittingDataSourceRule {
         Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
         if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
             Map<String, String> result = new HashMap<>(2, 1);
-            result.put(ReadwriteSplittingRuleConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.put(ReadwriteSplittingRuleConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
+            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
+            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
             return result;
         }
         return Collections.emptyMap();

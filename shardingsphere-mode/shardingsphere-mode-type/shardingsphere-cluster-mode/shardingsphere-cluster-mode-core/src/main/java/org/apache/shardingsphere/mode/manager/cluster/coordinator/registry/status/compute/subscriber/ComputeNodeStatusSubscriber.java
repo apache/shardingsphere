@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.mode.instance.Instance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
@@ -44,7 +44,7 @@ public final class ComputeNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final ComputeNodeStatusChangedEvent event) {
-        String computeNodePath = ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER, ClusterInstance.getInstance().getInstanceId(event.getIp(), event.getPort()));
+        String computeNodePath = ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER, Instance.getInstance().getInstanceId(event.getIp(), event.getPort()));
         if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAKER) {
             repository.persist(computeNodePath, "");
         } else {

@@ -14,6 +14,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
+spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
+
 spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
 spring.shardingsphere.datasource.ds-2.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-2.driver-class-name=com.mysql.jdbc.Driver

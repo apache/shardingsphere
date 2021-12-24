@@ -31,7 +31,7 @@ public final class SchemaChangedEvent implements GovernanceEvent {
 
     private final String schemaName;
     
-    private final String table;
-
-    private final TableMetaData tableMetaData;
+    private final TableMetaData changedTableMetaData;
+    
+    private final String deletedTable;
 }

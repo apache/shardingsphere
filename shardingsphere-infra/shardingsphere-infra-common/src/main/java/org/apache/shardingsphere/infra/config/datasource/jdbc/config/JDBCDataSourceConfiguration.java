@@ -17,72 +17,47 @@
 
 package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
 
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
  * JDBC data source configuration.
  */
-public abstract class JDBCDataSourceConfiguration {
+public interface JDBCDataSourceConfiguration {
     
     /**
      * Get type.
      *
      * @return type
      */
-    public abstract String getType();
+    String getType();
     
     /**
      * Get parameter.
      *
      * @return parameter
      */
-    public abstract String getParameter();
+    String getParameter();
     
     /**
      * Get data source configuration, related to {@link #getParameter()}.
      *
      * @return data source configuration
      */
-    protected abstract Object getDataSourceConfiguration();
+    Object getDataSourceConfiguration();
     
     /**
      * Append JDBC parameters.
      *
      * @param parameters JDBC parameters
      */
-    public abstract void appendJDBCParameters(Map<String, String> parameters);
+    void appendJDBCParameters(Map<String, String> parameters);
     
     /**
      * Get database type.
      *
      * @return database type
      */
-    public abstract DatabaseType getDatabaseType();
-    
-    /**
-     * Wrap.
-     *
-     * @return JDBC data source configuration wrapper
-     */
-    public JDBCDataSourceConfigurationWrapper wrap() {
-        JDBCDataSourceConfigurationWrapper result = new JDBCDataSourceConfigurationWrapper();
-        result.setType(getType());
-        result.setParameter(getParameter());
-        return result;
-    }
-    
-    /**
-     * To data source.
-     *
-     * @return data source
-     * @throws SQLException SQL exception
-     */
-    public DataSource toDataSource() throws SQLException {
-        return JDBCDataSourceCreatorFactory.getInstance(getType()).createDataSource(getParameter(), getDataSourceConfiguration());
-    }
+    DatabaseType getDatabaseType();
 }

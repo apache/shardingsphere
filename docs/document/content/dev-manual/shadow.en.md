@@ -15,4 +15,4 @@ chapter = true
 | ------------------------------- | ----------------------------------- |
 | ColumnValueMatchShadowAlgorithm | Column value match shadow algorithm |
 | ColumnRegexMatchShadowAlgorithm | Column regex match shadow algorithm |
-| SimpleSQLNoteShadowAlgorithm    | Simple SQL note shadow algorithm    |
+| SimpleHintShadowAlgorithm    | Simple hint shadow algorithm    |

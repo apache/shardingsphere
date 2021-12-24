@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.mode.instance.Instance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -39,7 +39,7 @@ public final class LockRegistryService {
     private final ClusterPersistRepository repository;
     
     public LockRegistryService(final ClusterPersistRepository repository) {
-        instanceId = ClusterInstance.getInstance().getId();
+        instanceId = Instance.getInstance().getId();
         this.repository = repository;
         initLockNode();
     }
