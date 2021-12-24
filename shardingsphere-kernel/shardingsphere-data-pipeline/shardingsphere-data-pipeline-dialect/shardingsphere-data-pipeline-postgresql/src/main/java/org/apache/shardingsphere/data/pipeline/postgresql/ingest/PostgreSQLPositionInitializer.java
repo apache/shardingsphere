@@ -121,11 +121,11 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     /**
      * Get the unique slot name by connection.
      *
-     * @param conn the connection
+     * @param connection the connection
      * @return the unique name by connection
      * @throws SQLException failed when getCatalog
      */
-    public static String getUniqueSlotName(final Connection conn) throws SQLException {
-        return String.format("%s_%s", SLOT_NAME, conn.getCatalog());
+    public static String getUniqueSlotName(final Connection connection) throws SQLException {
+        return String.format("%s_%s", SLOT_NAME, connection.getCatalog());
     }
 }
