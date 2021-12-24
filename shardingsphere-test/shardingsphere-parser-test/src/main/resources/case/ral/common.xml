@@ -35,4 +35,5 @@
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" resource-name="ds_0"/>
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
+    <show-authority-rule sql-case-id="show-authority-rule"/>
 </sql-parser-test-cases>
