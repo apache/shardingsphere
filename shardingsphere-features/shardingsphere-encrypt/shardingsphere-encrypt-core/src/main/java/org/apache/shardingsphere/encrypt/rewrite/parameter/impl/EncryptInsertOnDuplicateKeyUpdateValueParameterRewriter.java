@@ -59,6 +59,9 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(schemaName, tableName, encryptLogicColumnName);
             encryptor.ifPresent(optional -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
+                if (plainColumnValue == null) {
+                    return;
+                }
                 Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue);
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();

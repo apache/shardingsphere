@@ -23,6 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
@@ -79,8 +80,16 @@ public final class OnDuplicateUpdateContext {
      */
     public Object getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        return valueExpression instanceof ParameterMarkerExpressionSegment 
-                ? parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            return parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression));
+        }
+        if (valueExpression instanceof FunctionSegment && ((FunctionSegment) valueExpression).getParameters().size() == 0) {
+            FunctionSegment functionSegment = (FunctionSegment) valueExpression;
+            if ("VALUES".equals(functionSegment.getFunctionName()) && functionSegment.getParameters().size() == 0) {
+                return null;
+            }
+        }
+        return ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
     private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {

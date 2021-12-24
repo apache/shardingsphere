@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -71,6 +72,12 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(tableName, assignmentSegment));
+        }
+        if (assignmentSegment.getValue() instanceof FunctionSegment) {
+            FunctionSegment functionSegment = (FunctionSegment) assignmentSegment.getValue();
+            if ("VALUES".equals(functionSegment.getFunctionName()) && functionSegment.getParameters().size() == 0) {
+                return Optional.of(generateLiteralSQLToken(schemaName, tableName, assignmentSegment));
+            }
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
             return Optional.of(generateLiteralSQLToken(schemaName, tableName, assignmentSegment));
