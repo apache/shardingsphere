@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -54,8 +53,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     }
     
     @Override
-    protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
-        // TODO support chunk, reuse previousCalculatedResult
+    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());
         List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
@@ -66,19 +64,15 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
                 throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
             }
         }).collect(Collectors.toList());
-        return null == result.get(0) ? Optional.empty() : Optional.of(result);
+        return Collections.unmodifiableList(result);
     }
     
-    private Long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
+    private long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            long result = resultSet.getLong(1);
-            if (0 != result) {
-                return result;
-            }
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getLong(1);
         }
     }
 }

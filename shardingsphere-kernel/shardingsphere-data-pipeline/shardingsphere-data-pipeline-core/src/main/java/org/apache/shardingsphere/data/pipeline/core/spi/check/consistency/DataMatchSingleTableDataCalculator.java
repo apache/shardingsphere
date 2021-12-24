@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * Data match implementation of single table data calculator.
  */
-public final class DataMatchSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
     
     private static final Collection<String> DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
     
