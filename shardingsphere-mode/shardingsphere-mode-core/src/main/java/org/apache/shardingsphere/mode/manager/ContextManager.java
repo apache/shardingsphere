@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -248,11 +249,15 @@ public final class ContextManager implements AutoCloseable {
     public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
         if (null != changedTableMetaData) {
             metaDataContexts.getMetaData(schemaName).getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
-            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).put(changedTableMetaData);
+            FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
+            schemaMetaData.put(changedTableMetaData);
+            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
         }
         if (null != deletedTable) {
             metaDataContexts.getMetaData(schemaName).getSchema().remove(deletedTable);
-            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName).remove(deletedTable);
+            FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
+            schemaMetaData.remove(deletedTable);
+            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
         }
     }
     

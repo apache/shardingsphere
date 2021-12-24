@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.context;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Optimizer context.
+ * Filterable table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizerContext {
+public final class FilterableTableScanExecutorContext {
     
-    private final SQLParserRule sqlParserRule;
+    private final String schemaName;
     
-    private final FederationMetaData federationMetaData;
+    private final List<Object> parameters;
+
+    private final ConfigurationProperties props;
     
-    private final Map<String, OptimizerParserContext> parserContexts;
-    
-    private final Map<String, OptimizerPlannerContext> plannerContexts;
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
 }

@@ -48,6 +48,6 @@ public final class OptimizerContextFactory {
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(metaDataMap);
         Map<String, OptimizerPlannerContext> plannerContexts = OptimizerPlannerContextFactory.create(federationMetaData);
         SQLParserRule sqlParserRule = globalRuleMetaData.findSingleRule(SQLParserRule.class).orElse(null);
-        return new OptimizerContext(sqlParserRule, federationMetaData, metaDataMap, parserContexts, plannerContexts);
+        return new OptimizerContext(sqlParserRule, federationMetaData, parserContexts, plannerContexts);
     }
 }
