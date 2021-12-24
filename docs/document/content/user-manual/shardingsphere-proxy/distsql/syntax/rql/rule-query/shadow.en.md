@@ -112,7 +112,7 @@ mysql> show shadow rule status;
 +--------+
 | status |
 +--------+
-| true   |
+| enabled|
 +--------+
 1 row in set (0.01 sec)
 ```
