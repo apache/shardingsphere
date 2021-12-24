@@ -41,8 +41,8 @@ import java.util.Map;
  * ShardingSphere-JDBC data source configuration.
  */
 @Getter
-@EqualsAndHashCode(of = "parameter", callSuper = false)
-public final class ShardingSphereJDBCDataSourceConfiguration extends JDBCDataSourceConfiguration {
+@EqualsAndHashCode(of = "parameter")
+public final class ShardingSphereJDBCDataSourceConfiguration implements JDBCDataSourceConfiguration {
     
     public static final String TYPE = "ShardingSphereJDBC";
     
