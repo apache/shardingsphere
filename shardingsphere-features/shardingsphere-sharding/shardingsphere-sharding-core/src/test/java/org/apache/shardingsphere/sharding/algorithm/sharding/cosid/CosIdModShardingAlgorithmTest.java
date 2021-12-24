@@ -27,20 +27,21 @@ import org.junit.runners.Parameterized;
 import java.util.Collection;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class CosIdModShardingAlgorithmTest {
-
+    
     static final int DIVISOR = 4;
-
+    
     static final String LOGIC_NAME = "t_mod";
-
+    
     static final String COLUMN_NAME = "id";
-
+    
     static final String LOGIC_NAME_PREFIX = LOGIC_NAME + "_";
-
+    
     static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
-
+    
     static CosIdModShardingAlgorithm<Long> createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
@@ -50,56 +51,56 @@ public final class CosIdModShardingAlgorithmTest {
         shardingAlgorithm.init();
         return shardingAlgorithm;
     }
-
+    
     @RunWith(Parameterized.class)
     public static class PreciseValueDoShardingTest {
-
+        
         private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
-
+        
         private final long id;
-
+        
         public PreciseValueDoShardingTest(final long id) {
             this.id = id;
         }
-
+        
         @Before
         public void init() {
             shardingAlgorithm = createShardingAlg();
         }
-
+        
         @Parameterized.Parameters
         public static Number[] argsProvider() {
             return Arguments.of(1L, 2L, 3L, 4L, 5L, 6L);
         }
-
+        
         @Test
         public void assertDoSharding() {
             PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, id);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             String expected = LOGIC_NAME_PREFIX + (id % DIVISOR);
-            assertEquals(expected, actual);
+            assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class RangeValueDoShardingTest {
-
+        
         private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
-
+        
         private final Range<Long> rangeValue;
-
+        
         private final Collection<String> expected;
-
+        
         public RangeValueDoShardingTest(final Range<Long> rangeValue, final Collection<String> expected) {
             this.rangeValue = rangeValue;
             this.expected = expected;
         }
-
+        
         @Before
         public void init() {
             shardingAlgorithm = createShardingAlg();
         }
-
+        
         @Parameterized.Parameters
         public static Iterable<Object[]> argsProvider() {
             return Arguments.ofArrayElement(Arguments.of(Range.all(), ALL_NODES),
@@ -169,12 +170,12 @@ public final class CosIdModShardingAlgorithmTest {
                     Arguments.of(Range.atMost(3L), ALL_NODES), Arguments.of(Range.atMost(4L), ALL_NODES),
                     Arguments.of(Range.atMost(5L), ALL_NODES));
         }
-
+        
         @Test
         public void assertDoSharding() {
             RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
-            assertEquals(expected, actual);
+            assertThat(actual, is(expected));
         }
     }
 }
