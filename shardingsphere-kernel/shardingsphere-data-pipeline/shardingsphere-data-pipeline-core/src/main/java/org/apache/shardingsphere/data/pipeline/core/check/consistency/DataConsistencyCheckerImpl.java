@@ -33,8 +33,7 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
@@ -44,12 +43,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -181,11 +180,14 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
+    // TODO reuse metadata
     private Map<String, TableMetaData> getTablesColumnsMap(final JDBCDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
         try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
-            for (TableMetaData each : TableMetaDataLoaderEngine.load(Collections.singleton(new TableMetaDataLoaderMaterial(tableNames, dataSource)), dataSourceConfig.getDatabaseType())) {
-                result.put(each.getName(), each);
+            for (String each : tableNames) {
+                Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
+                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new DataCheckFailException("get table metadata failed, tableName=" + each));
+                result.put(each, tableMetaData);
             }
             return result;
         } catch (final SQLException ex) {

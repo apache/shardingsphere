@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
@@ -80,7 +81,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
-        Number startUniqueValue = (null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueValue() : 0).longValue() - 1;
+        Number startUniqueValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueValue() : -1;
         String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueValue);
         try {
             return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueValue, chunkSize);
@@ -117,6 +118,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     @EqualsAndHashCode
     private static final class CalculatedResult {
         
+        @NonNull
         private final Number maxUniqueValue;
         
         private final int recordCount;

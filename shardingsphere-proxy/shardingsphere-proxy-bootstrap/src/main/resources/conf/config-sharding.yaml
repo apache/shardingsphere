@@ -112,6 +112,8 @@
 #        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
 #      checkoutLocker:
 #        type: DEFAULT
 
@@ -211,5 +213,7 @@
 #        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
 #      checkoutLocker:
 #        type: DEFAULT
