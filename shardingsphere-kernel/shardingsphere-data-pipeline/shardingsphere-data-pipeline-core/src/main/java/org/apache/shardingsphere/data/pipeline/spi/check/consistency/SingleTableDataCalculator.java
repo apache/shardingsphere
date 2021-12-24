@@ -44,10 +44,10 @@ public interface SingleTableDataCalculator {
     Collection<String> getDatabaseTypes();
     
     /**
-     * Calculate table data, return checksum typically.
+     * Calculate table data content, return checksum typically.
      *
      * @param dataCalculateParameter data calculate parameter
      * @return calculated result, it will be used to check equality.
      */
-    Iterable<Object> dataCalculate(DataCalculateParameter dataCalculateParameter);
+    Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
 }

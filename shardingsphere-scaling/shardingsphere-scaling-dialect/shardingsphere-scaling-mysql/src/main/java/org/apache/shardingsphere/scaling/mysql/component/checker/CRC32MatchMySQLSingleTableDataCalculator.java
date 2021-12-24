@@ -54,7 +54,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     }
     
     @Override
-    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
+    protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         // TODO support chunk, reuse previousCalculatedResult
         String logicTableName = dataCalculateParameter.getLogicTableName();
         MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());

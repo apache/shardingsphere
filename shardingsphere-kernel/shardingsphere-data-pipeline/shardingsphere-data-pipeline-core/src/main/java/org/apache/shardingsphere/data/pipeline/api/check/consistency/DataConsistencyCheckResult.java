@@ -29,17 +29,17 @@ import lombok.ToString;
 @ToString
 public final class DataConsistencyCheckResult {
     
-    private final long sourceCount;
+    private final long sourceRecordsCount;
     
-    private final long targetCount;
+    private final long targetRecordsCount;
     
-    private final boolean countValid;
+    private final boolean recordsCountMatched;
     
-    private boolean dataValid;
+    private boolean recordsContentMatched;
     
-    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
-        this.sourceCount = sourceCount;
-        this.targetCount = targetCount;
-        countValid = sourceCount == targetCount;
+    public DataConsistencyCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
+        this.sourceRecordsCount = sourceRecordsCount;
+        this.targetRecordsCount = targetRecordsCount;
+        recordsCountMatched = sourceRecordsCount == targetRecordsCount;
     }
 }

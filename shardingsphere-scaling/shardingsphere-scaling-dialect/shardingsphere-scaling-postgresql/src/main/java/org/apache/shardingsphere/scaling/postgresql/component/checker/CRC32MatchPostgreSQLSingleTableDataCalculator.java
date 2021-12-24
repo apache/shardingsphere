@@ -44,8 +44,8 @@ public final class CRC32MatchPostgreSQLSingleTableDataCalculator extends Abstrac
     }
     
     @Override
-    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
-        //TODO PostgreSQL dataCalculate
+    protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
+        //TODO PostgreSQL calculateChunk
         return Optional.empty();
     }
 }

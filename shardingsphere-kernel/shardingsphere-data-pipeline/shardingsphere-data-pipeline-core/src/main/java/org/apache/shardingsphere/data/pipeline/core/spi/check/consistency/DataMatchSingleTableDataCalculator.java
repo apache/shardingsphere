@@ -54,7 +54,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
     }
     
     @Override
-    protected Optional<Object> calculateOnce(final DataCalculateParameter dataCalculateParameter) {
+    protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();

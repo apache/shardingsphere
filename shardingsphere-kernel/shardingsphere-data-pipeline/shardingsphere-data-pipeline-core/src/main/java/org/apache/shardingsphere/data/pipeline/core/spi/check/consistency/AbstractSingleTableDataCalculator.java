@@ -45,17 +45,17 @@ public abstract class AbstractSingleTableDataCalculator implements SingleTableDa
     }
     
     @Override
-    public final Iterable<Object> dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+    public final Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         return new ResultIterable(dataCalculateParameter);
     }
     
     /**
-     * Do calculation single time.
+     * Calculate chunked records at one time.
      *
      * @param dataCalculateParameter data calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<Object> calculateOnce(DataCalculateParameter dataCalculateParameter);
+    protected abstract Optional<Object> calculateChunk(DataCalculateParameter dataCalculateParameter);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
@@ -99,7 +99,7 @@ public abstract class AbstractSingleTableDataCalculator implements SingleTableDa
             if (null != nextResult) {
                 return;
             }
-            nextResult = calculateOnce(dataCalculateParameter);
+            nextResult = calculateChunk(dataCalculateParameter);
             if (!nextResult.isPresent()) {
                 log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
             }

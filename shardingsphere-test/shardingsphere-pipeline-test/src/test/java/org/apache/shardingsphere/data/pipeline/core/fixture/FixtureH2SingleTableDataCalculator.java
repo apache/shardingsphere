@@ -36,7 +36,7 @@ public final class FixtureH2SingleTableDataCalculator implements SingleTableData
     }
     
     @Override
-    public Iterable<Object> dataCalculate(final DataCalculateParameter dataCalculateParameter) {
+    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         return Collections.singletonList(true);
     }
 }

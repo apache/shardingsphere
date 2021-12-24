@@ -69,7 +69,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     private final RuleAlteredJobContext jobContext;
     
     @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
+    public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
@@ -112,7 +112,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, Boolean> dataCheck(final DataConsistencyCheckAlgorithm checkAlgorithm) {
+    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
         JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
@@ -145,8 +145,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                     .logicTableName(each).columnNames(columnNames).build();
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
                     .logicTableName(each).columnNames(columnNames).build();
-                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.dataCalculate(sourceCalculateParameter).iterator();
-                Iterator<Object> targetCalculatedResultIterator = targetCalculator.dataCalculate(targetCalculateParameter).iterator();
+                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.calculate(sourceCalculateParameter).iterator();
+                Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
