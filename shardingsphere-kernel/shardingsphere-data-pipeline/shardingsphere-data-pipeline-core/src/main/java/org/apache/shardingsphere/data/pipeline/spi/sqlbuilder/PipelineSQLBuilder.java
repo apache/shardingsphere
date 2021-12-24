@@ -87,11 +87,11 @@ public interface PipelineSQLBuilder {
      * Build query SQL.
      *
      * @param tableName table name
-     * @param uniqueKey unique key
-     * @param hasLimit has limit clause or not
+     * @param uniqueKey unique key, it may be primary key, not null
+     * @param startUniqueValue start unique value, not null
      * @return query SQL
      */
-    String buildQuerySQL(String tableName, String uniqueKey, boolean hasLimit);
+    String buildChunkedQuerySQL(String tableName, String uniqueKey, Number startUniqueValue);
     
     /**
      * Build check empty SQL.

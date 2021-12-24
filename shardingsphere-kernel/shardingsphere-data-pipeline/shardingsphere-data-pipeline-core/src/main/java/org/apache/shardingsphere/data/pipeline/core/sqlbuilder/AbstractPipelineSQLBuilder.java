@@ -146,15 +146,10 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildQuerySQL(final String tableName, final String uniqueKey, final boolean hasLimit) {
-        if (hasLimit) {
-            Preconditions.checkArgument(Strings.isNullOrEmpty(uniqueKey), "uniqueKey is empty when it's required");
-        }
-        String result = "SELECT * FROM " + quote(tableName);
-        if (hasLimit) {
-            result = result + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
-        }
-        return result;
+    public String buildChunkedQuerySQL(final String tableName, final String uniqueKey, final Number startUniqueValue) {
+        Preconditions.checkArgument(Strings.isNullOrEmpty(uniqueKey), "uniqueKey is empty");
+        Preconditions.checkNotNull(startUniqueValue, "startUniqueValue is null");
+        return "SELECT * FROM " + quote(tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
     }
     
     @Override

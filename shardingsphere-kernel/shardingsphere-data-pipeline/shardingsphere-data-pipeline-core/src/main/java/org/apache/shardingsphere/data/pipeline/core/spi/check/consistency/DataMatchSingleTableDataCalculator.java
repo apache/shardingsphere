@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -56,23 +59,26 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         Integer chunkSize = dataCalculateParameter.getChunkSize();
-        // TODO reuse previousCalculatedResult
-        String sql = sqlBuilder.buildQuerySQL(logicTableName, uniqueKey, null != chunkSize);
+        if (null == chunkSize) {
+            chunkSize = 1000;
+        }
+        CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
+        Number startUniqueValue = (null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueValue() : 0).longValue() - 1;
+        String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueValue);
         try {
-            return query(dataCalculateParameter.getDataSource(), sql, chunkSize);
+            return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueValue, chunkSize);
         } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
     
-    private Optional<Object> query(final DataSource dataSource, final String sql, final Integer chunkSize) throws SQLException {
+    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueValue, final int chunkSize) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            if (null != chunkSize) {
-                preparedStatement.setInt(1, chunkSize);
-            }
-            // TODO define a result pojo, record maxUniqueKey
-            Collection<Collection<Object>> result = new ArrayList<>();
+            preparedStatement.setObject(1, startUniqueValue);
+            preparedStatement.setInt(2, chunkSize);
+            Collection<Collection<Object>> records = new ArrayList<>(chunkSize);
+            Number maxUniqueValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -81,10 +87,23 @@ public final class DataMatchSingleTableDataCalculator extends AbstractSingleTabl
                     for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                         record.add(resultSet.getObject(columnIndex));
                     }
-                    result.add(record);
+                    records.add(record);
+                    maxUniqueValue = (Number) resultSet.getObject(uniqueKey);
                 }
             }
-            return result.isEmpty() ? Optional.empty() : Optional.of(result);
+            return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueValue, records.size(), records));
         }
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    @EqualsAndHashCode
+    private static final class CalculatedResult {
+        
+        private final Number maxUniqueValue;
+        
+        private final int recordCount;
+        
+        private final Collection<Collection<Object>> records;
     }
 }
