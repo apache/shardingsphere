@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -38,7 +39,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -68,17 +69,16 @@ public final class ShowTablesExecutorTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
-        for (int i = 0; i < 10; i++) {
-            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            when(schema.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail", "test"));
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getSchema()).thenReturn(schema);
-            when(metaData.isComplete()).thenReturn(true);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
-        }
-        return result;
+        Map<String, TableMetaData> tables = new HashMap<>(4, 1);
+        tables.put("t_account", new TableMetaData("t_account"));
+        tables.put("t_account_bak", new TableMetaData("t_account_bak"));
+        tables.put("t_account_detail", new TableMetaData("t_account_detail"));
+        tables.put("t_test", new TableMetaData("T_TEST"));
+        ShardingSphereSchema schema = new ShardingSphereSchema(tables);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getSchema()).thenReturn(schema); when(metaData.isComplete()).thenReturn(true);
+        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return Collections.singletonMap(String.format(SCHEMA_PATTERN, 0), metaData);
     }
     
     @Test
@@ -87,13 +87,13 @@ public final class ShowTablesExecutorTest {
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
+        showTablesExecutor.getMergedResult().next();
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
         showTablesExecutor.getMergedResult().next();
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
         showTablesExecutor.getMergedResult().next();
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("test"));
         assertFalse(showTablesExecutor.getMergedResult().next());
     }
     
@@ -130,16 +130,41 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertShowTablesExecutorWithUpperCaseTableName() throws SQLException {
+    public void assertShowTablesExecutorWithExpectedUpperCase() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "TEST")));
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
         showTablesStatement.setFilter(showFilterSegment);
         ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("test"));
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
+        assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithUnexpectedLowerCase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
+        showTablesExecutor.execute(mockConnectionSession());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    
+    @Test
+    public void assertShowTablesExecutorWithUnexpectedUpperCase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_ACCOUNT")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement);
+        showTablesExecutor.execute(mockConnectionSession());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         assertFalse(showTablesExecutor.getMergedResult().next());
     }
     
