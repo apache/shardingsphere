@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailExcep
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -137,12 +138,12 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
+        JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
                 String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
-                // TODO rate limit if it's chunked
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
@@ -151,6 +152,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.onQuery();
+                    }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
                     Object sourceCalculatedResult = sourceFuture.get();
