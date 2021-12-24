@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * SQLServer create schema statement.
+ * PostgreSQL create schema statement.
  */
 @ToString
-public final class SQLServerCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
 }

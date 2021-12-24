@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * SQLServer create schema statement.
+ * OpenGauss create schema statement.
  */
 @ToString
-public final class SQLServerCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class OpenGaussCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
 }
