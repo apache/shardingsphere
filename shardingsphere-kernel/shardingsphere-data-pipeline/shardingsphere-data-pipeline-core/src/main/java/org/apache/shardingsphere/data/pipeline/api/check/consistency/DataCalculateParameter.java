@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 
 import java.util.Collection;
@@ -62,6 +63,19 @@ public final class DataCalculateParameter {
      * It could be used in order by clause.
      */
     private String uniqueKey;
+    
+    /**
+     * Used for range query.
+     * If it's configured, then it could be translated to SQL like "uniqueColumn >= pair.left AND uniqueColumn <= pair.right".
+     * One of left and right of pair could be null.
+     */
+    private Pair<Object, Object> uniqueColumnValueRange;
+    
+    /**
+     * Used for multiple records query.
+     * If it's configured, then it could be translated to SQL like "uniqueColumn IN (value1,value2,value3)".
+     */
+    private Collection<Object> uniqueColumnValues;
     
     /**
      * Previous calculated result will be transferred to next call.
