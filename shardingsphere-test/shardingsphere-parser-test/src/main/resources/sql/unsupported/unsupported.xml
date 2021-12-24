@@ -44,7 +44,6 @@
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
-    <sql-case id="alter_language" value="ALTER LANGUAGE alt_lang1 OWNER TO regress_alter_generic_user1" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
