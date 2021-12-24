@@ -68,14 +68,14 @@ property:
 ```sql
 CREATE DB_DISCOVERY RULE ha_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec')),
-HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
+TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE ha_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=mgr,PROPERTIES('groupName'='246e9612-aaf1')),
-HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
+TYPE(NAME=mgr,PROPERTIES('group-name'='246e9612-aaf1')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 DROP DB_DISCOVERY RULE ha_group_0;
@@ -90,11 +90,11 @@ DROP DB_DISCOVERY HEARTBEAT ha_group_0_heartbeat;
 
 ```sql
 CREATE DB_DISCOVERY TYPE ha_group_1_mgr(
-  TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec'))
+  TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec'))
 );
 
 CREATE DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
-  PROPERTIES('keepAliveCron'='0/5 * * * * ?')
+  PROPERTIES('keep-alive-cron'='0/5 * * * * ?')
 );
 
 CREATE DB_DISCOVERY RULE ha_group_1 (
@@ -104,11 +104,11 @@ HEARTBEAT=ha_group_1_heartbeat
 );
 
 ALTER DB_DISCOVERY TYPE ha_group_1_mgr(
-  TYPE(NAME=mgr,PROPERTIES('groupName'='246e9612-aaf1'))
+  TYPE(NAME=mgr,PROPERTIES('group-name'='246e9612-aaf1'))
 );
 
 ALTER DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
-  PROPERTIES('keepAliveCron'='0/10 * * * * ?')
+  PROPERTIES('keep-alive-cron'='0/10 * * * * ?')
 );
 
 ALTER DB_DISCOVERY RULE ha_group_1 (
