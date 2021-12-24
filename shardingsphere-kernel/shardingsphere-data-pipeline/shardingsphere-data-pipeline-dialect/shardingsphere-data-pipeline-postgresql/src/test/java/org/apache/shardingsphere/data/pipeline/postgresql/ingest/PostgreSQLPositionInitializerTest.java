@@ -58,9 +58,11 @@ public final class PostgreSQLPositionInitializerTest {
     @Before
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getCatalog()).thenReturn("sharding_db");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement lsn96PreparedStatement = mockPostgreSQL96LSN();
-        when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot('sharding_scaling', 'test_decoding')")).thenReturn(mock(PreparedStatement.class));
+        when(connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", getUniqueSlotName(connection), "test_decoding")))
+                .thenReturn(mock(PreparedStatement.class));
         when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(lsn96PreparedStatement);
         PreparedStatement lsn10PreparedStatement = mockPostgreSQL10LSN();
         when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(lsn10PreparedStatement);
@@ -127,5 +129,16 @@ public final class PostgreSQLPositionInitializerTest {
         when(connection.prepareStatement("SELECT pg_drop_replication_slot(?)")).thenReturn(preparedStatement);
         new PostgreSQLPositionInitializer().destroy(dataSource);
         verify(preparedStatement).execute();
+    }
+    
+    /**
+     * Get the unique slot name by connection.
+     *
+     * @param conn the connection
+     * @return the unique name by connection
+     * @throws SQLException failed when getCatalog
+     */
+    public static String getUniqueSlotName(final Connection conn) throws SQLException {
+        return String.format("%s_%s", "sharding_scaling", conn.getCatalog());
     }
 }
