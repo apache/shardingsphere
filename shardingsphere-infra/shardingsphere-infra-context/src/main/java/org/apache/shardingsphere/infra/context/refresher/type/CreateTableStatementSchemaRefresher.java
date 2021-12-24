@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -51,6 +53,9 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         actualTableMetaData.ifPresent(tableMetaData -> {
             schemaMetaData.getSchema().put(tableName, tableMetaData);
             schema.put(tableMetaData);
+            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
+            event.getAlteredTables().add(tableMetaData);
+            ShardingSphereEventBus.getInstance().post(event);
         });
     }
     

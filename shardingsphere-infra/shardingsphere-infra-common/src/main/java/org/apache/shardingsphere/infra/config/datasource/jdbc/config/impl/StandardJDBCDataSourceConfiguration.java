@@ -35,8 +35,8 @@ import java.util.Map;
 /**
  * Standard JDBC data source configuration.
  */
-@EqualsAndHashCode(of = "parameter", callSuper = false)
-public final class StandardJDBCDataSourceConfiguration extends JDBCDataSourceConfiguration {
+@EqualsAndHashCode(of = "parameter")
+public final class StandardJDBCDataSourceConfiguration implements JDBCDataSourceConfiguration {
     
     public static final String TYPE = "JDBC";
     
@@ -91,7 +91,7 @@ public final class StandardJDBCDataSourceConfiguration extends JDBCDataSourceCon
     }
     
     @Override
-    protected Object getDataSourceConfiguration() {
+    public Object getDataSourceConfiguration() {
         return dataSourceConfig;
     }
     

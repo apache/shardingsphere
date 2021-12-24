@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.jdbc.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * JDBC data source configuration for YAML.
+ * OpenGauss alter language statement.
  */
-@Getter
-@Setter
-public final class YamlJDBCDataSourceConfiguration implements YamlConfiguration {
-    
-    private String type;
-    
-    private String parameter;
+@ToString
+public final class OpenGaussAlterLanguageStatement extends CreateLanguageStatement implements OpenGaussStatement {
 }

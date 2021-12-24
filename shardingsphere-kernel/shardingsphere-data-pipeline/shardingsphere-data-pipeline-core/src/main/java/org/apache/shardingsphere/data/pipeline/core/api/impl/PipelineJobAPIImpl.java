@@ -184,8 +184,14 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed()
-                .collect(LinkedHashMap::new, (map, each) -> map.put(each, PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
+            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+            if (jobProgress != null) {
+                jobProgress.setActive(!jobConfigPOJO.isDisabled());
+            }
+            map.put(each, jobProgress);
+        }, LinkedHashMap::putAll);
     }
     
     @Override
