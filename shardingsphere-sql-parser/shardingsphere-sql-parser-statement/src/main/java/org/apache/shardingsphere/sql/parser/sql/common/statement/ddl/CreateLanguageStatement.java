@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.utils;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class IpUtilsTest {
-    
-    @Test
-    public void getIp() {
-        assertNotNull(IpUtils.getIp());
-    }
+/**
+ * Create language statement.
+ */
+@ToString
+public abstract class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

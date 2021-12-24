@@ -29,7 +29,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,11 +51,18 @@ public final class ResultSetUtilTest {
     }
     
     @Test
-    public void assertConvertLocalDateTime() {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        LocalDateTime dateTime = (LocalDateTime) ResultSetUtil.convertValue(timestamp, LocalDateTime.class);
-        assertNotNull(dateTime);
-        assertThat(dateTime.toString(), is(timestamp.toLocalDateTime().toString()));
+    public void assertConvertLocalDateTimeValue() {
+        LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
+        assertThat(ResultSetUtil.convertValue(localDateTime, Timestamp.class), is(Timestamp.valueOf(localDateTime)));
+    }
+    
+    @Test
+    public void assertConvertTimestampValue() {
+        LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
+        Timestamp timestamp = Timestamp.valueOf(localDateTime);
+        assertThat(ResultSetUtil.convertValue(timestamp, LocalDateTime.class), is(localDateTime));
+        assertThat(ResultSetUtil.convertValue(timestamp, LocalDate.class), is(LocalDate.of(2021, Month.DECEMBER, 23)));
+        assertThat(ResultSetUtil.convertValue(timestamp, LocalTime.class), is(LocalTime.of(19, 30)));
     }
     
     @Test

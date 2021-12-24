@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 public final class StandardJDBCDataSourceCreator implements JDBCDataSourceCreator {
     
     @Override
-    public DataSource createDataSource(final String parameter, final Object dataSourceConfig) {
+    public DataSource createDataSource(final Object dataSourceConfig) {
         return DataSourceConverter.getDataSource((DataSourceConfiguration) dataSourceConfig);
     }
     

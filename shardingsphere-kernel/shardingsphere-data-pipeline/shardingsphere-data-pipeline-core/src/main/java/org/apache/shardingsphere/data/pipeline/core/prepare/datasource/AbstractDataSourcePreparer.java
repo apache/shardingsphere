@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefin
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,15 +50,15 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    protected DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(new JDBCDataSourceConfigurationWrapper(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()).unwrap());
+    protected final DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).unwrap());
     }
     
-    protected DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(new JDBCDataSourceConfigurationWrapper(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()).unwrap());
+    protected final DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
+        return dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).unwrap());
     }
     
-    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+    protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
@@ -72,12 +72,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    protected Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
+    protected final Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
         return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
     }
     
     //TODO simple lexer
-    protected TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
+    protected final TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
         if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
             return TableDefinitionSQLType.CREATE_TABLE;
         }
@@ -87,7 +87,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return TableDefinitionSQLType.UNKNOWN;
     }
     
-    protected String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }

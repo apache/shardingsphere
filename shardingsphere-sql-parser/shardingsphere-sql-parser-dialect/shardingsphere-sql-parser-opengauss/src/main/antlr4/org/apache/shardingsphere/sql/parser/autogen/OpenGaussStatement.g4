@@ -87,5 +87,6 @@ execute
     | dropTablespace
     | setConstraints
     | copy
+    | createLanguage
     ) SEMI_?
     ;

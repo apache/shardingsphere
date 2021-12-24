@@ -15,4 +15,4 @@ chapter = true
 |-------------------------------- |----------------------- |
 | ColumnValueMatchShadowAlgorithm | 基于字段值匹配影子算法     |
 | ColumnRegexMatchShadowAlgorithm | 基于字段值正则匹配影子算法  |
-| SimpleSQLNoteShadowAlgorithm    | 基于SQL注解简单匹配影子算法 |
+| SimpleHintShadowAlgorithm    | 基于 Hint 简单匹配影子算法 |
