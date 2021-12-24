@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.context.planner;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Optimize planner context.
+ * Filterable table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizerPlannerContext {
+public final class FilterableTableScanExecutorContext {
     
-    private final SqlValidator validator;
+    private final String schemaName;
     
-    private final SqlToRelConverter converter;
+    private final List<Object> parameters;
+
+    private final ConfigurationProperties props;
+    
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
 }

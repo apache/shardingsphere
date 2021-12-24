@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Schema refresher for create view statement.
@@ -37,8 +39,8 @@ import java.util.Collection;
 public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement,
-                        final ConfigurationProperties props) throws SQLException {
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+                        final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schemaMetaData.getSchema().put(viewName, tableMetaData);
