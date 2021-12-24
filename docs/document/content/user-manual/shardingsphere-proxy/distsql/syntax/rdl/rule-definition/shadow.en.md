@@ -20,9 +20,9 @@ DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
 CREATE DEFAULT SHADOW ALGORITHM NAME = algorithmName
 
-ENABLE SHADOW RULES;
+ENABLE SHADOW RULES
 
-DISABLE SHADOW RULES;
+DISABLE SHADOW RULES
 
 shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
 
