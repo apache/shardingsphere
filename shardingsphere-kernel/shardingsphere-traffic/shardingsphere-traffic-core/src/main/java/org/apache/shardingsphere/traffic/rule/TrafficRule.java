@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.traffic.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.traffic.config.TrafficRuleConfiguration;
@@ -42,7 +41,7 @@ public final class TrafficRule implements GlobalRule {
     
     private final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
-    public TrafficRule(final TrafficRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap) {
+    public TrafficRule(final TrafficRuleConfiguration config) {
         config.getTrafficAlgorithms().forEach((key, value) -> trafficAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, TrafficAlgorithm.class)));
         config.getTrafficLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, TrafficLoadBalanceAlgorithm.class)));
     }

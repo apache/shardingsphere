@@ -33,7 +33,7 @@ public final class TrafficRuleBuilder implements GlobalRuleBuilder<TrafficRuleCo
     
     @Override
     public GlobalRule build(final TrafficRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {
-        return new TrafficRule(ruleConfig, mataDataMap);
+        return new TrafficRule(ruleConfig);
     }
     
     @Override
