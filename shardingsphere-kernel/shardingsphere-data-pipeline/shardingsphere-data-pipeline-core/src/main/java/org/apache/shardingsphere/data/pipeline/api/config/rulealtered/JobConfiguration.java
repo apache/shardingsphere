@@ -49,36 +49,38 @@ public final class JobConfiguration {
     
     private WorkflowConfiguration workflowConfig;
     
-    private RuleConfiguration ruleConfig;
+    private PipelineConfiguration pipelineConfig;
     
     private HandleConfiguration handleConfig;
     
-    public JobConfiguration(final WorkflowConfiguration workflowConfig, final RuleConfiguration ruleConfig) {
+    public JobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
         this.workflowConfig = workflowConfig;
-        this.ruleConfig = ruleConfig;
+        this.pipelineConfig = pipelineConfig;
     }
     
     /**
      * Build handle configuration.
      */
     public void buildHandleConfig() {
-        RuleConfiguration ruleConfig = getRuleConfig();
+        PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             // TODO singleton
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfiguration(ruleConfig);
+            handleConfig = preparer.createHandleConfiguration(pipelineConfig);
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
-            JDBCDataSourceConfiguration sourceDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(getRuleConfig().getSource().getType(), getRuleConfig().getSource().getParameter());
+            JDBCDataSourceConfiguration sourceDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            JDBCDataSourceConfiguration targetDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(getRuleConfig().getTarget().getType(), getRuleConfig().getTarget().getParameter());
+            JDBCDataSourceConfiguration targetDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
@@ -93,6 +95,6 @@ public final class JobConfiguration {
      */
     public Collection<TaskConfiguration> buildTaskConfigs() {
         RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigurations(ruleConfig, handleConfig);
+        return preparer.createTaskConfigurations(pipelineConfig, handleConfig);
     }
 }

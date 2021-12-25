@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -139,7 +139,7 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
@@ -149,7 +149,7 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
@@ -185,17 +185,17 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         pipelineJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter());
+    private void initTableData(final PipelineConfiguration pipelineConfig) {
+        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
         initTableData(JDBCDataSourceCreatorFactory.getInstance(sourceConfig.getType()).createDataSource(sourceConfig.getDataSourceConfiguration()));
-        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter());
+        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
         initTableData(JDBCDataSourceCreatorFactory.getInstance(targetConfig.getType()).createDataSource(targetConfig.getDataSourceConfiguration()));
     }
     

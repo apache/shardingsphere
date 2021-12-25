@@ -45,8 +45,9 @@ public final class ScalingEnvironmentManager {
     // TODO seems it should be removed, dangerous to use
     public void resetTargetTable(final RuleAlteredJobContext jobContext) throws SQLException {
         Collection<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(
-                JDBCDataSourceConfigurationFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter()));
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), 
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter()));
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
                 String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);

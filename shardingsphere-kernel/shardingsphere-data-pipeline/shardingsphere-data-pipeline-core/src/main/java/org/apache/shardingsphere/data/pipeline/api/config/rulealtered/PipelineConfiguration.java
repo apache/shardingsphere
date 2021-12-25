@@ -22,10 +22,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.YamlJDBCDataSourceConfiguration;
 
 /**
- * Rule configuration.
+ * Pipeline configuration.
  */
 @Getter
-public final class RuleConfiguration {
+public final class PipelineConfiguration {
     
     private YamlJDBCDataSourceConfiguration source;
     

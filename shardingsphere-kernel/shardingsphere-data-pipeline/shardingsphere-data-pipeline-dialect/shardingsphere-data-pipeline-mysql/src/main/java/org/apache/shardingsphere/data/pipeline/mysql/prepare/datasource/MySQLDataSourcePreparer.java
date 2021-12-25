@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
@@ -44,10 +44,10 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
-        RuleConfiguration ruleConfig = parameter.getRuleConfig();
-        try (DataSourceWrapper sourceDataSource = getSourceDataSource(ruleConfig);
+        PipelineConfiguration pipelineConfig = parameter.getPipelineConfiguration();
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource(pipelineConfig);
              Connection sourceConnection = sourceDataSource.getConnection();
-             DataSourceWrapper targetDataSource = getTargetDataSource(ruleConfig);
+             DataSourceWrapper targetDataSource = getTargetDataSource(pipelineConfig);
              Connection targetConnection = targetDataSource.getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
