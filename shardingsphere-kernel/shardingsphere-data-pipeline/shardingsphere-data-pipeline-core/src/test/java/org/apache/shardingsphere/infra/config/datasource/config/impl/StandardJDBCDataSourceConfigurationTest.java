@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl;
+package org.apache.shardingsphere.infra.config.datasource.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;

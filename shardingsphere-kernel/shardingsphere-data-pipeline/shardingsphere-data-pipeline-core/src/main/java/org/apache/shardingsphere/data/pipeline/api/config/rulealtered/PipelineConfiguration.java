@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.YamlJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
 
 /**
  * Pipeline configuration.
