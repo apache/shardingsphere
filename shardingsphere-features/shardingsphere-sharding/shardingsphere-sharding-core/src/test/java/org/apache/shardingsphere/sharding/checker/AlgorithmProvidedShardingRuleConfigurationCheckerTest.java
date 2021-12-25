@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlgorithmProvidedShardingPipelineConfigurationCheckerTest {
+public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);

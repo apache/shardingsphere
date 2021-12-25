@@ -74,11 +74,13 @@ public final class JobConfiguration {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
-            JDBCDataSourceConfiguration sourceDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
+            JDBCDataSourceConfiguration sourceDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            JDBCDataSourceConfiguration targetDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
+            JDBCDataSourceConfiguration targetDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
