@@ -114,8 +114,6 @@ public final class ExampleTemplateFactory {
                 result.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
                 result.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
             }
-            result.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-            result.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
         }
         return result;
     }
