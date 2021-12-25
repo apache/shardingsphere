@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
@@ -81,11 +81,11 @@ public final class ITEnvironmentContext {
     }
     
     private static String createScalingConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
-        RuleConfiguration ruleConfig = new RuleConfiguration();
-        ruleConfig.setSource(createYamlJDBCDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
-        ruleConfig.setTarget(createYamlJDBCDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
+        PipelineConfiguration pipelineConfig = new PipelineConfiguration();
+        pipelineConfig.setSource(createYamlJDBCDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
+        pipelineConfig.setTarget(createYamlJDBCDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
         JobConfiguration jobConfig = new JobConfiguration();
-        jobConfig.setRuleConfig(ruleConfig);
+        jobConfig.setPipelineConfig(pipelineConfig);
         return new Gson().toJson(jobConfig);
     }
     

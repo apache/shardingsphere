@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableRuleConfigurationYamlSwapperTest {
+public final class TablePipelineConfigurationYamlSwapperTest {
     
     private final ShardingTableRuleConfigurationYamlSwapper tableYamlSwapper = new ShardingTableRuleConfigurationYamlSwapper();
     

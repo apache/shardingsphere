@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingRuleConfigurationYamlSwapperTest {
+public final class ShardingPipelineConfigurationYamlSwapperTest {
     
     @Mock
     private ShardingTableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper;

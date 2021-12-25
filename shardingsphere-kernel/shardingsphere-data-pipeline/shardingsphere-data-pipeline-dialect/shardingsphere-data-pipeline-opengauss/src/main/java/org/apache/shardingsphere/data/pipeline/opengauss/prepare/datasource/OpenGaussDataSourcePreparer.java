@@ -60,7 +60,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
-        try (DataSourceWrapper targetDataSource = getTargetDataSource(parameter.getRuleConfig());
+        try (DataSourceWrapper targetDataSource = getTargetDataSource(parameter.getPipelineConfiguration());
              Connection targetConnection = targetDataSource.getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
@@ -76,7 +76,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
         Collection<ActualTableDefinition> result = new ArrayList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = (ShardingSphereJDBCDataSourceConfiguration) JDBCDataSourceConfigurationFactory.newInstance(
-                parameter.getRuleConfig().getSource().getType(), parameter.getRuleConfig().getSource().getParameter());
+                parameter.getPipelineConfiguration().getSource().getType(), parameter.getPipelineConfiguration().getSource().getParameter());
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
                 DataNode dataNode = each.getDataNodes().get(0);

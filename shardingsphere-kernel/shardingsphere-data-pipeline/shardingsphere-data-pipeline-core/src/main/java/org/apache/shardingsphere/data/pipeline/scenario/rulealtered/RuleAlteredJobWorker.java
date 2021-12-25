@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
@@ -152,12 +152,12 @@ public final class RuleAlteredJobWorker {
      */
     private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
         JDBCDataSourceConfiguration targetDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
-                jobConfig.getRuleConfig().getTarget().getType(), jobConfig.getRuleConfig().getTarget().getParameter());
+                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         if (targetDataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
             return ((ShardingSphereJDBCDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
         JDBCDataSourceConfiguration sourceDataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
-                jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter());
+                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         return ((ShardingSphereJDBCDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
@@ -204,8 +204,8 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getRuleCacheId());
-        RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
-        return Optional.of(new JobConfiguration(workflowConfig, ruleConfig));
+        PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
+        return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(
@@ -225,8 +225,8 @@ public final class RuleAlteredJobWorker {
         return result;
     }
     
-    private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
-        RuleConfiguration result = new RuleConfiguration();
+    private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
+        PipelineConfiguration result = new PipelineConfiguration();
         result.setSource(createYamlJDBCDataSourceConfiguration(sourceRootConfig));
         result.setTarget(createYamlJDBCDataSourceConfiguration(targetRootConfig));
         return result;

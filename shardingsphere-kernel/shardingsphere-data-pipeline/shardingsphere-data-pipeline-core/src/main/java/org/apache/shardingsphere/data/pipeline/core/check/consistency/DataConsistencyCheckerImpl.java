@@ -76,9 +76,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
-            jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter());
+            jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
         JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
-            jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter());
+            jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             return jobContext.getTaskConfigs()
@@ -120,10 +120,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
         JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
-                jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter());
+                jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
         JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
-                jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter());
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
         Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceConfig, logicTableNames);

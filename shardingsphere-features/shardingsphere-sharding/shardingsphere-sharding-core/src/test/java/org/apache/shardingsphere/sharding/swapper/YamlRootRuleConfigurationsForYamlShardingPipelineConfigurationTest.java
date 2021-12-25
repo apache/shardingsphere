@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTest {
+public final class YamlRootRuleConfigurationsForYamlShardingPipelineConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
@@ -50,12 +50,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    protected final DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter()));
+    protected final DataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
+        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
     }
     
-    protected final DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()));
+    protected final DataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
+        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

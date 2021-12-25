@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
@@ -46,7 +46,7 @@ public final class MySQLDataSourcePreparerTest {
     private PrepareTargetTablesParameter prepareTargetTablesParameter;
     
     @Mock
-    private RuleConfiguration ruleConfig;
+    private PipelineConfiguration pipelineConfig;
     
     @Mock
     private YamlJDBCDataSourceConfiguration sourceYamlJDBCDataSourceConfiguration;
@@ -68,12 +68,12 @@ public final class MySQLDataSourcePreparerTest {
     
     @Before
     public void setUp() throws SQLException {
-        when(prepareTargetTablesParameter.getRuleConfig()).thenReturn(ruleConfig);
+        when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
-        when(ruleConfig.getSource()).thenReturn(sourceYamlJDBCDataSourceConfiguration);
+        when(pipelineConfig.getSource()).thenReturn(sourceYamlJDBCDataSourceConfiguration);
         when(JDBCDataSourceCreatorFactory.getInstance(
                 sourceScalingDataSourceConfig.getType()).createDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
-        when(ruleConfig.getTarget()).thenReturn(targetYamlJDBCDataSourceConfiguration);
+        when(pipelineConfig.getTarget()).thenReturn(targetYamlJDBCDataSourceConfiguration);
         when(JDBCDataSourceCreatorFactory.getInstance(
                 targetScalingDataSourceConfig.getType()).createDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
     }
