@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.prepare.datasource;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 
 /**
@@ -34,5 +34,5 @@ public final class PrepareTargetTablesParameter {
     private final JobDataNodeLine tablesFirstDataNodes;
     
     @NonNull
-    private final RuleConfiguration ruleConfig;
+    private final PipelineConfiguration pipelineConfiguration;
 }

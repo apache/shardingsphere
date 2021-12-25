@@ -74,6 +74,22 @@ public final class OptimizerPlannerContextFactory {
         return result;
     }
     
+    /**
+     * Create optimizer planner context.
+     *
+     * @param schemaMetaData federation schema meta data
+     * @return created optimizer planner context
+     */
+    public static OptimizerPlannerContext create(final FederationSchemaMetaData schemaMetaData) {
+        FederationSchema federationSchema = new FederationSchema(schemaMetaData);
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
+        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaMetaData.getName(), federationSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
+        SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
+        return new OptimizerPlannerContext(validator, converter);
+    }
+    
     private static Properties createConnectionProperties() {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");

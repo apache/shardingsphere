@@ -12,7 +12,7 @@ weight = 2
 
 > %SHARDINGSPHERE_PROXY_HOME% 为 Proxy 解压后的路径，例：/opt/shardingsphere-proxy-bin/
 
-详情请参见[配置手册](/cn/user-manual/shardingsphere-proxy/configuration/)。
+详情请参见[配置手册](/cn/user-manual/shardingsphere-proxy/yaml-config/)。
 
 ## 引入依赖
 

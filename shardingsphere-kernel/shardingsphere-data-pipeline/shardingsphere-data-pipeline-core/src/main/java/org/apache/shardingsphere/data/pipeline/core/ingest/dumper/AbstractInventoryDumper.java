@@ -82,6 +82,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private TableMetaData createTableMetaData() {
         JDBCDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
+        // TODO share MetaDataManager
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
         return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
     }

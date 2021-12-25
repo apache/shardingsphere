@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +69,7 @@ public final class DataSourceWrapperTest {
 
     @Test
     public void assertGetConnection() throws SQLException {
-        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper(dataSource);
+        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper(dataSource, new H2DatabaseType());
         assertThat(dataSourceWrapper.getConnection(), is(connection));
         assertThat(dataSourceWrapper.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD), is(connection));
         assertGetLogWriter(dataSourceWrapper.getLogWriter());
@@ -96,24 +97,24 @@ public final class DataSourceWrapperTest {
     @Test(expected = SQLException.class)
     public void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
-        new DataSourceWrapper(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
+        new DataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT);
     }
 
     @Test(expected = SQLException.class)
     public void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
-        new DataSourceWrapper(dataSource).setLogWriter(printWriter);
+        new DataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter);
     }
 
     @Test(expected = SQLException.class)
     public void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
-        new DataSourceWrapper(dataSource).close();
+        new DataSourceWrapper(dataSource, new H2DatabaseType()).close();
     }
 
     @Test(expected = SQLException.class)
     public void assertCloseSQLExceptionFailure() throws Exception {
         doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
-        new DataSourceWrapper(dataSource).close();
+        new DataSourceWrapper(dataSource, new H2DatabaseType()).close();
     }
 }

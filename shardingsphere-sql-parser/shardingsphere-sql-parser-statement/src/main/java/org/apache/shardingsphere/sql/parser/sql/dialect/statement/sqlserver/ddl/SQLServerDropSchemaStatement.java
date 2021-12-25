@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer drop schema statement.
  */
 @ToString
-public class SQLServerDropSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerDropSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

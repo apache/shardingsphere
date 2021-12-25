@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer create trigger statement.
  */
 @ToString
-public class SQLServerCreateTriggerStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerCreateTriggerStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

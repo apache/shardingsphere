@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -31,7 +31,9 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -137,7 +139,7 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
@@ -147,12 +149,12 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertTrue(checkResultMap.get("t_order").isDataValid());
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+        assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
+        assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
+        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(2L));
     }
     
     @Test
@@ -162,17 +164,17 @@ public final class PipelineJobAPIImplTest {
         checkResultMap = Collections.emptyMap();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
-        trueResult.setDataValid(true);
+        trueResult.setRecordsContentMatched(true);
         DataConsistencyCheckResult checkResult;
         checkResult = new DataConsistencyCheckResult(100, 95);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setDataValid(false);
+        checkResult.setRecordsContentMatched(false);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setDataValid(true);
+        checkResult.setRecordsContentMatched(true);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }
@@ -183,16 +185,18 @@ public final class PipelineJobAPIImplTest {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getRuleConfig());
+        initTableData(jobConfig.getPipelineConfig());
         pipelineJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
+        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final RuleConfiguration ruleConfig) {
-        initTableData(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).unwrap().toDataSource());
-        initTableData(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).unwrap().toDataSource());
+    private void initTableData(final PipelineConfiguration pipelineConfig) {
+        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        initTableData(JDBCDataSourceCreatorFactory.getInstance(sourceConfig.getType()).createDataSource(sourceConfig.getDataSourceConfiguration()));
+        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        initTableData(JDBCDataSourceCreatorFactory.getInstance(targetConfig.getType()).createDataSource(targetConfig.getDataSourceConfiguration()));
     }
     
     private void initTableData(final DataSource dataSource) throws SQLException {

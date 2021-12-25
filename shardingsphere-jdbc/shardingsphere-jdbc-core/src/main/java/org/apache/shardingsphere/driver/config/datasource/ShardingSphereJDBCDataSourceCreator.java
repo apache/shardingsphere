@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.driver.config.datasource;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import javax.sql.DataSource;
@@ -34,10 +36,21 @@ import java.util.Collections;
 public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSourceCreator {
     
     @Override
-    public DataSource createDataSource(final String parameter, final Object dataSourceConfig) throws SQLException {
+    public DataSource createDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) dataSourceConfig;
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(
-                rootConfig.getDataSources()), Collections.singletonList(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules())), null);
+        ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
+        enableRangeQueryForInline(shardingRuleConfig);
+        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
+                Collections.singletonList(shardingRuleConfig), null);
+    }
+    
+    private void enableRangeQueryForInline(final ShardingRuleConfiguration shardingRuleConfig) {
+        for (ShardingSphereAlgorithmConfiguration each : shardingRuleConfig.getShardingAlgorithms().values()) {
+            if (!"INLINE".equalsIgnoreCase(each.getType())) {
+                continue;
+            }
+            each.getProps().put("allow-range-query-with-inline-sharding", "true");
+        }
     }
     
     @Override

@@ -84,6 +84,16 @@ public interface PipelineSQLBuilder {
     String buildCountSQL(String tableName);
     
     /**
+     * Build query SQL.
+     *
+     * @param tableName table name
+     * @param uniqueKey unique key, it may be primary key, not null
+     * @param startUniqueValue start unique value, not null
+     * @return query SQL
+     */
+    String buildChunkedQuerySQL(String tableName, String uniqueKey, Number startUniqueValue);
+    
+    /**
      * Build check empty SQL.
      *
      * @param tableName table name

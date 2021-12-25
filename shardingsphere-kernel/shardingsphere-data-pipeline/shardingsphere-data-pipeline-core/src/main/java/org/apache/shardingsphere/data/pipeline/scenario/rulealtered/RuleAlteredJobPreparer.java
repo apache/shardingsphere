@@ -39,6 +39,7 @@ import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactor
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -78,11 +79,11 @@ public final class RuleAlteredJobPreparer {
             return;
         }
         JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getRuleConfig());
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig());
         dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
     }
     
-    private void initDataSourceManager(final DataSourceManager dataSourceManager, final List<TaskConfiguration> taskConfigs) {
+    private void initDataSourceManager(final DataSourceManager dataSourceManager, final Collection<TaskConfiguration> taskConfigs) {
         for (TaskConfiguration taskConfig : taskConfigs) {
             JDBCDataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
             dataSourceManager.createSourceDataSource(dataSourceConfig);

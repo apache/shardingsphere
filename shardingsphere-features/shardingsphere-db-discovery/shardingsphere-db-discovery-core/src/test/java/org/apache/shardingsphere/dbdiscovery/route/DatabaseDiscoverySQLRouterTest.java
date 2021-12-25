@@ -75,7 +75,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     @Before
     public void setUp() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig 
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "ha_heartbeat", "TEST");
+                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "TEST");
         ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),

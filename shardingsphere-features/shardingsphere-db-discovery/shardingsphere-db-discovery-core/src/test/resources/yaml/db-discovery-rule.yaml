@@ -76,4 +76,4 @@ rules:
     mgr:
       type: MGR
       props:
-        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
