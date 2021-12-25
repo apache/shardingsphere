@@ -36,8 +36,8 @@ import java.util.Collections;
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
-        YamlRootConfiguration rootConfig = (YamlRootConfiguration) dataSourceConfig;
+    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
+        YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
         ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
