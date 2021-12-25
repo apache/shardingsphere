@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.Placeho
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

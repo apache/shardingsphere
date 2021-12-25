@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 import java.util.Map;
 
