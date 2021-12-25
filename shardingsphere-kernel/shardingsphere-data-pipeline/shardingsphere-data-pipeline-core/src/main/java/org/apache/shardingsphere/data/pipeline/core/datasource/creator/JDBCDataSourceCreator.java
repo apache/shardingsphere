@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.jdbc.creator;
+package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * JDBC data source creator factory.
+ * JDBC data source creator.
  */
-public final class JDBCDataSourceCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(JDBCDataSourceCreator.class);
-    }
+public interface JDBCDataSourceCreator extends TypedSPI {
     
     /**
-     * Get JDBC data source creator instance.
-     * 
-     * @param type JDBC data source creator type
-     * @return JDBC data source creator instance
+     * Create data source.
+     *
+     * @param dataSourceConfig data source configuration
+     * @return data source
+     * @throws SQLException if create data source failed
      */
-    public static JDBCDataSourceCreator getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(JDBCDataSourceCreator.class, type, null);
-    }
+    DataSource createDataSource(Object dataSourceConfig) throws SQLException;
 }

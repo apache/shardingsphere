@@ -30,10 +30,10 @@ import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExec
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.YamlJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;

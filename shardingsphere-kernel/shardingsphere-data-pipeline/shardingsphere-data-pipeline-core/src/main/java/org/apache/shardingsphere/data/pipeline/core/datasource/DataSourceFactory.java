@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreatorFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

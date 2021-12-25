@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.config.datasource;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreator;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
