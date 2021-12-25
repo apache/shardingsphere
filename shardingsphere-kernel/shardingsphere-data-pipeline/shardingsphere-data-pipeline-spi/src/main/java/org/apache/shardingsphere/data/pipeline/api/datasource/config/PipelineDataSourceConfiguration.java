@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.config;
+package org.apache.shardingsphere.data.pipeline.api.datasource.config;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 
 import javax.sql.DataSource;

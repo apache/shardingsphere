@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefin
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;

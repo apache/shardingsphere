@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.config.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;

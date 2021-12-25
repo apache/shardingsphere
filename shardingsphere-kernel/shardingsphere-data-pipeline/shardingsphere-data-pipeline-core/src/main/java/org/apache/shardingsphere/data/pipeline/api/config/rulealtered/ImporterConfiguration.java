@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.Map;
 import java.util.Set;
