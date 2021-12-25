@@ -34,6 +34,10 @@ showAuthorityRule
     : SHOW AUTHORITY RULE
     ;
     
+showTransactionRule
+    : SHOW TRANSACTION RULE (FROM schemaName)?
+    ;
+    
 schemaName
     : IDENTIFIER
     ;
