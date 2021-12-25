@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource;
+package org.apache.shardingsphere.data.pipeline.api.datasource;
 
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.Before;

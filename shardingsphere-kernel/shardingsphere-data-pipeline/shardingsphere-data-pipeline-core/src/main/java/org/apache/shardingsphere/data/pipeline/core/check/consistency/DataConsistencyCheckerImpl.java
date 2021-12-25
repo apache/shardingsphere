@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;

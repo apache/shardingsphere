@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineCo
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 

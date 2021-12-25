@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 
 import java.sql.SQLException;
