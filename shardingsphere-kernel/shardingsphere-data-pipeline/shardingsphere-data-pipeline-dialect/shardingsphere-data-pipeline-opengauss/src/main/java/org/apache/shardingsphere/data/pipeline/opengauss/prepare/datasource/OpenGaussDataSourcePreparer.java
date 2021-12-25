@@ -75,13 +75,13 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     
     private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
         Collection<ActualTableDefinition> result = new ArrayList<>();
-        ShardingSpherePipelineDataSourceConfiguration sourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(
+        ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(
                 parameter.getPipelineConfiguration().getSource().getType(), parameter.getPipelineConfiguration().getSource().getParameter());
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
                 DataNode dataNode = each.getDataNodes().get(0);
                 // Keep dataSource to reuse
-                DataSourceWrapper dataSource = dataSourceManager.getDataSource(sourceConfig.getActualDataSourceConfig(dataNode.getDataSourceName()));
+                DataSourceWrapper dataSource = dataSourceManager.getDataSource(sourceDataSourceConfig.getActualDataSourceConfig(dataNode.getDataSourceName()));
                 try (Connection sourceConnection = dataSource.getConnection()) {
                     String actualTableName = dataNode.getTableName();
                     int oid = queryTableOid(sourceConnection, actualTableName);

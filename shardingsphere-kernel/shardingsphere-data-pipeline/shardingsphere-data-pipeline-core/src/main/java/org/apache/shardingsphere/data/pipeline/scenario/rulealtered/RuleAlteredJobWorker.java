@@ -227,12 +227,12 @@ public final class RuleAlteredJobWorker {
     
     private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
         PipelineConfiguration result = new PipelineConfiguration();
-        result.setSource(createYamlJDBCDataSourceConfiguration(sourceRootConfig));
-        result.setTarget(createYamlJDBCDataSourceConfiguration(targetRootConfig));
+        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         return result;
     }
     
-    private YamlPipelineDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
+    private YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
         PipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(yamlConfig);
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(config.getType());

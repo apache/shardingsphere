@@ -82,14 +82,14 @@ public final class ITEnvironmentContext {
     
     private static String createScalingConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
-        pipelineConfig.setSource(createYamlJDBCDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
-        pipelineConfig.setTarget(createYamlJDBCDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
         JobConfiguration jobConfig = new JobConfiguration();
         jobConfig.setPipelineConfig(pipelineConfig);
         return new Gson().toJson(jobConfig);
     }
     
-    private static YamlPipelineDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final PipelineDataSourceConfiguration targetConfig) {
+    private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration targetConfig) {
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(targetConfig.getType());
         result.setParameter(targetConfig.getParameter());

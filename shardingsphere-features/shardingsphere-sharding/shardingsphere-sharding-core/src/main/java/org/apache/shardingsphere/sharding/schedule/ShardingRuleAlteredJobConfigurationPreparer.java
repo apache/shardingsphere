@@ -85,10 +85,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final PipelineConfiguration pipelineConfig) {
-        PipelineDataSourceConfiguration sourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
-        Preconditions.checkState(sourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration,
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        Preconditions.checkState(sourceDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source TypedDataSourceConfiguration is supported.");
-        ShardingSpherePipelineDataSourceConfiguration source = (ShardingSpherePipelineDataSourceConfiguration) sourceConfig;
+        ShardingSpherePipelineDataSourceConfiguration source = (ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig;
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         ShardingRule shardingRule = new ShardingRule(sourceRuleConfig, source.getRootConfig().getDataSources().keySet());
         Map<String, TableRule> tableRules = shardingRule.getTableRules();
@@ -152,10 +152,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final PipelineConfiguration pipelineConfig) {
-        PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
-        if (dataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             return Optional.of(
-                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSpherePipelineDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
+                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig().getRules()));
         }
         return Optional.empty();
     }

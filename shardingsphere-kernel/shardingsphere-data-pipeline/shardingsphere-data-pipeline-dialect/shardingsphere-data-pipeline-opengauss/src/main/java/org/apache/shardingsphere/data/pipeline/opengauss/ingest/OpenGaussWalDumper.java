@@ -71,7 +71,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         walEventConverter = new WalEventConverter(dumperConfig);

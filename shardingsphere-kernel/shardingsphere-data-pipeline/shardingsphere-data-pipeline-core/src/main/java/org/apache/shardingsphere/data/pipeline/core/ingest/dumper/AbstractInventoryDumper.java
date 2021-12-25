@@ -71,7 +71,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardJDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.readBatchSize = inventoryDumperConfig.getReadBatchSize();

@@ -86,7 +86,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
-        Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");
+        Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         columnMetaDataLoader = new MySQLColumnMetaDataLoader(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     

@@ -63,13 +63,13 @@ public final class ResourceUtil {
         result.setWorkflowConfig(workflowConfig);
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
         result.setPipelineConfig(pipelineConfig);
-        pipelineConfig.setSource(createYamlJDBCDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlJDBCDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
         result.buildHandleConfig();
         return result;
     }
     
-    private static YamlPipelineDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final PipelineDataSourceConfiguration config) {
+    private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(config.getType());
         result.setParameter(config.getParameter());

@@ -193,10 +193,10 @@ public final class PipelineJobAPIImplTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final PipelineConfiguration pipelineConfig) {
-        PipelineDataSourceConfiguration sourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
-        initTableData(PipelineDataSourceCreatorFactory.getInstance(sourceConfig.getType()).createPipelineDataSource(sourceConfig.getDataSourceConfiguration()));
-        PipelineDataSourceConfiguration targetConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
-        initTableData(PipelineDataSourceCreatorFactory.getInstance(targetConfig.getType()).createPipelineDataSource(targetConfig.getDataSourceConfiguration()));
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        initTableData(PipelineDataSourceCreatorFactory.getInstance(sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        initTableData(PipelineDataSourceCreatorFactory.getInstance(targetDataSourceConfig.getType()).createPipelineDataSource(targetDataSourceConfig.getDataSourceConfiguration()));
     }
     
     private void initTableData(final DataSource pipelineDataSource) throws SQLException {

@@ -64,7 +64,7 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
     public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         walEventConverter = new WalEventConverter(dumperConfig);
@@ -77,9 +77,9 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
     }
     
     private void dump() {
-        try (Connection pgConnection = logicalReplication.createPgConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
-             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection), walPosition.getLogSequenceNumber())) {
-            PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
+        try (Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
+             PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLPositionInitializer.getUniqueSlotName(connection), walPosition.getLogSequenceNumber())) {
+            PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();

@@ -34,18 +34,18 @@ public final class TargetConfiguration {
     private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
     
     /**
-     * Get docker standard jdbc configuration.
+     * Get docker standard pipeline configuration.
      *
-     * @return standard jdbc configuration
+     * @return standard pipeline configuration
      */
     public static StandardPipelineDataSourceConfiguration getDockerConfiguration() {
         return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.docker"));
     }
     
     /**
-     * Get host standard jdbc configuration.
+     * Get host standard pipeline configuration.
      *
-     * @return standard jdbc configuration
+     * @return standard pipeline configuration
      */
     public static StandardPipelineDataSourceConfiguration getHostConfiguration() {
         return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.host"));
@@ -56,12 +56,11 @@ public final class TargetConfiguration {
     }
     
     /**
-     * Create host standard jdbc data source.
+     * Create host standard pipeline data source.
      *
      * @return data source
      */
     public static DataSource createHostDataSource() {
-        StandardPipelineDataSourceConfiguration configuration = TargetConfiguration.getHostConfiguration();
-        return new HikariDataSource(configuration.getHikariConfig());
+        return new HikariDataSource(TargetConfiguration.getHostConfiguration().getHikariConfig());
     }
 }
