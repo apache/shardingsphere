@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.component.checker;
+package org.apache.shardingsphere.data.pipeline.opengauss;
 
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource.OpenGaussDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
 /**
  * Environment checker for openGauss.

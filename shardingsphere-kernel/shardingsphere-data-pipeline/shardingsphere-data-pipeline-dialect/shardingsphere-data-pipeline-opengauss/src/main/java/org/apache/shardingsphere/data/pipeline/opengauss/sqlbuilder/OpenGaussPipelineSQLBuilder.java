@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss.component;
+package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;

@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.opengauss;
+package org.apache.shardingsphere.data.pipeline.opengauss;
 
+import org.apache.shardingsphere.data.pipeline.opengauss.importer.OpenGaussImporter;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussPositionInitializer;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;
-import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
-import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
