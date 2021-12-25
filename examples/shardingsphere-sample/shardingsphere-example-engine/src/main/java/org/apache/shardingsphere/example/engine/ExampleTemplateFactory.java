@@ -104,7 +104,7 @@ public final class ExampleTemplateFactory {
         }
         if (framework.contains("spring-boot-starter")) {
             result.put("properties/application", "application.properties");
-        } else if (framework.contains("spring-boot-namespace")){
+        } else if (framework.contains("spring-namespace")){
             result.put("xml/application", "application.xml");
         }
         if (framework.contains("mybatis")) {

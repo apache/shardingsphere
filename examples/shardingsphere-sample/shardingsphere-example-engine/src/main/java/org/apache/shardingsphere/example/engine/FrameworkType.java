@@ -28,9 +28,9 @@ public enum FrameworkType {
     SPRING_BOOT_STARTER_JDBC("spring-boot-starter-jdbc"),
     SPRING_BOOT_STARTER_JPA("spring-boot-starter-jpa"),
     SPRING_BOOT_STARTER_MYBATIS("spring-boot-starter-mybatis"),
-    SPRING_BOOT_NAMESPACE_JDBC("spring-boot-namespace-jdbc"),
-    SPRING_BOOT_NAMESPACE_JPA("spring-boot-namespace-jpa"),
-    SPRING_BOOT_NAMESPACE_MYBATIS("spring-boot-namespace-mybatis");
+    SPRING_BOOT_NAMESPACE_JDBC("spring-namespace-jdbc"),
+    SPRING_BOOT_NAMESPACE_JPA("spring-namespace-jpa"),
+    SPRING_BOOT_NAMESPACE_MYBATIS("spring-namespace-mybatis");
     
     private final String framework;
     
