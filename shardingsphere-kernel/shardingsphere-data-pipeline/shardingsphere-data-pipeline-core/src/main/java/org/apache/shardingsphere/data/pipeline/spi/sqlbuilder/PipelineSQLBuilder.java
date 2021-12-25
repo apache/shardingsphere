@@ -19,9 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,9 +52,7 @@ public interface PipelineSQLBuilder {
      * @param record the input datarecord
      * @return the filtered columns.
      */
-    default List<Column> extractUpdatedColumns(Collection<Column> columns, DataRecord record) {
-        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
-    }
+    List<Column> extractUpdatedColumns(Collection<Column> columns, DataRecord record);
     
     /**
      * Build delete SQL.
