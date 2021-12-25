@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator.impl;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 
 import javax.sql.DataSource;
@@ -36,6 +36,6 @@ public final class StandardPipelineDataSourceCreator implements PipelineDataSour
     
     @Override
     public String getType() {
-        return StandardJDBCDataSourceConfiguration.TYPE;
+        return StandardPipelineDataSourceConfiguration.TYPE;
     }
 }

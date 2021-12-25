@@ -31,8 +31,8 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -193,9 +193,9 @@ public final class PipelineJobAPIImplTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final PipelineConfiguration pipelineConfig) {
-        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        PipelineDataSourceConfiguration sourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
         initTableData(PipelineDataSourceCreatorFactory.getInstance(sourceConfig.getType()).createPipelineDataSource(sourceConfig.getDataSourceConfiguration()));
-        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        PipelineDataSourceConfiguration targetConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
         initTableData(PipelineDataSourceCreatorFactory.getInstance(targetConfig.getType()).createPipelineDataSource(targetConfig.getDataSourceConfiguration()));
     }
     

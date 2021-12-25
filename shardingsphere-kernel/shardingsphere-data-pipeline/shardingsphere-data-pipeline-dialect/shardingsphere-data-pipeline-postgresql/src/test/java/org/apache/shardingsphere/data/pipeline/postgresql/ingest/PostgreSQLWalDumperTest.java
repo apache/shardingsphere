@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper walDumper;
     
-    private StandardJDBCDataSourceConfiguration jdbcDataSourceConfig;
+    private StandardPipelineDataSourceConfiguration jdbcDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -87,7 +87,7 @@ public final class PostgreSQLWalDumperTest {
         } catch (final SQLException e) {
             throw new RuntimeException("Init table failed", e);
         }
-        jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration(jdbcUrl, username, password);
+        jdbcDataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(jdbcDataSourceConfig);
         Map<String, String> tableNameMap = new HashMap<>();

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -38,7 +38,7 @@ public final class TargetConfiguration {
      *
      * @return standard jdbc configuration
      */
-    public static StandardJDBCDataSourceConfiguration getDockerConfiguration() {
+    public static StandardPipelineDataSourceConfiguration getDockerConfiguration() {
         return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.docker"));
     }
     
@@ -47,12 +47,12 @@ public final class TargetConfiguration {
      *
      * @return standard jdbc configuration
      */
-    public static StandardJDBCDataSourceConfiguration getHostConfiguration() {
+    public static StandardPipelineDataSourceConfiguration getHostConfiguration() {
         return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.host"));
     }
     
-    private static StandardJDBCDataSourceConfiguration getConfiguration(final String host) {
-        return new StandardJDBCDataSourceConfiguration(String.format(TARGET_JDBC_URL, host), ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
+    private static StandardPipelineDataSourceConfiguration getConfiguration(final String host) {
+        return new StandardPipelineDataSourceConfiguration(String.format(TARGET_JDBC_URL, host), ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
     }
     
     /**
@@ -61,7 +61,7 @@ public final class TargetConfiguration {
      * @return data source
      */
     public static DataSource createHostDataSource() {
-        StandardJDBCDataSourceConfiguration configuration = TargetConfiguration.getHostConfiguration();
+        StandardPipelineDataSourceConfiguration configuration = TargetConfiguration.getHostConfiguration();
         return new HikariDataSource(configuration.getHikariConfig());
     }
 }

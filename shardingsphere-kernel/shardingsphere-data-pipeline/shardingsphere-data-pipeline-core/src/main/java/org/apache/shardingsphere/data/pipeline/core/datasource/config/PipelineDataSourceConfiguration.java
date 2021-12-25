@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import java.util.Map;
 
 /**
- * JDBC data source configuration.
+ * Pipeline data source configuration.
  */
-public interface JDBCDataSourceConfiguration {
+public interface PipelineDataSourceConfiguration {
     
     /**
      * Get type.

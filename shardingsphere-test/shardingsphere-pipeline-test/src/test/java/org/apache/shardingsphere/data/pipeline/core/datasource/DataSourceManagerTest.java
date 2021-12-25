@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public final class DataSourceManagerTest {
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(
-                JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
+                PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
@@ -54,9 +54,9 @@ public final class DataSourceManagerTest {
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
             dataSourceManager.createSourceDataSource(
-                    JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
+                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
             dataSourceManager.createTargetDataSource(
-                    JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter()));
+                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter()));
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));

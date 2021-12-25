@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.config.datasource;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -55,6 +55,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     
     @Override
     public String getType() {
-        return ShardingSphereJDBCDataSourceConfiguration.TYPE;
+        return ShardingSpherePipelineDataSourceConfiguration.TYPE;
     }
 }

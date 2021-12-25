@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.environment;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import java.sql.Connection;
@@ -45,7 +45,7 @@ public final class ScalingEnvironmentManager {
     // TODO seems it should be removed, dangerous to use
     public void resetTargetTable(final RuleAlteredJobContext jobContext) throws SQLException {
         Collection<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(
                 jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), 
                 jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter()));
              Connection connection = dataSource.getConnection()) {

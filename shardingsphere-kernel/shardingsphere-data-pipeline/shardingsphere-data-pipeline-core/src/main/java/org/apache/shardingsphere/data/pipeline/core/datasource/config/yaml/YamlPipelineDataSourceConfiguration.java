@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * JDBC data source configuration for YAML.
+ * Pipeline data source configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlJDBCDataSourceConfiguration implements YamlConfiguration {
+public final class YamlPipelineDataSourceConfiguration implements YamlConfiguration {
     
     private String type;
     

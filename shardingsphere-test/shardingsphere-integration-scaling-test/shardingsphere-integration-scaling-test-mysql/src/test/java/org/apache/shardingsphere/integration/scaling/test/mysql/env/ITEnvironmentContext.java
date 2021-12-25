@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.config.SourceConfiguration;
@@ -89,8 +89,8 @@ public final class ITEnvironmentContext {
         return new Gson().toJson(jobConfig);
     }
     
-    private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration targetConfig) {
-        YamlJDBCDataSourceConfiguration result = new YamlJDBCDataSourceConfiguration();
+    private static YamlPipelineDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final PipelineDataSourceConfiguration targetConfig) {
+        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(targetConfig.getType());
         result.setParameter(targetConfig.getParameter());
         return result;

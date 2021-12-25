@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.LogSequenceNumber;
@@ -51,11 +51,11 @@ public final class OpenGaussLogicalReplication {
      * @return OpenGauss connection
      * @throws SQLException SQL exception
      */
-    public Connection createPgConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
+    public Connection createPgConnection(final StandardPipelineDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         return createConnection(jdbcDataSourceConfig);
     }
     
-    private Connection createConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
+    private Connection createConnection(final StandardPipelineDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         Properties props = new Properties();
         PGProperty.USER.set(props, jdbcDataSourceConfig.getHikariConfig().getUsername());
         PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getHikariConfig().getPassword());
