@@ -39,7 +39,7 @@
 
     <rewrite-assertion id="select_with_not_exists" db-types="MySQL">
         <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
-        <output sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
+        <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_sum_fun">
