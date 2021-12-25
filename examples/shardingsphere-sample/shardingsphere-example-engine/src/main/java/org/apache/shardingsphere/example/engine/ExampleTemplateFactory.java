@@ -61,8 +61,8 @@ public final class ExampleTemplateFactory {
     
     /**
      * Get template resources that do not need to be renamed
-     * @param dataModel dat
-     * @return
+     * @param dataModel data model
+     * @return not need rename map
      */
     public static Map<String, String> getUnReNameTemplate(Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
@@ -88,7 +88,12 @@ public final class ExampleTemplateFactory {
         }
         return result;
     }
-
+    
+    /**
+     * Get template resources map
+     * @param dataModel data model
+     * @return resource map
+     */
     public static Map<String, String> getResourceTemplate(Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
