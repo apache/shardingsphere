@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.data.pipeline.postgresql.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;

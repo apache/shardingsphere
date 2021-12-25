@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.data.pipeline.postgresql;
 
+import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.opengauss.component.checker;
 
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 
 /**
  * Environment checker for openGauss.

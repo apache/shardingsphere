@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.opengauss.component.OpenGaussImporter;
 import org.apache.shardingsphere.scaling.opengauss.component.checker.OpenGaussEnvironmentChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;

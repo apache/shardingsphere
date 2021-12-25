@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.data.pipeline.postgresql.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;

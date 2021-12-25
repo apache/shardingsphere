@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component.checker;
+package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.PostgreSQLPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
