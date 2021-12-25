@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfig
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Rule altered job configuration preparer.
@@ -45,5 +45,5 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
      * @param handleConfig handle configuration
      * @return task configurations
      */
-    List<TaskConfiguration> createTaskConfigurations(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
+    Collection<TaskConfiguration> createTaskConfigurations(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
 }
