@@ -18,32 +18,32 @@
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Rule altered job configuration preparer, SPI interface.
+ * Rule altered job configuration preparer.
  */
 public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     
-    // TODO put referenced Config to spi
+    // TODO put referenced configuration to SPI
     /**
      * Create handle configuration, used to build job configuration.
      *
-     * @param ruleConfig rule configuration
+     * @param pipelineConfig pipeline configuration
      * @return handle configuration
      */
-    HandleConfiguration createHandleConfig(RuleConfiguration ruleConfig);
+    HandleConfiguration createHandleConfiguration(PipelineConfiguration pipelineConfig);
     
     /**
      * Create task configurations, used by underlying scheduler.
      *
-     * @param ruleConfig rule configuration
+     * @param pipelineConfig pipeline configuration
      * @param handleConfig handle configuration
      * @return task configurations
      */
-    List<TaskConfiguration> createTaskConfigs(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
+    Collection<TaskConfiguration> createTaskConfigurations(PipelineConfiguration pipelineConfig, HandleConfiguration handleConfig);
 }

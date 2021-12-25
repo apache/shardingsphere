@@ -12,6 +12,8 @@ SHOW SHADOW TABLE RULES [FROM schemaName]
 
 SHOW SHADOW ALGORITHMS [FROM schemaName]
 
+SHOW SHADOW RULE STATUS [FROM schemaName]
+
 shadowRule: 
     RULE ruleName
 ```
@@ -44,6 +46,12 @@ shadowRule:
 | shadow_algorithm_name | 影子算法名称   |
 | type                  | 算法类型      |
 | props                 | 算法参数      |
+
+### Shadow Rule status
+
+| 列                    | 说明          |
+| -------------------   | ------------ |
+| status                | 是否启用      |
 
 ## 示例
 
@@ -94,4 +102,16 @@ mysql> show shadow algorithms;
 | simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       |
 +-------------------------+--------------------+-------------------------------------------+
 2 rows in set (0.01 sec)
+```
+
+*SHOW SHADOW RULE STATUS*
+
+```sql
+mysql> show shadow rule status;
++--------+
+| status |
++--------+
+| enabled|
++--------+
+1 row in set (0.01 sec)
 ```

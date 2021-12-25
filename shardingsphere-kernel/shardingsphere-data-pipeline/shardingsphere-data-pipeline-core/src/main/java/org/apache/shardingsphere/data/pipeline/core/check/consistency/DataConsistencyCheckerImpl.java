@@ -28,10 +28,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailExcep
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
@@ -39,12 +42,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -68,31 +72,36 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     private final RuleAlteredJobContext jobContext;
     
     @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
+    public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        try {
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+            jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+            jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             return jobContext.getTaskConfigs()
-                    .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
-                    .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, executor), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
+                .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
+                    (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        } catch (final SQLException ex) {
+            throw new DataCheckFailException("count check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCheckResult countCheck(final String table, final ThreadPoolExecutor executor) {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
-            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceConfig.getDatabaseType()));
-            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetConfig.getDatabaseType()));
+    private DataConsistencyCheckResult countCheck(final String table, final DataSourceWrapper sourceDataSource, final DataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
+        try {
+            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
+            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
             long sourceCount = sourceFuture.get();
             long targetCount = targetFuture.get();
             return new DataConsistencyCheckResult(sourceCount, targetCount);
-        } catch (final SQLException | InterruptedException | ExecutionException ex) {
-            throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
+        } catch (final InterruptedException | ExecutionException ex) {
+            throw new DataCheckFailException(String.format("count check failed for table '%s'", table), ex);
         }
     }
     
@@ -103,45 +112,63 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("table %s count failed.", table), ex);
+            throw new DataCheckFailException(String.format("count for table '%s' failed", table), ex);
         }
     }
     
     @Override
-    public Map<String, Boolean> dataCheck(final DataConsistencyCheckAlgorithm checkAlgorithm) {
+    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
-        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
-        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
-        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
-                .distinct().collect(Collectors.toList());
-        Map<String, Collection<String>> tablesColumnNamesMap = getTablesColumnNamesMap(sourceConfig);
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceDataSourceConfig.getDatabaseType().getName());
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
+        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
+        Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceDataSourceConfig, logicTableNames);
         logicTableNames.forEach(each -> {
             //TODO put to preparer
-            if (!tablesColumnNamesMap.containsKey(each)) {
-                throw new DataCheckFailException(String.format("could not get table columns for '%s'", each));
+            if (!tableMetaDataMap.containsKey(each)) {
+                throw new DataCheckFailException(String.format("could not get columns for table '%s'", each));
             }
         });
-        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceConfig.getDatabaseType().getName());
-        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetConfig.getDatabaseType().getName());
+        String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
+        String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
+        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
+        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        try {
+        JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             for (String each : logicTableNames) {
-                Collection<String> columnNames = tablesColumnNamesMap.get(each);
-                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(sourceConfig).logicTableName(each).columnNames(columnNames).build();
-                Future<Object> sourceFuture = executor.submit(() -> sourceCalculator.dataCalculate(sourceCalculateParameter));
-                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSourceConfig(targetConfig).logicTableName(each).columnNames(columnNames).build();
-                Future<Object> targetFuture = executor.submit(() -> targetCalculator.dataCalculate(targetCalculateParameter));
-                Object sourceCalculateResult = sourceFuture.get();
-                Object targetCalculateResult = targetFuture.get();
-                boolean calculateResultsEquals = Objects.equals(sourceCalculateResult, targetCalculateResult);
+                Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
+                String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
+                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
+                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
+                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
+                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
+                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.calculate(sourceCalculateParameter).iterator();
+                Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
+                boolean calculateResultsEquals = true;
+                while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.onQuery();
+                    }
+                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
+                    Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
+                    Object sourceCalculatedResult = sourceFuture.get();
+                    Object targetCalculatedResult = targetFuture.get();
+                    calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
+                    if (!calculateResultsEquals) {
+                        break;
+                    }
+                }
                 result.put(each, calculateResultsEquals);
             }
-        } catch (final ExecutionException | InterruptedException ex) {
+        } catch (final ExecutionException | InterruptedException | SQLException ex) {
             throw new DataCheckFailException("data check failed");
         } finally {
             executor.shutdown();
@@ -156,14 +183,14 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private Map<String, Collection<String>> getTablesColumnNamesMap(final JDBCDataSourceConfiguration dataSourceConfig) {
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
-             Connection connection = dataSource.getConnection()) {
-            Map<String, Collection<String>> result = new LinkedHashMap<>();
-            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, "%", "%")) {
-                while (resultSet.next()) {
-                    result.computeIfAbsent(resultSet.getString("TABLE_NAME"), tableName -> new ArrayList<>()).add(resultSet.getString("COLUMN_NAME"));
-                }
+    // TODO reuse metadata
+    private Map<String, TableMetaData> getTablesColumnsMap(final PipelineDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
+            Map<String, TableMetaData> result = new LinkedHashMap<>();
+            for (String each : tableNames) {
+                Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
+                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new DataCheckFailException(String.format("get metadata failed for table '%s'", each)));
+                result.put(each, tableMetaData);
             }
             return result;
         } catch (final SQLException ex) {

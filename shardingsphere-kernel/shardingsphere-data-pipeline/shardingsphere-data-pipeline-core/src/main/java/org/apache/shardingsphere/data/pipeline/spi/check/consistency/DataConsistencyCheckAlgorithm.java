@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmP
 import java.util.Collection;
 
 /**
- * Data consistency check algorithm for SPI.
+ * Data consistency check algorithm, SPI.
  */
 public interface DataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     

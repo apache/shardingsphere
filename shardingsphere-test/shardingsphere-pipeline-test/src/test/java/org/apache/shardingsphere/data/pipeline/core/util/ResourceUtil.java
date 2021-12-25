@@ -21,14 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.YamlJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
@@ -63,17 +61,19 @@ public final class ResourceUtil {
         JobConfiguration result = new JobConfiguration();
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "id1");
         result.setWorkflowConfig(workflowConfig);
-        RuleConfiguration ruleConfig = new RuleConfiguration();
-        result.setRuleConfig(ruleConfig);
-        ruleConfig.setSource(createYamlJDBCDataSourceConfiguration(new ShardingSphereJDBCDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
-        ruleConfig.setTarget(createYamlJDBCDataSourceConfiguration(new StandardJDBCDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
+        PipelineConfiguration pipelineConfig = new PipelineConfiguration();
+        result.setPipelineConfig(pipelineConfig);
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
         result.buildHandleConfig();
         return result;
     }
     
-    private static YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final JDBCDataSourceConfiguration jdbcDataSourceConfig) {
-        JDBCDataSourceConfigurationWrapper targetWrapper = new JDBCDataSourceConfigurationWrapper(jdbcDataSourceConfig.getType(), jdbcDataSourceConfig.getParameter());
-        return new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(targetWrapper);
+    private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {
+        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
+        result.setType(config.getType());
+        result.setParameter(config.getParameter());
+        return result;
     }
     
     @SneakyThrows(IOException.class)

@@ -50,7 +50,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @Test
     public void assertBuild() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "ha_heartbeat", "TEST");
+                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "TEST");
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(dataSourceConfig), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));

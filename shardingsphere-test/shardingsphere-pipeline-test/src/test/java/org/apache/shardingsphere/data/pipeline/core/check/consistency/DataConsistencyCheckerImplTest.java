@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.junit.Test;
 
@@ -47,17 +47,17 @@ public final class DataConsistencyCheckerImplTest {
     public void assertCountAndDataCheck() {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
-        initTableData(jobContext.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
-        initTableData(jobContext.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
-        Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
-        assertTrue(resultMap.get("t_order").isCountValid());
-        assertThat(resultMap.get("t_order").getSourceCount(), is(resultMap.get("t_order").getTargetCount()));
-        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.dataCheck(new FixtureDataConsistencyCheckAlgorithm());
+        initTableData(jobContext.getTaskConfigs().iterator().next().getDumperConfig().getDataSourceConfig());
+        initTableData(jobContext.getTaskConfigs().iterator().next().getImporterConfig().getDataSourceConfig());
+        Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
+        assertTrue(resultMap.get("t_order").isRecordsCountMatched());
+        assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
+        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.checkRecordsContent(new FixtureDataConsistencyCheckAlgorithm());
         assertTrue(dataCheckResultMap.get("t_order"));
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final JDBCDataSourceConfiguration dataSourceConfig) {
+    private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

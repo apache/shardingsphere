@@ -76,6 +76,7 @@ execute
     | dropView
     | dropSequence
     | dropDomain
+    | dropSchema
     | vacuum
     | prepare
     | executeStmt
@@ -89,5 +90,7 @@ execute
     | setConstraints
     | copy
     | createLanguage
+    | alterLanguage
+    | dropLanguage
     ) SEMI_?
     ;

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -35,6 +37,9 @@ import java.util.logging.Logger;
 public final class DataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
+    
+    @Getter
+    private final DatabaseType databaseType;
     
     @Override
     public Connection getConnection() throws SQLException {

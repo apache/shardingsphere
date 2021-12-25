@@ -24,12 +24,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -49,36 +49,38 @@ public final class JobConfiguration {
     
     private WorkflowConfiguration workflowConfig;
     
-    private RuleConfiguration ruleConfig;
+    private PipelineConfiguration pipelineConfig;
     
     private HandleConfiguration handleConfig;
     
-    public JobConfiguration(final WorkflowConfiguration workflowConfig, final RuleConfiguration ruleConfig) {
+    public JobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
         this.workflowConfig = workflowConfig;
-        this.ruleConfig = ruleConfig;
+        this.pipelineConfig = pipelineConfig;
     }
     
     /**
      * Build handle configuration.
      */
     public void buildHandleConfig() {
-        RuleConfiguration ruleConfig = getRuleConfig();
+        PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             // TODO singleton
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfig(ruleConfig);
+            handleConfig = preparer.createHandleConfiguration(pipelineConfig);
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
             handleConfig.setJobId(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000));
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
-            JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(getRuleConfig().getSource()).unwrap();
+            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(getRuleConfig().getTarget()).unwrap();
+            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                    getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
@@ -91,8 +93,8 @@ public final class JobConfiguration {
      *
      * @return task configurations
      */
-    public List<TaskConfiguration> buildTaskConfigs() {
+    public Collection<TaskConfiguration> buildTaskConfigs() {
         RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigs(ruleConfig, handleConfig);
+        return preparer.createTaskConfigurations(pipelineConfig, handleConfig);
     }
 }
