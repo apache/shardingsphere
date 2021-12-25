@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsisten
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -193,9 +193,9 @@ public final class PipelineJobAPIImplTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getSource()).unwrap();
+        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter());
         initTableData(JDBCDataSourceCreatorFactory.getInstance(sourceConfig.getType()).createDataSource(sourceConfig.getDataSourceConfiguration()));
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(ruleConfig.getTarget()).unwrap();
+        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter());
         initTableData(JDBCDataSourceCreatorFactory.getInstance(targetConfig.getType()).createDataSource(targetConfig.getDataSourceConfiguration()));
     }
     

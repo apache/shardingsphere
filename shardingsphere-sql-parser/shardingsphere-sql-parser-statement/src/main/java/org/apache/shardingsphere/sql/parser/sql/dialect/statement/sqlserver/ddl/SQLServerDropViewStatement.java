@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer drop view statement.
  */
 @ToString
-public class SQLServerDropViewStatement extends DropViewStatement implements SQLServerStatement {
+public final class SQLServerDropViewStatement extends DropViewStatement implements SQLServerStatement {
 }

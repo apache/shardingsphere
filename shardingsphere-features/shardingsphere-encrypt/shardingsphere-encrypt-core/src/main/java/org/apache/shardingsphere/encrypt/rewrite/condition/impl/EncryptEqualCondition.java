@@ -41,6 +41,8 @@ public final class EncryptEqualCondition implements EncryptCondition {
     
     private final String columnName;
     
+    private final boolean isSortable;
+    
     private final String tableName;
 
     private final int startIndex;
@@ -51,8 +53,10 @@ public final class EncryptEqualCondition implements EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptEqualCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
+    public EncryptEqualCondition(final String columnName, final boolean isSortable, final String tableName, final int startIndex, final int stopIndex, 
+                                 final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
+        this.isSortable = isSortable;
         this.tableName = tableName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;

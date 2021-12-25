@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer alter view statement.
  */
 @ToString
-public class SQLServerAlterViewStatement extends AlterViewStatement implements SQLServerStatement {
+public final class SQLServerAlterViewStatement extends AlterViewStatement implements SQLServerStatement {
 }
