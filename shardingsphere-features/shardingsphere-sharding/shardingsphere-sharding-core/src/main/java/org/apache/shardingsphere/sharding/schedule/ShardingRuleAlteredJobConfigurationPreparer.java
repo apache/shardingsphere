@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
 public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAlteredJobConfigurationPreparer {
     
     @Override
-    public HandleConfiguration createHandleConfig(final RuleConfiguration ruleConfig) {
+    public HandleConfiguration createHandleConfiguration(final RuleConfiguration ruleConfig) {
         HandleConfiguration result = new HandleConfiguration();
         Map<String, List<DataNode>> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(ruleConfig);
         Collection<DataNode> dataNodes = new ArrayList<>();
@@ -127,7 +127,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     @Override
-    public List<TaskConfiguration> createTaskConfigs(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
+    public List<TaskConfiguration> createTaskConfigurations(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(ruleConfig);
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());

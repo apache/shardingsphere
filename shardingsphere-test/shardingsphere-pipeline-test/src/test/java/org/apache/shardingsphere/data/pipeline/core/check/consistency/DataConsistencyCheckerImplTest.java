@@ -47,8 +47,8 @@ public final class DataConsistencyCheckerImplTest {
     public void assertCountAndDataCheck() {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
-        initTableData(jobContext.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
-        initTableData(jobContext.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
+        initTableData(jobContext.getTaskConfigs().iterator().next().getDumperConfig().getDataSourceConfig());
+        initTableData(jobContext.getTaskConfigs().iterator().next().getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
         assertTrue(resultMap.get("t_order").isRecordsCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
