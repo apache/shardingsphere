@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -60,18 +62,10 @@ public final class DataSourceConfigurationValidator {
             throw new InvalidDataSourceConfigurationException(dataSourceConfigName, ex.getMessage());
         } finally {
             if (null != dataSource) {
-                close(dataSource);
-            }
-        }
-    }
-    
-    private void close(final DataSource dataSource) {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+                try {
+                    DataSourcePoolDestroyerFactory.getInstance(dataSource.getClass().getCanonicalName()).destroy(dataSource);
+                } catch (final SQLException ignored) {
+                }
             }
         }
     }
