@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -87,7 +87,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
-        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
+        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new PipelineDataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     @Override

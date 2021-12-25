@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DataSourceManagerTest {
+public final class PipelineDataSourceManagerTest {
     
     private JobConfiguration jobConfig;
     
@@ -45,15 +45,15 @@ public final class DataSourceManagerTest {
     
     @Test
     public void assertGetDataSource() {
-        DataSourceManager dataSourceManager = new DataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(
                 PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
-        assertThat(actual, instanceOf(DataSourceWrapper.class));
+        assertThat(actual, instanceOf(PipelineDataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
-        try (DataSourceManager dataSourceManager = new DataSourceManager()) {
+        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             dataSourceManager.createSourceDataSource(
                     PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
             dataSourceManager.createTargetDataSource(

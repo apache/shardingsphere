@@ -30,11 +30,11 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * Data source wrapper is for abstract standard jdbc and sharding jdbc.
+ * Pipeline data source wrapper is for abstract standard jdbc and sharding jdbc.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DataSourceWrapper implements DataSource, AutoCloseable {
+public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
     

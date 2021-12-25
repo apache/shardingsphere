@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -80,7 +80,7 @@ public final class MySQLIncrementalDumperTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
+        DataSource dataSource = new PipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

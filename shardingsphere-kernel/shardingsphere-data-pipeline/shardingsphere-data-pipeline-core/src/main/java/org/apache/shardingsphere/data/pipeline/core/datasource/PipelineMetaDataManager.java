@@ -30,10 +30,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Meta data manager.
+ * Pipeline meta data manager.
  */
 @RequiredArgsConstructor
-public final class MetaDataManager {
+public final class PipelineMetaDataManager {
     
     private final DataSource dataSource;
     

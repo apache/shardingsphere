@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataManagerTest {
+public final class PipelineMetaDataManagerTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -111,7 +111,7 @@ public final class MetaDataManagerTest {
     
     @Test
     public void assertGetTableMetaData() {
-        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
+        PipelineMetaDataManager metaDataManager = new PipelineMetaDataManager(dataSource);
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE, databaseType));
@@ -138,6 +138,6 @@ public final class MetaDataManagerTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new MetaDataManager(dataSource).getTableMetaData(TEST_TABLE, mock(DatabaseType.class));
+        new PipelineMetaDataManager(dataSource).getTableMetaData(TEST_TABLE, mock(DatabaseType.class));
     }
 }

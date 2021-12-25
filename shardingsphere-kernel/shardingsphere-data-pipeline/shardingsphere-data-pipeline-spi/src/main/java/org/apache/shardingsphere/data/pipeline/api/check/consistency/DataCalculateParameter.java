@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 
 import java.util.Collection;
 
@@ -39,7 +39,7 @@ public final class DataCalculateParameter {
      * Data source of source side or target side.
      * Do not close it, it will be reused later.
      */
-    private DataSourceWrapper dataSource;
+    private PipelineDataSourceWrapper dataSource;
     
     private String logicTableName;
     
