@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
+package org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * JDBC data source creator.
+ * Pipeline data source configuration for YAML.
  */
-public interface JDBCDataSourceCreator extends TypedSPI {
+@Getter
+@Setter
+public final class YamlPipelineDataSourceConfiguration implements YamlConfiguration {
     
-    /**
-     * Create data source.
-     *
-     * @param dataSourceConfig data source configuration
-     * @return data source
-     * @throws SQLException if create data source failed
-     */
-    DataSource createDataSource(Object dataSourceConfig) throws SQLException;
+    private String type;
+    
+    private String parameter;
 }

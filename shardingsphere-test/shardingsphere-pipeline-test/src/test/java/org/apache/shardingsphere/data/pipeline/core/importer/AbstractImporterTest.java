@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +70,7 @@ public final class AbstractImporterTest {
     private PipelineSQLBuilder pipelineSqlBuilder;
     
     @Mock
-    private JDBCDataSourceConfiguration dataSourceConfig;
+    private PipelineDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;

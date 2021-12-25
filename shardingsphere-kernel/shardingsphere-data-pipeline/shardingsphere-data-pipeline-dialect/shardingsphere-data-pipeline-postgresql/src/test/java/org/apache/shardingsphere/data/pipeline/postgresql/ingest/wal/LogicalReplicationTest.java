@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 public final class LogicalReplicationTest {
     
     @Mock
-    private PgConnection pgConnection;
+    private PgConnection connection;
     
     @Mock
     private PGReplicationConnection pgReplicationConnection;
@@ -66,30 +66,30 @@ public final class LogicalReplicationTest {
     
     @Test
     public void assertCreatePgConnectionSuccess() throws SQLException {
-        Connection pgConnection = logicalReplication.createPgConnection(
-                new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
-        assertFalse(pgConnection.isClosed());
+        Connection connection = logicalReplication.createConnection(
+                new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        assertFalse(connection.isClosed());
     }
     
     @Test
     public void assertCreateReplicationStreamSuccess() throws SQLException {
         LogSequenceNumber startPosition = LogSequenceNumber.valueOf(100L);
-        when(pgConnection.unwrap(PGConnection.class)).thenReturn(pgConnection);
-        when(pgConnection.getReplicationAPI()).thenReturn(pgReplicationConnection);
+        when(connection.unwrap(PGConnection.class)).thenReturn(connection);
+        when(connection.getReplicationAPI()).thenReturn(pgReplicationConnection);
         when(pgReplicationConnection.replicationStream()).thenReturn(chainedStreamBuilder);
         when(chainedStreamBuilder.logical()).thenReturn(chainedLogicalStreamBuilder);
         when(chainedLogicalStreamBuilder.withStartPosition(startPosition)).thenReturn(chainedLogicalStreamBuilder);
         when(chainedLogicalStreamBuilder.withSlotName("")).thenReturn(chainedLogicalStreamBuilder);
         when(chainedLogicalStreamBuilder.withSlotOption(anyString(), eq(true))).thenReturn(chainedLogicalStreamBuilder, chainedLogicalStreamBuilder);
         BaseLogSequenceNumber basePosition = new PostgreSQLLogSequenceNumber(startPosition);
-        logicalReplication.createReplicationStream(pgConnection, "", basePosition);
+        logicalReplication.createReplicationStream(connection, "", basePosition);
         verify(chainedLogicalStreamBuilder).start();
     }
     
     @Test(expected = SQLException.class)
     @SneakyThrows(SQLException.class)
     public void assertCreateReplicationStreamFailure() {
-        when(pgConnection.unwrap(PGConnection.class)).thenThrow(new SQLException(""));
-        logicalReplication.createReplicationStream(pgConnection, "", new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
+        when(connection.unwrap(PGConnection.class)).thenThrow(new SQLException(""));
+        logicalReplication.createReplicationStream(connection, "", new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
     }
 }

@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml;
+package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 /**
- * JDBC data source configuration for YAML.
+ * Pipeline data source creator factory.
  */
-@Getter
-@Setter
-public final class YamlJDBCDataSourceConfiguration implements YamlConfiguration {
+public final class PipelineDataSourceCreatorFactory {
     
-    private String type;
+    static {
+        ShardingSphereServiceLoader.register(PipelineDataSourceCreator.class);
+    }
     
-    private String parameter;
+    /**
+     * Get pipeline data source creator instance.
+     * 
+     * @param type pipeline data source creator type
+     * @return pipeline data source creator instance
+     */
+    public static PipelineDataSourceCreator getInstance(final String type) {
+        return TypedSPIRegistry.getRegisteredService(PipelineDataSourceCreator.class, type, null);
+    }
 }

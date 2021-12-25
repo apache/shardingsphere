@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,7 @@ import java.util.Set;
 @ToString(exclude = "dataSourceConfig")
 public final class ImporterConfiguration {
     
-    private JDBCDataSourceConfiguration dataSourceConfig;
+    private PipelineDataSourceConfiguration dataSourceConfig;
     
     private Map<String, Set<String>> shardingColumnsMap;
     

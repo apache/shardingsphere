@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.config.datasource;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreator;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -31,13 +31,13 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * ShardingSphere JDBC data source creator.
+ * ShardingSphere pipeline data source creator.
  */
-public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSourceCreator {
+public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createDataSource(final Object dataSourceConfig) throws SQLException {
-        YamlRootConfiguration rootConfig = (YamlRootConfiguration) dataSourceConfig;
+    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
+        YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
         ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
@@ -55,6 +55,6 @@ public final class ShardingSphereJDBCDataSourceCreator implements JDBCDataSource
     
     @Override
     public String getType() {
-        return ShardingSphereJDBCDataSourceConfiguration.TYPE;
+        return ShardingSpherePipelineDataSourceConfiguration.TYPE;
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.LogSequenceNumber;
@@ -47,22 +47,22 @@ public final class OpenGaussLogicalReplication {
     /**
      * Create OpenGauss connection.
      *
-     * @param jdbcDataSourceConfig JDBC data source configuration
+     * @param pipelineDataSourceConfig pipeline data source configuration
      * @return OpenGauss connection
      * @throws SQLException SQL exception
      */
-    public Connection createPgConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
-        return createConnection(jdbcDataSourceConfig);
+    public Connection createPgConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+        return createConnection(pipelineDataSourceConfig);
     }
     
-    private Connection createConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
+    private Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, jdbcDataSourceConfig.getHikariConfig().getUsername());
-        PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getHikariConfig().getPassword());
+        PGProperty.USER.set(props, pipelineDataSourceConfig.getHikariConfig().getUsername());
+        PGProperty.PASSWORD.set(props, pipelineDataSourceConfig.getHikariConfig().getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.4");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
+        return DriverManager.getConnection(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
     }
     
     /**

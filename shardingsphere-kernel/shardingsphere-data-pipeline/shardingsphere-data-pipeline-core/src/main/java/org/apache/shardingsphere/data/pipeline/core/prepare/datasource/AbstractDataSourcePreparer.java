@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefin
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,11 +51,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     protected final DataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
-        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
+        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
     }
     
     protected final DataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
-        return dataSourceFactory.newInstance(JDBCDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
+        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

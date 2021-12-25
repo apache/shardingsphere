@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigu
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
@@ -51,7 +51,7 @@ public final class SourceConfiguration {
      * @param tableRules table rules
      * @return sharding jdbc configuration
      */
-    public static ShardingSphereJDBCDataSourceConfiguration getDockerConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
+    public static ShardingSpherePipelineDataSourceConfiguration getDockerConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
         return getConfiguration(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.docker")), tableRules);
     }
     
@@ -61,13 +61,13 @@ public final class SourceConfiguration {
      * @param tableRules table rules
      * @return sharding jdbc configuration
      */
-    public static ShardingSphereJDBCDataSourceConfiguration getHostConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
+    public static ShardingSpherePipelineDataSourceConfiguration getHostConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
         return getConfiguration(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.host")), tableRules);
     }
     
-    private static ShardingSphereJDBCDataSourceConfiguration getConfiguration(final String jdbcUrl, final Map<String, YamlTableRuleConfiguration> tableRules) {
+    private static ShardingSpherePipelineDataSourceConfiguration getConfiguration(final String jdbcUrl, final Map<String, YamlTableRuleConfiguration> tableRules) {
         YamlRootConfiguration rootConfig = getShardingJdbcConfiguration(jdbcUrl, tableRules);
-        return new ShardingSphereJDBCDataSourceConfiguration(YamlEngine.marshal(rootConfig));
+        return new ShardingSpherePipelineDataSourceConfiguration(YamlEngine.marshal(rootConfig));
     }
     
     private static YamlRootConfiguration getShardingJdbcConfiguration(final String jdbcUrl, final Map<String, YamlTableRuleConfiguration> tableRules) {
@@ -92,9 +92,9 @@ public final class SourceConfiguration {
      */
     @SneakyThrows(SQLException.class)
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
-        ShardingSphereJDBCDataSourceConfiguration configuration = getHostConfiguration(tableRules);
+        ShardingSpherePipelineDataSourceConfiguration config = getHostConfiguration(tableRules);
         return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, 
-                null, new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootConfig().getDataSources()),
-                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootConfig().getRules()), null);
+                null, new YamlDataSourceConfigurationSwapper().swapToDataSources(config.getRootConfig().getDataSources()),
+                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(config.getRootConfig().getRules()), null);
     }
 }

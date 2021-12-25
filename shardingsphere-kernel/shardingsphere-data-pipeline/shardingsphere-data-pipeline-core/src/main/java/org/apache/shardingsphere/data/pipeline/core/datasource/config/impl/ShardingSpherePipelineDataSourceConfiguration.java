@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -38,11 +38,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * ShardingSphere-JDBC data source configuration.
+ * Pipeline data source configuration for ShardingSphere-JDBC.
  */
 @Getter
 @EqualsAndHashCode(of = "parameter")
-public final class ShardingSphereJDBCDataSourceConfiguration implements JDBCDataSourceConfiguration {
+public final class ShardingSpherePipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
     
     public static final String TYPE = "ShardingSphereJDBC";
     
@@ -52,14 +52,14 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements JDBCData
     
     private final DatabaseType databaseType;
     
-    public ShardingSphereJDBCDataSourceConfiguration(final String parameter) {
+    public ShardingSpherePipelineDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
         rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
     }
     
-    public ShardingSphereJDBCDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
+    public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
         YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules());
         this.parameter = YamlEngine.marshal(parameterConfig);
         this.rootConfig = rootConfig;
@@ -98,10 +98,10 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements JDBCData
      * @param actualDataSourceName actual data source name
      * @return actual data source configuration
      */
-    public StandardJDBCDataSourceConfiguration getActualDataSourceConfig(final String actualDataSourceName) {
+    public StandardPipelineDataSourceConfiguration getActualDataSourceConfig(final String actualDataSourceName) {
         Map<String, Object> yamlDataSourceConfig = rootConfig.getDataSources().get(actualDataSourceName);
         Preconditions.checkNotNull(yamlDataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
-        return new StandardJDBCDataSourceConfiguration(yamlDataSourceConfig);
+        return new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
     }
     
     /**

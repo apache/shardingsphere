@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
 /**
  * Pipeline configuration.
@@ -27,16 +27,16 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJ
 @Getter
 public final class PipelineConfiguration {
     
-    private YamlJDBCDataSourceConfiguration source;
+    private YamlPipelineDataSourceConfiguration source;
     
-    private YamlJDBCDataSourceConfiguration target;
+    private YamlPipelineDataSourceConfiguration target;
     
     /**
      * Set source.
      *
      * @param source source configuration
      */
-    public void setSource(final YamlJDBCDataSourceConfiguration source) {
+    public void setSource(final YamlPipelineDataSourceConfiguration source) {
         checkParameters(source);
         this.source = source;
     }
@@ -46,12 +46,12 @@ public final class PipelineConfiguration {
      *
      * @param target target configuration
      */
-    public void setTarget(final YamlJDBCDataSourceConfiguration target) {
+    public void setTarget(final YamlPipelineDataSourceConfiguration target) {
         checkParameters(target);
         this.target = target;
     }
     
-    private void checkParameters(final YamlJDBCDataSourceConfiguration yamlConfig) {
+    private void checkParameters(final YamlPipelineDataSourceConfiguration yamlConfig) {
         Preconditions.checkNotNull(yamlConfig);
         Preconditions.checkNotNull(yamlConfig.getType());
         Preconditions.checkNotNull(yamlConfig.getParameter());

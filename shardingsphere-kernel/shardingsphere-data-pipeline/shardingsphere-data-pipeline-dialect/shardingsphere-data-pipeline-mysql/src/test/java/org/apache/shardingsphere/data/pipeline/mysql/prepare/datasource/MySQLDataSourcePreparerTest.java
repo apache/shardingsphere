@@ -21,9 +21,9 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineCo
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,16 +49,16 @@ public final class MySQLDataSourcePreparerTest {
     private PipelineConfiguration pipelineConfig;
     
     @Mock
-    private YamlJDBCDataSourceConfiguration sourceYamlJDBCDataSourceConfiguration;
+    private YamlPipelineDataSourceConfiguration sourceYamlPipelineDataSourceConfiguration;
     
     @Mock
-    private YamlJDBCDataSourceConfiguration targetYamlJDBCDataSourceConfiguration;
+    private YamlPipelineDataSourceConfiguration targetYamlPipelineDataSourceConfiguration;
     
     @Mock
-    private ShardingSphereJDBCDataSourceConfiguration sourceScalingDataSourceConfig;
+    private ShardingSpherePipelineDataSourceConfiguration sourceScalingDataSourceConfig;
     
     @Mock
-    private ShardingSphereJDBCDataSourceConfiguration targetScalingDataSourceConfig;
+    private ShardingSpherePipelineDataSourceConfiguration targetScalingDataSourceConfig;
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource sourceDataSource;
@@ -70,12 +70,12 @@ public final class MySQLDataSourcePreparerTest {
     public void setUp() throws SQLException {
         when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
-        when(pipelineConfig.getSource()).thenReturn(sourceYamlJDBCDataSourceConfiguration);
-        when(JDBCDataSourceCreatorFactory.getInstance(
-                sourceScalingDataSourceConfig.getType()).createDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
-        when(pipelineConfig.getTarget()).thenReturn(targetYamlJDBCDataSourceConfiguration);
-        when(JDBCDataSourceCreatorFactory.getInstance(
-                targetScalingDataSourceConfig.getType()).createDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
+        when(pipelineConfig.getSource()).thenReturn(sourceYamlPipelineDataSourceConfiguration);
+        when(PipelineDataSourceCreatorFactory.getInstance(
+                sourceScalingDataSourceConfig.getType()).createPipelineDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
+        when(pipelineConfig.getTarget()).thenReturn(targetYamlPipelineDataSourceConfiguration);
+        when(PipelineDataSourceCreatorFactory.getInstance(
+                targetScalingDataSourceConfig.getType()).createPipelineDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
     }
     
     @Test

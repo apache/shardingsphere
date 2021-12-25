@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public class DumperConfiguration {
     
     private String dataSourceName;
     
-    private JDBCDataSourceConfiguration dataSourceConfig;
+    private PipelineDataSourceConfiguration dataSourceConfig;
     
     private int blockQueueSize = 10000;
     

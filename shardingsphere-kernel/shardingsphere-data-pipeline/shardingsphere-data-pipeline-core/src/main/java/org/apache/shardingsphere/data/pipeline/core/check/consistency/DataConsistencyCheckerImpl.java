@@ -29,8 +29,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
@@ -75,12 +75,12 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
-        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             return jobContext.getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
@@ -119,30 +119,30 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     @Override
     public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
-        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceDataSourceConfig.getDatabaseType().getName());
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
-        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
+        checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
-        Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceConfig, logicTableNames);
+        Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceDataSourceConfig, logicTableNames);
         logicTableNames.forEach(each -> {
             //TODO put to preparer
             if (!tableMetaDataMap.containsKey(each)) {
                 throw new DataCheckFailException(String.format("could not get columns for table '%s'", each));
             }
         });
-        String sourceDatabaseType = sourceConfig.getDatabaseType().getName();
-        String targetDatabaseType = targetConfig.getDatabaseType().getName();
+        String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
+        String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
         SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
         SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
+        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
                 String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
@@ -184,7 +184,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     // TODO reuse metadata
-    private Map<String, TableMetaData> getTablesColumnsMap(final JDBCDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
+    private Map<String, TableMetaData> getTablesColumnsMap(final PipelineDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
         try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tableNames) {

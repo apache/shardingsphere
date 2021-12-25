@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,9 +36,9 @@ public final class DataSourceFactory {
      * @return new data source wrapper
      */
     @SneakyThrows(SQLException.class)
-    public DataSourceWrapper newInstance(final JDBCDataSourceConfiguration dataSourceConfig) {
+    public DataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
         // TODO cache and reuse, try DataSourceManager
-        DataSource dataSource = JDBCDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createDataSource(dataSourceConfig.getDataSourceConfiguration());
-        return new DataSourceWrapper(dataSource, dataSourceConfig.getDatabaseType());
+        DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
+        return new DataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
     }
 }

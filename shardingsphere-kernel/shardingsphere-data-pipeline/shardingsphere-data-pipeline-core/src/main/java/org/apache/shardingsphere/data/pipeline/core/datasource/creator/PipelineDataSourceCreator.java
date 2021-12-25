@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * JDBC data source creator factory.
+ * Pipeline data source creator.
  */
-public final class JDBCDataSourceCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(JDBCDataSourceCreator.class);
-    }
+public interface PipelineDataSourceCreator extends TypedSPI {
     
     /**
-     * Get JDBC data source creator instance.
-     * 
-     * @param type JDBC data source creator type
-     * @return JDBC data source creator instance
+     * Create pipeline data source.
+     *
+     * @param pipelineDataSourceConfig pipeline data source configuration
+     * @return pipeline data source
+     * @throws SQLException if create data source failed
      */
-    public static JDBCDataSourceCreator getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(JDBCDataSourceCreator.class, type, null);
-    }
+    DataSource createPipelineDataSource(Object pipelineDataSourceConfig) throws SQLException;
 }

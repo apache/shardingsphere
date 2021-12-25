@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper walDumper;
     
-    private StandardJDBCDataSourceConfiguration jdbcDataSourceConfig;
+    private StandardPipelineDataSourceConfiguration pipelineDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -87,9 +87,9 @@ public final class PostgreSQLWalDumperTest {
         } catch (final SQLException e) {
             throw new RuntimeException("Init table failed", e);
         }
-        jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration(jdbcUrl, username, password);
+        pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(jdbcDataSourceConfig);
+        result.setDataSourceConfig(pipelineDataSourceConfig);
         Map<String, String> tableNameMap = new HashMap<>();
         tableNameMap.put("t_order_0", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -100,7 +100,7 @@ public final class PostgreSQLWalDumperTest {
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
             ReflectionUtil.setFieldValue(walDumper, "logicalReplication", logicalReplication);
-            when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
+            when(logicalReplication.createConnection(pipelineDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection), position.getLogSequenceNumber()))
                     .thenReturn(pgReplicationStream);

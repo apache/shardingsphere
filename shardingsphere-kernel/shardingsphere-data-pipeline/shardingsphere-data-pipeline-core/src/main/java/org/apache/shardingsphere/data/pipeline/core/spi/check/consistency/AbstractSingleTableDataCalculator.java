@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.Properties;
 
@@ -33,7 +33,7 @@ public abstract class AbstractSingleTableDataCalculator implements SingleTableDa
     
     private Properties algorithmProps;
     
-    protected final DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
+    protected final DataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
         return dataSourceFactory.newInstance(dataSourceConfig);
     }
     

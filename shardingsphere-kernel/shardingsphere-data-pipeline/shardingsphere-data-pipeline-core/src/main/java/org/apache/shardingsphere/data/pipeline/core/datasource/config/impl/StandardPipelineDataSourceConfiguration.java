@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -33,10 +33,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Standard JDBC data source configuration.
+ * Pipeline data source configuration for standard JDBC.
  */
 @EqualsAndHashCode(of = "parameter")
-public final class StandardJDBCDataSourceConfiguration implements JDBCDataSourceConfiguration {
+public final class StandardPipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
     
     public static final String TYPE = "JDBC";
     
@@ -54,15 +54,15 @@ public final class StandardJDBCDataSourceConfiguration implements JDBCDataSource
     private final DatabaseType databaseType;
     
     @SuppressWarnings("unchecked")
-    public StandardJDBCDataSourceConfiguration(final String parameter) {
+    public StandardPipelineDataSourceConfiguration(final String parameter) {
         this(YamlEngine.unmarshal(parameter, Map.class), parameter);
     }
     
-    public StandardJDBCDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
+    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
         this(yamlDataSourceConfig, YamlEngine.marshal(yamlDataSourceConfig));
     }
     
-    private StandardJDBCDataSourceConfiguration(final Map<String, Object> yamlConfig, final String parameter) {
+    private StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlConfig, final String parameter) {
         this.parameter = parameter;
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, HikariDataSource.class.getName());
@@ -73,7 +73,7 @@ public final class StandardJDBCDataSourceConfiguration implements JDBCDataSource
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
     }
     
-    public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
         this(wrapParameter(jdbcUrl, username, password));
     }
     

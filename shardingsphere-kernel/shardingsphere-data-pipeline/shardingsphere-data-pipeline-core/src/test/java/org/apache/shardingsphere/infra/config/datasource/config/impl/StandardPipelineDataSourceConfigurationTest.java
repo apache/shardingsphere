@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.config.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StandardJDBCDataSourceConfigurationTest {
+public final class StandardPipelineDataSourceConfigurationTest {
     
     @Test
     public void assertConstructionByParameter() {
         String parameter = readFileAndIgnoreComments("config_standard_jdbc_target.yaml");
-        new StandardJDBCDataSourceConfiguration(parameter);
+        new StandardPipelineDataSourceConfiguration(parameter);
     }
     
     /**
@@ -54,8 +54,9 @@ public final class StandardJDBCDataSourceConfigurationTest {
     
     @Test
     public void assertAppendJDBCParameters() {
-        StandardJDBCDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false", null, null);
-        dataSourceConfig.appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        assertThat(dataSourceConfig.getHikariConfig().getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
+        StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(
+                "jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false", null, null);
+        pipelineDataSourceConfig.appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        assertThat(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
 }

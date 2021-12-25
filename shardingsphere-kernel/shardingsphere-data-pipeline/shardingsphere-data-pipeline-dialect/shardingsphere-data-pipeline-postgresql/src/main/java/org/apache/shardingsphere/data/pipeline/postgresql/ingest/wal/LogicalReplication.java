@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.postgresql.PGConnection;
 import org.postgresql.PGProperty;
 import org.postgresql.replication.LogSequenceNumber;
@@ -35,37 +35,33 @@ import java.util.Properties;
 public final class LogicalReplication {
     
     /**
-     * Create PostgreSQL connection.
+     * Create connection.
      *
-     * @param jdbcDataSourceConfig JDBC data source configuration
+     * @param pipelineDataSourceConfig pipeline data source configuration
      * @return PostgreSQL connection
      * @throws SQLException SQL exception
      */
-    public Connection createPgConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
-        return createConnection(jdbcDataSourceConfig);
-    }
-    
-    private Connection createConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
+    public Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, jdbcDataSourceConfig.getHikariConfig().getUsername());
-        PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getHikariConfig().getPassword());
+        PGProperty.USER.set(props, pipelineDataSourceConfig.getHikariConfig().getUsername());
+        PGProperty.PASSWORD.set(props, pipelineDataSourceConfig.getHikariConfig().getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.6");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
+        return DriverManager.getConnection(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
     }
     
     /**
      * Create PostgreSQL replication stream.
      *
-     * @param pgConnection PostgreSQL connection
+     * @param connection connection
      * @param slotName slot name
      * @param startPosition start position
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final Connection pgConnection, final String slotName, final BaseLogSequenceNumber startPosition) throws SQLException {
-        return pgConnection.unwrap(PGConnection.class).getReplicationAPI()
+    public PGReplicationStream createReplicationStream(final Connection connection, final String slotName, final BaseLogSequenceNumber startPosition) throws SQLException {
+        return connection.unwrap(PGConnection.class).getReplicationAPI()
                 .replicationStream()
                 .logical()
                 .withStartPosition((LogSequenceNumber) startPosition.get())

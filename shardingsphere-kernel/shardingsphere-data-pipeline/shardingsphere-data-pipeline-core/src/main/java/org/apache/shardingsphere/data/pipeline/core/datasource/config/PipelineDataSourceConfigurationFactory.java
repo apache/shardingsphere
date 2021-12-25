@@ -19,28 +19,28 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 
 /**
- * JDBC data source configuration factory.
+ * Pipeline data source configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCDataSourceConfigurationFactory {
+public final class PipelineDataSourceConfigurationFactory {
     
     /**
-     * Get new instance of JDBC data source configuration.
+     * Get new instance of pipeline data source configuration.
      *
-     * @param type type of JDBC data source configuration
-     * @param parameter parameter of JDBC data source configuration
-     * @return new instance of JDBC data source configuration
+     * @param type type of pipeline data source configuration
+     * @param parameter parameter of pipeline data source configuration
+     * @return new instance of pipeline data source configuration
      */
-    public static JDBCDataSourceConfiguration newInstance(final String type, final String parameter) {
+    public static PipelineDataSourceConfiguration newInstance(final String type, final String parameter) {
         switch (type) {
-            case StandardJDBCDataSourceConfiguration.TYPE:
-                return new StandardJDBCDataSourceConfiguration(parameter);
-            case ShardingSphereJDBCDataSourceConfiguration.TYPE:
-                return new ShardingSphereJDBCDataSourceConfiguration(parameter);
+            case StandardPipelineDataSourceConfiguration.TYPE:
+                return new StandardPipelineDataSourceConfiguration(parameter);
+            case ShardingSpherePipelineDataSourceConfiguration.TYPE:
+                return new ShardingSpherePipelineDataSourceConfiguration(parameter);
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported data source type '%s'", type));
         }
