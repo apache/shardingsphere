@@ -20,20 +20,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>shardingsphere-jdbc-memory-local-example</artifactId>
+        <artifactId>shardingsphere-jdbc-memory-local-db-discovery-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <artifactId>shardingsphere-jdbc-memory-local-db-discovery-example</artifactId>
+    <artifactId>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-jdbc-memory-local-db-discovery-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jdbc-example</module>
-        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jpa-example</module>
-        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-mybatis-example</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
     
 </project>
