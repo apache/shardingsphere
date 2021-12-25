@@ -84,12 +84,6 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return result;
     }
     
-    /**
-     * Get scaling actual data nodes.
-     *
-     * @param ruleConfig rule configuration
-     * @return map(logic table name, DataNode of each logic table)
-     */
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleConfiguration ruleConfig) {
         JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter());
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
@@ -127,8 +121,8 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     @Override
-    public List<TaskConfiguration> createTaskConfigurations(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
-        List<TaskConfiguration> result = new LinkedList<>();
+    public Collection<TaskConfiguration> createTaskConfigurations(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
+        Collection<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(ruleConfig);
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> sourceDataSource = new YamlDataSourceConfigurationSwapper().getDataSourceConfigurations(sourceConfig.getRootConfig());
