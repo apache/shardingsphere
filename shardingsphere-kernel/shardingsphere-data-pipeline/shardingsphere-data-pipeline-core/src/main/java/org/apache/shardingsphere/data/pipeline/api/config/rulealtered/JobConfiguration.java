@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSou
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -67,7 +67,7 @@ public final class JobConfiguration {
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             // TODO singleton
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfig(ruleConfig);
+            handleConfig = preparer.createHandleConfiguration(ruleConfig);
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
@@ -91,8 +91,8 @@ public final class JobConfiguration {
      *
      * @return task configurations
      */
-    public List<TaskConfiguration> buildTaskConfigs() {
+    public Collection<TaskConfiguration> buildTaskConfigs() {
         RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigs(ruleConfig, handleConfig);
+        return preparer.createTaskConfigurations(ruleConfig, handleConfig);
     }
 }

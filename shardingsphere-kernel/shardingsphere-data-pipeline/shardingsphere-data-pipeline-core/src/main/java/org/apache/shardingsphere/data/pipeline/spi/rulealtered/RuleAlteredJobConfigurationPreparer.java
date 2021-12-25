@@ -25,18 +25,18 @@ import org.apache.shardingsphere.spi.required.RequiredSPI;
 import java.util.List;
 
 /**
- * Rule altered job configuration preparer, SPI interface.
+ * Rule altered job configuration preparer.
  */
 public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     
-    // TODO put referenced Config to spi
+    // TODO put referenced configuration to SPI
     /**
      * Create handle configuration, used to build job configuration.
      *
      * @param ruleConfig rule configuration
      * @return handle configuration
      */
-    HandleConfiguration createHandleConfig(RuleConfiguration ruleConfig);
+    HandleConfiguration createHandleConfiguration(RuleConfiguration ruleConfig);
     
     /**
      * Create task configurations, used by underlying scheduler.
@@ -45,5 +45,5 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
      * @param handleConfig handle configuration
      * @return task configurations
      */
-    List<TaskConfiguration> createTaskConfigs(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
+    List<TaskConfiguration> createTaskConfigurations(RuleConfiguration ruleConfig, HandleConfiguration handleConfig);
 }

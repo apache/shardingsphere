@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFa
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +44,7 @@ public final class ScalingEnvironmentManager {
      */
     // TODO seems it should be removed, dangerous to use
     public void resetTargetTable(final RuleAlteredJobContext jobContext) throws SQLException {
-        Set<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
+        Collection<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
         try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(
                 JDBCDataSourceConfigurationFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter()));
              Connection connection = dataSource.getConnection()) {
