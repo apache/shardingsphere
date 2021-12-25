@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 /**
- * Traffic load-balance algorithm.
+ * Traffic load balance algorithm.
  */
 public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
 }
