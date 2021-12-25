@@ -139,12 +139,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-mysql</artifactId>
+            <artifactId>shardingsphere-data-pipeline-mysql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-postgresql</artifactId>
+            <artifactId>shardingsphere-data-pipeline-postgresql</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-opengauss</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

@@ -101,7 +101,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             long targetCount = targetFuture.get();
             return new DataConsistencyCheckResult(sourceCount, targetCount);
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new DataCheckFailException("count check failed, table=" + table, ex);
+            throw new DataCheckFailException(String.format("count check failed for table '%s'", table), ex);
         }
     }
     
@@ -112,7 +112,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("table %s count failed.", table), ex);
+            throw new DataCheckFailException(String.format("count for table '%s' failed", table), ex);
         }
     }
     
@@ -130,7 +130,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         logicTableNames.forEach(each -> {
             //TODO put to preparer
             if (!tableMetaDataMap.containsKey(each)) {
-                throw new DataCheckFailException(String.format("could not get table columns for '%s'", each));
+                throw new DataCheckFailException(String.format("could not get columns for table '%s'", each));
             }
         });
         String sourceDatabaseType = sourceConfig.getDatabaseType().getName();
@@ -189,7 +189,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tableNames) {
                 Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
-                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new DataCheckFailException("get table metadata failed, tableName=" + each));
+                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new DataCheckFailException(String.format("get metadata failed for table '%s'", each)));
                 result.put(each, tableMetaData);
             }
             return result;
