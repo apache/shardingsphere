@@ -17,7 +17,7 @@ The hardware standards of Jenkins and Sysbench machines can appropriately lower.
 #### Software Environment
 
 ```
-Jenins: The latest version
+Jenkins: The latest version
 Sysbench: 1.0.20
 ShardingSphere-Proxy: package from master branch
 MySQL Server: 5.7.28
