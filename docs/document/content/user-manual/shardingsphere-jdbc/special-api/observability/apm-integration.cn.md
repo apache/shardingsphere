@@ -27,7 +27,7 @@ ShardingTracer.init();
 ShardingTracer.init(new SkywalkingTracer());
 ```
 
-*注意：使用 SkyWalking 的 OpenTracing 探针时，不能同时使用Apache ShardingSphere Agent的OpenTracing插件，以防止两种插件互相冲突。*
+*注意：使用 SkyWalking 的 OpenTracing 探针时，不能同时使用 Apache ShardingSphere Agent 的 OpenTracing 插件，以防止两种插件互相冲突。*
 
 ### 使用 SkyWalking 自动探针
 
