@@ -15,36 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorRegistry;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Properties;
 
 /**
- * Scaling default data consistency check algorithm.
+ * Abstract data consistency check algorithm.
  */
-public final class DefaultDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
+public abstract class AbstractDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
     
-    public static final String TYPE = "DEFAULT";
+    private Properties props = new Properties();
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
+    @Override
+    public Properties getProps() {
+        return props;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init() {
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Default implementation with CRC32 of all records.";
-    }
-    
-    @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
     }
     
     @Override
@@ -53,12 +50,10 @@ public final class DefaultDataConsistencyCheckAlgorithm implements DataConsisten
     }
     
     @Override
-    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        return SingleTableDataCalculatorRegistry.newServiceInstance(TYPE, supportedDatabaseType);
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
+    public final SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
+        SingleTableDataCalculator result = SingleTableDataCalculatorRegistry.newServiceInstance(getType(), supportedDatabaseType);
+        result.setAlgorithmProps(props);
+        result.init();
+        return result;
     }
 }

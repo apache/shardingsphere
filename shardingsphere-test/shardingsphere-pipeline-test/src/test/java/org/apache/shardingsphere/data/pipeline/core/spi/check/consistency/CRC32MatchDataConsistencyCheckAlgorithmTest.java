@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.junit.Test;
 
@@ -25,13 +25,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class ScalingDefaultDataConsistencyCheckAlgorithmTest {
+public final class CRC32MatchDataConsistencyCheckAlgorithmTest {
     
     @Test
     public void assertNewInstance() {
-        DefaultDataConsistencyCheckAlgorithm checkAlgorithm = new DefaultDataConsistencyCheckAlgorithm();
+        CRC32MatchDataConsistencyCheckAlgorithm checkAlgorithm = new CRC32MatchDataConsistencyCheckAlgorithm();
         checkAlgorithm.init();
-        assertThat(checkAlgorithm.getType(), is(DefaultDataConsistencyCheckAlgorithm.TYPE));
+        assertThat(checkAlgorithm.getType(), is(CRC32MatchDataConsistencyCheckAlgorithm.TYPE));
         assertNotNull(checkAlgorithm.getDescription());
         assertThat(checkAlgorithm.getProvider(), is("ShardingSphere"));
         assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
@@ -39,7 +39,7 @@ public final class ScalingDefaultDataConsistencyCheckAlgorithmTest {
     
     @Test(expected = NullPointerException.class)
     public void assertGetSingleTableDataCalculator() {
-        DefaultDataConsistencyCheckAlgorithm checkAlgorithm = new DefaultDataConsistencyCheckAlgorithm();
+        CRC32MatchDataConsistencyCheckAlgorithm checkAlgorithm = new CRC32MatchDataConsistencyCheckAlgorithm();
         checkAlgorithm.getSupportedDatabaseTypes().forEach(checkAlgorithm::getSingleTableDataCalculator);
     }
 }

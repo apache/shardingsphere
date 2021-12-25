@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
@@ -36,6 +37,8 @@ public final class DataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public DataSourceWrapper newInstance(final JDBCDataSourceConfiguration dataSourceConfig) {
-        return new DataSourceWrapper(JDBCDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createDataSource(dataSourceConfig.getDataSourceConfiguration()));
+        // TODO cache and reuse, try DataSourceManager
+        DataSource dataSource = JDBCDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createDataSource(dataSourceConfig.getDataSourceConfiguration());
+        return new DataSourceWrapper(dataSource, dataSourceConfig.getDatabaseType());
     }
 }

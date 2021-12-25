@@ -152,9 +152,9 @@ public final class PipelineJobAPIImplTest {
         initTableData(jobConfig.getRuleConfig());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isCountValid());
-        assertTrue(checkResultMap.get("t_order").isDataValid());
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+        assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
+        assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
+        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(2L));
     }
     
     @Test
@@ -164,17 +164,17 @@ public final class PipelineJobAPIImplTest {
         checkResultMap = Collections.emptyMap();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
-        trueResult.setDataValid(true);
+        trueResult.setRecordsContentMatched(true);
         DataConsistencyCheckResult checkResult;
         checkResult = new DataConsistencyCheckResult(100, 95);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setDataValid(false);
+        checkResult.setRecordsContentMatched(false);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setDataValid(true);
+        checkResult.setRecordsContentMatched(true);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }
@@ -188,7 +188,7 @@ public final class PipelineJobAPIImplTest {
         initTableData(jobConfig.getRuleConfig());
         pipelineJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
-        assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
+        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
     }
     
     @SneakyThrows(SQLException.class)

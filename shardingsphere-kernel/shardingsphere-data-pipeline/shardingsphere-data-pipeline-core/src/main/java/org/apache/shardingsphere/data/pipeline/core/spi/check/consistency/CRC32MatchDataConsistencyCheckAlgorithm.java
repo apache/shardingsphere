@@ -15,28 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public final class FixtureH2SingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+/**
+ * CRC32 match implementation of data consistency check algorithm.
+ */
+public final class CRC32MatchDataConsistencyCheckAlgorithm extends AbstractDataConsistencyCheckAlgorithm {
+    
+    public static final String TYPE = "CRC32_MATCH";
+    
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
-    public String getAlgorithmType() {
-        return FixtureDataConsistencyCheckAlgorithm.TYPE;
+    public String getDescription() {
+        return "Match CRC32 of records.";
     }
     
     @Override
-    public Collection<String> getDatabaseTypes() {
-        return Collections.singletonList("H2");
+    public Collection<String> getSupportedDatabaseTypes() {
+        return SUPPORTED_DATABASE_TYPES;
     }
     
     @Override
-    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
-        return Collections.singletonList(true);
+    public String getType() {
+        return TYPE;
     }
 }

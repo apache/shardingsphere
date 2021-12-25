@@ -248,10 +248,10 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final RuleAlteredJobContext jobContext, final DataConsistencyCheckAlgorithm checkAlgorithm) {
         long jobId = jobContext.getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
-        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
-            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
-            result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
+        if (result.values().stream().allMatch(DataConsistencyCheckResult::isRecordsCountMatched)) {
+            Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkRecordsContent(checkAlgorithm);
+            result.forEach((key, value) -> value.setRecordsContentMatched(contentCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
@@ -264,10 +264,11 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
-            boolean isDataValid = entry.getValue().isDataValid();
-            boolean isCountValid = entry.getValue().isCountValid();
-            if (!isDataValid || !isCountValid) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, entry.getKey(), isDataValid, isCountValid);
+            boolean recordsCountMatched = entry.getValue().isRecordsCountMatched();
+            boolean recordsContentMatched = entry.getValue().isRecordsContentMatched();
+            if (!recordsContentMatched || !recordsCountMatched) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
+                    jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
                 return false;
             }
         }

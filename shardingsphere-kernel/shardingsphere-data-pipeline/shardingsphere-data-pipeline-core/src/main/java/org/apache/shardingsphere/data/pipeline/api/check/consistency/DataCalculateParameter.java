@@ -21,7 +21,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 
 import java.util.Collection;
 
@@ -35,9 +36,10 @@ import java.util.Collection;
 public final class DataCalculateParameter {
     
     /**
-     * Data source configuration of source side or target side.
+     * Data source of source side or target side.
+     * Do not close it, it will be reused later.
      */
-    private JDBCDataSourceConfiguration dataSourceConfig;
+    private DataSourceWrapper dataSource;
     
     private String logicTableName;
     
@@ -47,27 +49,36 @@ public final class DataCalculateParameter {
     private Collection<String> columnNames;
     
     /**
+     * Database type.
+     */
+    private String databaseType;
+    
+    /**
      * Peer database type.
      */
     private String peerDatabaseType;
     
     /**
-     * Chunk size of limited records to be calculated in a batch.
+     * It could be primary key.
+     * It could be used in order by clause.
      */
-    private Integer chunkSize;
+    private String uniqueKey;
     
     /**
-     * Ignored column names.
+     * Used for range query.
+     * If it's configured, then it could be translated to SQL like "uniqueColumn >= pair.left AND uniqueColumn <= pair.right".
+     * One of left and right of pair could be null.
      */
-    private Collection<String> ignoredColumnNames;
+    private Pair<Object, Object> uniqueColumnValueRange;
     
     /**
-     * If {@link #chunkSize} exists, it could be used in order by clause on first priority.
+     * Used for multiple records query.
+     * If it's configured, then it could be translated to SQL like "uniqueColumn IN (value1,value2,value3)".
      */
-    private Collection<String> primaryColumnNames;
+    private Collection<Object> uniqueColumnValues;
     
     /**
-     * If {@link #chunkSize} exists, it could be used in order by clause on second priority.
+     * Previous calculated result will be transferred to next call.
      */
-    private Collection<String> uniqueColumnNames;
+    private volatile Object previousCalculatedResult;
 }

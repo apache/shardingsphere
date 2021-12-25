@@ -51,17 +51,17 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getKey());
-                    list.add(each.getValue().getSourceCount());
-                    list.add(each.getValue().getTargetCount());
-                    list.add(each.getValue().isCountValid() + "");
-                    list.add(each.getValue().isDataValid() + "");
+                    list.add(each.getValue().getSourceRecordsCount());
+                    list.add(each.getValue().getTargetRecordsCount());
+                    list.add(each.getValue().isRecordsCountMatched() + "");
+                    list.add(each.getValue().isRecordsContentMatched() + "");
                     return list;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "source_count", "target_count", "count_valid", "data_valid");
+        return Arrays.asList("table_name", "source_records_count", "target_records_count", "records_count_matched", "records_content_matched");
     }
     
     @Override

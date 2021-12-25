@@ -71,6 +71,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @return data source
      */
     public DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
+        // TODO re-init if existing dataSource was closed
         if (cachedDataSources.containsKey(dataSourceConfig)) {
             return cachedDataSources.get(dataSourceConfig);
         }

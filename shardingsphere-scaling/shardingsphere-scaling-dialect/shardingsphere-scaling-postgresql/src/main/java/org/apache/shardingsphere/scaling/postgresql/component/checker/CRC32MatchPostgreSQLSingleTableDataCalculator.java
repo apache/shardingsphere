@@ -18,30 +18,33 @@
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DefaultDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
- * Default PostgreSQL single table data calculator.
+ * CRC32 match PostgreSQL implementation of single table data calculator.
  */
-public final class DefaultPostgreSQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class CRC32MatchPostgreSQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
-    private static final String DATABASE_TYPE = new PostgreSQLDatabaseType().getName();
+    private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new PostgreSQLDatabaseType().getName());
     
     @Override
     public String getAlgorithmType() {
-        return DefaultDataConsistencyCheckAlgorithm.TYPE;
+        return CRC32MatchDataConsistencyCheckAlgorithm.TYPE;
     }
     
     @Override
-    public String getDatabaseType() {
-        return DATABASE_TYPE;
+    public Collection<String> getDatabaseTypes() {
+        return DATABASE_TYPES;
     }
     
     @Override
-    public Object dataCalculate(final DataCalculateParameter dataCalculateParameter) {
-        //TODO PostgreSQL dataCalculate
-        return true;
+    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
+        //TODO PostgreSQL calculate
+        return Collections.emptyList();
     }
 }

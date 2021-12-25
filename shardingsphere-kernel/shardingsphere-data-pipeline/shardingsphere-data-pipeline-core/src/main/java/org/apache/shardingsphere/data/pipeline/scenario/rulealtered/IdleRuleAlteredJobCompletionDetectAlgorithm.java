@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
 
@@ -29,8 +27,6 @@ import java.util.Properties;
 /**
  * Idle rule altered job completion detect algorithm.
  */
-@Getter
-@Setter
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAlteredJobCompletionDetectAlgorithm {
     
     public static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
@@ -38,6 +34,16 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAl
     private Properties props = new Properties();
     
     private long incrementalTaskIdleMinuteThreshold = 30;
+    
+    @Override
+    public Properties getProps() {
+        return props;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init() {

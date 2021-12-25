@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -141,6 +142,13 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     @Override
     public String buildCountSQL(final String tableName) {
         return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    }
+    
+    @Override
+    public String buildChunkedQuerySQL(final String tableName, final String uniqueKey, final Number startUniqueValue) {
+        Preconditions.checkNotNull(uniqueKey, "uniqueKey is null");
+        Preconditions.checkNotNull(startUniqueValue, "startUniqueValue is null");
+        return "SELECT * FROM " + quote(tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
     }
     
     @Override

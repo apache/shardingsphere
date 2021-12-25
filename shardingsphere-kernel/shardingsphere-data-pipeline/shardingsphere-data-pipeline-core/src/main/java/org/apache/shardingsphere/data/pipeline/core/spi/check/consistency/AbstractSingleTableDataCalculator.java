@@ -15,27 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 
+import java.util.Properties;
+
 /**
  * Abstract single table data calculator.
  */
-@RequiredArgsConstructor
-@Getter
-@Slf4j
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
+    private Properties algorithmProps;
+    
     protected final DataSourceWrapper getDataSource(final JDBCDataSourceConfiguration dataSourceConfig) {
         return dataSourceFactory.newInstance(dataSourceConfig);
+    }
+    
+    @Override
+    public Properties getAlgorithmProps() {
+        return algorithmProps;
+    }
+    
+    @Override
+    public void setAlgorithmProps(final Properties algorithmProps) {
+        this.algorithmProps = algorithmProps;
+    }
+    
+    @Override
+    public void init() {
     }
 }
