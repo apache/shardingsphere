@@ -21,21 +21,21 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 /**
- * JDBC data source creator factory.
+ * Pipeline data source creator factory.
  */
-public final class JDBCDataSourceCreatorFactory {
+public final class PipelineDataSourceCreatorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(JDBCDataSourceCreator.class);
+        ShardingSphereServiceLoader.register(PipelineDataSourceCreator.class);
     }
     
     /**
-     * Get JDBC data source creator instance.
+     * Get pipeline data source creator instance.
      * 
-     * @param type JDBC data source creator type
-     * @return JDBC data source creator instance
+     * @param type pipeline data source creator type
+     * @return pipeline data source creator instance
      */
-    public static JDBCDataSourceCreator getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(JDBCDataSourceCreator.class, type, null);
+    public static PipelineDataSourceCreator getInstance(final String type) {
+        return TypedSPIRegistry.getRegisteredService(PipelineDataSourceCreator.class, type, null);
     }
 }

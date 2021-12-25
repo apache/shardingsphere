@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTar
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.yaml.YamlJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -71,11 +71,11 @@ public final class MySQLDataSourcePreparerTest {
         when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
         when(pipelineConfig.getSource()).thenReturn(sourceYamlJDBCDataSourceConfiguration);
-        when(JDBCDataSourceCreatorFactory.getInstance(
-                sourceScalingDataSourceConfig.getType()).createDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
+        when(PipelineDataSourceCreatorFactory.getInstance(
+                sourceScalingDataSourceConfig.getType()).createPipelineDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
         when(pipelineConfig.getTarget()).thenReturn(targetYamlJDBCDataSourceConfiguration);
-        when(JDBCDataSourceCreatorFactory.getInstance(
-                targetScalingDataSourceConfig.getType()).createDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
+        when(PipelineDataSourceCreatorFactory.getInstance(
+                targetScalingDataSourceConfig.getType()).createPipelineDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
     }
     
     @Test

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Abstr
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.JDBCDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -92,10 +92,9 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     private MppdbDecodingPlugin initReplication() {
         MppdbDecodingPlugin plugin = null;
         try {
-            
-            DataSource dataSource = JDBCDataSourceCreatorFactory.getInstance(
-                    dumperConfig.getDataSourceConfig().getType()).createDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
-            try (Connection conn = dataSource.getConnection()) {
+            DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(
+                    dumperConfig.getDataSourceConfig().getType()).createPipelineDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
+            try (Connection conn = pipelineDataSource.getConnection()) {
                 slotName = OpenGaussLogicalReplication.getUniqueSlotName(conn);
                 OpenGaussLogicalReplication.createIfNotExists(conn);
                 OpenGaussTimestampUtils utils = new OpenGaussTimestampUtils(conn.unwrap(PgConnection.class).getTimestampUtils());

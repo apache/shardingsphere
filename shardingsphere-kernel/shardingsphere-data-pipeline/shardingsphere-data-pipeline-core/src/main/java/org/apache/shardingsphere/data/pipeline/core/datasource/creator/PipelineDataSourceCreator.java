@@ -23,16 +23,16 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * JDBC data source creator.
+ * Pipeline data source creator.
  */
-public interface JDBCDataSourceCreator extends TypedSPI {
+public interface PipelineDataSourceCreator extends TypedSPI {
     
     /**
-     * Create data source.
+     * Create pipeline data source.
      *
      * @param dataSourceConfig data source configuration
-     * @return data source
+     * @return pipeline data source
      * @throws SQLException if create data source failed
      */
-    DataSource createDataSource(Object dataSourceConfig) throws SQLException;
+    DataSource createPipelineDataSource(Object dataSourceConfig) throws SQLException;
 }
