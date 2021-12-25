@@ -104,7 +104,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     }
     
     private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
-        ColumnSegment column =  assignmentSegment.getColumns().get(0);
+        ColumnSegment column = assignmentSegment.getColumns().get(0);
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(column.getStartIndex(), assignmentSegment.getStopIndex());
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, column.getIdentifier().getValue());
         result.addAssignment(cipherColumn, cipherColumn, true);
