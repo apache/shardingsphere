@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreator;
 import org.junit.Test;
 
 import javax.sql.DataSource;
