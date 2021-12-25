@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer create service statement.
  */
 @ToString
-public class SQLServerCreateServiceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerCreateServiceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

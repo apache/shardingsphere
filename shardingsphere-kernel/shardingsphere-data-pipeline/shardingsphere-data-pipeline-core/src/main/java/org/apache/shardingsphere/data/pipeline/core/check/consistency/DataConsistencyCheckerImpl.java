@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
@@ -75,8 +75,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
+        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+            jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter());
+        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
+            jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter());
         try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceConfig);
              DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetConfig)) {
             return jobContext.getTaskConfigs()
@@ -117,12 +119,13 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     @Override
     public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getSource()).unwrap();
+        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getRuleConfig().getSource().getType(), jobContext.getJobConfig().getRuleConfig().getSource().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceConfig.getDatabaseType().getName());
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap();
+        JDBCDataSourceConfiguration targetConfig = JDBCDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getRuleConfig().getTarget().getType(), jobContext.getJobConfig().getRuleConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetConfig.getDatabaseType().getName());
-        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream())
-            .distinct().collect(Collectors.toList());
+        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
         Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceConfig, logicTableNames);
         logicTableNames.forEach(each -> {
             //TODO put to preparer

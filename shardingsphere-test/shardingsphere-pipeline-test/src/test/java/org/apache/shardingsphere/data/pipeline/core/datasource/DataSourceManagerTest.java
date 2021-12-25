@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,15 +45,18 @@ public final class DataSourceManagerTest {
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap());
+        DataSource actual = dataSourceManager.getDataSource(
+                JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()));
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (DataSourceManager dataSourceManager = new DataSourceManager()) {
-            dataSourceManager.createSourceDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap());
-            dataSourceManager.createTargetDataSource(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getTarget()).unwrap());
+            dataSourceManager.createSourceDataSource(
+                    JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getRuleConfig().getSource().getType(), jobConfig.getRuleConfig().getSource().getParameter()));
+            dataSourceManager.createTargetDataSource(
+                    JDBCDataSourceConfigurationFactory.newInstance(jobConfig.getRuleConfig().getTarget().getType(), jobConfig.getRuleConfig().getTarget().getParameter()));
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));
