@@ -77,15 +77,7 @@
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
-<#if feature=="sharding">
-    <#include "shardingApplication.ftl">
-<#elseif feature=="readwrite-splitting">
-    <#include "readwriteSplittingApplication.ftl">
-<#elseif feature=="encrypt">
-    <#include "encryptApplication.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowApplication.ftl">
-</#if>
+<#include "${feature}.ftl">
     
 <#if framework=="spring-namespace-mybatis">
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

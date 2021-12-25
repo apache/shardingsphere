@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.sharding.example.engine;
+package org.apache.shardingsphere.example.engine;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -35,8 +34,7 @@ import java.util.Map;
 /**
  * Example generate engine.
  */
-@AllArgsConstructor
-public abstract class ExampleGenerateEngine {
+public final class ExampleGenerateEngine {
     
     private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_31);
     
@@ -58,13 +56,13 @@ public abstract class ExampleGenerateEngine {
             + "<#assign frameworkName=frameworkName + framework1?cap_first>"
             + "</#list>${frameworkName}";
     
-    private static final String FRAMEWORK_PATH = "/dataModel/%s/data-model.yaml";
+    private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
-    private final Map<String, String> renameTemplateMap;
+    private static Map<String, String> renameTemplateMap;
     
-    private final Map<String, String> unRenameTemplateMap;
+    private static Map<String, String> unRenameTemplateMap;
     
-    private final Map<String, String> resourceTemplateMap;
+    private static Map<String, String> resourceTemplateMap;
     
     static {
         try {
@@ -73,6 +71,19 @@ public abstract class ExampleGenerateEngine {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Generate file 
+     * @param args
+     */
+    public static void main(String[] args) {
+        Yaml yaml = new Yaml();
+        InputStream in = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH);
+        Map<String, String> dataModel = yaml.loadAs(in, Map.class);
+        fillTemplateMap(dataModel);
+        generateJavaCode(dataModel);
+        generateResourcesFile(dataModel);
     }
     
     /**
@@ -107,26 +118,14 @@ public abstract class ExampleGenerateEngine {
         }
         return null;
     }
-
-    /**
-     * get generator.
-     * @return generator name
-     */
-    protected abstract String getGenerator();
     
-    /**
-     * exec code generate
-     */
-    protected void exec() {
-        Yaml yaml = new Yaml();
-        String path = String.format(FRAMEWORK_PATH, getGenerator());
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream(path);
-        Map<String, String> dataModel = yaml.loadAs(in, Map.class);
-        this.generateJavaCode(dataModel);
-        this.generateResourcesFile(dataModel);
+    private static void fillTemplateMap(Map<String, String> dataModel) {
+        renameTemplateMap = ExampleTemplateFactory.getRenameTemplate(dataModel);
+        unRenameTemplateMap = ExampleTemplateFactory.getUnReNameTemplate(dataModel);
+        resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);
     }
     
-    private void generateJavaCode(final Map<String, String> dataModel) {
+    private static void generateJavaCode(final Map<String, String> dataModel) {
         String fileName = processString(dataModel, FILE_NAME_PREFIX);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String key : renameTemplateMap.keySet()) {
@@ -137,7 +136,7 @@ public abstract class ExampleGenerateEngine {
         }
     }
     
-    private void generateResourcesFile(final Map<String, String> dataModel) {
+    private static void generateResourcesFile(final Map<String, String> dataModel) {
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
         for (String key : resourceTemplateMap.keySet()) {
             processFile(dataModel, "/template/" + key + ".ftl", outputPath + "/" + resourceTemplateMap.get(key));
