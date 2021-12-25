@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.instance.util;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schedule.CronJob;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * Scheduler rule.
- */
-public interface SchedulerRule extends ShardingSphereRule {
+public final class IpUtilsTest {
     
-    /**
-     *  Get cron jobs.
-     *
-     * @param schemaName schema name
-     * @param dataSources datasource
-     * @return cron jobs
-     */
-    List<CronJob> getCronJobs(String schemaName, Map<String, DataSource> dataSources);
+    @Test
+    public void getIp() {
+        assertNotNull(IpUtils.getIp());
+    }
 }

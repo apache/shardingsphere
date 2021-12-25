@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.instance;
+package org.apache.shardingsphere.infra.instance;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
 

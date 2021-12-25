@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.mode.instance.Instance;
+import org.apache.shardingsphere.infra.instance.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.After;
