@@ -30,6 +30,5 @@
     
     <modules>
         <module>shardingsphere-scaling-distsql</module>
-        <module>shardingsphere-scaling-dialect</module>
     </modules>
 </project>
