@@ -36,5 +36,5 @@ public final class TrafficRuleConfiguration implements GlobalRuleConfiguration {
     
     private final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = new LinkedHashMap<>();
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> trafficLoadBalancers = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
 }

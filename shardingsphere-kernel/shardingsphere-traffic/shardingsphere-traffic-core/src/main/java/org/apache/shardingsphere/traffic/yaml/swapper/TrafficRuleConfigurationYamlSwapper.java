@@ -47,8 +47,8 @@ public final class TrafficRuleConfigurationYamlSwapper implements YamlRuleConfig
         if (null != data.getTrafficAlgorithms()) {
             data.getTrafficAlgorithms().forEach((key, value) -> yamlConfig.getTrafficAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
-        if (null != data.getTrafficLoadBalancers()) {
-            data.getTrafficLoadBalancers().forEach((key, value) -> yamlConfig.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        if (null != data.getLoadBalancers()) {
+            data.getLoadBalancers().forEach((key, value) -> yamlConfig.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
     }
     
@@ -69,7 +69,7 @@ public final class TrafficRuleConfigurationYamlSwapper implements YamlRuleConfig
             yamlConfig.getTrafficAlgorithms().forEach((key, value) -> ruleConfig.getTrafficAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
         }
         if (null != yamlConfig.getLoadBalancers()) {
-            yamlConfig.getLoadBalancers().forEach((key, value) -> ruleConfig.getTrafficLoadBalancers().put(key, algorithmSwapper.swapToObject(value)));
+            yamlConfig.getLoadBalancers().forEach((key, value) -> ruleConfig.getLoadBalancers().put(key, algorithmSwapper.swapToObject(value)));
         }
     }
     
