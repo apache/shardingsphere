@@ -43,7 +43,6 @@
         
         <module>shardingsphere-features</module>
         <module>shardingsphere-agent</module>
-        <module>shardingsphere-scaling</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
@@ -267,6 +266,11 @@
                 <version>${netty.version}</version>
                 <classifier>linux-aarch_64</classifier>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>

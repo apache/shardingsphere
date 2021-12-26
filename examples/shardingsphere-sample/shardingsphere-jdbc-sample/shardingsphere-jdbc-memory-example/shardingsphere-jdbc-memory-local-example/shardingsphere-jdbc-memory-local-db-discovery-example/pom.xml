@@ -31,6 +31,10 @@
     
     <modules>
         <module>shardingsphere-jdbc-memory-local-db-discovery-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jdbc-example</module>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jpa-example</module>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-mybatis-example</module>
+        <module>shardingsphere-jdbc-memory-local-db-discovery-spring-namespace-jdbc-example</module>
     </modules>
     
 </project>

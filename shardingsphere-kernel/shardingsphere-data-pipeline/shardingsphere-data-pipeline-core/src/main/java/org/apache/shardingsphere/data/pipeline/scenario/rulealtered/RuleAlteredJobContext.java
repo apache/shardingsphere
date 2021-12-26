@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Rule altered job context.
@@ -45,11 +45,11 @@ public final class RuleAlteredJobContext {
     
     private JobProgress initProgress;
     
-    private final List<TaskConfiguration> taskConfigs;
+    private final Collection<TaskConfiguration> taskConfigs;
     
-    private final List<InventoryTask> inventoryTasks = new LinkedList<>();
+    private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
-    private final List<IncrementalTask> incrementalTasks = new LinkedList<>();
+    private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
     private final JobConfiguration jobConfig;
     

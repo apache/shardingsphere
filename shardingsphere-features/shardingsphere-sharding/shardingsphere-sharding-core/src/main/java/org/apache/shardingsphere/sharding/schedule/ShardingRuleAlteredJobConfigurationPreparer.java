@@ -25,16 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationFactory;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -71,9 +71,9 @@ import java.util.stream.Collectors;
 public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAlteredJobConfigurationPreparer {
     
     @Override
-    public HandleConfiguration createHandleConfig(final RuleConfiguration ruleConfig) {
+    public HandleConfiguration createHandleConfiguration(final PipelineConfiguration pipelineConfig) {
         HandleConfiguration result = new HandleConfiguration();
-        Map<String, List<DataNode>> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(ruleConfig);
+        Map<String, List<DataNode>> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(pipelineConfig);
         Collection<DataNode> dataNodes = new ArrayList<>();
         for (Entry<String, List<DataNode>> entry : shouldScalingActualDataNodes.entrySet()) {
             dataNodes.addAll(entry.getValue());
@@ -84,17 +84,11 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return result;
     }
     
-    /**
-     * Get scaling actual data nodes.
-     *
-     * @param ruleConfig rule configuration
-     * @return map(logic table name, DataNode of each logic table)
-     */
-    private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration sourceConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter());
-        Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
+    private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final PipelineConfiguration pipelineConfig) {
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        Preconditions.checkState(sourceDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source TypedDataSourceConfiguration is supported.");
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
+        ShardingSpherePipelineDataSourceConfiguration source = (ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig;
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         ShardingRule shardingRule = new ShardingRule(sourceRuleConfig, source.getRootConfig().getDataSources().keySet());
         Map<String, TableRule> tableRules = shardingRule.getTableRules();
@@ -127,19 +121,19 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     @Override
-    public List<TaskConfiguration> createTaskConfigs(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig) {
-        List<TaskConfiguration> result = new LinkedList<>();
-        ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(ruleConfig);
+    public Collection<TaskConfiguration> createTaskConfigurations(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig) {
+        Collection<TaskConfiguration> result = new LinkedList<>();
+        ShardingSpherePipelineDataSourceConfiguration sourceConfig = getSourceConfiguration(pipelineConfig);
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
         Map<String, DataSourceConfiguration> sourceDataSource = new YamlDataSourceConfigurationSwapper().getDataSourceConfigurations(sourceConfig.getRootConfig());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getRootConfig().getDataSources().keySet()));
-        Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(ruleConfig);
+        Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(pipelineConfig);
         filterByShardingDataSourceTables(dataSourceTableNameMap, handleConfig);
         Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             OnRuleAlteredActionConfiguration ruleAlteredActionConfig = getRuleAlteredActionConfig(targetRuleConfig.orElse(sourceRuleConfig)).orElse(null);
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue(), ruleAlteredActionConfig);
-            ImporterConfiguration importerConfig = createImporterConfig(ruleConfig, handleConfig, shardingColumnsMap);
+            ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, shardingColumnsMap);
             TaskConfiguration taskConfig = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
             log.info("toTaskConfigs, dataSourceName={}, taskConfig={}", entry.getKey(), taskConfig);
             result.add(taskConfig);
@@ -151,17 +145,17 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return Optional.ofNullable(shardingRuleConfig.getScaling().get(shardingRuleConfig.getScalingName()));
     }
     
-    private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration result = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getSource().getType(), ruleConfig.getSource().getParameter());
-        Preconditions.checkArgument(result instanceof ShardingSphereJDBCDataSourceConfiguration, "Only support ShardingSphere source data source.");
-        return (ShardingSphereJDBCDataSourceConfiguration) result;
+    private static ShardingSpherePipelineDataSourceConfiguration getSourceConfiguration(final PipelineConfiguration pipelineConfig) {
+        PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+        Preconditions.checkArgument(result instanceof ShardingSpherePipelineDataSourceConfiguration, "Only support ShardingSphere source data source.");
+        return (ShardingSpherePipelineDataSourceConfiguration) result;
     }
     
-    private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final RuleConfiguration ruleConfig) {
-        JDBCDataSourceConfiguration dataSourceConfig = JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter());
-        if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
+    private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final PipelineConfiguration pipelineConfig) {
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             return Optional.of(
-                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootConfig().getRules()));
+                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig().getRules()));
         }
         return Optional.empty();
     }
@@ -272,7 +266,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                                                           final OnRuleAlteredActionConfiguration ruleAlteredActionConfig) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
-        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(YamlEngine.marshal(props)));
+        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
         result.setTableNameMap(tableMap);
         if (null != ruleAlteredActionConfig) {
             result.setBlockQueueSize(ruleAlteredActionConfig.getBlockQueueSize());
@@ -280,9 +274,9 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return result;
     }
     
-    private static ImporterConfiguration createImporterConfig(final RuleConfiguration ruleConfig, final HandleConfiguration handleConfig, final Map<String, Set<String>> shardingColumnsMap) {
+    private static ImporterConfiguration createImporterConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig, final Map<String, Set<String>> shardingColumnsMap) {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(JDBCDataSourceConfigurationFactory.newInstance(ruleConfig.getTarget().getType(), ruleConfig.getTarget().getParameter()));
+        result.setDataSourceConfig(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
         result.setShardingColumnsMap(shardingColumnsMap);
         result.setRetryTimes(handleConfig.getRetryTimes());
         return result;
