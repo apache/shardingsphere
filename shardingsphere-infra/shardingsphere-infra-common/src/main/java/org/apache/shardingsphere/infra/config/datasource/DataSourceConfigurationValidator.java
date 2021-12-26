@@ -63,7 +63,7 @@ public final class DataSourceConfigurationValidator {
         } finally {
             if (null != dataSource) {
                 try {
-                    DataSourcePoolDestroyerFactory.getInstance(dataSource.getClass().getCanonicalName()).destroy(dataSource);
+                    DataSourcePoolDestroyerFactory.destroy(dataSource);
                 } catch (final SQLException ignored) {
                 }
             }
