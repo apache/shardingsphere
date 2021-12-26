@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ratelimit;
+package org.apache.shardingsphere.data.pipeline.core.spi.ratelimit;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
