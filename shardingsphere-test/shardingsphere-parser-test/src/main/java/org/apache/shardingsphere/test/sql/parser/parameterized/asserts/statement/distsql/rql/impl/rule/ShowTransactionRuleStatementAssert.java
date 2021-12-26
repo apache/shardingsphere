@@ -21,11 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowTransactionRuleStatementTestCase;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Show transaction rule statement assert.
@@ -41,11 +40,10 @@ public final class ShowTransactionRuleStatementAssert {
      * @param expected expected show transaction rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTransactionRuleStatement actual, final ShowTransactionRuleStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
         }
     }
 }

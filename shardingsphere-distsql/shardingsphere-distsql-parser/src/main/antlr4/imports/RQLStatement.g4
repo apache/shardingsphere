@@ -35,7 +35,7 @@ showAuthorityRule
     ;
     
 showTransactionRule
-    : SHOW TRANSACTION RULE (FROM schemaName)?
+    : SHOW TRANSACTION RULE
     ;
     
 schemaName

@@ -19,10 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show transaction rule statement test case.
@@ -30,7 +27,4 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement
-    private ExpectedSchema schema;
 }
