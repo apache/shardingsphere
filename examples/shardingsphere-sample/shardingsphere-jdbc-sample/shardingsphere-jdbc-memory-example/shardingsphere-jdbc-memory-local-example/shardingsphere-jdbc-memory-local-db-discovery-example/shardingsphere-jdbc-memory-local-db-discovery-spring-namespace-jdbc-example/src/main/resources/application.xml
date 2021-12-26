@@ -47,66 +47,46 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
                            ">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}"/>
-<#if framework=="spring-namespace-jpa">
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource" />
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
-        </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity" />
-        <property name="jpaProperties">
+    <context:component-scan base-package="org.apache.shardingsphere.example.db.discovery.spring.namespace.jdbc"/>
+    
+    <bean id="ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.15:3306/ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+    
+    <bean id="ds_0_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.16:3306/ds_0_replica_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+    
+    <bean id="ds_0_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.17:3306/ds_0_replica_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+    
+    <database-discovery:rule id="databaseDiscoveryRule">
+        <database-discovery:data-source-rule id="db" data-source-names="ds_0,ds_0_replica_1,ds_0_replica_1" discovery-heartbeat-name="mgr-heartbeat"
+                                             discovery-type-name="mgr"/>
+        <database-discovery:discovery-heartbeat id="mgr-heartbeat">
             <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
-                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
-                <prop key="hibernate.show_sql">false</prop>
+                <prop key="keep-alive-cron">0/5 * * * * ?</prop>
             </props>
-        </property>
-    </bean>
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
-    <tx:annotation-driven />
-</#if>
-<#if feature!="db-discovery">
-    <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3307/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="123456"/>
-    </bean>
+        </database-discovery:discovery-heartbeat>
+    </database-discovery:rule>
     
-    <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3307/demo_ds_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="123456"/>
-    </bean>
-</#if>
-<#if feature=="sharding">
-    <#include "shardingApplication.ftl">
-<#elseif feature=="readwrite-splitting">
-    <#include "readwriteSplittingApplication.ftl">
-<#elseif feature=="encrypt">
-    <#include "encryptApplication.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowApplication.ftl">
-<#elseif feature=="db-discovery">
-    <#include "db-discovery.ftl">
-</#if>
+    <database-discovery:discovery-type id="mgr" type="MGR">
+        <props>
+            <prop key="keep-alive-cron">0/5 * * * * ?</prop>
+            <prop key="group-name">aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</prop>
+        </props>
+    </database-discovery:discovery-type>
     
-<#if framework=="spring-namespace-mybatis">
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
-    </bean>
-    <tx:annotation-driven />
-
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
-    </bean>
-
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-    </bean>
-</#if>
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0,ds_0_replica_1,ds_0_replica_1" rule-refs="databaseDiscoveryRule" />
+    
 </beans>
