@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
@@ -284,7 +284,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             Optional<Boolean> checkResultOptional = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
             if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
-                throw new DataCheckFailException("Data consistency check not finished or failed.");
+                throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);

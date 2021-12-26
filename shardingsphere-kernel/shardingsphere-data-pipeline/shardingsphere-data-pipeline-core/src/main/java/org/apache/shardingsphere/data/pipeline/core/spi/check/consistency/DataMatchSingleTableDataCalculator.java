@@ -24,7 +24,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
@@ -86,7 +86,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         try {
             return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueValue, chunkSize);
         } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
     
