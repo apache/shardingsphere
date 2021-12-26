@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,13 +36,13 @@ import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLJdbcDumperTest {
     
-    private DataSourceManager dataSourceManager;
+    private PipelineDataSourceManager dataSourceManager;
     
     private PostgreSQLInventoryDumper jdbcDumper;
     
     @Before
     public void setUp() {
-        dataSourceManager = new DataSourceManager();
+        dataSourceManager = new PipelineDataSourceManager();
         jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     

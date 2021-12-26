@@ -23,8 +23,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +112,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
         return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    }
+    
+    @Override
+    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
+        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
     }
     
     @Override

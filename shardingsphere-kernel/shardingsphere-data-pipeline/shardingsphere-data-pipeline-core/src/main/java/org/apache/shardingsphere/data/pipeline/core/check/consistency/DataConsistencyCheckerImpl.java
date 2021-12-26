@@ -22,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
     // TODO replace to JobConfiguration
     private final RuleAlteredJobContext jobContext;
@@ -79,8 +79,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             return jobContext.getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
@@ -93,7 +93,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private DataConsistencyCheckResult countCheck(final String table, final DataSourceWrapper sourceDataSource, final DataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
+    private DataConsistencyCheckResult countCheck(
+            final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
         try {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
@@ -141,8 +142,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
-        try (DataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             DataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             for (String each : logicTableNames) {
                 Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
                 String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
@@ -185,7 +186,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     // TODO reuse metadata
     private Map<String, TableMetaData> getTablesColumnsMap(final PipelineDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
+        try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tableNames) {
                 Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
