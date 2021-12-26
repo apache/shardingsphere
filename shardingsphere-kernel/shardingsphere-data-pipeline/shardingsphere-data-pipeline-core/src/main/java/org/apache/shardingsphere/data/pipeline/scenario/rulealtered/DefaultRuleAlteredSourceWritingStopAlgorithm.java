@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 
 /**
  * Default rule altered source writing stop algorithm.
  */
+@ToString
 public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
     
     @Override

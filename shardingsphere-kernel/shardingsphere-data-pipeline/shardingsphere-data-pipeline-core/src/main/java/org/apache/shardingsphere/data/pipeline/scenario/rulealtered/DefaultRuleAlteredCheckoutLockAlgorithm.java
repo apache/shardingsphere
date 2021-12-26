@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 
 /**
  * Default rule altered checkout lock algorithm.
  */
+@ToString
 public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
     
     @Override

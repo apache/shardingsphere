@@ -65,4 +65,9 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAl
         }
         return incrementalTaskIdleMinutes.stream().allMatch(idleMinute -> idleMinute >= incrementalTaskIdleMinuteThreshold);
     }
+    
+    @Override
+    public String toString() {
+        return "IdleRuleAlteredJobCompletionDetectAlgorithm{" + "props=" + props + '}';
+    }
 }

@@ -58,4 +58,9 @@ public final class SourceJobRateLimitAlgorithm implements JobRateLimitAlgorithm 
     public void onQuery() {
         rateLimiter.acquire();
     }
+    
+    @Override
+    public String toString() {
+        return "SourceJobRateLimitAlgorithm{" + "props=" + props + '}';
+    }
 }
