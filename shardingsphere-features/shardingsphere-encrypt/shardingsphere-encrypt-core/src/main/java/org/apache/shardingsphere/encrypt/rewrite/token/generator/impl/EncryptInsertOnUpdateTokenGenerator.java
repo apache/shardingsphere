@@ -104,15 +104,16 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     }
     
     private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
+        String valuesFormat = "VALUES(%s)";
         ColumnSegment column = assignmentSegment.getColumns().get(0);
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(column.getStartIndex(), assignmentSegment.getStopIndex());
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, column.getIdentifier().getValue());
-        result.addAssignment(cipherColumn, String.format("VALUES(%s)", cipherColumn), true);
+        result.addAssignment(cipherColumn, String.format(valuesFormat, cipherColumn), true);
         getEncryptRule().findAssistedQueryColumn(tableName, column.getIdentifier().getValue()).ifPresent(assistedQueryColumn -> {
-            result.addAssignment(assistedQueryColumn, String.format("VALUES(%s)", assistedQueryColumn), true);
+            result.addAssignment(assistedQueryColumn, String.format(valuesFormat, assistedQueryColumn), true);
         });
         getEncryptRule().findPlainColumn(tableName, column.getIdentifier().getValue()).ifPresent(plainColumn -> {
-            result.addAssignment(plainColumn, String.format("VALUES(%s)", plainColumn), true);
+            result.addAssignment(plainColumn, String.format(valuesFormat, plainColumn), true);
         });
         return result;
     }
