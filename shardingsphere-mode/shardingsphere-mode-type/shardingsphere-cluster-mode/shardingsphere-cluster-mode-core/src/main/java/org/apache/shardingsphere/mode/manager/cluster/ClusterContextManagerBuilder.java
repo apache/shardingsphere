@@ -83,7 +83,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port, schemaName);
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts, null);
-        ModeScheduleContextFactory.getInstance().init(modeConfig);
         afterBuildContextManager();
         return contextManager;
     }
@@ -93,6 +92,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                            final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         registryCenter = new RegistryCenter(repository, port);
+        ModeScheduleContextFactory.getInstance().init(modeConfig);
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Arrays.asList(schemaName);
