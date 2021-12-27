@@ -145,7 +145,6 @@ public class SpringBootStarterTest {
     }
     
     private void assertShadowRule(final ShadowRule rule) {
-        assertThat(rule.isEnable(), is(true));
         assertShadowDataSourceMappings(rule.getShadowDataSourceMappings());
         assertShadowAlgorithms(rule.getShadowAlgorithms());
         assertShadowTableRules(rule.getShadowTableRules());

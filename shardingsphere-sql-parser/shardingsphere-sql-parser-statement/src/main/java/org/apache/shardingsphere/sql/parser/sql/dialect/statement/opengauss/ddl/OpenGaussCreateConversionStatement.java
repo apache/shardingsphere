@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Enable shadow rules statement.
+ * OpenGauss create conversion statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class EnableShadowRulesStatement extends AlterRuleStatement {
-    
+@ToString
+public final class OpenGaussCreateConversionStatement extends CreateConversionStatement implements OpenGaussStatement {
 }

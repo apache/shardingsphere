@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.example.engine;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.AllArgsConstructor;
 
 /**
- * Show shadow rule status statement.
+ * Framework type.
  */
-@Getter
-public final class ShowShadowRuleStatusStatement extends ShowRulesStatement {
+@AllArgsConstructor
+public enum FrameworkType {
+    JDBC("jdbc"),
+    SPRING_BOOT_STARTER_JDBC("spring-boot-starter-jdbc"),
+    SPRING_BOOT_STARTER_JPA("spring-boot-starter-jpa"),
+    SPRING_BOOT_STARTER_MYBATIS("spring-boot-starter-mybatis"),
+    SPRING_BOOT_NAMESPACE_JDBC("spring-namespace-jdbc"),
+    SPRING_BOOT_NAMESPACE_JPA("spring-namespace-jpa"),
+    SPRING_BOOT_NAMESPACE_MYBATIS("spring-namespace-mybatis");
     
-    public ShowShadowRuleStatusStatement(final SchemaSegment schema) {
-        super(schema);
+    private final String framework;
+    
+    public String getFramework() {
+        return framework;
     }
 }

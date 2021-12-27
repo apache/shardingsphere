@@ -40,5 +40,6 @@ execute
     | showSQLParserRule
     | alterSQLParserRule
     | showAuthorityRule
+    | showTransactionRule
     ) SEMI?
     ;

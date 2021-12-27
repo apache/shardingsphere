@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
@@ -35,7 +34,6 @@ import java.util.Optional;
 /**
  * Projections context.
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public final class ProjectionsContext {
@@ -47,6 +45,26 @@ public final class ProjectionsContext {
     private final boolean distinctRow;
     
     private final Collection<Projection> projections;
+    
+    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+    
+    public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.distinctRow = distinctRow;
+        this.projections = projections;
+        aggregationDistinctProjections.addAll(createAggregationDistinctProjections());
+    }
+    
+    private Collection<AggregationDistinctProjection> createAggregationDistinctProjections() {
+        Collection<AggregationDistinctProjection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof AggregationDistinctProjection) {
+                result.add((AggregationDistinctProjection) each);
+            }
+        }
+        return result;
+    }
     
     /**
      * Judge is unqualified shorthand projection or not.
@@ -108,21 +126,6 @@ public final class ProjectionsContext {
                 AggregationProjection aggregationProjection = (AggregationProjection) each;
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get aggregation distinct projections.
-     * 
-     * @return aggregation distinct projections
-     */
-    public List<AggregationDistinctProjection> getAggregationDistinctProjections() {
-        List<AggregationDistinctProjection> result = new LinkedList<>();
-        for (Projection each : projections) {
-            if (each instanceof AggregationDistinctProjection) {
-                result.add((AggregationDistinctProjection) each);
             }
         }
         return result;

@@ -39,14 +39,4 @@ spring.shardingsphere.datasource.ds-1.username=root
 spring.shardingsphere.datasource.ds-1.password=root
 spring.shardingsphere.datasource.ds-1.max-active=16
 </#if>
-<#if feature=="sharding">
-    <#include "shardingApplication.ftl">
-<#elseif feature=="readwrite-splitting">
-    <#include "readwriteSplittingApplication.ftl">
-<#elseif feature=="encrypt">
-    <#include "encryptApplication.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowApplication.ftl">
-<#elseif feature=="db-discovery">
-    <#include "dbDiscoveryApplication.ftl">
-</#if>
+<#include "${feature}.ftl">

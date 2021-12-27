@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Disable shadow rules statement.
+ * PostgreSQL create conversion statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DisableShadowRulesStatement extends AlterRuleStatement {
-    
+@ToString
+public final class PostgreSQLCreateConversionStatement extends CreateConversionStatement implements PostgreSQLStatement {
 }

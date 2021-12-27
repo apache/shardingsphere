@@ -154,6 +154,10 @@ LIST
 TABLE
     : T A B L E
     ;
+    
+TRANSACTION
+    : T R A N S A C T I O N
+    ;
 
 RULES
     : R U L E S

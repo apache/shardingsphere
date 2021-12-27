@@ -46,7 +46,6 @@
 #
 #rules:
 #- !SHADOW
-#  enable: true
 #  dataSources:
 #    shadowDataSource:
 #      sourceDataSourceName: ds
@@ -94,7 +93,6 @@
 #    simple-hint-algorithm:
 #      type: SIMPLE_HINT
 #      props:
-#        shadow: true
 #        foo: bar
 
 ######################################################################################################
@@ -127,7 +125,6 @@
 #
 #rules:
 #- !SHADOW
-#  enable: true
 #  dataSources:
 #    shadowDataSource:
 #      sourceDataSourceName: ds
@@ -175,5 +172,4 @@
 #    simple-hint-algorithm:
 #      type: SIMPLE_HINT
 #      props:
-#        shadow: true
 #        foo: bar

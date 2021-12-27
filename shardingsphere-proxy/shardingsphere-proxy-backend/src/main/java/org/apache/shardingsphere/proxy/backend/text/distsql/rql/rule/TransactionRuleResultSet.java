@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.query;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatusStatement;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Result set for shadow rule status.
+ * Result set for show transaction rule.
  */
-public final class ShadowRuleStatusQueryResultSet implements DistSQLResultSet {
+public final class TransactionRuleResultSet implements DistSQLResultSet {
     
-    private static final String STATUS = "status";
-    
-    private Iterator<Boolean> data;
+    private Iterator<TransactionRuleConfiguration> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(configuration -> data = Collections.singleton(configuration.isEnable()).iterator());
+        Optional<TransactionRuleConfiguration> ruleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()
+                .stream().filter(each -> each instanceof TransactionRuleConfiguration).map(each -> (TransactionRuleConfiguration) each).findAny();
+        ruleConfiguration.ifPresent(op -> data = Collections.singletonList(op).iterator());
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singletonList(STATUS);
+        return Arrays.asList("default_type", "provider_type");
     }
     
     @Override
@@ -56,11 +56,12 @@ public final class ShadowRuleStatusQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<Object> getRowData() {
-        return Collections.singletonList(data.next() ? "enabled" : "disabled");
+        TransactionRuleConfiguration next = data.next();
+        return Arrays.asList(next.getDefaultType(), next.getProviderType());
     }
     
     @Override
     public String getType() {
-        return ShowShadowRuleStatusStatement.class.getCanonicalName();
+        return ShowTransactionRuleStatement.class.getCanonicalName();
     }
 }

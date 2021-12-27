@@ -92,5 +92,6 @@ execute
     | createLanguage
     | alterLanguage
     | dropLanguage
+    | createConversion
     ) SEMI_?
     ;

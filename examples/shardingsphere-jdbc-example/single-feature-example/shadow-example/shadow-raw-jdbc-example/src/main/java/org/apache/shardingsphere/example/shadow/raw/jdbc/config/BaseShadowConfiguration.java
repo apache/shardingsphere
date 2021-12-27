@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     protected Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds", DataSourceUtil.createDataSource("ds"));
-        result.put("shadow-ds", DataSourceUtil.createDataSource("ds_shadow"));
+        result.put("ds_shadow", DataSourceUtil.createDataSource("ds_shadow"));
         return result;
     }
     
@@ -47,7 +48,9 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     }
     
     protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        return new DefaultSQLParserRuleConfigurationBuilder().build();
+        CacheOption parserTreeCacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, 4);
+        return new SQLParserRuleConfiguration(true, parserTreeCacheOption, sqlStatementCacheOption);
     }
     
     protected Collection<String> createShadowAlgorithmNames() {
