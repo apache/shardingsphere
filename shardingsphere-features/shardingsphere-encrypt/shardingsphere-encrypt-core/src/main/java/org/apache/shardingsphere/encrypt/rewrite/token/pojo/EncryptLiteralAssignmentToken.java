@@ -39,10 +39,10 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
      *
      * @param columnName column name
      * @param value assignment value
-     * @param exceptional exceptional value
+     * @param noQuotes noQuotes value
      */
-    public void addAssignment(final String columnName, final Object value, final boolean exceptional) {
-        assignments.add(new LiteralAssignment(columnName, value, exceptional));
+    public void addAssignment(final String columnName, final Object value, final boolean noQuotes) {
+        assignments.add(new LiteralAssignment(columnName, value, noQuotes));
     }
     
     @Override
@@ -57,14 +57,11 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         
         private final Object value;
         
-        private final boolean exceptional;
+        private final boolean noQuotes;
         
         @Override
         public String toString() {
-            if (exceptional) {
-                return String.format("%s = VALUES(%s)", columnName, value);
-            }
-            return String.format("%s = %s", columnName, toString(value));
+            return String.format("%s = %s", columnName, noQuotes ? value : toString(value));
         }
     
         private String toString(final Object value) {
