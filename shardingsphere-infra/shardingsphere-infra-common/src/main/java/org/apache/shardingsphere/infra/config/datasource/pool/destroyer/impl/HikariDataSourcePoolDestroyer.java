@@ -35,12 +35,12 @@ public final class HikariDataSourcePoolDestroyer implements DataSourcePoolDestro
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             while (true) {
-                if (hikariDataSource.getHikariPoolMXBean().getActiveConnections() == 0) {
+                if (0 == hikariDataSource.getHikariPoolMXBean().getActiveConnections()) {
                     hikariDataSource.close();
                     break;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(10L);
                 } catch (final InterruptedException ignore) {
                 }
             }

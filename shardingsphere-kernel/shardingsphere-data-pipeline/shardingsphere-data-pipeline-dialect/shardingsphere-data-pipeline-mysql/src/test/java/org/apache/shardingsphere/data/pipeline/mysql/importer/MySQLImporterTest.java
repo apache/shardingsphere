@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.mysql.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,11 +42,11 @@ public final class MySQLImporterTest {
     private ImporterConfiguration importerConfig;
     
     @Mock
-    private DataSourceManager dataSourceManager;
+    private PipelineDataSourceManager dataSourceManager;
     
     @Test
     public void assertCreateSqlBuilder() {
-        when(importerConfig.getDataSourceConfig()).thenReturn(mock(JDBCDataSourceConfiguration.class));
+        when(importerConfig.getDataSourceConfig()).thenReturn(mock(PipelineDataSourceConfiguration.class));
         MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager);
         String insertSQL = mysqlImporter.createSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
