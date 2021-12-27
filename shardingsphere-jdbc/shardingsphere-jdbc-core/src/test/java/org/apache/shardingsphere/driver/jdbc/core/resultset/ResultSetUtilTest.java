@@ -64,6 +64,14 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(timestamp, LocalDate.class), is(LocalDate.of(2021, Month.DECEMBER, 23)));
         assertThat(ResultSetUtil.convertValue(timestamp, LocalTime.class), is(LocalTime.of(19, 30)));
     }
+
+    @Test
+    public void assertConvertBooleanValue() {
+        String dbFalse = "-2";
+        String dbTrue = "1";
+        assertThat(ResultSetUtil.convertValue(dbFalse, boolean.class), is(false));
+        assertThat(ResultSetUtil.convertValue(dbTrue, boolean.class), is(true));
+    }
     
     @Test
     public void assertConvertNumberValueSuccess() {
