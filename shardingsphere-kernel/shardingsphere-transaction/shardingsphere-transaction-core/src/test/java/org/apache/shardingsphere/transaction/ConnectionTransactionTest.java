@@ -23,14 +23,15 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class ConnectionTransactionTest {
 
@@ -42,7 +43,7 @@ public final class ConnectionTransactionTest {
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos")), transactionContexts);
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
-        MatcherAssert.assertThat(operationType, Matchers.equalTo(DistributedTransactionOperationType.COMMIT));
+        assertThat(operationType, equalTo(DistributedTransactionOperationType.COMMIT));
     }
 
     @Test
@@ -51,7 +52,7 @@ public final class ConnectionTransactionTest {
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos")), transactionContexts);
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
-        MatcherAssert.assertThat(operationType, Matchers.equalTo(DistributedTransactionOperationType.IGNORE));
+        assertThat(operationType, equalTo(DistributedTransactionOperationType.IGNORE));
     }
 
     @Test
@@ -59,9 +60,9 @@ public final class ConnectionTransactionTest {
         Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("LOCAL", "Atomikos")), transactionContexts);
-        Assert.assertTrue(connectionTransaction.isLocalTransaction());
+        assertTrue(connectionTransaction.isLocalTransaction());
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos")), transactionContexts);
-        Assert.assertFalse(connectionTransaction.isLocalTransaction());
+        assertFalse(connectionTransaction.isLocalTransaction());
     }
 
     @Test
@@ -69,11 +70,11 @@ public final class ConnectionTransactionTest {
         Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("LOCAL", "Atomikos")), transactionContexts);
-        Assert.assertTrue(connectionTransaction.isHoldTransaction(false));
+        assertTrue(connectionTransaction.isHoldTransaction(false));
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos")), transactionContexts);
-        Assert.assertTrue(connectionTransaction.isInTransaction());
-        Assert.assertTrue(connectionTransaction.isHoldTransaction(true));
+        assertTrue(connectionTransaction.isInTransaction());
+        assertTrue(connectionTransaction.isHoldTransaction(true));
         connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, new TransactionRule(new TransactionRuleConfiguration("LOCAL", "Atomikos")), transactionContexts);
-        Assert.assertFalse(connectionTransaction.isHoldTransaction(true));
+        assertFalse(connectionTransaction.isHoldTransaction(true));
     }
 }
