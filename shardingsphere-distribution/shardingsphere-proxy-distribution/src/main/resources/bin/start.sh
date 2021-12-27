@@ -50,7 +50,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
 fi
 
 print_version() {
-    java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.version.ShardingSphereVersion
+    java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
     exit 0
 }
 

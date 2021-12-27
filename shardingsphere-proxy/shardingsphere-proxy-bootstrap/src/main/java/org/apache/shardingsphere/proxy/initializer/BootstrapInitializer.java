@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -103,11 +103,7 @@ public final class BootstrapInitializer {
     }
     
     private void setDatabaseServerInfo() {
-        String version = ShardingSphereVersion.BUILD_MAVEN_PROJECT_VERSION;
-        if (!Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
-            version += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
-        }
-        CommonConstants.PROXY_VERSION.set(version);
+        CommonConstants.PROXY_VERSION.set(getShardingSphereVersion());
         findBackendDataSource().ifPresent(dataSourceSample -> {
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
             log.info(databaseServerInfo.toString());
@@ -121,6 +117,14 @@ public final class BootstrapInitializer {
                 default:
             }
         });
+    }
+    
+    private String getShardingSphereVersion() {
+        String version = ShardingSphereVersion.VERSION;
+        if (!Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+            version += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        }
+        return version;
     }
     
     private Optional<DataSource> findBackendDataSource() {

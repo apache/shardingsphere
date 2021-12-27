@@ -71,7 +71,7 @@ goto exit
  goto exit
 
 :print_version
- java -classpath %CLASS_PATH% org.apache.shardingsphere.infra.version.ShardingSphereVersion
+ java -classpath %CLASS_PATH% org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
  goto exit
 
 :exit
