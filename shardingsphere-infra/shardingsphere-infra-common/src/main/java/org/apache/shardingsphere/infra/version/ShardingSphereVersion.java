@@ -44,7 +44,7 @@ public final class ShardingSphereVersion {
         BUILD_MAVEN_PROJECT_VERSION = properties.getProperty("git.build.version");
         BUILD_GIT_COMMIT_ID = properties.getProperty("git.commit.id");
         BUILD_GIT_COMMIT_ID_SHORT = properties.getProperty("git.commit.id.abbrev");
-        BUILD_GIT_COMMIT_MESSAGE = properties.getProperty("git.commit.message");
+        BUILD_GIT_COMMIT_MESSAGE_FULL = properties.getProperty("git.commit.message.full");
         BUILD_GIT_COMMIT_MESSAGE_SHORT = properties.getProperty("git.commit.message.short");
         BUILD_GIT_TAG = properties.getProperty("git.tags");
         BUILD_GIT_DIRTY = Boolean.parseBoolean(properties.getProperty("git.dirty"));
@@ -66,7 +66,7 @@ public final class ShardingSphereVersion {
     
     public static final String BUILD_GIT_COMMIT_ID_SHORT;
     
-    public static final String BUILD_GIT_COMMIT_MESSAGE;
+    public static final String BUILD_GIT_COMMIT_MESSAGE_FULL;
     
     public static final String BUILD_GIT_COMMIT_MESSAGE_SHORT;
     
