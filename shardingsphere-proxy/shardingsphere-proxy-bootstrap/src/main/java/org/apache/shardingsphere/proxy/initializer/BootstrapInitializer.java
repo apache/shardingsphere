@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.version.ProxyVersion;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
@@ -104,7 +103,7 @@ public final class BootstrapInitializer {
     }
     
     private void setDatabaseServerInfo() {
-        String version = ProxyVersion.VERSION;
+        String version = ShardingSphereVersion.BUILD_MAVEN_PROJECT_VERSION;
         if (!Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
             version += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
         }
