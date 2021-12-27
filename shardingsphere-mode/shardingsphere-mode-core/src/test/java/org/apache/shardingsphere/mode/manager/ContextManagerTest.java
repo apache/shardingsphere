@@ -293,15 +293,15 @@ public final class ContextManagerTest {
         Map<String, DataSourceConfiguration> dataSourceConfigs = new LinkedHashMap<>();
         dataSourceConfigs.put("test_ds", createDataSourceConfiguration(dsProps));
         contextManager.alterResource("test_schema", dataSourceConfigs);
-        HikariDataSource alteredDs = (HikariDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().get("test_ds");
-        assertNotNull(alteredDs);
-        assertThat(alteredDs.getJdbcUrl(), is("jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(alteredDs.getPassword(), is("test"));
-        assertThat(alteredDs.getUsername(), is("test"));
-        assertThat(alteredDs.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(alteredDs.getMaximumPoolSize(), is(50));
-        assertThat(alteredDs.getMinimumIdle(), is(1));
-        assertThat(alteredDs.getMaxLifetime(), is(60000L));
+        HikariDataSource actualDs = (HikariDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().get("test_ds");
+        assertNotNull(actualDs);
+        assertThat(actualDs.getJdbcUrl(), is("jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actualDs.getPassword(), is("test"));
+        assertThat(actualDs.getUsername(), is("test"));
+        assertThat(actualDs.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actualDs.getMaximumPoolSize(), is(50));
+        assertThat(actualDs.getMinimumIdle(), is(1));
+        assertThat(actualDs.getMaxLifetime(), is(60000L));
     }
     
     @Test 
@@ -390,14 +390,14 @@ public final class ContextManagerTest {
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceConfigurations);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
-        HikariDataSource ds = (HikariDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("test_ds_1");
-        assertThat(ds.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(ds.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(ds.getPassword(), is("test"));
-        assertThat(ds.getUsername(), is("test"));
-        assertThat(ds.getMaximumPoolSize(), is(50));
-        assertThat(ds.getMinimumIdle(), is(1));
-        assertThat(ds.getMaxLifetime(), is(60000L));
+        HikariDataSource actualDs = (HikariDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("test_ds_1");
+        assertThat(actualDs.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actualDs.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actualDs.getPassword(), is("test"));
+        assertThat(actualDs.getUsername(), is("test"));
+        assertThat(actualDs.getMaximumPoolSize(), is(50));
+        assertThat(actualDs.getMinimumIdle(), is(1));
+        assertThat(actualDs.getMaxLifetime(), is(60000L));
     }
     
     @Test
