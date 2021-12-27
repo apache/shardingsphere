@@ -28,8 +28,8 @@ public final class EncryptLiteralAssignmentTokenTest {
     @Test
     public void assertToString() {
         EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
-        actual.addAssignment("c1", "c1", false);
-        actual.addAssignment("c2", 1, false);
+        actual.addAssignment("c1", "c1", true);
+        actual.addAssignment("c2", 1, true);
         assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
     }
 }

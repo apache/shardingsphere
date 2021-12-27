@@ -108,12 +108,12 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         ColumnSegment column = assignmentSegment.getColumns().get(0);
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(column.getStartIndex(), assignmentSegment.getStopIndex());
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, column.getIdentifier().getValue());
-        result.addAssignment(cipherColumn, String.format(valuesFormat, cipherColumn), true);
+        result.addAssignment(cipherColumn, String.format(valuesFormat, cipherColumn), false);
         getEncryptRule().findAssistedQueryColumn(tableName, column.getIdentifier().getValue()).ifPresent(assistedQueryColumn -> {
-            result.addAssignment(assistedQueryColumn, String.format(valuesFormat, assistedQueryColumn), true);
+            result.addAssignment(assistedQueryColumn, String.format(valuesFormat, assistedQueryColumn), false);
         });
         getEncryptRule().findPlainColumn(tableName, column.getIdentifier().getValue()).ifPresent(plainColumn -> {
-            result.addAssignment(plainColumn, String.format(valuesFormat, plainColumn), true);
+            result.addAssignment(plainColumn, String.format(valuesFormat, plainColumn), false);
         });
         return result;
     }
@@ -134,7 +134,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
         Object cipherValue = getEncryptRule().getEncryptValues(schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), 
                 Collections.singletonList(originalValue)).iterator().next();
-        token.addAssignment(getEncryptRule().getCipherColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue, false);
+        token.addAssignment(getEncryptRule().getCipherColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()), cipherValue, true);
     }
     
     private void addAssistedQueryAssignment(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
@@ -143,12 +143,12 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
             Object assistedQueryValue = getEncryptRule()
                     .getEncryptAssistedQueryValues(schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue))
                     .iterator().next();
-            token.addAssignment(assistedQueryColumn, assistedQueryValue, false);
+            token.addAssignment(assistedQueryColumn, assistedQueryValue, true);
         });
     }
     
     private void addPlainAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        getEncryptRule().findPlainColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(plainColumn -> token.addAssignment(plainColumn, originalValue, false));
+        getEncryptRule().findPlainColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(plainColumn -> token.addAssignment(plainColumn, originalValue, true));
     }
 }
