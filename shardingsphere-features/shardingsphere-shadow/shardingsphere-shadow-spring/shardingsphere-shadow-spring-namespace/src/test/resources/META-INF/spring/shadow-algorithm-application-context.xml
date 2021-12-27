@@ -45,7 +45,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" enable="true">
+    <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
         <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds1" shadow-data-source-name="ds1-shadow"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source-0,shadow-data-source-1">

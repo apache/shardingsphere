@@ -37,7 +37,6 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         ShadowRuleConfiguration expectedConfiguration = new ShadowRuleConfiguration();
-        expectedConfiguration.setEnable(true);
         YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
         assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
     }
@@ -51,7 +50,6 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
     
     private YamlShadowRuleConfiguration createYamlShadowRuleConfiguration() {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
-        result.setEnable(true);
         return result;
     }
 }

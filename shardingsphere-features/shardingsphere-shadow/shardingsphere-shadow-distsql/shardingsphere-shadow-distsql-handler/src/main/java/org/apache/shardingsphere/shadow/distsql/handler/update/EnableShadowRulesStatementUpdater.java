@@ -43,13 +43,13 @@ public final class EnableShadowRulesStatementUpdater implements RuleDefinitionAl
     @Override
     public RuleConfiguration buildToBeAlteredRuleConfiguration(final EnableShadowRulesStatement sqlStatement) {
         ShadowRuleConfiguration configuration = new ShadowRuleConfiguration();
-        configuration.setEnable(true);
+        // configuration.setEnable(true);
         return configuration;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
-        currentRuleConfig.setEnable(toBeAlteredRuleConfig.isEnable());
+        // currentRuleConfig.setEnable(toBeAlteredRuleConfig.isEnable());
     }
     
     @Override

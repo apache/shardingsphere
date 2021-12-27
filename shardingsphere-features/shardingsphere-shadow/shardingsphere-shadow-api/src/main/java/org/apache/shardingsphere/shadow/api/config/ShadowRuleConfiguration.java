@@ -35,7 +35,7 @@ import java.util.Map;
 @Setter
 public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
-    private boolean enable;
+    private final boolean enable = true;
     
     private String defaultShadowAlgorithmName;
     
