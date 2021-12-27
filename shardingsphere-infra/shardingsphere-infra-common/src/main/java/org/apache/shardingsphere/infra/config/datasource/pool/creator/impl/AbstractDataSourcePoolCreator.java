@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Abstract data source pool creator.
@@ -42,7 +43,7 @@ import java.util.Optional;
 public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCreator {
     
     static {
-        GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
+        GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class);
         SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout");
     }
     
