@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceSetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCreateDatabaseExecutor;
@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
@@ -91,6 +92,11 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         }
         if (sqlStatement instanceof MySQLShowCreateDatabaseStatement) {
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof SetStatement) {
+            if (!hasSchemas() || !hasDatasource()) {
+                return Optional.of(new NoResourceSetExecutor((SetStatement) sqlStatement));
+            }
         }
         if (sqlStatement instanceof SelectStatement) {
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
@@ -152,7 +158,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     }
     
     private boolean hasDatasource() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap().values().stream().anyMatch(ShardingSphereMetaData::hasDataSource);
+        return ProxyContext.getInstance().getAllSchemaNames().stream().anyMatch(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource());
     }
     
     @Override

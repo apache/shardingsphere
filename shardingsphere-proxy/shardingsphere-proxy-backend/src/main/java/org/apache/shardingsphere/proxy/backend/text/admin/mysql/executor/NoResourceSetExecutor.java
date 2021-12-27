@@ -19,41 +19,23 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * No Resource set executor.
  */
 @Getter
 @RequiredArgsConstructor
-public final class NoResourceSetExecutor implements DatabaseBackendHandler {
+public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
     
     private final SetStatement sqlStatement;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
-        return new UpdateResponseHeader(new EmptyStatement());
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return DatabaseBackendHandler.super.next();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return DatabaseBackendHandler.super.getRowData();
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        DatabaseBackendHandler.super.close();
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
+        return;
     }
 }
