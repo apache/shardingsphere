@@ -800,6 +800,7 @@
                         <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
                         <failOnNoGitDirectory>false</failOnNoGitDirectory>
                         <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                        <offline>true</offline>
                         <includeOnlyProperties>
                             <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
                             <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
