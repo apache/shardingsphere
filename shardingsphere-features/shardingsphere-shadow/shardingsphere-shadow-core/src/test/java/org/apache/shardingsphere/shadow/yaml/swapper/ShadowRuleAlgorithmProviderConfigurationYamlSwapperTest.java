@@ -49,7 +49,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration expectedConfiguration = buildAlgorithmProvidedShadowRuleConfiguration();
         YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
-        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
         actualConfiguration.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
             assertNotNull(dataSourceConfiguration);
@@ -80,7 +79,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         YamlShadowRuleConfiguration expectedConfiguration = buildYamlShadowRuleConfiguration();
         AlgorithmProvidedShadowRuleConfiguration actualConfiguration = swapper.swapToObject(expectedConfiguration);
-        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
         actualConfiguration.getDataSources().forEach((key, value) -> {
             YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
             assertNotNull(yamlShadowDataSourceConfiguration);

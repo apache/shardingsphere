@@ -35,8 +35,6 @@ import java.util.Map;
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
-    private final boolean enable = true;
-    
     private String defaultShadowAlgorithmName;
     
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
