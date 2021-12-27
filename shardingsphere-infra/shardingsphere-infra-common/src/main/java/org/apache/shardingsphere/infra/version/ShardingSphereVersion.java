@@ -76,11 +76,7 @@ public final class ShardingSphereVersion {
         result += String.format("ShardingSphere-%s\n", BUILD_MAVEN_PROJECT_VERSION);
         result += String.format("Commit ID: %s%s\n", BUILD_GIT_DIRTY ? "dirty-" : "", BUILD_GIT_COMMIT_ID);
         result += String.format("Commit Message: %s\n", BUILD_GIT_COMMIT_MESSAGE_SHORT);
-        if (BUILD_GIT_TAG.isEmpty()) {
-            result += String.format("Branch: %s\n", BUILD_BRANCH);
-        } else {
-            result += String.format("Tag: %s\n", BUILD_GIT_TAG);
-        }
+        result += BUILD_GIT_TAG.isEmpty() ? String.format("Branch: %s\n", BUILD_BRANCH) : String.format("Tag: %s\n", BUILD_GIT_TAG);
         result += String.format("Build time: %s\n", BUILD_TIME);
         return result;
     }
