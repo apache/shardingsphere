@@ -15,37 +15,16 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Keyword, Literals, Symbol;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
+/**
+ * Show transaction rule statement.
+ */
+public final class ShowTransactionRuleStatement extends ShowRulesStatement {
     
-showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
-    
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-    
-showTransactionRule
-    : SHOW TRANSACTION RULE
-    ;
-    
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-    
-tableName
-    : IDENTIFIER
-    ;
+    public ShowTransactionRuleStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}

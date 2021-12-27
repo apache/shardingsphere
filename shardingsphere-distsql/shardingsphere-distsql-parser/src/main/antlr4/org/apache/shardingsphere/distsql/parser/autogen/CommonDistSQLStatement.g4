@@ -39,5 +39,6 @@ execute
     | refreshTableMetadata
     | showSQLParserRule
     | showAuthorityRule
+    | showTransactionRule
     ) SEMI?
     ;
