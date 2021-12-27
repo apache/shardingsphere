@@ -49,6 +49,15 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
     print_usage
 fi
 
+print_version() {
+    java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.version.ShardingSphereVersion
+    exit 0
+}
+
+if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
+    print_version
+fi
+
 echo "Starting the $SERVER_NAME ..."
 
 if [ $# == 0 ]; then

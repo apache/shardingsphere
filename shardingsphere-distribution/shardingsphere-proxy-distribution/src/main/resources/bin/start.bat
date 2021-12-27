@@ -34,6 +34,14 @@ if "%PORT%"=="--help" (
     goto print_usage
 )
 
+if "%PORT%"=="-v" (
+    goto print_version
+)
+
+if "%PORT%"=="--version" (
+    goto print_version
+)
+
 if "%PORT%"=="" (
 set MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 set CLASS_PATH=../conf;%CLASS_PATH%
@@ -60,7 +68,11 @@ goto exit
  echo "usage: start.bat [port] [config_dir]"
  echo "  port: proxy listen port, default is 3307"
  echo "  config_dir: proxy config directory, default is conf"
- pause
+ goto exit
+
+:print_version
+ java -classpath %CLASS_PATH% org.apache.shardingsphere.infra.version.ShardingSphereVersion
+ goto exit
 
 :exit
  pause
