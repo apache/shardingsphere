@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * No resource show executor.
+ * Unicast resource show executor.
  */
 @Getter
 @RequiredArgsConstructor
