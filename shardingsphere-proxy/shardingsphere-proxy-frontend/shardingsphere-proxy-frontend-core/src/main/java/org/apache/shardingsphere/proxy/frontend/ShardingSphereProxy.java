@@ -73,7 +73,7 @@ public final class ShardingSphereProxy {
     }
     
     private void accept(final ChannelFuture future) throws InterruptedException {
-        log.info("ShardingSphere-Proxy start success");
+        log.info("ShardingSphere-Proxy {} Mode started successfully", ProxyContext.getInstance().getContextManager().getMode());
         future.channel().closeFuture().sync();
     }
     

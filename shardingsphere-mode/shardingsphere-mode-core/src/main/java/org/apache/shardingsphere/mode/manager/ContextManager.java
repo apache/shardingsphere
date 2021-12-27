@@ -74,6 +74,12 @@ public final class ContextManager implements AutoCloseable {
     
     private final StateContext stateContext = new StateContext();
     
+    private final String mode;
+    
+    public ContextManager(final String mode) {
+        this.mode = mode;
+    }
+    
     /**
      * Initialize context manager.
      *
