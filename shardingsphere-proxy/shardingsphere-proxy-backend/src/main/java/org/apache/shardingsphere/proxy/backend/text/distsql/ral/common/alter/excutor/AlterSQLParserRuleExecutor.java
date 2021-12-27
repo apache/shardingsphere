@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor;
 
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
@@ -30,19 +29,15 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.AlterStatementExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Alter sql parser rule statement executor.
+ * Alter SQL parser rule statement executor.
  */
 @AllArgsConstructor
 public final class AlterSQLParserRuleExecutor implements AlterStatementExecutor {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(AlterSQLParserRuleExecutor.class);
     
     private final AlterSQLParserRuleStatement sqlStatement;
     
@@ -68,8 +63,6 @@ public final class AlterSQLParserRuleExecutor implements AlterStatementExecutor 
     }
 
     private SQLParserRuleConfiguration buildSQLParserRuleConfiguration(final SQLParserRuleConfiguration ruleConfiguration) {
-        LOG.info("========== {}", new Gson().toJson(ruleConfiguration));
-        LOG.info("---------- {}", new Gson().toJson(sqlStatement));
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled() 
                 : sqlStatement.getSqlCommentParseEnable());
