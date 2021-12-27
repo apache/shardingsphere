@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
+import java.lang.UnsupportedOperationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
@@ -51,6 +51,6 @@ public final class AdvancedDistSQLBackendHandlerFactory {
         } else if (sqlStatement instanceof ParseStatement) {
             return new ParseDistSQLBackendHandler(databaseType, (ParseStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }
