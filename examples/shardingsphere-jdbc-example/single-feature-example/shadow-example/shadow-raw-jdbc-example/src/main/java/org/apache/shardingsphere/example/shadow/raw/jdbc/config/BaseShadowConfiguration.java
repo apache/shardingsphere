@@ -48,10 +48,9 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     }
     
     protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        CacheOption PARSER_TREE_CACHE_OPTION = new CacheOption(128, 1024L, 4);
-        CacheOption SQL_STATEMENT_CACHE_OPTION = new CacheOption(2000, 65535L, 4);
-        return new SQLParserRuleConfiguration(true, PARSER_TREE_CACHE_OPTION, SQL_STATEMENT_CACHE_OPTION);
-        // return new DefaultSQLParserRuleConfigurationBuilder().build();
+        CacheOption parserTreeCacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, 4);
+        return new SQLParserRuleConfiguration(true, parserTreeCacheOption, sqlStatementCacheOption);
     }
     
     protected Collection<String> createShadowAlgorithmNames() {
