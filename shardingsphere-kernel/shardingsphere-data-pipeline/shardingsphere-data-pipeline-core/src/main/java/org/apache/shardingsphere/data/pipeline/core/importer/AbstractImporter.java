@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
@@ -56,7 +56,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final ImporterConfiguration importerConfig;
     
-    private final DataSourceManager dataSourceManager;
+    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
@@ -66,7 +66,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     @Setter
     private ImporterListener importerListener;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());

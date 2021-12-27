@@ -67,6 +67,7 @@ execute
     | createSequence
     | createDomain
     | createRule
+    | createSchema
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -75,6 +76,7 @@ execute
     | dropView
     | dropSequence
     | dropDomain
+    | dropSchema
     | vacuum
     | prepare
     | executeStmt
@@ -88,5 +90,8 @@ execute
     | setConstraints
     | copy
     | createLanguage
+    | alterLanguage
+    | dropLanguage
+    | createConversion
     ) SEMI_?
     ;

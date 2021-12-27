@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngin
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -64,9 +65,19 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        return getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
+        List<Object> result = getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
                 ? getEncryptRule().getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues) 
                         : getEncryptRule().getEncryptValues(schemaName, tableName, columnName, originalValues);
+        checkSortable(encryptCondition, result);
+        return result;
+    }
+    
+    private void checkSortable(final EncryptCondition encryptCondition, final List<Object> values) {
+        values.stream().forEach(each -> {
+            if (encryptCondition.isSortable() && !(each instanceof Number)) {
+                throw new ShardingSphereException("The SQL clause is unsupported in encrypt rule as not sortable encrypted values.");
+            }
+        });
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

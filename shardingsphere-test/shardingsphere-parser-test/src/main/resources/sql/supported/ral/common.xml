@@ -35,4 +35,5 @@
     <distsql-case id="refresh-table-metadata-with-table-name" value="refresh table metadata t_order" />
     <distsql-case id="refresh-table-metadata-with-resource" value="refresh table metadata t_order from resource ds_0" />
     <distsql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" />
+    <distsql-case id="show-authority-rule" value="SHOW AUTHORITY RULE"/>
 </sql-cases>

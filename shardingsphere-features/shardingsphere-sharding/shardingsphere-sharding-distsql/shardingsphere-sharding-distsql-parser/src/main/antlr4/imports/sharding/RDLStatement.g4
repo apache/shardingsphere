@@ -79,6 +79,10 @@ dropShardingAlgorithm
     : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    ;
+
 shardingTableRuleDefinition
     : (shardingAutoTableRule | shardingTableRule)
     ;

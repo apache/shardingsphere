@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.scaling.core.job.environment;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceYamlConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public final class ScalingEnvironmentManager {
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
     /**
      * Reset target table.
@@ -44,8 +44,10 @@ public final class ScalingEnvironmentManager {
      */
     // TODO seems it should be removed, dangerous to use
     public void resetTargetTable(final RuleAlteredJobContext jobContext) throws SQLException {
-        Set<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobContext.getJobConfig().getRuleConfig().getTarget()).unwrap());
+        Collection<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
+        try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), 
+                jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter()));
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
                 String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);

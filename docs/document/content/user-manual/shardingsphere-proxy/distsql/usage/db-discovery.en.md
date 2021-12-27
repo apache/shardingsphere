@@ -34,8 +34,8 @@ PASSWORD=root
 ```sql
 CREATE DB_DISCOVERY RULE ha_group_0 (
 RESOURCES(ds_0, ds_1),
-TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec')),
-HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
+TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
@@ -44,8 +44,8 @@ HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
 ```sql
 ALTER DB_DISCOVERY RULE ha_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=mgr,PROPERTIES('groupName'='92504d5b-6dec')),
-HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))
+TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 

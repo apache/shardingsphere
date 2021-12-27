@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -57,7 +57,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private final ExecuteEngine importerExecuteEngine;
     
-    private final DataSourceManager dataSourceManager;
+    private final PipelineDataSourceManager dataSourceManager;
     
     private Dumper dumper;
     
@@ -67,7 +67,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
         this.importerExecuteEngine = importerExecuteEngine;
-        this.dataSourceManager = new DataSourceManager();
+        this.dataSourceManager = new PipelineDataSourceManager();
         taskId = generateTaskId(inventoryDumperConfig);
         position = inventoryDumperConfig.getPosition();
     }

@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-distsql-statement</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-statement</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
