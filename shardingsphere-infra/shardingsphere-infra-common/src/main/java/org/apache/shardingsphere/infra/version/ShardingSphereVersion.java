@@ -36,37 +36,22 @@ public final class ShardingSphereVersion {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-        BUILD_BRANCH = properties.getProperty("git.branch");
-        BUILD_HOST = properties.getProperty("git.build.host");
-        BUILD_TIME = properties.getProperty("git.build.time");
-        BUILD_GIT_USER_EMAIL = properties.getProperty("git.build.user.email");
-        BUILD_GIT_USER_NAME = properties.getProperty("git.build.user.name");
-        BUILD_MAVEN_PROJECT_VERSION = properties.getProperty("git.build.version");
-        BUILD_GIT_COMMIT_ID = properties.getProperty("git.commit.id");
-        BUILD_GIT_COMMIT_ID_SHORT = properties.getProperty("git.commit.id.abbrev");
-        BUILD_GIT_COMMIT_MESSAGE_FULL = properties.getProperty("git.commit.message.full");
-        BUILD_GIT_COMMIT_MESSAGE_SHORT = properties.getProperty("git.commit.message.short");
-        BUILD_GIT_TAG = properties.getProperty("git.tags");
+        BUILD_BRANCH = properties.getProperty("git.branch", "");
+        BUILD_TIME = properties.getProperty("git.build.time", "");
+        BUILD_MAVEN_PROJECT_VERSION = properties.getProperty("git.build.version", "");
+        BUILD_GIT_COMMIT_ID = properties.getProperty("git.commit.id", "");
+        BUILD_GIT_COMMIT_MESSAGE_SHORT = properties.getProperty("git.commit.message.short", "");
+        BUILD_GIT_TAG = properties.getProperty("git.tags", "");
         BUILD_GIT_DIRTY = Boolean.parseBoolean(properties.getProperty("git.dirty"));
     }
     
     public static final String BUILD_BRANCH;
     
-    public static final String BUILD_HOST;
-    
     public static final String BUILD_TIME;
-    
-    public static final String BUILD_GIT_USER_EMAIL;
-    
-    public static final String BUILD_GIT_USER_NAME;
     
     public static final String BUILD_MAVEN_PROJECT_VERSION;
     
     public static final String BUILD_GIT_COMMIT_ID;
-    
-    public static final String BUILD_GIT_COMMIT_ID_SHORT;
-    
-    public static final String BUILD_GIT_COMMIT_MESSAGE_FULL;
     
     public static final String BUILD_GIT_COMMIT_MESSAGE_SHORT;
     
@@ -88,7 +73,11 @@ public final class ShardingSphereVersion {
         result += String.format("ShardingSphere-%s\n", BUILD_MAVEN_PROJECT_VERSION);
         result += String.format("Commit ID: %s%s\n", BUILD_GIT_DIRTY ? "dirty-" : "", BUILD_GIT_COMMIT_ID);
         result += String.format("Commit Message: %s\n", BUILD_GIT_COMMIT_MESSAGE_SHORT);
-        result += String.format("Branch: %s\n", BUILD_BRANCH);
+        if (BUILD_GIT_TAG.isEmpty()) {
+            result += String.format("Branch: %s\n", BUILD_BRANCH);
+        } else {
+            result += String.format("Tag: %s\n", BUILD_GIT_TAG);
+        }
         result += String.format("Build time: %s\n", BUILD_TIME);
         return result;
     }

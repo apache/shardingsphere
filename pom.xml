@@ -798,6 +798,13 @@
                     <configuration>
                         <generateGitPropertiesFile>true</generateGitPropertiesFile>
                         <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
+                        <includeOnlyProperties>
+                            <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.commit\.id$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.commit\.message\.short$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.(dirty|tags)$</includeOnlyProperty>
+                        </includeOnlyProperties>
                     </configuration>
                 </plugin>
             </plugins>
