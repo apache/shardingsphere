@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -102,7 +104,11 @@ public final class BootstrapInitializer {
     }
     
     private void setDatabaseServerInfo() {
-        CommonConstants.PROXY_VERSION.set(ProxyVersion.VERSION);
+        String version = ProxyVersion.VERSION;
+        if (!Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+            version += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        }
+        CommonConstants.PROXY_VERSION.set(version);
         findBackendDataSource().ifPresent(dataSourceSample -> {
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
             log.info(databaseServerInfo.toString());
