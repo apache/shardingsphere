@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -58,7 +59,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     @Override
     public void execute(final ConnectionSession connectionSession) {
         TableSegment tableSegment = sqlStatement.getFrom();
-        expressions = sqlStatement.getProjections().getProjections().stream()
+        expressions = sqlStatement.getProjections().getProjections().stream().filter(each -> !(each instanceof ShorthandProjectionSegment))
                 .map(each -> new ProjectionEngine(null, null).createProjection(tableSegment, each))
                 .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression())
                 .collect(Collectors.toCollection(LinkedList::new));
@@ -66,10 +67,11 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     }
     
     private QueryResult getQueryResult() {
-        if (expressions.isEmpty()) {
-            return new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.emptyList()), Collections.emptyList());
-        }
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
+        if (expressions.isEmpty()) {
+            rows.add(new MemoryQueryResultDataRow(Collections.singletonList("")));
+            return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
+        }
         ArrayList<Object> row = new ArrayList<>(expressions);
         row.replaceAll(each -> "");
         rows.add(new MemoryQueryResultDataRow(row));
@@ -78,6 +80,10 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
+        if (expressions.isEmpty()) {
+            RawQueryResultColumnMetaData defaultColumnMetaData = new RawQueryResultColumnMetaData("", "", "", Types.VARCHAR, "VARCHAR", 100, 0);
+            return new RawQueryResultMetaData(Collections.singletonList(defaultColumnMetaData));
+        }
         LinkedList<RawQueryResultColumnMetaData> raws = expressions.stream().map(each -> new RawQueryResultColumnMetaData("", each.toString(), each.toString(), Types.VARCHAR, "VARCHAR", 100, 0))
                 .collect(Collectors.toCollection(LinkedList::new));
         return new RawQueryResultMetaData(raws);

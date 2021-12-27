@@ -233,16 +233,6 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithQueryNoResource() throws SQLException {
-        String sql = "select * from t_order limit 1";
-        ProxyContext instance = ProxyContext.getInstance();
-        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-        when(instance.getMetaData("schema").hasDataSource()).thenReturn(false);
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
-    }
-    
-    @Test
     public void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);

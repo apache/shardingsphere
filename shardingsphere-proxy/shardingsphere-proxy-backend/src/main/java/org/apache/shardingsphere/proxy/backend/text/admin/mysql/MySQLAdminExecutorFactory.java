@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTab
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTransactionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -80,7 +81,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql, final Optional<String> schemaName) {
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
         }
@@ -94,7 +95,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof SetStatement) {
-            if (!hasSchemas() || !hasDatasource()) {
+            if (!hasSchemas() || !hasResources()) {
                 return Optional.of(new NoResourceSetExecutor((SetStatement) sqlStatement));
             }
         }
@@ -109,10 +110,10 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
                     || isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
                 return Optional.of(new ShowCurrentUserExecutor());
             }
-            if ((!hasSchemas() || !hasDatasource()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
+            if ((!hasSchemas() || !hasResources()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
                 return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
             }
-            if (!hasSchemas() || !hasDatasource() && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
+            if ((!hasSchemas() || !hasResources()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
                 return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
             }
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
@@ -125,9 +126,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
                 // TODO
                 return Optional.empty();
             }
-            if (!hasSchemas() || !hasDatasource()) {
-                return Optional.of(new NoResourceShowExecutor((SelectStatement) sqlStatement));
-            }
+            return Optional.ofNullable(mockExecutor(schemaName, (SelectStatement) sqlStatement, sql));
         }
         return Optional.empty();
     }
@@ -153,11 +152,23 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }
     
+    private DatabaseAdminExecutor mockExecutor(final Optional<String> schemaName, final SelectStatement sqlStatement, final String sql) {
+        boolean isNotUseSchema = !schemaName.isPresent() && sqlStatement.getFrom() == null;
+        if (isNotUseSchema) {
+            if (!hasSchemas() || !hasResources()) {
+                return new NoResourceShowExecutor(sqlStatement);
+            } else {
+                return new UnicastResourceShowExecutor(sqlStatement, sql);
+            }
+        }
+        return null;
+    }
+    
     private boolean hasSchemas() {
         return !ProxyContext.getInstance().getAllSchemaNames().isEmpty();
     }
     
-    private boolean hasDatasource() {
+    private boolean hasResources() {
         return ProxyContext.getInstance().getAllSchemaNames().stream().anyMatch(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource());
     }
     

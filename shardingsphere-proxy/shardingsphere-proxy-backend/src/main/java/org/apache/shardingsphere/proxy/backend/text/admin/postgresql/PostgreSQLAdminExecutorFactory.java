@@ -58,7 +58,7 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql, final Optional<String> schemaName) {
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
             if (selectedTableNames.contains(PG_DATABASE)) {
