@@ -120,11 +120,13 @@ public final class BootstrapInitializer {
     }
     
     private String getShardingSphereVersion() {
-        String version = ShardingSphereVersion.VERSION;
-        if (!Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
-            version += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        String result = ShardingSphereVersion.VERSION;
+        if (Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+            return result;
         }
-        return version;
+        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
+        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        return result;
     }
     
     private Optional<DataSource> findBackendDataSource() {
