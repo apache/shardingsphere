@@ -25,17 +25,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DisableShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropShadowRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.EnableShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowAlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
@@ -45,13 +42,10 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRule
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.DisableShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.EnableShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRuleStatusStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -101,21 +95,6 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
                 : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()), 
                 getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
         return new ShadowAlgorithmSegment(algorithmName, segment);
-    }
-    
-    @Override
-    public ASTNode visitShowShadowStatus(final ShowShadowStatusContext ctx) {
-        return new ShowShadowRuleStatusStatement(null != ctx.schemaName() ? (SchemaSegment) visit(ctx.schemaName()) : null);
-    }
-    
-    @Override
-    public ASTNode visitDisableShadowRule(final DisableShadowRuleContext ctx) {
-        return new DisableShadowRulesStatement();
-    }
-    
-    @Override
-    public ASTNode visitEnableShadowRule(final EnableShadowRuleContext ctx) {
-        return new EnableShadowRulesStatement();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {

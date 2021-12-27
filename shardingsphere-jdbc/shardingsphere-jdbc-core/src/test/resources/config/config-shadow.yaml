@@ -22,7 +22,6 @@ props:
 
 rules:
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource0:
       sourceDataSourceName: shadow_jdbc_0
