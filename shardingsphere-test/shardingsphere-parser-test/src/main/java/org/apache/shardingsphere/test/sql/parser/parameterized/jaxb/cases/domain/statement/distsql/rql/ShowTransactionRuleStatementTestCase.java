@@ -15,37 +15,16 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
-    
-showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
-    
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-    
-showTransactionRule
-    : SHOW TRANSACTION RULE
-    ;
-    
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-    
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * Show transaction rule statement test case.
+ */
+@Getter
+@Setter
+public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
+}
