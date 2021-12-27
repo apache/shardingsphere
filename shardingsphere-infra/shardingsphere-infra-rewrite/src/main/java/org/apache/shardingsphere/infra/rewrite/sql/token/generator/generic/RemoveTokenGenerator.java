@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -46,11 +45,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof TableAvailable) {
             containsSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().isPresent();
         }
-        return containsRemoveSegment || containsSchemaName || isContainsAggregationDistinctProjection(sqlStatementContext);
-    }
-    
-    private boolean isContainsAggregationDistinctProjection(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
+        return containsRemoveSegment || containsSchemaName;
     }
     
     @Override
@@ -61,9 +56,6 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         }
         if (sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().isPresent()) {
             result.addAll(generateTableAvailableSQLTokens((TableAvailable) sqlStatementContext));
-        }
-        if (isContainsAggregationDistinctProjection(sqlStatementContext)) {
-            ((SelectStatementContext) sqlStatementContext).getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));
         }
         return result;
     }
