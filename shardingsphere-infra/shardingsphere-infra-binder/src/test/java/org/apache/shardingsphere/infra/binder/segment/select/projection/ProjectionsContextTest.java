@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +106,7 @@ public final class ProjectionsContextTest {
     @Test
     public void assertGetAggregationDistinctProjections() {
         Projection projection = getAggregationDistinctProjection();
-        List<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
+        Collection<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
     }
