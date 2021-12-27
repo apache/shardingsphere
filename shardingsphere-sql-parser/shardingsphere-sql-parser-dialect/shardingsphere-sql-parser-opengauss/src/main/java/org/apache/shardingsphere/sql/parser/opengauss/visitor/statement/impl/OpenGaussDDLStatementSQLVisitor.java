@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionContext;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateFunctionStatement;
@@ -603,5 +605,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
         return new OpenGaussDropLanguageStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
+        return new OpenGaussCreateConversionStatement();
     }
 }
