@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.traffic.rule;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.traffic.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Traffic rule.
@@ -37,11 +42,14 @@ public final class TrafficRule implements GlobalRule {
         ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
     }
     
+    private final Collection<TrafficStrategyRule> trafficStrategyRules = new LinkedList<>();
+    
     private final Map<String, TrafficAlgorithm> trafficAlgorithms = new LinkedHashMap<>();
     
     private final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     public TrafficRule(final TrafficRuleConfiguration config) {
+        config.getTrafficStrategies().forEach(each -> trafficStrategyRules.add(new TrafficStrategyRule(each.getName(), each.getLabels(), each.getAlgorithmName(), each.getLoadBalancerName())));
         config.getTrafficAlgorithms().forEach((key, value) -> trafficAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, TrafficAlgorithm.class)));
         config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, TrafficLoadBalanceAlgorithm.class)));
     }
@@ -49,5 +57,33 @@ public final class TrafficRule implements GlobalRule {
     @Override
     public String getType() {
         return TrafficRule.class.getSimpleName();
+    }
+    
+    /**
+     * Find traffic strategy rule.
+     * 
+     * @param logicSQL logic SQL
+     * @return traffic strategy rule
+     */
+    public Optional<TrafficStrategyRule> findTrafficStrategyRule(final LogicSQL logicSQL) {
+        for (TrafficStrategyRule each : trafficStrategyRules) {
+            TrafficAlgorithm trafficAlgorithm = trafficAlgorithms.get(each.getAlgorithmName());
+            Preconditions.checkState(null != trafficAlgorithm, "Traffic strategy rule configuration must match traffic algorithm.");
+            // TODO add trafficAlgorithm match logic
+            return Optional.of(each);
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Find load balancer.
+     * 
+     * @param loadBalancerName load balancer name
+     * @return load balancer
+     */
+    public TrafficLoadBalanceAlgorithm findLoadBalancer(final String loadBalancerName) {
+        TrafficLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.get(loadBalancerName);
+        Preconditions.checkState(null != loadBalanceAlgorithm, "Traffic load balance algorithm can not be null.");
+        return loadBalanceAlgorithm;
     }
 }

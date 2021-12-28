@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.config;
+package org.apache.shardingsphere.traffic.api.config;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.traffic.api.config.strategy.TrafficStrategyConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
