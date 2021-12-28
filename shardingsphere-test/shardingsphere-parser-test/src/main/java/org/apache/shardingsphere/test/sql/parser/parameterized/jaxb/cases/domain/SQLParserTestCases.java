@@ -117,6 +117,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
@@ -908,6 +909,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-conversion")
+    private final List<DropConversionStatementTestCase> dropConversionTestCase = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1134,6 +1138,7 @@ public final class SQLParserTestCases {
         putAll(showAuthorityRuleStatementTestCases,result);
         putAll(showTransactionRuleStatementTestCases, result);
         putAll(alterSQLParserRuleStatementTestCases, result);
+        putAll(dropConversionTestCase, result);
         return result;
     }
     // CHECKSTYLE:ON
