@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.exception;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
 
 /**
- * Scaling job operate exception.
+ * Default rule altered checkout lock algorithm.
  */
-public final class ScalingJobOperateException extends ShardingSphereException {
+@ToString
+public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
     
-    private static final long serialVersionUID = 7598088400647370901L;
+    @Override
+    public void init() {
+    }
     
-    public ScalingJobOperateException(final String reason) {
-        super(reason);
+    // TODO impl default checkoutLockAlgorithm
+    @Override
+    public void lock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public String getType() {
+        return "DEFAULT";
     }
 }

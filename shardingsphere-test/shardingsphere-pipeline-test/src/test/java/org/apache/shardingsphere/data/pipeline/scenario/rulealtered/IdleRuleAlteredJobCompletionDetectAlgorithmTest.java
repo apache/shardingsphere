@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.IdleRuleAlteredJobCompletionDetectAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
