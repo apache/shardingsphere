@@ -6,19 +6,19 @@ weight = 2
 ## Compile source code
 Download Apache ShardingSphere from GitHub,Then compile.
 ```shell
-git clone git@github.com:apache/shardingsphere.git
+git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install 
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
-Output directory: shardingsphere-agent/shardingsphere-agent-distribution/target/shardingsphere-agent.tar.gz
+Output directory: shardingsphere-agent/shardingsphere-agent-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
 ## Agent configuration
 * Directory structure
 
-  Create agent directory, and unzip shardingsphere-agent.tar.gz to agent.
+  Create agent directory, and unzip agent distribution package to the directory.
 ```shell
 mkdir agent
-tar -zxvf shardingsphere-agent.tar.gz -C agent
+tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
 cd agent
 tree 
 .
@@ -26,12 +26,12 @@ tree
 │   ├── agent.yaml
 │   └── logback.xml
 ├── plugins
-│   ├── shardingsphere-agent-logging-base-x.y.z-SNAPSHOT.jar
-│   ├── shardingsphere-agent-metrics-prometheus-x.y.z-SNAPSHOT.jar
-│   ├── shardingsphere-agent-tracing-jaeger-x.y.z-SNAPSHOT.jar
-│   ├── shardingsphere-agent-tracing-opentelemetry-x.y.z-SNAPSHOT.jar
-│   ├── shardingsphere-agent-tracing-opentracing-x.y.z-SNAPSHOT.jar
-│   └── shardingsphere-agent-tracing-zipkin-x.y.z-SNAPSHOT.jar
+│   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
+│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
+│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
 └── shardingsphere-agent.jar
 
 ```
