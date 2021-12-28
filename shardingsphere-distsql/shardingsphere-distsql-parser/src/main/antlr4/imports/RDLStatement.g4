@@ -42,6 +42,14 @@ alterDefaultSingleTableRule
 dropDefaultSingleTableRule
     : DROP DEFAULT SINGLE TABLE RULE
     ;
+    
+alterSQLParserRule
+    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
+    ;
+    
+sqlParserRuleDefinition
+    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSER_TREE_CACHE LP parserTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
+    ;
 
 dataSource
     : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
@@ -101,4 +109,32 @@ poolProperty
 
 ignoreSingleTables
     : IGNORE SINGLE TABLES
+    ;
+    
+sqlCommentParseEnable
+    : TRUE | FALSE
+    ;
+    
+parserTreeCache
+    : cacheOption
+    ;
+    
+sqlStatementCache
+    : cacheOption
+    ;
+    
+cacheOption
+    : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? 
+    ;
+    
+initialCapacity
+    : INT
+    ;
+    
+maximumSize
+    : INT
+    ;
+    
+concurrencyLevel
+    : INT
     ;

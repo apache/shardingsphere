@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    ) SEMI?
-    ;
+/**
+ * Alter statement executor.
+ */
+public interface AlterStatementExecutor {
+    
+    /**
+     * Execute alter statement.
+     *
+     * @return backend response
+     * @throws DistSQLException DistSQL exception
+     */
+    ResponseHeader execute() throws DistSQLException;
+}

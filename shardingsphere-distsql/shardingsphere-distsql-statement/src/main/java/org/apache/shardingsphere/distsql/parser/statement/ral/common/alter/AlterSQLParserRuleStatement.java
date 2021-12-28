@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.alter;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    ) SEMI?
-    ;
+/**
+ * Alter SQL parser rule statement.
+ */
+@Setter
+@Getter
+public final class AlterSQLParserRuleStatement extends AlterDistSQLStatement {
+    
+    private Boolean sqlCommentParseEnable;
+    
+    private CacheOptionSegment parserTreeCache;
+    
+    private CacheOptionSegment sqlStatementCache;
+}
