@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.executor;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 import java.sql.SQLException;
 
 /**
- * Database admin query executor.
+ * No Resource set executor.
  */
-public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
+@Getter
+@RequiredArgsConstructor
+public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
     
-    /**
-     * Get query result meta data.
-     * 
-     * @return query result meta data
-     */
-    QueryResultMetaData getQueryResultMetaData();
+    private final SetStatement sqlStatement;
     
-    /**
-     * Get merged result.
-     * 
-     * @return  merged result
-     * @throws SQLException SQL exception
-     */
-    MergedResult getMergedResult() throws SQLException;
+    @Override
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
+        return;
+    }
 }
