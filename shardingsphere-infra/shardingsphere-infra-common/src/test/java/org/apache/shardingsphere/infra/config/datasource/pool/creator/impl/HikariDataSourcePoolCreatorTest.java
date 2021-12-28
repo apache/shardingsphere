@@ -29,8 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public final class HikariDataSourcePoolCreatorTest {
     
@@ -56,10 +55,9 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(configuration.getProps().get("password"), is("root"));
         assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
         assertThat(configuration.getProps().get("minimumIdle"), is(1));
-        Properties dataSourceProperties = (Properties) configuration.getProps().get("dataSourceProperties");
-        assertThat(dataSourceProperties.get("prepStmtCacheSqlLimit"), is(1024));
-        assertThat(dataSourceProperties.get("cachePrepStmts"), is(true));
-        assertThat(dataSourceProperties.get("prepStmtCacheSize"), is(1000));
+        assertNotNull(configuration.getProps());
+        assertNotNull(configuration.getProps().get("dataSourceProperties"));
+        assertDataSourceProperties((Properties) configuration.getProps().get("dataSourceProperties"));
     }
     
     @Test
@@ -75,10 +73,8 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
-        Properties dataSourceProperties = hikariDataSource.getDataSourceProperties();
-        assertThat(dataSourceProperties.get("prepStmtCacheSqlLimit"), is(1024));
-        assertThat(dataSourceProperties.get("cachePrepStmts"), is(true));
-        assertThat(dataSourceProperties.get("prepStmtCacheSize"), is(1000));
+        assertNotNull(hikariDataSource.getDataSourceProperties());
+        assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
@@ -90,13 +86,23 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
-        Properties dataSourceProperties = new Properties();
-        dataSourceProperties.put("prepStmtCacheSqlLimit", 1024);
-        dataSourceProperties.put("cachePrepStmts", true);
-        dataSourceProperties.put("prepStmtCacheSize", 1000);
-        props.put("data-source-properties", dataSourceProperties);
+        props.put("data-source-properties", getDataSourceProperties());
         DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
         result.getProps().putAll(props);
         return result;
+    }
+    
+    private Properties getDataSourceProperties() {
+        Properties result = new Properties();
+        result.put("prepStmtCacheSqlLimit", 1024);
+        result.put("cachePrepStmts", true);
+        result.put("prepStmtCacheSize", 1000);
+        return result;
+    }
+    
+    private void assertDataSourceProperties(Properties props) {
+        assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(props.get("cachePrepStmts"), is(true));
+        assertThat(props.get("prepStmtCacheSize"), is(1000));
     }
 }
