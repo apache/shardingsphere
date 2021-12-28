@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.mock.MockedDriver;

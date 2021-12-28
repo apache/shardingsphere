@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
