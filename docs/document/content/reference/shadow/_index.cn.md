@@ -60,11 +60,10 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 建议配置如下（YAML 格式展示）：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -83,7 +82,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
@@ -219,7 +218,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 

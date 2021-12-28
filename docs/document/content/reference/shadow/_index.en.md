@@ -102,7 +102,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
@@ -238,7 +238,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
