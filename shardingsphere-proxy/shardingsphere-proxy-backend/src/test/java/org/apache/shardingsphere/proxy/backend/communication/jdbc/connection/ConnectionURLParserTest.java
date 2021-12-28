@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;

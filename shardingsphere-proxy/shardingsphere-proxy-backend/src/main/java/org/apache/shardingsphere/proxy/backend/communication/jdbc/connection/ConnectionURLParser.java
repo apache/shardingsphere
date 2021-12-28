@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
