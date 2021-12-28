@@ -42,7 +42,9 @@ public final class RuleAlteredContext {
     static {
         ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleAlteredJobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleAlteredSourceWritingStopAlgorithm.class);
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleAlteredCheckoutLockAlgorithm.class);
     }
     
     private static volatile ModeConfiguration modeConfig;

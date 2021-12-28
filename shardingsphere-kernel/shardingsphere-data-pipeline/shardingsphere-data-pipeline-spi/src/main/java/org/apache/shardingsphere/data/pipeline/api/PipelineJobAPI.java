@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -147,9 +146,8 @@ public interface PipelineJobAPI extends RequiredSPI {
      * Reset scaling job.
      *
      * @param jobId job id
-     * @throws SQLException SQL exception
      */
-    void reset(long jobId) throws SQLException;
+    void reset(long jobId);
     
     /**
      * Get job configuration.

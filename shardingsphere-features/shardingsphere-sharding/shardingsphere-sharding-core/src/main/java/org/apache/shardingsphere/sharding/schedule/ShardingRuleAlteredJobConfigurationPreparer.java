@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.schedule;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -79,8 +78,6 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final PipelineConfiguration pipelineConfig) {
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
-        Preconditions.checkState(sourceDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration,
-                "Only ShardingSphereJdbc type of source TypedDataSourceConfiguration is supported.");
         ShardingSpherePipelineDataSourceConfiguration source = (ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig;
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
         ShardingRule shardingRule = new ShardingRule(sourceRuleConfig, source.getRootConfig().getDataSources().keySet());
@@ -157,17 +154,16 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static ShardingSpherePipelineDataSourceConfiguration getSourceConfiguration(final PipelineConfiguration pipelineConfig) {
         PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
-        Preconditions.checkArgument(result instanceof ShardingSpherePipelineDataSourceConfiguration, "Only support ShardingSphere source data source.");
         return (ShardingSpherePipelineDataSourceConfiguration) result;
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final PipelineConfiguration pipelineConfig) {
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
-        if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            return Optional.of(
-                    ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig().getRules()));
+        if (!(targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        ShardingSpherePipelineDataSourceConfiguration target = (ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig;
+        return Optional.of(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(target.getRootConfig().getRules()));
     }
     
     private static Map<String, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig) {

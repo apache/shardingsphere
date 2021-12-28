@@ -98,10 +98,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
-            Number startPrimaryValue = getPositionBeginValue(position) - 1;
-            Optional<Number> maxPrimaryValue;
-            while ((maxPrimaryValue = dump0(conn, sql, startPrimaryValue)).isPresent()) {
-                startPrimaryValue = maxPrimaryValue.get();
+            Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
+            Optional<Number> maxUniqueKeyValue;
+            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue)).isPresent()) {
+                startUniqueKeyValue = maxUniqueKeyValue.get();
             }
         } catch (final SQLException ex) {
             stop();
@@ -118,18 +118,18 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
     }
     
-    private Optional<Number> dump0(final Connection conn, final String sql, final Number startPrimaryValue) throws SQLException {
+    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue) throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.onQuery();
         }
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
-            preparedStatement.setObject(1, startPrimaryValue);
+            preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
             preparedStatement.setInt(3, readBatchSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
-                Number maxPrimaryValue = null;
+                Number maxUniqueKeyValue = null;
                 while (isRunning() && resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
@@ -138,16 +138,16 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
                         Object value = readValue(resultSet, i);
                         if (isPrimaryKey) {
-                            maxPrimaryValue = (Number) value;
+                            maxUniqueKeyValue = (Number) value;
                         }
                         record.addColumn(new Column(metaData.getColumnName(i), value, true, isPrimaryKey));
                     }
                     pushRecord(record);
                     rowCount++;
                 }
-                log.info("dump, rowCount={}, maxPrimaryValue={}", rowCount, maxPrimaryValue);
+                log.info("dump, rowCount={}, maxUniqueKeyValue={}", rowCount, maxUniqueKeyValue);
                 pushRecord(new FinishedRecord(new FinishedPosition()));
-                return Optional.ofNullable(maxPrimaryValue);
+                return Optional.ofNullable(maxUniqueKeyValue);
             }
         }
     }

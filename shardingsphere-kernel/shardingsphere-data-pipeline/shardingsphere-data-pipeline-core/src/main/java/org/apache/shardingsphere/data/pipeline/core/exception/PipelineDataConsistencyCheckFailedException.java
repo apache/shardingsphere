@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-
-@RequiredArgsConstructor
-public final class UnexpectedDataRecordOrderException extends RuntimeException {
+/**
+ * Pipeline data consistency check failed exception.
+ */
+public final class PipelineDataConsistencyCheckFailedException extends RuntimeException {
     
-    private static final long serialVersionUID = 6023695604738387750L;
+    private static final long serialVersionUID = -4100671584682823997L;
     
-    private final DataRecord beforeDataRecord;
+    public PipelineDataConsistencyCheckFailedException(final String message) {
+        super(message);
+    }
     
-    private final DataRecord afterDataRecord;
+    public PipelineDataConsistencyCheckFailedException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

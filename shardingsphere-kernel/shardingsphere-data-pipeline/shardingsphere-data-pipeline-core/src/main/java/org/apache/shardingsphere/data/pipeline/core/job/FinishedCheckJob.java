@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSource
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,6 @@ import java.util.Map;
 public final class FinishedCheckJob implements SimpleJob {
     
     private final PipelineJobAPI pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredSourceWritingStopAlgorithm.class);
-        ShardingSphereServiceLoader.register(RuleAlteredCheckoutLockAlgorithm.class);
-    }
     
     @Override
     public void execute(final ShardingContext shardingContext) {
