@@ -41,7 +41,7 @@ public final class DataSourcePoolParameterDecoratorHelper {
         Optional<DataSourcePoolParameterDecorator> decorator = ShardingSphereServiceLoader
                 .getSingletonServiceInstances(DataSourcePoolParameterDecorator.class)
                 .stream()
-                .filter(each -> each.getType() == dataSource.getClass()).findFirst();
+                .filter(each -> each.getType().equals(dataSource.getClass().getCanonicalName())).findFirst();
         return decorator.isPresent() ? decorator.get().decorate(dataSource) : dataSource;
     }
 }
