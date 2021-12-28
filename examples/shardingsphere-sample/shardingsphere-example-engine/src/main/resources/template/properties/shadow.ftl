@@ -17,7 +17,6 @@
 
 spring.shardingsphere.datasource.names=ds-0,ds-1
 
-spring.shardingsphere.rules.shadow.enable=true
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name=ds-0
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name=ds-1
 
