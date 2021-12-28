@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShadowExtractorTest {
+public final class ShadowExtractorTest {
 
     @Test
     public void extractValuesIsSimpleExpressionSegment() {
@@ -36,6 +36,6 @@ public class ShadowExtractorTest {
         List<Object> list = new LinkedList<>();
         Collection<Comparable<?>> result = new LinkedList<>();
         result.add((Comparable<?>) LiteralExpressionSegment.getLiterals());
-        assertThat(ShadowExtractor.extractValues(LiteralExpressionSegment, list), equalTo(Optional.of(result)));
+        assertThat(ShadowExtractor.extractValues(LiteralExpressionSegment, list), is(Optional.of(result)));
     }
 }
