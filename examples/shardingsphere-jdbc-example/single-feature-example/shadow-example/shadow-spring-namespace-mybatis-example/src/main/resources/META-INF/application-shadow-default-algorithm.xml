@@ -21,7 +21,7 @@
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
+       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow" xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/tx
@@ -31,8 +31,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
-                           http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
-                           ">
+                           http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd http://shardingsphere.apache.org/schema/shardingsphere/sql-parser http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
     <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -80,7 +79,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" enable="true">
+    <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
@@ -90,10 +89,13 @@
         <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>
 
-    <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,ds_shadow" rule-refs="shadowRule">
+    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parser-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+
+    <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,ds_shadow" rule-refs="shadowRule,sqlParseRule">
         <props>
             <prop key="sql-show">true</prop>
-            <prop key="sql-comment-parse-enabled">true</prop>
         </props>
     </shardingsphere:data-source>
 

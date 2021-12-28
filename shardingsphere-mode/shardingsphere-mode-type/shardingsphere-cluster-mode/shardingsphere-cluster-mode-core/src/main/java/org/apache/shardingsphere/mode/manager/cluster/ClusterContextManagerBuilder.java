@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.SchedulerRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -41,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -83,9 +82,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port, schemaName);
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
+        contextManager.init(metaDataContexts, transactionContexts, null);
         afterBuildContextManager();
-        startMonitor();
         return contextManager;
     }
     
@@ -94,6 +92,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                            final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         registryCenter = new RegistryCenter(repository, port);
+        ModeScheduleContextFactory.getInstance().init(modeConfig);
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Arrays.asList(schemaName);
@@ -228,15 +227,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
         schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
-    }
-    
-    private void startMonitor() {
-        metaDataContexts.getAllSchemaNames().forEach(each -> metaDataContexts.getMetaData(each).getRuleMetaData().getRules().stream().filter(rule -> rule instanceof SchedulerRule)
-                .forEach(rule -> startSchedules(each, metaDataContexts.getMetaData(each).getResource().getDataSources(), (SchedulerRule) rule)));
-    }
-    
-    private void startSchedules(final String schemaName, final Map<String, DataSource> dataSources, final SchedulerRule schedulerRule) {
-        schedulerRule.getCronJobs(schemaName, dataSources).forEach(each -> contextManager.getModeScheduleContext().startCronJob(each));
     }
     
     @Override

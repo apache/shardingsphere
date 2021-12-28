@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +77,7 @@ public final class RuleAlteredJobProgressDetector {
      * @param inventoryTasks to check inventory tasks
      * @return is finished
      */
-    public static boolean allInventoryTasksFinished(final List<InventoryTask> inventoryTasks) {
+    public static boolean allInventoryTasksFinished(final Collection<InventoryTask> inventoryTasks) {
         if (inventoryTasks.isEmpty()) {
             log.warn("inventoryTasks is empty");
         }

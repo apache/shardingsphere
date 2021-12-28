@@ -26,6 +26,7 @@
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
+       xmlns:database-discovery="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -42,6 +43,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
+                           http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}"/>
@@ -63,7 +66,7 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
 </#if>
-    
+<#if feature!="db-discovery">
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3307/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
@@ -77,15 +80,7 @@
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
-<#if feature=="sharding">
-    <#include "shardingApplication.ftl">
-<#elseif feature=="readwrite-splitting">
-    <#include "readwriteSplittingApplication.ftl">
-<#elseif feature=="encrypt">
-    <#include "encryptApplication.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowApplication.ftl">
-</#if>
+<#include "${feature}.ftl">
     
 <#if framework=="spring-namespace-mybatis">
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

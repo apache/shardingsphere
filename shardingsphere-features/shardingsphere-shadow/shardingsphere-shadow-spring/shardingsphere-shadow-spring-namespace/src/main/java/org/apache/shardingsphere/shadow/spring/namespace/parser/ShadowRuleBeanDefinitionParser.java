@@ -54,16 +54,11 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedShadowRuleConfiguration.class);
-        factory.addPropertyValue("enable", parseShadowEnableConfiguration(element));
         factory.addPropertyValue("dataSources", parseDataSourcesConfiguration(element));
         factory.addPropertyValue("tables", parseShadowTablesConfiguration(element));
         factory.addPropertyValue("defaultShadowAlgorithmName", parseDefaultShadowAlgorithmName(element));
         factory.addPropertyValue("shadowAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShadowAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
-    }
-    
-    private boolean parseShadowEnableConfiguration(final Element element) {
-        return Boolean.parseBoolean(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_ENABLE_TAG));
     }
     
     private Map<String, BeanDefinition> parseShadowTablesConfiguration(final Element element) {
