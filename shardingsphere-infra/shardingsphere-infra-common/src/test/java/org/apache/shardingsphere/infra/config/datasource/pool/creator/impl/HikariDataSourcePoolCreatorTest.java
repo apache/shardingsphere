@@ -98,7 +98,7 @@ public final class HikariDataSourcePoolCreatorTest {
         return result;
     }
     
-    private void assertDataSourceProperties(Properties props) {
+    private void assertDataSourceProperties(final Properties props) {
         assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
         assertThat(props.get("cachePrepStmts"), is(true));
         assertThat(props.get("prepStmtCacheSize"), is(1000));
