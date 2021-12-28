@@ -25,6 +25,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow
 | shadow-data-source-name | Attribute | Shadow data source name |
 
 \<shadow:default-shadow-algorithm-name />
+
 | *Name* | *Type*  | *Description* |
 | ----- | ------ | ------ |
 | name | Attribute | Default shadow algorithm name |
