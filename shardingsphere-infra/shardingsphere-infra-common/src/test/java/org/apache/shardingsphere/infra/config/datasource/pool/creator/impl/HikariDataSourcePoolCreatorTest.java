@@ -25,6 +25,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,6 +56,10 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(configuration.getProps().get("password"), is("root"));
         assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
         assertThat(configuration.getProps().get("minimumIdle"), is(1));
+        Properties dataSourceProperties = (Properties) configuration.getProps().get("dataSourceProperties");
+        assertThat(dataSourceProperties.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(dataSourceProperties.get("cachePrepStmts"), is(true));
+        assertThat(dataSourceProperties.get("prepStmtCacheSize"), is(1000));
     }
     
     @Test
@@ -70,6 +75,10 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
+        Properties dataSourceProperties = hikariDataSource.getDataSourceProperties();
+        assertThat(dataSourceProperties.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(dataSourceProperties.get("cachePrepStmts"), is(true));
+        assertThat(dataSourceProperties.get("prepStmtCacheSize"), is(1000));
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
@@ -81,6 +90,11 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.put("prepStmtCacheSqlLimit", 1024);
+        dataSourceProperties.put("cachePrepStmts", true);
+        dataSourceProperties.put("prepStmtCacheSize", 1000);
+        props.put("data-source-properties", dataSourceProperties);
         DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
         result.getProps().putAll(props);
         return result;
