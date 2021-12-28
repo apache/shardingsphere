@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.config.datasource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -34,10 +33,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceConverter {
     
-    static {
-        ShardingSphereServiceLoader.register(DataSourcePoolParameterDecorator.class);
-    }
-    
     /**
      * Get data source.
      * 
@@ -45,7 +40,7 @@ public final class DataSourceConverter {
      * @return data source
      */
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        return DataSourcePoolParameterDecoratorHelper.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
+        return DataSourcePoolParameterDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
     }
     
     /**
