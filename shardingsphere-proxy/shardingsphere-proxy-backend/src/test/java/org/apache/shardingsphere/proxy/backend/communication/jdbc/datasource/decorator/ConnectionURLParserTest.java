@@ -17,99 +17,58 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public final class ConnectionURLParserTest {
-    
-    private static final String MYSQL_CONNECTION_WITHOUT_PROPS = "jdbc:mysql://127.0.0.1:3306/demo_ds";
-    
-    private static final String MYSQL_CONNECTION_WITH_PROPS = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
-    
-    private static final String MYSQL_CONNECTION_WITH_REPLICATION = "jdbc:mysql:replication://master_ip:3306,slave_1_ip:3306,slave_2_ip:3306/demo_ds?useUnicode=true";
-    
-    private static final String POSTGRESQL_CONNECTION_WITH_PROPS = "jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared";
-    
-    private static final String MICROSOFT_SQLSERVER_CONNECTION_WITHOUT_PROPS = "jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds";
-    
-    private static final String MOCK_CONNECTION_WITHOUT_PROPS = "mock:jdbc://127.0.0.1:3306/demo_ds";
-    
-    private static final String INCORRECT_MYSQL_CONNECTION = "jdbc:mysql://127.0.0.1:3306//demo_ds";
     
     @Test
     public void assertParseMySQLWithoutProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITHOUT_PROPS);
-        assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:"));
-        assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertNull(connectionUrlParser.getQuery());
-        assertTrue(connectionUrlParser.getQueryMap().isEmpty());
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:mysql://127.0.0.1:3306/demo_ds");
+        assertTrue(connectionUrlParser.getProperties().isEmpty());
     }
     
     @Test
     public void assertParseMySQLWithProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITH_PROPS);
-        assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:"));
-        assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertThat(connectionUrlParser.getQuery(), is("serverTimezone=UTC&useSSL=false"));
-        assertThat(connectionUrlParser.getQueryMap().size(), is(2));
-        assertThat(connectionUrlParser.getQueryMap().get("serverTimezone"), is("UTC"));
-        assertThat(connectionUrlParser.getQueryMap().get("useSSL"), is("false"));
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false");
+        assertThat(connectionUrlParser.getProperties().size(), is(2));
+        assertThat(connectionUrlParser.getProperties().get("serverTimezone"), is("UTC"));
+        assertThat(connectionUrlParser.getProperties().get("useSSL"), is("false"));
     }
     
     @Test
     public void assertParseMySQLWithReplication() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITH_REPLICATION);
-        assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:replication:"));
-        assertThat(connectionUrlParser.getAuthority(), is("master_ip:3306,slave_1_ip:3306,slave_2_ip:3306"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertThat(connectionUrlParser.getQuery(), is("useUnicode=true"));
-        assertThat(connectionUrlParser.getQueryMap().size(), is(1));
-        assertThat(connectionUrlParser.getQueryMap().get("useUnicode"), is("true"));
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:mysql:replication://master_ip:3306,slave_1_ip:3306,slave_2_ip:3306/demo_ds?useUnicode=true");
+        assertThat(connectionUrlParser.getProperties().size(), is(1));
+        assertThat(connectionUrlParser.getProperties().get("useUnicode"), is("true"));
     }
     
     @Test
     public void assertParsePostgreSQLWithProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(POSTGRESQL_CONNECTION_WITH_PROPS);
-        assertThat(connectionUrlParser.getScheme(), is("jdbc:postgresql:"));
-        assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:5432"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertThat(connectionUrlParser.getQuery(), is("prepareThreshold=1&preferQueryMode=extendedForPrepared"));
-        assertThat(connectionUrlParser.getQueryMap().size(), is(2));
-        assertThat(connectionUrlParser.getQueryMap().get("prepareThreshold"), is("1"));
-        assertThat(connectionUrlParser.getQueryMap().get("preferQueryMode"), is("extendedForPrepared"));
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared");
+        assertThat(connectionUrlParser.getProperties().size(), is(2));
+        assertThat(connectionUrlParser.getProperties().get("prepareThreshold"), is("1"));
+        assertThat(connectionUrlParser.getProperties().get("preferQueryMode"), is("extendedForPrepared"));
     }
     
     @Test
     public void assertParseMicrosoftSQLServerWithoutProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MICROSOFT_SQLSERVER_CONNECTION_WITHOUT_PROPS);
-        assertThat(connectionUrlParser.getScheme(), is("jdbc:microsoft:sqlserver:"));
-        assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertNull(connectionUrlParser.getQuery());
-        assertTrue(connectionUrlParser.getQueryMap().isEmpty());
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds");
+        assertTrue(connectionUrlParser.getProperties().isEmpty());
     }
     
     @Test
     public void assertParseMockSQLWithoutProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MOCK_CONNECTION_WITHOUT_PROPS);
-        assertThat(connectionUrlParser.getScheme(), is("mock:jdbc:"));
-        assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
-        assertThat(connectionUrlParser.getPath(), is("demo_ds"));
-        assertNull(connectionUrlParser.getQuery());
-        assertTrue(connectionUrlParser.getQueryMap().isEmpty());
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("mock:jdbc://127.0.0.1:3306/demo_ds");
+        assertTrue(connectionUrlParser.getProperties().isEmpty());
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertParseIncorrectURL() {
-        new ConnectionURLParser(INCORRECT_MYSQL_CONNECTION);
+        new ConnectionURLParser("jdbc:mysql://127.0.0.1:3306//demo_ds");
     }
 }

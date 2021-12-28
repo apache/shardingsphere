@@ -30,28 +30,28 @@ public final class HikariParameterDecorator implements DataSourcePoolParameterDe
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {
-        Map<String, String> urlProps = new ConnectionURLParser(dataSource.getJdbcUrl()).getQueryMap();
-        setProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "cachePrepStmts", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "prepStmtCacheSize", "200000");
-        setProperty(dataSource, urlProps, "prepStmtCacheSqlLimit", "2048");
-        setProperty(dataSource, urlProps, "useLocalSessionState", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "rewriteBatchedStatements", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "cacheResultSetMetadata", Boolean.FALSE.toString());
-        setProperty(dataSource, urlProps, "cacheServerConfiguration", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "elideSetAutoCommits", Boolean.TRUE.toString());
-        setProperty(dataSource, urlProps, "maintainTimeStats", Boolean.FALSE.toString());
-        setProperty(dataSource, urlProps, "netTimeoutForStreamingResults", "0");
-        setProperty(dataSource, urlProps, "tinyInt1isBit", Boolean.FALSE.toString());
-        setProperty(dataSource, urlProps, "useSSL", Boolean.FALSE.toString());
-        setProperty(dataSource, urlProps, "serverTimezone", "UTC");
+        Map<String, String> props = new ConnectionURLParser(dataSource.getJdbcUrl()).getProperties();
+        setProperty(dataSource, props, "useServerPrepStmts", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "cachePrepStmts", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "prepStmtCacheSize", "200000");
+        setProperty(dataSource, props, "prepStmtCacheSqlLimit", "2048");
+        setProperty(dataSource, props, "useLocalSessionState", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "rewriteBatchedStatements", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "cacheResultSetMetadata", Boolean.FALSE.toString());
+        setProperty(dataSource, props, "cacheServerConfiguration", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "elideSetAutoCommits", Boolean.TRUE.toString());
+        setProperty(dataSource, props, "maintainTimeStats", Boolean.FALSE.toString());
+        setProperty(dataSource, props, "netTimeoutForStreamingResults", "0");
+        setProperty(dataSource, props, "tinyInt1isBit", Boolean.FALSE.toString());
+        setProperty(dataSource, props, "useSSL", Boolean.FALSE.toString());
+        setProperty(dataSource, props, "serverTimezone", "UTC");
         HikariDataSource result = new HikariDataSource(dataSource);
         dataSource.close();
         return result;
     }
     
-    private void setProperty(final HikariConfig config, final Map<String, String> urlProps, final String key, final String value) {
-        if (urlProps.isEmpty() || !urlProps.containsKey(key)) {
+    private void setProperty(final HikariConfig config, final Map<String, String> props, final String key, final String value) {
+        if (props.isEmpty() || !props.containsKey(key)) {
             config.getDataSourceProperties().setProperty(key, value);
         }
     }

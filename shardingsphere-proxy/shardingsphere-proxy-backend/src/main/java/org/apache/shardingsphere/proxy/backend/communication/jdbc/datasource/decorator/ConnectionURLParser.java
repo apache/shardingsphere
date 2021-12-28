@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collections;
@@ -30,53 +29,36 @@ import java.util.regex.Pattern;
 /**
  * JDBC connection URL parser.
  */
-@Getter
 public final class ConnectionURLParser {
     
-    private static final String KEY_SCHEME = "scheme";
+    private static final String PROPS_GROUP_KEY = "props";
     
-    private static final String KEY_AUTHORITY = "authority";
+    private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
     
-    private static final String KEY_PATH = "path";
+    private static final String AUTHORITY_PATTERN = "(?://(?<authority>[^/?#]*))?\\s*";
     
-    private static final String KEY_QUERY = "query";
+    private static final String PATH_PATTERN = "(?:/(?!\\s*/)(?<path>[^?#]*))?";
     
-    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(
-            "(?<scheme>[\\w\\+:%]+)\\s*"
-                    + "(?://(?<authority>[^/?#]*))?\\s*"
-                    + "(?:/(?!\\s*/)(?<path>[^?#]*))?"
-                    + "(?:\\?(?!\\s*\\?)(?<query>[^#]*))?");
+    private static final String PROPS_PATTERN = "(?:\\?(?!\\s*\\?)(?<props>[^#]*))?";
     
-    private final Matcher matcher;
+    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + PROPS_PATTERN);
     
-    private final String scheme;
-    
-    private final String authority;
-    
-    private final String path;
-    
-    private final String query;
+    private final String props;
     
     public ConnectionURLParser(final String jdbcURL) {
-        matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
+        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (!matcher.matches()) {
             throw new ShardingSphereConfigurationException("Incorrect JDBC URL format: %s", jdbcURL);
         }
-        scheme = matcher.group(KEY_SCHEME);
-        authority = matcher.group(KEY_AUTHORITY);
-        path = matcher.group(KEY_PATH);
-        query = matcher.group(KEY_QUERY);
+        props = matcher.group(PROPS_GROUP_KEY);
     }
     
     /**
-     * Get properties map of JDBC url.
+     * Get properties from JDBC connection URL.
      *
-     * @return properties map
+     * @return properties
      */
-    public Map<String, String> getQueryMap() {
-        if (!Strings.isNullOrEmpty(query)) {
-            return Splitter.on("&").withKeyValueSeparator("=").split(query);
-        }
-        return Collections.emptyMap();
+    public Map<String, String> getProperties() {
+        return Strings.isNullOrEmpty(props) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(props);
     }
 }
