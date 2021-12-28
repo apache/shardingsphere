@@ -534,4 +534,19 @@ public final class ShardingRuleTest {
         String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
+
+    @Test
+    public void assertGetLogicTablesByActualTable() {
+        assertThat(createShardingRuleWithSameActualTablesButDifferentLogicTables().getLogicTablesByActualTable("table_0"), is(new LinkedHashSet<>(Arrays.asList("ID_STRATEGY_LOGIC_TABLE", "HINT_STRATEGY_LOGIC_TABLE"))));
+    }
+
+    private ShardingRule createShardingRuleWithSameActualTablesButDifferentLogicTables() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration idTableRuleConfig = createTableRuleConfiguration("ID_STRATEGY_LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration hintTableRuleConfig = createTableRuleConfiguration("HINT_STRATEGY_LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        shardingRuleConfig.getTables().add(idTableRuleConfig);
+        shardingRuleConfig.getTables().add(hintTableRuleConfig);
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
+    }
+
 }
