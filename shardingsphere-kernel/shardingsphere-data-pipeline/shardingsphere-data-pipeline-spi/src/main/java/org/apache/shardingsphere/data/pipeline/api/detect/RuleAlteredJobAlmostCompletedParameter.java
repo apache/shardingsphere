@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.detect;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+
+import java.util.Collection;
 
 /**
- * Rule altered checkout lock algorithm, SPI.
+ * Rule altered job almost completed parameter.
  */
-public interface RuleAlteredCheckoutLockAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class RuleAlteredJobAlmostCompletedParameter {
     
-    /**
-     * Lock to protect checkout (switch configuration).
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void lock(String schemaName, String jobId);
+    private final int jobShardingCount;
     
-    /**
-     * Release lock.
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void releaseLock(String schemaName, String jobId);
+    @NonNull
+    private final Collection<JobProgress> jobProgresses;
 }

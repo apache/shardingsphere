@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 
 /**
- * Default rule altered checkout lock algorithm.
+ * Default source writing stop algorithm.
  */
 @ToString
-public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
+public final class DefaultSourceWritingStopAlgorithm implements RowBasedJobLockAlgorithm {
     
     @Override
     public void init() {
     }
     
-    // TODO impl default checkoutLockAlgorithm
+    // TODO impl default sourceWritingStopAlgorithm
     @Override
     public void lock(final String schemaName, final String jobId) {
     }

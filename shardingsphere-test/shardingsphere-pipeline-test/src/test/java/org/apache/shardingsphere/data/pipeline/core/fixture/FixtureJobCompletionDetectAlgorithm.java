@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 
-/**
- * Rule altered job completion detect algorithm for SPI.
- */
-public interface RuleAlteredJobCompletionDetectAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public final class FixtureJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<Object> {
     
-    /**
-     * All incremental tasks is almost finished.
-     *
-     * @param parameter parameter
-     * @return Almost finished or not
-     */
-    boolean allIncrementalTasksAlmostFinished(AllIncrementalTasksAlmostFinishedParameter parameter);
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public boolean isAlmostCompleted(final Object parameter) {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

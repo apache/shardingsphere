@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
+import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.IdleRuleAlteredJobCompletionDetectAlgorithm;
 import org.junit.Before;
@@ -27,9 +32,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -84,26 +93,55 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     }
     
     @Test
-    public void assertFalseOnNullIncrementalTasks() {
-        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+    public void assertFalseOnFewJobProgresses() {
+        int jobShardingCount = 2;
+        Collection<JobProgress> jobProgresses = Collections.singleton(new JobProgress());
+        RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
     @Test
-    public void assertFalseOnEmptyIncrementalTasks() {
-        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Collections.emptyList()).build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+    public void assertFalseOnUnFinishedPosition() {
+        int jobShardingCount = 1;
+        JobProgress jobProgress = new JobProgress();
+        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new LinkedHashMap<>();
+        jobProgress.setInventoryTaskProgressMap(inventoryTaskProgressMap);
+        inventoryTaskProgressMap.put("ds_0", new InventoryTaskProgress(new PlaceholderPosition()));
+        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
     @Test
-    public void assertFalseOnFewPendingIncrementalTasks() {
-        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Arrays.asList(10L, 50L)).build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+    public void assertTrueWhenIdleMinutesNotReach() {
+        int jobShardingCount = 1;
+        long latestActiveTimeMillis = System.currentTimeMillis() - ThreadLocalRandom.current().nextLong(1, detectAlgorithm.getIncrementalTaskIdleMinuteThreshold());
+        JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
+        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
+    }
+    
+    private JobProgress createJobProgress(final long latestActiveTimeMillis) {
+        JobProgress result = new JobProgress();
+        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new LinkedHashMap<>();
+        result.setInventoryTaskProgressMap(inventoryTaskProgressMap);
+        inventoryTaskProgressMap.put("ds_0", new InventoryTaskProgress(new FinishedPosition()));
+        Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new LinkedHashMap<>();
+        result.setIncrementalTaskProgressMap(incrementalTaskProgressMap);
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
+        incrementalTaskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(latestActiveTimeMillis);
+        incrementalTaskProgressMap.put("ds_0", incrementalTaskProgress);
+        return result;
     }
     
     @Test
-    public void assertTrueWhenAllIncrementalTasksAlmostFinished() {
-        AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Arrays.asList(60L, 50L, 30L)).build();
-        assertTrue(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+    public void assertTrueWhenJobAlmostCompleted() {
+        int jobShardingCount = 1;
+        long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(detectAlgorithm.getIncrementalTaskIdleMinuteThreshold() + 5);
+        JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
+        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
+        assertTrue(detectAlgorithm.isAlmostCompleted(parameter));
     }
 }
