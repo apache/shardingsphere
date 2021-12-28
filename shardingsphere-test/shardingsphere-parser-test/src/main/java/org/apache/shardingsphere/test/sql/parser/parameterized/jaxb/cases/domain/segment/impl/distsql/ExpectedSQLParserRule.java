@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
+/**
+ * Expected SQL parser rule.
+ */
+@Getter
+@Setter
+public final class ExpectedSQLParserRule extends AbstractExpectedIdentifierSQLSegment {
 
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
+    @XmlAttribute
+    private boolean sqlCommentParseEnabled;
+    
+    @XmlElement(name = "parser-tree-cache")
+    private ExpectedCacheOption parseTreeCache;
 
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    @XmlElement(name = "sql-statement-cache")
+    private ExpectedCacheOption sqlStatementCache;
+}

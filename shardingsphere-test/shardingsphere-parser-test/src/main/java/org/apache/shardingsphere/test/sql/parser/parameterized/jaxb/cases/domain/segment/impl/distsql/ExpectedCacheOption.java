@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
 
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
+/**
+ * Expected cache option.
+ */
+@Getter
+@Setter
+public final class ExpectedCacheOption extends AbstractExpectedIdentifierSQLSegment {
+    
+    @XmlAttribute(name = "initial-capacity")
+    private int initialCapacity;
 
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
+    @XmlAttribute(name = "maximum-size")
+    private long maximumSize;
 
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    @XmlAttribute(name = "concurrency-level")
+    private int concurrencyLevel;
+}

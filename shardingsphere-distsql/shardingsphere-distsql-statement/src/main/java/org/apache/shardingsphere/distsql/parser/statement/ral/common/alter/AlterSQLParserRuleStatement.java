@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.alter;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Alter SQL parser rule statement.
+ */
+@Setter
+@Getter
+public final class AlterSQLParserRuleStatement extends AlterDistSQLStatement {
+    
+    private Boolean sqlCommentParseEnable;
+    
+    private CacheOptionSegment parserTreeCache;
+    
+    private CacheOptionSegment sqlStatementCache;
+}

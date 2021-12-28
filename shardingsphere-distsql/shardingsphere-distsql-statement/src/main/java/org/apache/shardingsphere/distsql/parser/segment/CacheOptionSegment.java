@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Cache option segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CacheOptionSegment implements ASTNode {
+    
+    private final Integer initialCapacity;
+    
+    private final Long maximumSize;
+    
+    private final Integer concurrencyLevel;
+}

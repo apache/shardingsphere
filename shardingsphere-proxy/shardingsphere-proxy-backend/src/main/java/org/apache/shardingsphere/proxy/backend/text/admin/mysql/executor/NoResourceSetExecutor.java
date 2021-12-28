@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
+import java.sql.SQLException;
 
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * No Resource set executor.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
+    
+    private final SetStatement sqlStatement;
+    
+    @Override
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
+        return;
+    }
+}

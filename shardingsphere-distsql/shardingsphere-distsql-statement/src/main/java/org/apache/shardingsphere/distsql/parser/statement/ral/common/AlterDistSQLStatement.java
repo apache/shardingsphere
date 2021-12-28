@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import Keyword, Literals, Symbol;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Alter dist sql statement.
+ */
+public abstract class AlterDistSQLStatement extends CommonDistSQLStatement {
+}

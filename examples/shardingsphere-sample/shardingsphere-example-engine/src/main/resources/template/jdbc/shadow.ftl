@@ -43,7 +43,6 @@
     
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());

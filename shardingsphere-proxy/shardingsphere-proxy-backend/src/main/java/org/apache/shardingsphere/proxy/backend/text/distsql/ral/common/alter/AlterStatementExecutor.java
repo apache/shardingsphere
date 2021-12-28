@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
 
-import Keyword, Literals, Symbol;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+/**
+ * Alter statement executor.
+ */
+public interface AlterStatementExecutor {
+    
+    /**
+     * Execute alter statement.
+     *
+     * @return backend response
+     * @throws DistSQLException DistSQL exception
+     */
+    ResponseHeader execute() throws DistSQLException;
+}

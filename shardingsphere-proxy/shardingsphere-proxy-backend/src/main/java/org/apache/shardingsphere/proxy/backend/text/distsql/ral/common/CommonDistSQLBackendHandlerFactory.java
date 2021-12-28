@@ -21,6 +21,7 @@ import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
@@ -56,6 +57,9 @@ public final class CommonDistSQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof RefreshTableMetadataStatement) {
             return new RefreshTableMetadataHandler((RefreshTableMetadataStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof AlterDistSQLStatement) {
+            return new AlterDistSQLBackendHandler((AlterDistSQLStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

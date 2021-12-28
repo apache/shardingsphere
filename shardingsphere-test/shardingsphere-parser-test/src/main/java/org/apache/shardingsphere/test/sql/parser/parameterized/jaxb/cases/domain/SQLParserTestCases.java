@@ -137,6 +137,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
@@ -904,6 +905,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-transaction-rule")
     private final List<ShowTransactionRuleStatementTestCase> showTransactionRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-sql-parser-rule")
+    private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1129,6 +1133,7 @@ public final class SQLParserTestCases {
         putAll(createRuleStatementTestCases, result);
         putAll(showAuthorityRuleStatementTestCases,result);
         putAll(showTransactionRuleStatementTestCases, result);
+        putAll(alterSQLParserRuleStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
