@@ -88,7 +88,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private Map<String, TableMetaData> getTableMetaDataMap(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDataList) {
-            List<String> logicTables = rule.getLogicTablesByActualTable(each.getName());
+            Collection<String> logicTables = rule.getLogicTablesByActualTable(each.getName());
             if (CollectionUtils.isEmpty(logicTables)) {
                 result.putIfAbsent(each.getName(), each);
             } else {

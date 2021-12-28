@@ -528,8 +528,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @param actualTable actual table name
      * @return logic tables
      */
-    public List<String> getLogicTablesByActualTable(final String actualTable) {
-        return tableRules.values().stream().filter(each -> each.isExisted(actualTable)).map(TableRule::getLogicTable).collect(Collectors.toList());
+    public Collection<String> getLogicTablesByActualTable(final String actualTable) {
+        return tableRules.values().stream().filter(each -> each.isExisted(actualTable)).map(TableRule::getLogicTable).collect(Collectors.toSet());
     }
     
     @Override
