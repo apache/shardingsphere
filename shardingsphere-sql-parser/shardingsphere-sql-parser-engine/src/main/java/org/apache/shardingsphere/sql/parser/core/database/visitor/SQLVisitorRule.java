@@ -370,7 +370,9 @@ public enum SQLVisitorRule {
     
     DROP_LANGUAGE("DropLanguage", SQLStatementType.DDL),
     
-    CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL);
+    CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
+    
+    DROP_CONVERSION("DropConversion", SQLStatementType.DDL);
 
     private final String name;
     

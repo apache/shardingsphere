@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropFunctionContext;
@@ -125,6 +126,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropFunctionStatement;
@@ -610,5 +612,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
         return new OpenGaussCreateConversionStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropConversion(final DropConversionContext ctx) {
+        return new OpenGaussDropConversionStatement();
     }
 }
