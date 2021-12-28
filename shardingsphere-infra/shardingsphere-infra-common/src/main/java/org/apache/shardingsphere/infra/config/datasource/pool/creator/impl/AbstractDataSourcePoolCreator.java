@@ -155,8 +155,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = SETTER_PREFIX + (property.contains("-") ? CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, property)
-                : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
+        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
     
