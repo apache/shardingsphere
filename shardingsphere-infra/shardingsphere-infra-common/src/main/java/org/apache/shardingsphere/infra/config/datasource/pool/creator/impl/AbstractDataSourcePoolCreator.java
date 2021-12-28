@@ -145,13 +145,18 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
             method.invoke(target, Boolean.parseBoolean(value.toString()));
         } else if (paramType == String.class) {
             method.invoke(target, value.toString());
+        } else if (paramType == Properties.class) {
+            Properties props = new Properties();
+            props.putAll((Map) value);
+            method.invoke(target, props);
         } else {
             method.invoke(target, value);
         }
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
+        String setterMethodName = property.contains("-") ?  SETTER_PREFIX + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, property)
+                : SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
     
