@@ -92,7 +92,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     }
     
     private boolean requireAggregation(final PostgreSQLCommandPacketType commandPacketType) {
-        return PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)
+        return PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType) && PostgreSQLCommandPacketType.EXECUTE_COMMAND != commandPacketType
                 && PostgreSQLCommandPacketType.SYNC_COMMAND != commandPacketType && PostgreSQLCommandPacketType.FLUSH_COMMAND != commandPacketType;
     }
     
