@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.config.datasource;
 import javax.sql.DataSource;
 
 /**
- * JDBC parameter decorator.
+ * Data source pool parameter decorator.
  * 
  * @param <T> type of data source
  */
-public interface JDBCParameterDecorator<T extends DataSource> {
+public interface DataSourcePoolParameterDecorator<T extends DataSource> {
     
     /**
      * Decorate data source.

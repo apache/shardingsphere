@@ -24,8 +24,11 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import javax.sql.DataSource;
 import java.util.Optional;
 
+/**
+ * Data source pool parameter decorator helper.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCParameterDecoratorHelper {
+public final class DataSourcePoolParameterDecoratorHelper {
     
     /**
      * Decorate data source.
@@ -35,8 +38,8 @@ public final class JDBCParameterDecoratorHelper {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static DataSource decorate(final DataSource dataSource) {
-        Optional<JDBCParameterDecorator> decorator = ShardingSphereServiceLoader
-                .getSingletonServiceInstances(JDBCParameterDecorator.class)
+        Optional<DataSourcePoolParameterDecorator> decorator = ShardingSphereServiceLoader
+                .getSingletonServiceInstances(DataSourcePoolParameterDecorator.class)
                 .stream()
                 .filter(each -> each.getType() == dataSource.getClass()).findFirst();
         return decorator.isPresent() ? decorator.get().decorate(dataSource) : dataSource;
