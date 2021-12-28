@@ -48,7 +48,7 @@ alterSQLParserRule
     ;
     
 sqlParserRuleDefinition
-    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSER_TREE_CACHE LP parserTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
+    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSER_TREE_CACHE LP parseTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
     ;
 
 dataSource
@@ -115,7 +115,7 @@ sqlCommentParseEnable
     : TRUE | FALSE
     ;
     
-parserTreeCache
+parseTreeCache
     : cacheOption
     ;
     

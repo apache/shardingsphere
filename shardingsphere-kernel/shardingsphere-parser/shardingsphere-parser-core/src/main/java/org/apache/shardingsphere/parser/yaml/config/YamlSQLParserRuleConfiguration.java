@@ -33,7 +33,7 @@ public final class YamlSQLParserRuleConfiguration implements YamlRuleConfigurati
     
     private YamlSQLParserCacheOptionRuleConfiguration sqlStatementCache;
     
-    private YamlSQLParserCacheOptionRuleConfiguration parserTreeCache;
+    private YamlSQLParserCacheOptionRuleConfiguration parseTreeCache;
     
     @Override
     public Class<SQLParserRuleConfiguration> getRuleConfigurationType() {
