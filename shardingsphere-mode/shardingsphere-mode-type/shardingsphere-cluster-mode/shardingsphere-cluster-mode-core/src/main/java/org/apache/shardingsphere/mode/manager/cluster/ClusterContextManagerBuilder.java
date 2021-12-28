@@ -81,8 +81,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
                                 final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port, schemaName);
-        contextManager = new ContextManager(getType());
-        contextManager.init(metaDataContexts, transactionContexts, null);
+        contextManager = new ContextManager();
+        contextManager.init(metaDataContexts, transactionContexts, null, getType());
         afterBuildContextManager();
         return contextManager;
     }

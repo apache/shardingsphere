@@ -74,11 +74,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final StateContext stateContext = new StateContext();
     
-    private final String mode;
-    
-    public ContextManager(final String mode) {
-        this.mode = mode;
-    }
+    private String mode;
     
     /**
      * Initialize context manager.
@@ -86,11 +82,13 @@ public final class ContextManager implements AutoCloseable {
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      * @param modeScheduleContext mode schedule context
+     * @param mode runtime mode                           
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final ModeScheduleContext modeScheduleContext) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final ModeScheduleContext modeScheduleContext, final String mode) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
         this.modeScheduleContext = modeScheduleContext;
+        this.mode = mode;
     }
     
     /**

@@ -42,7 +42,7 @@ public final class ProxyContext {
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private volatile ContextManager contextManager;
+    private volatile ContextManager contextManager = new ContextManager();
     
     /**
      * Get instance of proxy schema schemas.

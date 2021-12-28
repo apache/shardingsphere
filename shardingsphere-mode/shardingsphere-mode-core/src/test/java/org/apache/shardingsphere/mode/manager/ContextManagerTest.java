@@ -66,8 +66,8 @@ public final class ContextManagerTest {
 
     @Before
     public void setUp() throws SQLException {
-        contextManager = new ContextManager("Memory");
-        contextManager.init(metaDataContexts, transactionContexts, modeScheduleContext);
+        contextManager = new ContextManager();
+        contextManager.init(metaDataContexts, transactionContexts, modeScheduleContext, "Memory");
         dataSourceMap = new HashMap<>(2, 1);
         DataSource primaryDataSource = mock(DataSource.class);
         DataSource replicaDataSource = mock(DataSource.class);
