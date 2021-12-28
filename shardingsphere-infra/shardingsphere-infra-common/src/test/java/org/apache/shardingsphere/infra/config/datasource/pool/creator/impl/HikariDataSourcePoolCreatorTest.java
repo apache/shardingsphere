@@ -29,7 +29,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 public final class HikariDataSourcePoolCreatorTest {
     
@@ -55,8 +56,6 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(configuration.getProps().get("password"), is("root"));
         assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
         assertThat(configuration.getProps().get("minimumIdle"), is(1));
-        assertNotNull(configuration.getProps());
-        assertNotNull(configuration.getProps().get("dataSourceProperties"));
         assertDataSourceProperties((Properties) configuration.getProps().get("dataSourceProperties"));
     }
     
@@ -73,7 +72,6 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
-        assertNotNull(hikariDataSource.getDataSourceProperties());
         assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
     }
     
