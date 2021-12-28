@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourcePoolParameterDecorator;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionUrlParser;
 
 import java.util.Map;
 
 /**
- * JDBC parameter decorator for HikariCP.
+ * Data source pool parameter decorator for Hikari.
  */
-public final class HikariJDBCParameterDecorator implements JDBCParameterDecorator<HikariDataSource> {
+public final class HikariParameterDecorator implements DataSourcePoolParameterDecorator<HikariDataSource> {
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {

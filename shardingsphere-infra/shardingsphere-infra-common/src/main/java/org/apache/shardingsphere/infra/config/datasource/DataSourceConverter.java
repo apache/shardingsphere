@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public final class DataSourceConverter {
     
     static {
-        ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
+        ShardingSphereServiceLoader.register(DataSourcePoolParameterDecorator.class);
     }
     
     /**
@@ -45,7 +45,7 @@ public final class DataSourceConverter {
      * @return data source
      */
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        return JDBCParameterDecoratorHelper.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
+        return DataSourcePoolParameterDecoratorHelper.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
     }
     
     /**
