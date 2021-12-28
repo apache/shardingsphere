@@ -27,7 +27,7 @@ It focuses on how to reuse existing databases and their respective upper layer, 
 
 The concepts at the core of the project are Link, Enhance and Pluggable.
 
-- `Link:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly link applications and multi-mode heterogeneous databases quickly.
+- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and multi-mode heterogeneous databases.
 - `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
 - `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
 
