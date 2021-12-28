@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
+import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -54,7 +54,7 @@ public final class RuleAlteredContext {
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    private final JobCompletionDetectAlgorithm<AllIncrementalTasksAlmostFinishedParameter> completionDetectAlgorithm;
+    private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
     private final RuleAlteredSourceWritingStopAlgorithm sourceWritingStopAlgorithm;
     

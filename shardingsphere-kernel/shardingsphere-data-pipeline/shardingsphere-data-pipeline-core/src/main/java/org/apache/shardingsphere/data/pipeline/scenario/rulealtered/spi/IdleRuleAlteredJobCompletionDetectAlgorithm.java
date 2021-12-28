@@ -18,16 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
+import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Idle rule altered job completion detect algorithm.
  */
-public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<AllIncrementalTasksAlmostFinishedParameter> {
+public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
     public static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
     
@@ -58,12 +63,38 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     @Override
-    public boolean isAlmostCompleted(final AllIncrementalTasksAlmostFinishedParameter parameter) {
-        Collection<Long> incrementalTaskIdleMinutes = parameter.getIncrementalTaskIdleMinutes();
-        if (null == incrementalTaskIdleMinutes || incrementalTaskIdleMinutes.isEmpty()) {
+    public boolean isAlmostCompleted(final RuleAlteredJobAlmostCompletedParameter parameter) {
+        int jobShardingCount = parameter.getJobShardingCount();
+        Collection<JobProgress> jobProgresses = parameter.getJobProgresses();
+        if (!isAllProgressesFilled(jobShardingCount, jobProgresses)) {
             return false;
         }
-        return incrementalTaskIdleMinutes.stream().allMatch(idleMinute -> idleMinute >= incrementalTaskIdleMinuteThreshold);
+        if (!isAllInventoryTasksCompleted(jobProgresses)) {
+            return false;
+        }
+        Collection<Long> incrementalTasksIdleMinutes = getIncrementalTasksIdleMinutes(jobProgresses);
+        return incrementalTasksIdleMinutes.stream().allMatch(idleMinute -> idleMinute >= incrementalTaskIdleMinuteThreshold);
+    }
+    
+    private static boolean isAllProgressesFilled(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
+        return jobShardingCount == jobProgresses.size()
+                && jobProgresses.stream().allMatch(Objects::nonNull);
+    }
+    
+    private static boolean isAllInventoryTasksCompleted(final Collection<JobProgress> jobProgresses) {
+        return jobProgresses.stream()
+                .flatMap(each -> each.getInventoryTaskProgressMap().values().stream())
+                .allMatch(each -> each.getPosition() instanceof FinishedPosition);
+    }
+    
+    private static Collection<Long> getIncrementalTasksIdleMinutes(final Collection<JobProgress> jobProgresses) {
+        long currentTimeMillis = System.currentTimeMillis();
+        return jobProgresses.stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
+                .map(each -> {
+                    long latestActiveTimeMillis = each.getIncrementalTaskDelay().getLatestActiveTimeMillis();
+                    return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
+                })
+                .collect(Collectors.toList());
     }
     
     @Override

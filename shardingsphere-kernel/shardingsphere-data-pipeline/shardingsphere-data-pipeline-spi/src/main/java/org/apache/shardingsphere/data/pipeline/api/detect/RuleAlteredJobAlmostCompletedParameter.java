@@ -17,21 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.api.detect;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 
 import java.util.Collection;
 
 /**
- * All incremental tasks almost finished parameter.
+ * Rule altered job almost completed parameter.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@Builder
 @ToString
-public final class AllIncrementalTasksAlmostFinishedParameter {
+public final class RuleAlteredJobAlmostCompletedParameter {
     
-    private Collection<Long> incrementalTaskIdleMinutes;
+    private final int jobShardingCount;
+    
+    @NonNull
+    private final Collection<JobProgress> jobProgresses;
 }
