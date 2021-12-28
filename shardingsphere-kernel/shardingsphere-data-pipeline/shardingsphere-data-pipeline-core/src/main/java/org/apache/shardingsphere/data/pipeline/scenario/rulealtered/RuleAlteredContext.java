@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -41,7 +42,7 @@ public final class RuleAlteredContext {
     
     static {
         ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
-        ShardingSphereServiceLoader.register(RuleAlteredJobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleAlteredSourceWritingStopAlgorithm.class);
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleAlteredCheckoutLockAlgorithm.class);
@@ -53,7 +54,7 @@ public final class RuleAlteredContext {
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    private final RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm;
+    private final JobCompletionDetectAlgorithm<AllIncrementalTasksAlmostFinishedParameter> completionDetectAlgorithm;
     
     private final RuleAlteredSourceWritingStopAlgorithm sourceWritingStopAlgorithm;
     
@@ -77,7 +78,7 @@ public final class RuleAlteredContext {
         }
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         if (null != completionDetector) {
-            completionDetectAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, RuleAlteredJobCompletionDetectAlgorithm.class);
+            completionDetectAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, JobCompletionDetectAlgorithm.class);
         } else {
             completionDetectAlgorithm = null;
         }

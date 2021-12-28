@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -27,7 +27,7 @@ import java.util.Properties;
 /**
  * Idle rule altered job completion detect algorithm.
  */
-public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAlteredJobCompletionDetectAlgorithm {
+public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<AllIncrementalTasksAlmostFinishedParameter> {
     
     public static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
     
@@ -58,7 +58,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAl
     }
     
     @Override
-    public boolean allIncrementalTasksAlmostFinished(final AllIncrementalTasksAlmostFinishedParameter parameter) {
+    public boolean isAlmostCompleted(final AllIncrementalTasksAlmostFinishedParameter parameter) {
         Collection<Long> incrementalTaskIdleMinutes = parameter.getIncrementalTaskIdleMinutes();
         if (null == incrementalTaskIdleMinutes || incrementalTaskIdleMinutes.isEmpty()) {
             return false;

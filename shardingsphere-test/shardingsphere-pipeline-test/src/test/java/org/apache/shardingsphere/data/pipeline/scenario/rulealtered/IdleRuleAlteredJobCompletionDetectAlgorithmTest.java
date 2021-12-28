@@ -86,24 +86,24 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test
     public void assertFalseOnNullIncrementalTasks() {
         AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
     @Test
     public void assertFalseOnEmptyIncrementalTasks() {
         AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Collections.emptyList()).build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
     @Test
     public void assertFalseOnFewPendingIncrementalTasks() {
         AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Arrays.asList(10L, 50L)).build();
-        assertFalse(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
     @Test
     public void assertTrueWhenAllIncrementalTasksAlmostFinished() {
         AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(Arrays.asList(60L, 50L, 30L)).build();
-        assertTrue(detectAlgorithm.allIncrementalTasksAlmostFinished(parameter));
+        assertTrue(detectAlgorithm.isAlmostCompleted(parameter));
     }
 }

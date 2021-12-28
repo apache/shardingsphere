@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlm
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
@@ -59,7 +59,8 @@ public final class RuleAlteredJobProgressDetector {
                 && jobProgressMap.values().stream().allMatch(Objects::nonNull);
     }
     
-    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final RuleAlteredJobCompletionDetectAlgorithm completionDetectAlgorithm) {
+    private static boolean allIncrementalTasksAlmostFinished(
+            final Map<Integer, JobProgress> jobProgressMap, final JobCompletionDetectAlgorithm<AllIncrementalTasksAlmostFinishedParameter> completionDetectAlgorithm) {
         long currentTimeMillis = System.currentTimeMillis();
         Collection<Long> incrementalTaskIdleMinutes = jobProgressMap.values().stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .map(each -> {
@@ -68,7 +69,7 @@ public final class RuleAlteredJobProgressDetector {
                 })
                 .collect(Collectors.toList());
         AllIncrementalTasksAlmostFinishedParameter parameter = AllIncrementalTasksAlmostFinishedParameter.builder().incrementalTaskIdleMinutes(incrementalTaskIdleMinutes).build();
-        return completionDetectAlgorithm.allIncrementalTasksAlmostFinished(parameter);
+        return completionDetectAlgorithm.isAlmostCompleted(parameter);
     }
     
     /**
