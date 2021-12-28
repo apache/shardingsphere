@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -44,6 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * Table meta data builder for sharding.
@@ -86,7 +88,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private Map<String, TableMetaData> getTableMetaDataMap(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDataList) {
-            result.putIfAbsent(rule.findLogicTableByActualTable(each.getName()).orElse(each.getName()), each);
+            List<String> logicTables = rule.getLogicTablesByActualTable(each.getName());
+            if (CollectionUtils.isEmpty(logicTables)) {
+                result.putIfAbsent(each.getName(), each);
+            } else {
+                logicTables.forEach(logicTable -> result.putIfAbsent(logicTable, each));
+            }
         }
         return result;
     }
