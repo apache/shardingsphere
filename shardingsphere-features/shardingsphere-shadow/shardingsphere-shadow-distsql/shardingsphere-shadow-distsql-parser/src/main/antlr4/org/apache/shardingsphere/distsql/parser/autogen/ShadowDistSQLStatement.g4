@@ -30,8 +30,5 @@ execute
     | createDefaultShadowAlgorithm
     | alterShadowAlgorithm
     | createShadowAlgorithm
-    | disableShadowRule
-    | enableShadowRule
-    | showShadowStatus
     ) SEMI?
     ;

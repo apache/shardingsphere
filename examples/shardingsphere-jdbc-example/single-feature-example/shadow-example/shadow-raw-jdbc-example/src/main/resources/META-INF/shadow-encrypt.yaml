@@ -51,7 +51,6 @@ rules:
       type: assistedTest
 
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
       sourceDataSourceName: ds
@@ -71,19 +70,19 @@ rules:
       type: REGEX_MATCH
       props:
         operation: insert
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-select-match-algorithm:
       type: REGEX_MATCH
       props:
         operation: select
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-delete-match-algorithm:
       type: REGEX_MATCH
       props:
         operation: delete
-        column: user_id
+        column: user_type
         regex: "[1]"
     simple-hint-algorithm:
       type: SIMPLE_HINT

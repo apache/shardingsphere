@@ -17,40 +17,36 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.AggregationDistinctToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Aggregation distinct token generator.
+ * Sharding remove token generator.
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
+public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext;
+        return isContainsAggregationDistinctProjection(sqlStatementContext);
+    }
+    
+    private boolean isContainsAggregationDistinctProjection(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
     }
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (AggregationDistinctProjection each : ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
-            result.add(generateSQLToken(each));
+    public Collection<? extends SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
+        if (isContainsAggregationDistinctProjection(sqlStatementContext)) {
+            ((SelectStatementContext) sqlStatementContext).getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));
         }
         return result;
-    }
-    
-    private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
-        Preconditions.checkArgument(projection.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get()) ? projection.getAlias().get() : null;
-        return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }

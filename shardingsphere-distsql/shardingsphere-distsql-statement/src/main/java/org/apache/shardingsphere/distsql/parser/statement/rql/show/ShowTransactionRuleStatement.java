@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Disable shadow rules statement.
+ * Show transaction rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DisableShadowRulesStatement extends AlterRuleStatement {
+public final class ShowTransactionRuleStatement extends ShowRulesStatement {
     
+    public ShowTransactionRuleStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

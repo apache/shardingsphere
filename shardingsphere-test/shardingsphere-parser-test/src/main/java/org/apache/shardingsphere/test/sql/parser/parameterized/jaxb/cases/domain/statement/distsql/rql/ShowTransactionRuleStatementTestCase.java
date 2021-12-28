@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Enable shadow rules statement.
+ * Show transaction rule statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class EnableShadowRulesStatement extends AlterRuleStatement {
-    
+@Setter
+public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
 }
