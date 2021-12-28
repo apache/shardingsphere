@@ -189,13 +189,18 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tableNames) {
-                Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
+                Optional<TableMetaData> tableMetaDataOptional;
+                try {
+                    tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
+                } catch (final SQLException ex) {
+                    throw new PipelineDataConsistencyCheckFailedException(String.format("get columns failed for table '%s'", each), ex);
+                }
                 TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new PipelineDataConsistencyCheckFailedException(String.format("get metadata failed for table '%s'", each)));
                 result.put(each, tableMetaData);
             }
             return result;
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("get table columns failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("create data source failed", ex);
         }
     }
 }
