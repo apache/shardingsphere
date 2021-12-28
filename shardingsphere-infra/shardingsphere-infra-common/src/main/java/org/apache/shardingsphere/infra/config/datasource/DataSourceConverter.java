@@ -37,11 +37,11 @@ public final class DataSourceConverter {
     /**
      * Get data source.
      * 
-     * @param dataSourceConfiguration data source configuration
+     * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        return DataSourcePoolParameterDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
+    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
+        return DataSourcePoolParameterDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig));
     }
     
     /**
