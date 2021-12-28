@@ -39,13 +39,13 @@ public final class TrafficEngine {
     private final TrafficRule trafficRule;
     
     /**
-     * Route SQL.
+     * Dispatch.
      *
      * @param logicSQL logic SQL
-     * @return route context
+     * @return traffic context
      */
     public TrafficContext dispatch(final LogicSQL logicSQL) {
-        Optional<TrafficStrategyRule> strategyRule = trafficRule.findTrafficStrategyRule(logicSQL);
+        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL);
         TrafficContext result = new TrafficContext();
         if (!strategyRule.isPresent()) {
             return result;

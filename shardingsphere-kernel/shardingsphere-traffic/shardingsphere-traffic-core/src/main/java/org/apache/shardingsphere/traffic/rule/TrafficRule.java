@@ -60,12 +60,12 @@ public final class TrafficRule implements GlobalRule {
     }
     
     /**
-     * Find traffic strategy rule.
+     * Find matched strategy rule.
      * 
      * @param logicSQL logic SQL
-     * @return traffic strategy rule
+     * @return matched strategy rule
      */
-    public Optional<TrafficStrategyRule> findTrafficStrategyRule(final LogicSQL logicSQL) {
+    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL) {
         for (TrafficStrategyRule each : trafficStrategyRules) {
             TrafficAlgorithm trafficAlgorithm = trafficAlgorithms.get(each.getAlgorithmName());
             Preconditions.checkState(null != trafficAlgorithm, "Traffic strategy rule configuration must match traffic algorithm.");
