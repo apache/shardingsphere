@@ -38,6 +38,6 @@ public final class TrafficContext {
      * @return data source config
      */
     public Optional<DataSourceConfiguration> getDataSourceConfig() {
-        return Optional.of(dataSourceConfig); 
+        return Optional.ofNullable(dataSourceConfig); 
     }
 }
