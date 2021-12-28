@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
-
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+package org.apache.shardingsphere.data.pipeline.spi.lock;
 
 /**
- * Default rule altered source writing stop algorithm.
+ * Job lock.
  */
-@ToString
-public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
+public interface JobLock {
     
-    @Override
-    public void init() {
-    }
+    /**
+     * Lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void lock(String schemaName, String jobId);
     
-    // TODO impl default sourceWritingStopAlgorithm
-    @Override
-    public void stopSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public void resumeSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public String getType() {
-        return "DEFAULT";
-    }
+    /**
+     * Release lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void releaseLock(String schemaName, String jobId);
 }

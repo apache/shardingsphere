@@ -23,9 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCo
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -43,9 +43,9 @@ public final class RuleAlteredContext {
     static {
         ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
-        ShardingSphereServiceLoader.register(RuleAlteredSourceWritingStopAlgorithm.class);
+        ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
-        ShardingSphereServiceLoader.register(RuleAlteredCheckoutLockAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
     
     private static volatile ModeConfiguration modeConfig;
@@ -56,11 +56,11 @@ public final class RuleAlteredContext {
     
     private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
-    private final RuleAlteredSourceWritingStopAlgorithm sourceWritingStopAlgorithm;
+    private final RowBasedJobLockAlgorithm sourceWritingStopAlgorithm;
     
     private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
-    private final RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm;
+    private final RuleBasedJobLockAlgorithm checkoutLockAlgorithm;
     
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -84,7 +84,7 @@ public final class RuleAlteredContext {
         }
         ShardingSphereAlgorithmConfiguration sourceWritingStopper = onRuleAlteredActionConfig.getSourceWritingStopper();
         if (null != sourceWritingStopper) {
-            sourceWritingStopAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(sourceWritingStopper, RuleAlteredSourceWritingStopAlgorithm.class);
+            sourceWritingStopAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(sourceWritingStopper, RowBasedJobLockAlgorithm.class);
         } else {
             sourceWritingStopAlgorithm = null;
         }
@@ -96,7 +96,7 @@ public final class RuleAlteredContext {
         }
         ShardingSphereAlgorithmConfiguration checkoutLocker = onRuleAlteredActionConfig.getCheckoutLocker();
         if (null != checkoutLocker) {
-            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleAlteredCheckoutLockAlgorithm.class);
+            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleBasedJobLockAlgorithm.class);
         } else {
             checkoutLockAlgorithm = null;
         }

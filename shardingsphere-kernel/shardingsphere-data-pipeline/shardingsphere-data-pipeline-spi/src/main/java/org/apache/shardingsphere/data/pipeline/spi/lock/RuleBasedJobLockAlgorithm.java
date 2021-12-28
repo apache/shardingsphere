@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.spi.lock;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Rule altered checkout lock algorithm, SPI.
+ * Rule based job lock algorithm, SPI.
  */
-public interface RuleAlteredCheckoutLockAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
-    
-    /**
-     * Lock to protect checkout (switch configuration).
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void lock(String schemaName, String jobId);
-    
-    /**
-     * Release lock.
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void releaseLock(String schemaName, String jobId);
+public interface RuleBasedJobLockAlgorithm extends JobLock, ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
 }
