@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
 import javax.sql.DataSource;
 
 /**
@@ -24,7 +26,7 @@ import javax.sql.DataSource;
  * 
  * @param <T> type of data source
  */
-public interface DataSourcePoolParameterDecorator<T extends DataSource> {
+public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
     
     /**
      * Decorate data source.
@@ -33,11 +35,4 @@ public interface DataSourcePoolParameterDecorator<T extends DataSource> {
      * @return decorated data source
      */
     T decorate(T dataSource);
-    
-    /**
-     * Get data source type.
-     *
-     * @return data source type
-     */
-    Class<T> getType();
 }

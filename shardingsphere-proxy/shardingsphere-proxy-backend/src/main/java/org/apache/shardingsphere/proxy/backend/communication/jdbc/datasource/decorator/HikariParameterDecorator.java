@@ -58,7 +58,7 @@ public final class HikariParameterDecorator implements DataSourcePoolParameterDe
     }
     
     @Override
-    public Class<HikariDataSource> getType() {
-        return HikariDataSource.class;
+    public String getType() {
+        return HikariDataSource.class.getCanonicalName();
     }
 }
