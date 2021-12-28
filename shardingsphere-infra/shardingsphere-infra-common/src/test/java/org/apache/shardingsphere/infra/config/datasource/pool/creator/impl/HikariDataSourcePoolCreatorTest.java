@@ -84,7 +84,7 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
-        props.put("data-source-properties", getDataSourceProperties());
+        props.put("dataSourceProperties", getDataSourceProperties());
         DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
         result.getProps().putAll(props);
         return result;
