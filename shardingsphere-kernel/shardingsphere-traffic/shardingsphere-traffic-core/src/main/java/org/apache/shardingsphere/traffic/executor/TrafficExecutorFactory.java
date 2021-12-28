@@ -29,9 +29,9 @@ import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
 public final class TrafficExecutorFactory {
     
     /**
-     * Create new instance of federation executor factory.
+     * Create new instance of traffic executor factory.
      * 
-     * @return new instance of federation executor
+     * @return new instance of traffic executor
      */
     public static TrafficExecutor newInstance() {
         return new JDBCTrafficExecutor(new DataSourceConfigurationValidator());
