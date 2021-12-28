@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourcePoolParameterDecorator;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionUrlParser;
+import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolParameterDecorator;
 
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public final class HikariParameterDecorator implements DataSourcePoolParameterDe
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {
-        Map<String, String> urlProps = new ConnectionUrlParser(dataSource.getJdbcUrl()).getQueryMap();
+        Map<String, String> urlProps = new ConnectionURLParser(dataSource.getJdbcUrl()).getQueryMap();
         setProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
         setProperty(dataSource, urlProps, "cachePrepStmts", Boolean.TRUE.toString());
         setProperty(dataSource, urlProps, "prepStmtCacheSize", "200000");

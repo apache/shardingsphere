@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -28,10 +28,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * JDBC connection url parser.
+ * JDBC connection URL parser.
  */
 @Getter
-public final class ConnectionUrlParser {
+public final class ConnectionURLParser {
     
     private static final String KEY_SCHEME = "scheme";
     
@@ -42,13 +42,9 @@ public final class ConnectionUrlParser {
     private static final String KEY_QUERY = "query";
     
     private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(
-            // scheme
             "(?<scheme>[\\w\\+:%]+)\\s*"
-                    // authority
                     + "(?://(?<authority>[^/?#]*))?\\s*"
-                    // path
                     + "(?:/(?!\\s*/)(?<path>[^?#]*))?"
-                    // query
                     + "(?:\\?(?!\\s*\\?)(?<query>[^#]*))?");
     
     private final Matcher matcher;
@@ -61,10 +57,10 @@ public final class ConnectionUrlParser {
     
     private final String query;
     
-    public ConnectionUrlParser(final String jdbcUrl) {
-        matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
+    public ConnectionURLParser(final String jdbcURL) {
+        matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (!matcher.matches()) {
-            throw new ShardingSphereConfigurationException("Incorrect JDBC url format: %s", jdbcUrl);
+            throw new ShardingSphereConfigurationException("Incorrect JDBC URL format: %s", jdbcURL);
         }
         scheme = matcher.group(KEY_SCHEME);
         authority = matcher.group(KEY_AUTHORITY);

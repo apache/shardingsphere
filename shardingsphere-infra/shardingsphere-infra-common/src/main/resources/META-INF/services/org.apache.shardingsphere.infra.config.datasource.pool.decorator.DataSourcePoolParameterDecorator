@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator.HikariParameterDecorator
+org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl.HikariParameterDecorator

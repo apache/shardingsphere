@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolParameterDecoratorFactory;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

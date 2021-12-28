@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 
 /**
- * Data source pool parameter decorator.
- * 
- * @param <T> type of data source
+ * Data source pool parameter decorator factory.
  */
-public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourcePoolParameterDecoratorFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DataSourcePoolParameterDecorator.class);
+    }
     
     /**
      * Decorate data source.
-     * 
+     *
      * @param dataSource data source to be decorated
      * @return decorated data source
      */
-    T decorate(T dataSource);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static DataSource decorate(final DataSource dataSource) {
+        Optional<DataSourcePoolParameterDecorator> decorator = TypedSPIRegistry.findRegisteredService(DataSourcePoolParameterDecorator.class, dataSource.getClass().getCanonicalName(), null);
+        return decorator.isPresent() ? decorator.get().decorate(dataSource) : dataSource;
+    }
 }

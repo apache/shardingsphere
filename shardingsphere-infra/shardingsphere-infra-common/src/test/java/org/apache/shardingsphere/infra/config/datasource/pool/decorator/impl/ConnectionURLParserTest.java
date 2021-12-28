@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public final class ConnectionUrlParserTest {
+public final class ConnectionURLParserTest {
     
     private static final String MYSQL_CONNECTION_WITHOUT_PROPS = "jdbc:mysql://127.0.0.1:3306/demo_ds";
     
@@ -45,7 +45,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParseMySQLWithoutProps() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(MYSQL_CONNECTION_WITHOUT_PROPS);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITHOUT_PROPS);
         assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -55,7 +55,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParseMySQLWithProps() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(MYSQL_CONNECTION_WITH_PROPS);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITH_PROPS);
         assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -67,7 +67,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParseMySQLWithReplication() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(MYSQL_CONNECTION_WITH_REPLICATION);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MYSQL_CONNECTION_WITH_REPLICATION);
         assertThat(connectionUrlParser.getScheme(), is("jdbc:mysql:replication:"));
         assertThat(connectionUrlParser.getAuthority(), is("master_ip:3306,slave_1_ip:3306,slave_2_ip:3306"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -78,7 +78,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParsePostgreSQLWithProps() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(POSTGRESQL_CONNECTION_WITH_PROPS);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(POSTGRESQL_CONNECTION_WITH_PROPS);
         assertThat(connectionUrlParser.getScheme(), is("jdbc:postgresql:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:5432"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -90,7 +90,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParseMicrosoftSQLServerWithoutProps() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(MICROSOFT_SQLSERVER_CONNECTION_WITHOUT_PROPS);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MICROSOFT_SQLSERVER_CONNECTION_WITHOUT_PROPS);
         assertThat(connectionUrlParser.getScheme(), is("jdbc:microsoft:sqlserver:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -100,7 +100,7 @@ public final class ConnectionUrlParserTest {
     
     @Test
     public void assertParseMockSQLWithoutProps() {
-        ConnectionUrlParser connectionUrlParser = new ConnectionUrlParser(MOCK_CONNECTION_WITHOUT_PROPS);
+        ConnectionURLParser connectionUrlParser = new ConnectionURLParser(MOCK_CONNECTION_WITHOUT_PROPS);
         assertThat(connectionUrlParser.getScheme(), is("mock:jdbc:"));
         assertThat(connectionUrlParser.getAuthority(), is("127.0.0.1:3306"));
         assertThat(connectionUrlParser.getPath(), is("demo_ds"));
@@ -110,6 +110,6 @@ public final class ConnectionUrlParserTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertParseIncorrectURL() {
-        new ConnectionUrlParser(INCORRECT_MYSQL_CONNECTION);
+        new ConnectionURLParser(INCORRECT_MYSQL_CONNECTION);
     }
 }
