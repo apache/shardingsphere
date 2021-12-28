@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
@@ -64,5 +64,10 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements RuleAl
             return false;
         }
         return incrementalTaskIdleMinutes.stream().allMatch(idleMinute -> idleMinute >= incrementalTaskIdleMinuteThreshold);
+    }
+    
+    @Override
+    public String toString() {
+        return "IdleRuleAlteredJobCompletionDetectAlgorithm{" + "props=" + props + '}';
     }
 }

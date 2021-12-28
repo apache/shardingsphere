@@ -47,7 +47,7 @@ import java.util.concurrent.Future;
  * Incremental task.
  */
 @Slf4j
-@ToString(exclude = {"dataSourceManager", "dumper", "progress"})
+@ToString(exclude = {"incrementalDumperExecuteEngine", "dataSourceManager", "dumper", "progress"})
 public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask {
     
     @Getter

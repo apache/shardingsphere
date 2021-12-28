@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+
 /**
- * Data check fail exception.
+ * Pipeline unexpected data record order exception.
  */
-public final class DataCheckFailException extends RuntimeException {
+public final class PipelineUnexpectedDataRecordOrderException extends RuntimeException {
     
-    private static final long serialVersionUID = -4100671584682823997L;
+    private static final long serialVersionUID = 6023695604738387750L;
     
-    public DataCheckFailException(final String message) {
-        super(message);
-    }
-    
-    public DataCheckFailException(final String message, final Throwable cause) {
-        super(message, cause);
+    public PipelineUnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
+        super("beforeDataRecord=" + beforeDataRecord + ", afterDataRecord=" + afterDataRecord);
     }
 }

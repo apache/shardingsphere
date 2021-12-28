@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
@@ -86,7 +86,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
                     (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         } catch (final SQLException ex) {
-            throw new DataCheckFailException("count check failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("count check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -102,7 +102,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             long targetCount = targetFuture.get();
             return new DataConsistencyCheckResult(sourceCount, targetCount);
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new DataCheckFailException(String.format("count check failed for table '%s'", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("count check failed for table '%s'", table), ex);
         }
     }
     
@@ -113,7 +113,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("count for table '%s' failed", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("count for table '%s' failed", table), ex);
         }
     }
     
@@ -131,7 +131,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         logicTableNames.forEach(each -> {
             //TODO put to preparer
             if (!tableMetaDataMap.containsKey(each)) {
-                throw new DataCheckFailException(String.format("could not get columns for table '%s'", each));
+                throw new PipelineDataConsistencyCheckFailedException(String.format("could not get columns for table '%s'", each));
             }
         });
         String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
@@ -170,7 +170,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 result.put(each, calculateResultsEquals);
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new DataCheckFailException("data check failed");
+            throw new PipelineDataConsistencyCheckFailedException("data check failed");
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -180,7 +180,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private void checkDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final String databaseType) {
         if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new DataCheckFailException("database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+            throw new PipelineDataConsistencyCheckFailedException("database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
         }
     }
     
@@ -190,12 +190,12 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tableNames) {
                 Optional<TableMetaData> tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
-                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new DataCheckFailException(String.format("get metadata failed for table '%s'", each)));
+                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new PipelineDataConsistencyCheckFailedException(String.format("get metadata failed for table '%s'", each)));
                 result.put(each, tableMetaData);
             }
             return result;
         } catch (final SQLException ex) {
-            throw new DataCheckFailException("get table columns failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("get table columns failed", ex);
         }
     }
 }
