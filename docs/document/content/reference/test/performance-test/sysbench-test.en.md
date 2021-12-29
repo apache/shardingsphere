@@ -279,8 +279,8 @@ users:
   - root@%:root
   - sharding@:sharding
 props:
-  max-connections-size-per-query: 10
-  kernel-executor-size: 128  # Infinite by default.
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
@@ -460,7 +460,7 @@ rules:
         worker-id: 123
 ```
 
-config-replica-query.yaml
+config-readwrite-splitting.yaml
 
 ```yaml
 schemaName: sbtest
@@ -484,7 +484,7 @@ rules:
         - ds_0
 ```
 
-config-sharding-replica-query.yaml
+config-shadow.yaml
 
 ```yaml
 schemaName: sbtest
