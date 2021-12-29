@@ -84,7 +84,7 @@ public final class UnicastDatabaseBackendHandlerTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getDefaultSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(mock(SQLStatementContext.class), EXECUTE_SQL, connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
