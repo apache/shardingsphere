@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+package org.apache.shardingsphere.sharding.distsql.handler.enums;
 
 /**
- * Sharding strategy segment.
+ * Sharding strategy level enum.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingStrategySegment implements ASTNode {
+public enum ShardingStrategyLevelEnum {
     
-    private final String type;
-    
-    private final String shardingColumn;
-    
-    private final String shardingAlgorithmName;
-
-    private final AlgorithmSegment algorithmSegment;
+    DATABASE, TABLE
 }

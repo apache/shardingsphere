@@ -76,8 +76,8 @@ public final class ShardingRuleStatementConverterTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")), null);
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
-                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
-                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
+                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm", null),
+                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm", null),
                 new KeyGenerateSegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))));
         result.add(autoTableRuleSegment);
         result.add(tableRuleSegment);

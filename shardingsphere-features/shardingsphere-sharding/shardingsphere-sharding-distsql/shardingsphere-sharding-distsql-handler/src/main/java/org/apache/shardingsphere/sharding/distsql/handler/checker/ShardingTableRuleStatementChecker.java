@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
@@ -195,7 +195,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkTableRule(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
         Collection<TableRuleSegment> tableRules = rules.stream().map(each -> (TableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
-        Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getTableStrategySegment(), each.getTableStrategySegment()))
+        Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).findAny();
         if (anyTableRule.isPresent()) {
             checkStrategy(schemaName, currentRuleConfig, tableRules);
@@ -203,11 +203,22 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkStrategy(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
-        Set<String> algorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
-        LinkedList<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
-                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> !ShardingStrategyType.contain(each.getType()) || !algorithms.contains(each.getShardingAlgorithmName()))
+        Collection<String> currentAlgorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
+        Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
+                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isAlgorithmInvalid(currentAlgorithms, each))
                 .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(schemaName, invalidAlgorithms));
+    }
+    
+    private static boolean isAlgorithmInvalid(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+        return !ShardingStrategyTypeEnum.contain(shardingStrategySegment.getType()) || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+    }
+    
+    private static boolean isAlgorithmExists(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+        if (null == shardingStrategySegment.getShardingAlgorithmName() && null != shardingStrategySegment.getAlgorithmSegment()) {
+            return true;
+        }
+        return currentAlgorithms.contains(shardingStrategySegment.getShardingAlgorithmName());
     }
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {
