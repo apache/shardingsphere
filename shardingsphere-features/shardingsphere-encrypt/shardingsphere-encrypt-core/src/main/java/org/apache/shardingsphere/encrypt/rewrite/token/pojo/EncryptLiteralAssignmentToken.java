@@ -45,6 +45,14 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         assignments.add(new LiteralAssignment(columnName, value, withQuotes));
     }
     
+    /**
+     * Get assignments.
+     * @return LiteralAssignment collection
+     */
+    public Collection<LiteralAssignment> getAssignment() {
+        return assignments;
+    }
+    
     @Override
     public String toString() {
         return Joiner.on(", ").join(assignments);
