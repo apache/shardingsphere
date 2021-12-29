@@ -42,7 +42,7 @@ import java.util.Optional;
  */
 public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
     
-    private static final String NAME = "name";
+    private static final String NAME = "group_name";
     
     private static final String DATA_SOURCE_NAMES = "data_source_names";
     
@@ -91,9 +91,9 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         Map<String, String> heartbeatMap = new LinkedHashMap<>();
         heartbeatMap.put(NAME, dataSourceRuleConfig.getDiscoveryHeartbeatName());
         heartbeatMap.putAll(convertToMap(discoveryHeartbeats.get(dataSourceRuleConfig.getDiscoveryHeartbeatName())));
-        String name = dataSourceRuleConfig.getName();
-        String primaryDataSourceName = null == primaryDataSources.get(name) ? "" : primaryDataSources.get(name);
-        return Arrays.asList(name, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap);
+        String groupName = dataSourceRuleConfig.getGroupName();
+        String primaryDataSourceName = null == primaryDataSources.get(groupName) ? "" : primaryDataSources.get(groupName);
+        return Arrays.asList(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap);
     }
     
     private Map<String, String> convertToMap(final Object obj) {
