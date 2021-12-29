@@ -24,6 +24,7 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,20 +39,22 @@ public final class SegmentMatchTrafficAlgorithm implements SegmentTrafficAlgorit
     
     private static final String SEGMENTS_PROPS_KEY = "segments";
     
+    private Properties props = new Properties();
+    
     @Override
-    public final void init() {
+    public void init() {
     }
     
     @Override
-    public final String getType() {
+    public String getType() {
         return "SEGMENT_MATCH";
     }
     
     @Override
-    public final boolean match(final SegmentTrafficValue segmentTrafficValue) {
+    public boolean match(final SegmentTrafficValue segmentTrafficValue) {
         String statement = getProps().getProperty(STATEMENT_PROPS_KEY);
         Collection<String> segments = Arrays.asList(getProps().getProperty(SEGMENTS_PROPS_KEY).split(","));
-        Set<String> collect = segmentTrafficValue.getSegments().stream().map(each -> each.getClass().getSimpleName()).collect(Collectors.toSet());
-        return statement.equals(segmentTrafficValue.getStatement().getClass().getSimpleName()) && collect.containsAll(segments);
+        Set<String> allSegments = segmentTrafficValue.getSegments().stream().map(each -> each.getClass().getSimpleName()).collect(Collectors.toSet());
+        return statement.equals(segmentTrafficValue.getStatement().getClass().getSimpleName()) && allSegments.containsAll(segments);
     }
 }

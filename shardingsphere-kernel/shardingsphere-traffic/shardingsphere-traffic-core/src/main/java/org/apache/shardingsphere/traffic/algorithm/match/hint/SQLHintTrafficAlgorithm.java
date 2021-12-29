@@ -38,17 +38,17 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<Strin
     private Properties props = new Properties();
     
     @Override
-    public final void init() {
+    public void init() {
         Preconditions.checkState(!props.isEmpty(), "Simple hint traffic algorithm props cannot be empty.");
     }
     
     @Override
-    public final String getType() {
+    public String getType() {
         return "SQL_HINT";
     }
     
     @Override
-    public final boolean match(final HintTrafficValue<String> hintTrafficValue) {
+    public boolean match(final HintTrafficValue<String> hintTrafficValue) {
         Properties sqlHintProps = SQLHintUtils.getSQLHintProps(hintTrafficValue.getValue());
         for (Entry<Object, Object> each : props.entrySet()) {
             if (!Objects.equals(each.getValue(), sqlHintProps.get(String.valueOf(each.getKey())))) {

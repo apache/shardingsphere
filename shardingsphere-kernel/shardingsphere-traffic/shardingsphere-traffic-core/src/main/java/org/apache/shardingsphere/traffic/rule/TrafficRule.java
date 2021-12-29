@@ -98,7 +98,8 @@ public final class TrafficRule implements GlobalRule {
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SegmentTrafficAlgorithm segmentTrafficAlgorithm = (SegmentTrafficAlgorithm) trafficAlgorithm;
-            segmentTrafficAlgorithm.match(getSegmentTrafficValue(statementContext));
+            SegmentTrafficValue segmentTrafficValue = getSegmentTrafficValue(statementContext);
+            return segmentTrafficAlgorithm.match(segmentTrafficValue);
         }
         return false;
     }
