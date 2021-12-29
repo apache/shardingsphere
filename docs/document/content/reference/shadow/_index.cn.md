@@ -14,7 +14,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 影子规则包含影子数据源映射关系，影子表以及影子算法。
 
-![规则](https://shardingsphere.apache.org/document/current/img/shadow/rule_cn.png)
+![规则](https://shardingsphere.apache.org/document/current/img/shadow/rule_v5.1.0_cn.png)
 
 **影子库映射**：生产数据源名称和影子数据源名称映射关系。
 

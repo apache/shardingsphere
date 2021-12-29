@@ -15,7 +15,7 @@ route to production DB or shadow DB.
 
 Shadow rules include shadow data source mapping, shadow tables, and shadow algorithms.
 
-![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
+![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_v5.1.0_en.png)
 
 **data-sources**：Production data source name and shadow data source name mappings.
 
