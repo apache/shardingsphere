@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.api.detect;
 
-import org.apache.shardingsphere.data.pipeline.api.detect.AllIncrementalTasksAlmostFinishedParameter;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 
-public final class FixtureRuleAlteredJobCompletionDetectAlgorithm implements RuleAlteredJobCompletionDetectAlgorithm {
+import java.util.Collection;
+
+/**
+ * Rule altered job almost completed parameter.
+ */
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class RuleAlteredJobAlmostCompletedParameter {
     
-    @Override
-    public void init() {
-    }
+    private final int jobShardingCount;
     
-    @Override
-    public boolean allIncrementalTasksAlmostFinished(final AllIncrementalTasksAlmostFinishedParameter parameter) {
-        return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+    @NonNull
+    private final Collection<JobProgress> jobProgresses;
 }

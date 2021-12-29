@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.config;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import javax.sql.DataSource;
 
 /**
- * Traffic rule configuration.
+ * Data source pool parameter decorator.
+ * 
+ * @param <T> type of data source
  */
-@Getter
-public final class TrafficRuleConfiguration implements GlobalRuleConfiguration {
+public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
     
-    private final Collection<TrafficStrategyConfiguration> trafficStrategies = new LinkedList<>();
-    
-    private final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = new LinkedHashMap<>();
-    
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    /**
+     * Decorate data source.
+     * 
+     * @param dataSource data source to be decorated
+     * @return decorated data source
+     */
+    T decorate(T dataSource);
 }

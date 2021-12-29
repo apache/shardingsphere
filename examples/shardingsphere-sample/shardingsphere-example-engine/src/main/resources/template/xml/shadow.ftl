@@ -59,6 +59,5 @@
     <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0,demo_ds_1" rule-refs="shadowRule">
         <props>
             <prop key="sql-show">true</prop>
-            <prop key="sql-comment-parse-enabled">true</prop>
         </props>
     </shardingsphere:data-source>

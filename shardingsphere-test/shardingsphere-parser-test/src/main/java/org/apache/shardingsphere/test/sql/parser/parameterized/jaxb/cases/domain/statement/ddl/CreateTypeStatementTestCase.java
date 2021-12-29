@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Rule altered source writing stop algorithm, SPI.
+ * Create type statement test case.
  */
-public interface RuleAlteredSourceWritingStopAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
-    
-    /**
-     * Stop source writing.
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void stopSourceWriting(String schemaName, String jobId);
-    
-    /**
-     * Resume source writing.
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void resumeSourceWriting(String schemaName, String jobId);
+public final class CreateTypeStatementTestCase extends SQLParserTestCase {
 }

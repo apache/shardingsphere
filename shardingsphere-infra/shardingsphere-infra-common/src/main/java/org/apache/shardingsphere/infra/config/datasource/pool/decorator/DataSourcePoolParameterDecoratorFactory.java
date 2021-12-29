@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.pool.decorator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Optional;
 
+/**
+ * Data source pool parameter decorator factory.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCParameterDecoratorHelper {
+public final class DataSourcePoolParameterDecoratorFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DataSourcePoolParameterDecorator.class);
+    }
     
     /**
      * Decorate data source.
@@ -35,10 +43,7 @@ public final class JDBCParameterDecoratorHelper {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static DataSource decorate(final DataSource dataSource) {
-        Optional<JDBCParameterDecorator> decorator = ShardingSphereServiceLoader
-                .getSingletonServiceInstances(JDBCParameterDecorator.class)
-                .stream()
-                .filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        Optional<DataSourcePoolParameterDecorator> decorator = TypedSPIRegistry.findRegisteredService(DataSourcePoolParameterDecorator.class, dataSource.getClass().getCanonicalName(), null);
         return decorator.isPresent() ? decorator.get().decorate(dataSource) : dataSource;
     }
 }

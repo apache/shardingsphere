@@ -15,32 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Default rule altered source writing stop algorithm.
+ * PostgreSQL create type statement.
  */
 @ToString
-public final class DefaultRuleAlteredSourceWritingStopAlgorithm implements RuleAlteredSourceWritingStopAlgorithm {
-    
-    @Override
-    public void init() {
-    }
-    
-    // TODO impl default sourceWritingStopAlgorithm
-    @Override
-    public void stopSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public void resumeSourceWriting(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public String getType() {
-        return "DEFAULT";
-    }
+public final class PostgreSQLCreateTypeStatement extends CreateConversionStatement implements PostgreSQLStatement {
 }

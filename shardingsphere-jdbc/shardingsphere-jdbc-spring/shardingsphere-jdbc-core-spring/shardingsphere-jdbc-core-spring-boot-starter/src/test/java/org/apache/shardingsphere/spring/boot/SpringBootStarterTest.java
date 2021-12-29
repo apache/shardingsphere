@@ -165,7 +165,7 @@ public class SpringBootStarterTest {
     private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
         assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
         assertCacheOption(sqlParserRule.getSqlStatementCache());
-        assertCacheOption(sqlParserRule.getParserTreeCache());
+        assertCacheOption(sqlParserRule.getParseTreeCache());
     }
 
     private void assertCacheOption(final CacheOption cacheOption) {

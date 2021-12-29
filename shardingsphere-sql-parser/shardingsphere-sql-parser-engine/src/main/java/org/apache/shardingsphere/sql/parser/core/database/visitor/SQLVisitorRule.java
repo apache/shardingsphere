@@ -372,6 +372,8 @@ public enum SQLVisitorRule {
     
     CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
     
+    CREATE_TYPE("CreateType", SQLStatementType.DDL),
+    
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL);
 
     private final String name;

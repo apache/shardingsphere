@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
+package org.apache.shardingsphere.traffic.rule;
 
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Default rule altered checkout lock algorithm.
+ * Traffic strategy rule.
  */
-@ToString
-public final class DefaultRuleAlteredCheckoutLockAlgorithm implements RuleAlteredCheckoutLockAlgorithm {
+@RequiredArgsConstructor
+@Getter
+public final class TrafficStrategyRule {
     
-    @Override
-    public void init() {
-    }
+    private final String name;
     
-    // TODO impl default checkoutLockAlgorithm
-    @Override
-    public void lock(final String schemaName, final String jobId) {
-    }
+    private final Collection<String> labels;
     
-    @Override
-    public void releaseLock(final String schemaName, final String jobId) {
-    }
+    private final String algorithmName;
     
-    @Override
-    public String getType() {
-        return "DEFAULT";
-    }
+    private final String loadBalancerName;
 }

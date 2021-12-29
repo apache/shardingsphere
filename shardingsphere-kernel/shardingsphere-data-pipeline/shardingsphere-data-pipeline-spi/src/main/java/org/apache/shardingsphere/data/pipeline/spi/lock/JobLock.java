@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.config;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+package org.apache.shardingsphere.data.pipeline.spi.lock;
 
 /**
- * Traffic strategy configuration.
+ * Job lock.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TrafficStrategyConfiguration {
+public interface JobLock {
     
-    private final String name;
+    /**
+     * Lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void lock(String schemaName, String jobId);
     
-    private final Collection<String> labels;
-    
-    private final String algorithmName;
-    
-    private final String loadBalancerName;
+    /**
+     * Release lock.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void releaseLock(String schemaName, String jobId);
 }

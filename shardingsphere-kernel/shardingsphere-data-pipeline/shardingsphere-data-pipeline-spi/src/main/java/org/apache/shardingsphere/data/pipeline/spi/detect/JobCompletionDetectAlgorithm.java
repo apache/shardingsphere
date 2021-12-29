@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.detect;
+package org.apache.shardingsphere.data.pipeline.spi.detect;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * All incremental tasks almost finished parameter.
+ * Job completion detect algorithm, SPI.
+ *
+ * @param <T> completion detect parameter type
  */
-@Getter
-@Setter
-@Builder
-@ToString
-public final class AllIncrementalTasksAlmostFinishedParameter {
+public interface JobCompletionDetectAlgorithm<T> extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    private Collection<Long> incrementalTaskIdleMinutes;
+    /**
+     * Whether job is almost completed.
+     *
+     * @param parameter parameter
+     * @return almost completed or not
+     */
+    boolean isAlmostCompleted(T parameter);
 }

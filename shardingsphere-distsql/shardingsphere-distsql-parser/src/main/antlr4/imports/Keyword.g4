@@ -195,8 +195,8 @@ SQL_COMMENT_PARSE_ENABLE
     : S Q L UL_ C O M M E N T UL_ P A R S E UL_ E N A B L E
     ;
     
-PARSER_TREE_CACHE
-    : P A R S E R UL_ T R E E UL_ C A C H E
+PARSE_TREE_CACHE
+    : P A R S E UL_ T R E E UL_ C A C H E
     ;
     
 SQL_STATEMENT_CACHE

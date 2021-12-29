@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 
 /**
- * Rule altered checkout lock algorithm, SPI.
+ * Default source writing stop algorithm.
  */
-public interface RuleAlteredCheckoutLockAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@ToString
+public final class DefaultSourceWritingStopAlgorithm implements RowBasedJobLockAlgorithm {
     
-    /**
-     * Lock to protect checkout (switch configuration).
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void lock(String schemaName, String jobId);
+    @Override
+    public void init() {
+    }
     
-    /**
-     * Release lock.
-     *
-     * @param schemaName schema name
-     * @param jobId job id
-     */
-    void releaseLock(String schemaName, String jobId);
+    // TODO impl default sourceWritingStopAlgorithm
+    @Override
+    public void lock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final String jobId) {
+    }
+    
+    @Override
+    public String getType() {
+        return "DEFAULT";
+    }
 }

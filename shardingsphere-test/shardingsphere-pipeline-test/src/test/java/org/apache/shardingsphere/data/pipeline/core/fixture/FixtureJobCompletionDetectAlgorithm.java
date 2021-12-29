@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import javax.sql.DataSource;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 
-/**
- * JDBC parameter decorator.
- * 
- * @param <T> type of data source
- */
-public interface JDBCParameterDecorator<T extends DataSource> {
+public final class FixtureJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<Object> {
     
-    /**
-     * Decorate data source.
-     * 
-     * @param dataSource data source to be decorated
-     * @return decorated data source
-     */
-    T decorate(T dataSource);
+    @Override
+    public void init() {
+    }
     
-    /**
-     * Get data source type.
-     *
-     * @return data source type
-     */
-    Class<T> getType();
+    @Override
+    public boolean isAlmostCompleted(final Object parameter) {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

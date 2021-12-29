@@ -256,7 +256,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     public ASTNode visitSqlParserRuleDefinition(final SqlParserRuleDefinitionContext ctx) {
         AlterSQLParserRuleStatement result = new AlterSQLParserRuleStatement();
         result.setSqlCommentParseEnable(null == ctx.sqlCommentParseEnable() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.sqlCommentParseEnable())));
-        result.setParserTreeCache(null == ctx.parserTreeCache() ? null : visitCacheOption(ctx.parserTreeCache().cacheOption()));
+        result.setParseTreeCache(null == ctx.parseTreeCache() ? null : visitCacheOption(ctx.parseTreeCache().cacheOption()));
         result.setSqlStatementCache(null == ctx.sqlStatementCache() ? null : visitCacheOption(ctx.sqlStatementCache().cacheOption()));
         return result;
     }

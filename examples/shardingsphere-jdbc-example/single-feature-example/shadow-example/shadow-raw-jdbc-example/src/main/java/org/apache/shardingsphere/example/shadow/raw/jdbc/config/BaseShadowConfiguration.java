@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import javax.sql.DataSource;
@@ -48,9 +47,9 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     }
     
     protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        CacheOption parserTreeCacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L, 4);
         CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, 4);
-        return new SQLParserRuleConfiguration(true, parserTreeCacheOption, sqlStatementCacheOption);
+        return new SQLParserRuleConfiguration(true, parseTreeCacheOption, sqlStatementCacheOption);
     }
     
     protected Collection<String> createShadowAlgorithmNames() {

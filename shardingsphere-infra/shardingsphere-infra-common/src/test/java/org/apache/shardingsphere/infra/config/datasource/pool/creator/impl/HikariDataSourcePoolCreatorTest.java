@@ -25,6 +25,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,6 +56,7 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(configuration.getProps().get("password"), is("root"));
         assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
         assertThat(configuration.getProps().get("minimumIdle"), is(1));
+        assertDataSourceProperties((Properties) configuration.getProps().get("dataSourceProperties"));
     }
     
     @Test
@@ -70,6 +72,7 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
+        assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
@@ -81,8 +84,23 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
+        props.put("dataSourceProperties", getDataSourceProperties());
         DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
         result.getProps().putAll(props);
         return result;
+    }
+    
+    private Properties getDataSourceProperties() {
+        Properties result = new Properties();
+        result.put("prepStmtCacheSqlLimit", 1024);
+        result.put("cachePrepStmts", true);
+        result.put("prepStmtCacheSize", 1000);
+        return result;
+    }
+    
+    private void assertDataSourceProperties(final Properties props) {
+        assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(props.get("cachePrepStmts"), is(true));
+        assertThat(props.get("prepStmtCacheSize"), is(1000));
     }
 }

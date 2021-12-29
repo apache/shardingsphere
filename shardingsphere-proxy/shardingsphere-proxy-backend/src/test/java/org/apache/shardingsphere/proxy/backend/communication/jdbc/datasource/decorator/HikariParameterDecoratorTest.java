@@ -25,22 +25,16 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
-public final class HikariJDBCParameterDecoratorTest {
+public final class HikariParameterDecoratorTest {
     
     @Test
-    public void assertGetTypeResultIsHikariDataSource() {
-        assertSame(HikariDataSource.class, new HikariJDBCParameterDecorator().getType());
-    }
-    
-    @Test
-    public void assertDecoratedHikariDataSource() {
+    public void assertDecorate() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc");
-        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
+        HikariDataSource actual = new HikariParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
@@ -59,11 +53,11 @@ public final class HikariJDBCParameterDecoratorTest {
     }
     
     @Test
-    public void assertDecoratedHikariDataSourceWithExistedParam() {
+    public void assertDecorateWithExistedParam() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc://127.0.0.1:3306/test0?tinyInt1isBit=true&useSSL=false");
-        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
+        HikariDataSource actual = new HikariParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
