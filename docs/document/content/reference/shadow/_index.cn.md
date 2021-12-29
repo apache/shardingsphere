@@ -101,6 +101,26 @@ CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ..
 
 执行到影子库。
 
+**注意**：如果使用 MySQL 客户端进行测试，链接需要使用参数：`-c` 例如：
+
+```sql
+mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
+```
+
+参数说明：执行包含注解 SQL 例如：
+
+```sql
+SELECT * FROM table_name /*shadow:true,foo:bar*/;
+```
+
+不使用参数 `-c` 会被 MySQL 客户端截取注释语句变为:
+
+```sql
+SELECT * FROM table_name;
+```
+
+影响测试结果。
+
 ### 影子算法使用
    
 1. 列影子算法使用

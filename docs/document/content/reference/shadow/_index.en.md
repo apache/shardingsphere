@@ -120,6 +120,26 @@ CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ..
 ``` 
 Execute to the shadow DB.
 
+**Note**: If use the MySQL client for testing, the link needs to use the parameter `-c`, for example:
+
+```sql
+mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
+```
+
+Parameter description: execute SQL containing annotations, for example:
+
+```sql
+SELECT * FROM table_name /*shadow:true,foo:bar*/;
+```
+
+If parameter `-c` not used, the comment statement will be intercepted by the MySQL client, for example:
+
+```sql
+SELECT * FROM table_name;
+```
+
+Affect test results.
+
 ### Shadow algorithm example
 
 1. Column shadow algorithm example
