@@ -42,11 +42,11 @@ import java.util.function.Consumer;
 @Slf4j
 public final class ModeScheduleContext {
     
+    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
+    
     private final CoordinatorRegistryCenter registryCenter;
     
     private final JobConfigurationAPI jobConfigAPI;
-    
-    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
     
     public ModeScheduleContext(final ModeConfiguration modeConfig) {
         CoordinatorRegistryCenter registryCenter = initRegistryCenter(modeConfig);
