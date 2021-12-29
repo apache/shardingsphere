@@ -537,7 +537,8 @@ public final class ShardingRuleTest {
 
     @Test
     public void assertGetLogicTablesByActualTable() {
-        assertThat(createShardingRuleWithSameActualTablesButDifferentLogicTables().getLogicTablesByActualTable("table_0"), is(new LinkedHashSet<>(Arrays.asList("ID_STRATEGY_LOGIC_TABLE", "HINT_STRATEGY_LOGIC_TABLE"))));
+        assertThat(createShardingRuleWithSameActualTablesButDifferentLogicTables().getLogicTablesByActualTable("table_0"),
+                is(new LinkedHashSet<>(Arrays.asList("ID_STRATEGY_LOGIC_TABLE", "HINT_STRATEGY_LOGIC_TABLE"))));
     }
 
     private ShardingRule createShardingRuleWithSameActualTablesButDifferentLogicTables() {
