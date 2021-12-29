@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.rule.builder;
 
-import org.apache.shardingsphere.traffic.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;

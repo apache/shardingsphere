@@ -68,6 +68,7 @@ execute
     | createDomain
     | createRule
     | createSchema
+    | createType
     | dropDatabase
     | dropFunction
     | dropProcedure

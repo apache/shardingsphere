@@ -24,7 +24,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
@@ -81,22 +81,22 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
-        Number startUniqueValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueValue() : -1;
-        String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueValue);
+        Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
+        String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueKeyValue);
         try {
-            return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueValue, chunkSize);
+            return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
         } catch (final SQLException ex) {
-            throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
     
-    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueValue, final int chunkSize) throws SQLException {
+    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueKeyValue, final int chunkSize) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setObject(1, startUniqueValue);
+            preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setInt(2, chunkSize);
             Collection<Collection<Object>> records = new ArrayList<>(chunkSize);
-            Number maxUniqueValue = null;
+            Number maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -106,10 +106,10 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                         record.add(resultSet.getObject(columnIndex));
                     }
                     records.add(record);
-                    maxUniqueValue = (Number) resultSet.getObject(uniqueKey);
+                    maxUniqueKeyValue = (Number) resultSet.getObject(uniqueKey);
                 }
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueValue, records.size(), records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         }
     }
     
@@ -119,7 +119,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     private static final class CalculatedResult {
         
         @NonNull
-        private final Number maxUniqueValue;
+        private final Number maxUniqueKeyValue;
         
         private final int recordCount;
         

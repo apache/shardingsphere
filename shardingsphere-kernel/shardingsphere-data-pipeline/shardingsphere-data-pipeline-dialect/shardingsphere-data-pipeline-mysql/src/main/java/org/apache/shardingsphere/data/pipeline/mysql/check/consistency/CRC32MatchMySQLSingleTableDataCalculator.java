@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
@@ -61,7 +61,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
             try {
                 return sumCrc32(dataCalculateParameter.getDataSource(), sql);
             } catch (final SQLException ex) {
-                throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
+                throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
             }
         }).collect(Collectors.toList());
         return Collections.unmodifiableList(result);
