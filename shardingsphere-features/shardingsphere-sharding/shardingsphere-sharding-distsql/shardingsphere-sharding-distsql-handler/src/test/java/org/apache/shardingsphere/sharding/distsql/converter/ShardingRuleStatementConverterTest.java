@@ -84,7 +84,7 @@ public final class ShardingRuleStatementConverterTest {
         result.add(tableRuleSegment);
         return result;
     }
-
+    
     private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
         return new AlgorithmSegment(name, properties);
     }
