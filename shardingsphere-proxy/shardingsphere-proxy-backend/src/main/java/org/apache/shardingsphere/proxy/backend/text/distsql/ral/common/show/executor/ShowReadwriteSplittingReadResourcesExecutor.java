@@ -158,6 +158,6 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     }
     
     private Object getResourceName(final List<Object> row) {
-        return row.get(1);
+        return row.get(0);
     }
 }
