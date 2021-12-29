@@ -74,11 +74,8 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(tableName, assignmentSegment));
         }
-        if (assignmentSegment.getValue() instanceof FunctionSegment) {
-            FunctionSegment functionSegment = (FunctionSegment) assignmentSegment.getValue();
-            if ("VALUES".equals(functionSegment.getFunctionName()) && 0 == functionSegment.getParameters().size()) {
-                return Optional.of(generateValuesSQLToken(schemaName, tableName, assignmentSegment));
-            }
+        if (assignmentSegment.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) assignmentSegment.getValue()).getFunctionName())) {
+            return Optional.of(generateValuesSQLToken(schemaName, tableName, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
             return Optional.of(generateLiteralSQLToken(schemaName, tableName, assignmentSegment));
@@ -103,17 +100,22 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         return result;
     }
     
-    private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
-        String valuesFormat = "VALUES(%s)";
+    private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
         ColumnSegment column = assignmentSegment.getColumns().get(0);
+        ColumnSegment valueColumn = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(column.getStartIndex(), assignmentSegment.getStopIndex());
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, column.getIdentifier().getValue());
-        result.addAssignment(cipherColumn, String.format(valuesFormat, cipherColumn), false);
+        String cipherValueColumn = getEncryptRule().getCipherColumn(tableName, valueColumn.getIdentifier().getValue());
+        result.addAssignment(cipherColumn, String.format("VALUES(%s)", cipherValueColumn), false);
         getEncryptRule().findAssistedQueryColumn(tableName, column.getIdentifier().getValue()).ifPresent(assistedQueryColumn -> {
-            result.addAssignment(assistedQueryColumn, String.format(valuesFormat, assistedQueryColumn), false);
+            getEncryptRule().findAssistedQueryColumn(tableName, valueColumn.getIdentifier().getValue()).ifPresent(valueAssistedQueryColumn -> {
+                result.addAssignment(assistedQueryColumn, String.format("VALUES(%s)", valueAssistedQueryColumn), false);
+            });
         });
         getEncryptRule().findPlainColumn(tableName, column.getIdentifier().getValue()).ifPresent(plainColumn -> {
-            result.addAssignment(plainColumn, String.format(valuesFormat, plainColumn), false);
+            getEncryptRule().findPlainColumn(tableName, valueColumn.getIdentifier().getValue()).ifPresent(valuePlainColumn -> {
+                result.addAssignment(plainColumn, String.format("VALUES(%s)", valuePlainColumn), false);
+            });
         });
         return result;
     }

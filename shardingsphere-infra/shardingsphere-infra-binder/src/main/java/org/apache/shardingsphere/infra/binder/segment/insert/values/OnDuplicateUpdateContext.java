@@ -83,11 +83,8 @@ public final class OnDuplicateUpdateContext {
         if (valueExpression instanceof ParameterMarkerExpressionSegment) {
             return parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression));
         }
-        if (valueExpression instanceof FunctionSegment && 0 == ((FunctionSegment) valueExpression).getParameters().size()) {
-            FunctionSegment functionSegment = (FunctionSegment) valueExpression;
-            if ("VALUES".equals(functionSegment.getFunctionName()) && 0 == functionSegment.getParameters().size()) {
-                return null;
-            }
+        if (valueExpression instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) valueExpression).getFunctionName())) {
+            return null;
         }
         return ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
