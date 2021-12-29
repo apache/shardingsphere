@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.config;
+package org.apache.shardingsphere.traffic.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Traffic strategy configuration.
+ * Traffic strategy rule.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TrafficStrategyConfiguration {
+public final class TrafficStrategyRule {
     
     private final String name;
     

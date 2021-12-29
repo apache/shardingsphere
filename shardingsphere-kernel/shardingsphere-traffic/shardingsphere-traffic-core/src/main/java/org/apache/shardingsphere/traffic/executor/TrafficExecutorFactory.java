@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule;
+package org.apache.shardingsphere.traffic.executor;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TrafficRuleTest {
+/**
+ * Traffic executor factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TrafficExecutorFactory {
     
-    @Test
-    public void assertGetRuleType() {
-        TrafficRuleConfiguration ruleConfig = new TrafficRuleConfiguration();
-        TrafficRule authorityRule = new TrafficRule(ruleConfig);
-        assertThat(authorityRule.getType(), is(TrafficRule.class.getSimpleName()));
+    /**
+     * Create new instance of traffic executor factory.
+     * 
+     * @return new instance of traffic executor
+     */
+    public static TrafficExecutor newInstance() {
+        return new JDBCTrafficExecutor(new DataSourceConfigurationValidator());
     }
 }

@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule;
+package org.apache.shardingsphere.traffic.context;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Optional;
 
-public final class TrafficRuleTest {
+/**
+ * Traffic context.
+ */
+@Getter
+@Setter
+public final class TrafficContext {
     
-    @Test
-    public void assertGetRuleType() {
-        TrafficRuleConfiguration ruleConfig = new TrafficRuleConfiguration();
-        TrafficRule authorityRule = new TrafficRule(ruleConfig);
-        assertThat(authorityRule.getType(), is(TrafficRule.class.getSimpleName()));
+    private DataSourceConfiguration dataSourceConfig;
+    
+    /**
+     * Get data source config.
+     * 
+     * @return data source config
+     */
+    public Optional<DataSourceConfiguration> getDataSourceConfig() {
+        return Optional.ofNullable(dataSourceConfig); 
     }
 }

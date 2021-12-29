@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.traffic.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.api.config.strategy.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 
 /**
