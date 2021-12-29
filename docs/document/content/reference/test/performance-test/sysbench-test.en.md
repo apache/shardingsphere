@@ -286,7 +286,6 @@ props:
   proxy-hint-enabled: false
   sql-show: false
   check-table-metadata-enabled: false
-  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
 ```
 
 config-sharding.yaml
