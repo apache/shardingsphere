@@ -15,23 +15,55 @@ chapter = true
 | ---------------------- | --------------------------- |
 | MySQLScalingEntry      | MySQL entry of scaling      |
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
+| OpenGaussScalingEntry  | openGauss entry of scaling |
 
-## ScalingClusterAutoSwitchAlgorithm
+## JobRateLimitAlgorithm
 
-| *SPI Name*                                  | *Description*                               |
+| *SPI Name*                                   | *Description*                              |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingClusterAutoSwitchAlgorithm           | Scaling job completion check algorithm      |
+| JobRateLimitAlgorithm                       | job rate limit algorithm                    |
 
 | *Implementation Class*                      | *Description*                               |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingIdleClusterAutoSwitchAlgorithm       | Incremental task idle time based algorithm  |
+| SourceJobRateLimitAlgorithm                 | rate limit algorithm for source side        |
 
-## ScalingDataConsistencyCheckAlgorithm
+## JobCompletionDetectAlgorithm
 
 | *SPI Name*                                  | *Description*                               |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDataConsistencyCheckAlgorithm        | Data consistency check algorithm on source and target database cluster |
+| JobCompletionDetectAlgorithm                | Job completion check algorithm              |
 
 | *Implementation Class*                      | *Description*                               |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDefaultDataConsistencyCheckAlgorithm | Default implementation with CRC32 of all records. |
+| IdleRuleAlteredJobCompletionDetectAlgorithm | Incremental task idle time based algorithm  |
+
+## RowBasedJobLockAlgorithm
+
+| *SPI Name*                                  | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| RowBasedJobLockAlgorithm                    | Job lock algorithm for protecting row       |
+
+| *Implementation Class*                      | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| DefaultSourceWritingStopAlgorithm           | Default lock implementation for stopping source writing |
+
+## DataConsistencyCheckAlgorithm
+
+| *SPI Name*                                  | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| DataConsistencyCheckAlgorithm               | Data consistency check algorithm on source and target database cluster |
+
+| *Implementation Class*                      | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| DataMatchDataConsistencyCheckAlgorithm      | Records content match implementation        |
+| CRC32MatchDataConsistencyCheckAlgorithm     | Records CRC32 match implementation          |
+
+## RuleBasedJobLockAlgorithm
+
+| *SPI Name*                                  | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| RuleBasedJobLockAlgorithm                   | Job lock algorithm for protecting rule      |
+
+| *Implementation Class*                      | *Description*                               |
+| ------------------------------------------- | ------------------------------------------- |
+| DefaultMetadataCheckoutLockAlgorithm        | Default lock implementation for metadata checkout |
