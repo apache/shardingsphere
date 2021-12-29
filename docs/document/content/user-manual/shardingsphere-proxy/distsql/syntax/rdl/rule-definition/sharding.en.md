@@ -26,10 +26,10 @@ shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
    
 shardingAutoTableRule:
-    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)?)
+    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)?)
     
 shardingTableRule:
-    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?)
+    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)?)
 
 resources:
     RESOURCES(resource [, resource] ...)
@@ -49,7 +49,10 @@ shardingColumn:
 algorithmDefinition:
     TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties])])
 
-keyGenerateStrategy:
+keyGenerateDeclaration:
+    keyGenerateDefinition | keyGenerateConstruction
+
+keyGenerateDefinition:
     GENERATED_KEY(COLUMN=columnName, strategyDefinition)
 
 shardingScope:
@@ -60,6 +63,9 @@ databaseStrategy:
 
 tableStrategy:
     TABLE_STRATEGY(shardingStrategy)
+
+keyGenerateConstruction
+    GENERATED_KEY(COLUMN=columnName, GENERATED_KEY_ALGORITHM=keyGenerateAlgorithmName)
 
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
@@ -127,6 +133,20 @@ DROP SHARDING BROADCAST TABLE RULES
 
 ### Sharding Table Rule
 
+*Key Generator*
+
+```sql
+CREATE SHARDING KEY GENERATOR snowflake_key_generator (
+TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=123))
+);
+
+ALTER SHARDING KEY GENERATOR snowflake_key_generator (
+TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
+);
+
+DROP SHARDING KEY GENERATOR snowflake_key_generator;
+```
+
 *Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
@@ -157,7 +177,7 @@ CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
@@ -170,7 +190,7 @@ ALTER SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
 );
 
 DROP SHARDING TABLE RULE t_order_item;
@@ -180,20 +200,6 @@ DROP SHARDING ALGORITHM database_inline;
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
 TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
 );
-```
-
-*Key Generator*
-
-```sql
-CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=123))
-);
-
-ALTER SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
-);
-
-DROP SHARDING KEY GENERATOR snowflake_key_generator;
 ```
 
 ### Sharding Binding Table Rule

@@ -88,11 +88,11 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
     ;
 
 keyGeneratorDefination
@@ -135,6 +135,10 @@ autoCreativeAlgorithm
     : SHARDING_ALGORITHM LP algorithmDefinition RP
     ;
 
+keyGenerator
+    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
+    ;
+
 shardingStrategy
     :  TYPE EQ strategyType COMMA shardingColumn COMMA shardingAlgorithm 
     ;
@@ -147,8 +151,16 @@ tableStrategy
     : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
-keyGenerateStrategy
+keyGenerateDeclaration
+    : keyGenerateDefinition | keyGenerateStrategy
+    ;
+
+keyGenerateDefinition
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+keyGenerateStrategy
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition

@@ -68,7 +68,7 @@ variableName
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT 
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceDefination
