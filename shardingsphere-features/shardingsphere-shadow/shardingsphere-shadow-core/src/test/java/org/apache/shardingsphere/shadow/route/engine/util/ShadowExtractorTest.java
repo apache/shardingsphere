@@ -33,9 +33,9 @@ public final class ShadowExtractorTest {
     @Test
     public void extractValuesIsSimpleExpressionSegment() {
         LiteralExpressionSegment LiteralExpressionSegment = new LiteralExpressionSegment(1, 2, "");
-        List<Object> list = new LinkedList<>();
+        List<Object> parametersList = new LinkedList<>();
         Collection<Comparable<?>> result = new LinkedList<>();
         result.add((Comparable<?>) LiteralExpressionSegment.getLiterals());
-        assertThat(ShadowExtractor.extractValues(LiteralExpressionSegment, list), is(Optional.of(result)));
+        assertThat(ShadowExtractor.extractValues(LiteralExpressionSegment, parametersList), is(Optional.of(result)));
     }
 }
