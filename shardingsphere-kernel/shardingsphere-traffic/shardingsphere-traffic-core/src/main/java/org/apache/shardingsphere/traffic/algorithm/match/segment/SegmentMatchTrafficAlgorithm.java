@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public class SegmentMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
+public final class SegmentMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     private static final String STATEMENT_PROPS_KEY = "statement";
     

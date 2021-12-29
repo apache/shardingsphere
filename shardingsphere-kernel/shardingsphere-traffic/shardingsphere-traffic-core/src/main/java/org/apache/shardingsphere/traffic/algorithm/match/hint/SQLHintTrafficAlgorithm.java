@@ -33,7 +33,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<String> {
+public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<String> {
     
     private Properties props = new Properties();
     
