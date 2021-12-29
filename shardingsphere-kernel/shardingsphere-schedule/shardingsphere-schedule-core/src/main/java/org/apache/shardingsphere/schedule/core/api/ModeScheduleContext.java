@@ -119,7 +119,7 @@ public final class ModeScheduleContext {
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName())) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).shutdown();
         }
-        JobConfiguration jobConfig = JobConfiguration.newBuilder(job.getJobName(), 1).cron(job.getCron()).build();
+        JobConfiguration jobConfig = JobConfiguration.newBuilder(job.getJobName(), 1).cron(job.getCron()).overwrite(true).build();
         ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job.getJob()), jobConfig);
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(job.getJobName(), bootstrap);
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).schedule();
