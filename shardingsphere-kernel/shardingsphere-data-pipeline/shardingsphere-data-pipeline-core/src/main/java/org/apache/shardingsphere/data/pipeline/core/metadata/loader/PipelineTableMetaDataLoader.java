@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 
@@ -32,6 +33,7 @@ import java.util.Set;
 /**
  * Pipeline table meta data loader.
  */
+@Slf4j
 public final class PipelineTableMetaDataLoader {
     
     private final Map<String, PipelineTableMetaData> tableMetaDataMap;
@@ -42,8 +44,8 @@ public final class PipelineTableMetaDataLoader {
     
     private Map<String, PipelineTableMetaData> loadTableMetadataMap(final Connection connection, final String tableNamePattern) throws SQLException {
         Map<String, Map<String, PipelineColumnMetaData>> tablePipelineColumnMetaDataMap = new LinkedHashMap<>();
-        Map<String, Set<String>> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableNamePattern, "%")) {
+        // TODO if tableNamePattern is '%', it might return inconsistent result, actual table `t_order_2` may be return
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableNamePattern, "%")) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 Map<String, PipelineColumnMetaData> columnMetaDataMap = tablePipelineColumnMetaDataMap.computeIfAbsent(tableName, k -> new LinkedHashMap<>());
@@ -52,7 +54,14 @@ public final class PipelineTableMetaDataLoader {
                     continue;
                 }
                 int dataType = resultSet.getInt("DATA_TYPE");
-                boolean primaryKey = primaryKeys.containsKey(tableName) && primaryKeys.get(tableName).contains(columnName);
+                Set<String> primaryKeys;
+                try {
+                    primaryKeys = loadPrimaryKeys(connection, tableName);
+                } catch (final SQLException ex) {
+                    log.error("loadPrimaryKeys failed, tableName={}", tableName);
+                    throw ex;
+                }
+                boolean primaryKey = primaryKeys.contains(columnName);
                 PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(columnName, dataType, primaryKey);
                 columnMetaDataMap.put(columnName, columnMetaData);
             }
@@ -61,16 +70,15 @@ public final class PipelineTableMetaDataLoader {
         for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
             result.put(entry.getKey(), new PipelineTableMetaData(entry.getKey(), entry.getValue()));
         }
+        log.info("loadTableMetadataMap, result={}", result);
         return result;
     }
     
-    private Map<String, Set<String>> loadPrimaryKeys(final Connection connection, final String tableNamePattern) throws SQLException {
-        Map<String, Set<String>> result = new LinkedHashMap<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), tableNamePattern)) {
+    private Set<String> loadPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
+        Set<String> result = new LinkedHashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), tableName)) {
             while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                Set<String> columnNames = result.computeIfAbsent(tableName, k -> new LinkedHashSet<>());
-                columnNames.add(resultSet.getString("COLUMN_NAME"));
+                result.add(resultSet.getString("COLUMN_NAME"));
             }
         }
         return result;

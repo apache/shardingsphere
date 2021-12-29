@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -64,6 +65,8 @@ import java.util.stream.Collectors;
 @Getter
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
+    
+    private static final Map<PipelineDataSourceConfiguration, PipelineTableMetaDataLoader> TABLE_META_DATA_LOADER_MAP = new ConcurrentHashMap<>();
     
     private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
@@ -136,7 +139,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            PipelineTableMetaDataLoader tableMetaDataLoader = getTableMetaDataLoader(sourceDataSource);
+            PipelineTableMetaDataLoader tableMetaDataLoader = getTableMetaDataLoader(sourceDataSourceConfig, sourceDataSource);
             logicTableNames.forEach(each -> {
                 //TODO put to preparer
                 if (null == tableMetaDataLoader.getTableMetaData(each)) {
@@ -184,10 +187,21 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    // TODO reuse metadata
-    private PipelineTableMetaDataLoader getTableMetaDataLoader(final PipelineDataSourceWrapper sourceDataSource) throws SQLException {
-        try (Connection connection = sourceDataSource.getConnection()) {
-            return new PipelineTableMetaDataLoader(connection, "%");
+    private PipelineTableMetaDataLoader getTableMetaDataLoader(final PipelineDataSourceConfiguration sourceDataSourceConfig, final PipelineDataSourceWrapper sourceDataSource) throws SQLException {
+        PipelineTableMetaDataLoader result = TABLE_META_DATA_LOADER_MAP.get(sourceDataSourceConfig);
+        if (null != result) {
+            return result;
+        }
+        synchronized (TABLE_META_DATA_LOADER_MAP) {
+            result = TABLE_META_DATA_LOADER_MAP.get(sourceDataSourceConfig);
+            if (null != result) {
+                return result;
+            }
+            try (Connection connection = sourceDataSource.getConnection()) {
+                result = new PipelineTableMetaDataLoader(connection, "%");
+                TABLE_META_DATA_LOADER_MAP.put(sourceDataSourceConfig, result);
+            }
+            return result;
         }
     }
 }

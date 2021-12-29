@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @ToString
 public final class PipelineTableMetaData {
     
+    @NonNull
     private final String name;
     
     private final Map<String, PipelineColumnMetaData> columnMetaDataMap;
@@ -47,5 +50,22 @@ public final class PipelineTableMetaData {
         this.columnMetaDataMap = columnMetaDataMap;
         columnNames = Collections.unmodifiableCollection(columnMetaDataMap.keySet());
         primaryKeys = Collections.unmodifiableList(columnMetaDataMap.values().stream().filter(PipelineColumnMetaData::isPrimaryKey).map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PipelineTableMetaData that = (PipelineTableMetaData) o;
+        return name.equals(that.name);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
