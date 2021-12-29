@@ -106,7 +106,7 @@ sql-parser:
 ```
 
 **Note**: If you use the Hint shadow algorithm, the parse SQL comment configuration item `sql-comment-parse-enabled: true` need to be turned on. turned off by default.
-please refer to [Configuration Props]( https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/configuration/props/) 
+please refer to [SQL-PARSER Configuration](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/) 
 
 ### Shadow DB environment
 
@@ -126,13 +126,15 @@ Execute to the shadow DB.
 mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
 ```
 
-Parameter description: execute SQL containing annotations, for example:
+Parameter description: keep the comment, send the comment to the server
+
+Execute SQL containing annotations, for example:
 
 ```sql
 SELECT * FROM table_name /*shadow:true,foo:bar*/;
 ```
 
-If parameter `-c` not used, the comment statement will be intercepted by the MySQL client, for example:
+Comment statement will be intercepted by the MySQL client if parameter `-c` not be used, for example:
 
 ```sql
 SELECT * FROM table_name;

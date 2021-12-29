@@ -87,7 +87,7 @@ sql-parser:
 ```
 
 **注意**： 如果使用注解影子算法，需要开启解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认关闭。 
-请参考 [配置项说明]( https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/configuration/props/)
+请参考 [SQL 解析配置](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 
 ### 影子库环境
 
@@ -107,7 +107,9 @@ CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ..
 mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
 ```
 
-参数说明：执行包含注解 SQL 例如：
+参数说明：保留注释，发送注释到服务端。
+
+执行包含注解 SQL 例如：
 
 ```sql
 SELECT * FROM table_name /*shadow:true,foo:bar*/;
