@@ -854,7 +854,12 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitValuesFunction(final ValuesFunctionContext ctx) {
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
+        if (!ctx.columnRefList().columnRef().isEmpty()) {
+            ColumnSegment columnSegment = (ColumnSegment) visit(ctx.columnRefList().columnRef(0));
+            result.getParameters().add(columnSegment);
+        }
+        return result; 
     }
     
     @Override
