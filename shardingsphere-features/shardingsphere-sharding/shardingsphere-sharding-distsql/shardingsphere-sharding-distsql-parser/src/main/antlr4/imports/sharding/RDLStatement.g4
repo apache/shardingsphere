@@ -124,7 +124,15 @@ shardingColumn
     ;
 
 shardingAlgorithm
+    : existingAlgorithm | autoCreativeAlgorithm
+    ;
+
+existingAlgorithm
     : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+autoCreativeAlgorithm
+    : SHARDING_ALGORITHM LP algorithmDefinition RP
     ;
 
 shardingStrategy

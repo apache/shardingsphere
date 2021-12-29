@@ -68,7 +68,13 @@ shardingColumn:
     SHARDING_COLUMN=columnName
     
 shardingAlgorithm:
+    existingAlgorithm | autoCreativeAlgorithm
+
+existingAlgorithm:
     SHARDING_ALGORITHM=shardingAlgorithmName
+
+autoCreativeAlgorithm:
+    SHARDING_ALGORITHM(algorithmDefinition)
 
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
@@ -90,6 +96,7 @@ algorithmProperty:
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
 - `strategyType` specifies the sharding strategy，please refer to[Sharding Strategy](/en/features/sharding/concept/sharding/#sharding-strategy)
 - `Sharding Table Rule` supports both `Auto Table` and `Table` at the same time. The two types are different in syntax. For the corresponding configuration file, please refer to [Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)
+- When using the `autoCreativeAlgorithm` way to specify `shardingStrategy`, a new sharding algorithm will be created automatically. The algorithm naming rule is `tableName_strategyType_shardingAlgorithmType`, such as `t_order_database_inline`
 
 ### Sharding Binding Table Rule
 
@@ -142,15 +149,13 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}"))
-),table_inline (
+CREATE SHARDING ALGORITHM table_inline (
 TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
 );
 
 CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
