@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -91,7 +92,7 @@ public final class ShardingTableRuleStatementChecker {
         String schemaName = shardingSphereMetaData.getName();
         checkShardingTables(schemaName, rules, currentRuleConfig, isCreate);
         checkResources(schemaName, rules, shardingSphereMetaData);
-        checkKeyGenerators(rules);
+        checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
         checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
         checkTableRule(schemaName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
@@ -168,9 +169,13 @@ public final class ShardingTableRuleStatementChecker {
         return result;
     }
     
-    private static void checkKeyGenerators(final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        Set<String> requiredKeyGenerators = rules.stream().filter(each -> Objects.nonNull(each.getKeyGenerateSegment()))
-                .map(each -> each.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment().getName()).collect(Collectors.toSet());
+    private static void checkKeyGenerators(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Set<String> notExistKeyGenerator = new LinkedHashSet<>(rules.size());
+        Set<String> requiredKeyGenerators = new LinkedHashSet<>(rules.size());
+        rules.stream().map(AbstractTableRuleSegment::getKeyGenerateSegment).filter(Objects::nonNull)
+                .peek(each -> each.getKeyGenerateAlgorithmName().filter(op -> null == currentRuleConfig || !currentRuleConfig.getKeyGenerators().containsKey(op)).ifPresent(notExistKeyGenerator::add))
+                .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
+        DistSQLException.predictionThrow(notExistKeyGenerator.isEmpty(), new RequiredAlgorithmMissedException("key generator", notExistKeyGenerator));
         Collection<String> invalidKeyGenerators = requiredKeyGenerators.stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
