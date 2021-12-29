@@ -68,6 +68,7 @@ execute
     | createDomain
     | createRule
     | createSchema
+    | createType
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -91,5 +92,8 @@ execute
     | copy
     | createLanguage
     | alterLanguage
+    | dropLanguage
+    | createConversion
+    | dropConversion
     ) SEMI_?
     ;

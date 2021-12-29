@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
@@ -35,4 +36,6 @@ public final class CreateDefaultShardingStrategyStatement extends CreateRuleStat
     private final String shardingColumn;
     
     private final String shardingAlgorithmName;
+    
+    private final AlgorithmSegment algorithmSegment;
 }

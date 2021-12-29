@@ -46,7 +46,6 @@ public class YmlShadowDefaultSpringBootStarterTest {
     
     @Test
     public void assertShadowRuleConfiguration() {
-        assertThat(shadowRuleConfiguration.isEnable(), is(true));
         assertShadowDataSources(shadowRuleConfiguration.getDataSources());
         assertShadowTables(shadowRuleConfiguration.getTables());
         assertDefaultShadowAlgorithm(shadowRuleConfiguration.getDefaultShadowAlgorithmName());

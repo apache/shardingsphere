@@ -43,7 +43,7 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         SimpleTableSegment tableSegment = mock(SimpleTableSegment.class);
         when(tableSegment.getTableName()).thenReturn(new TableNameSegment(0, 0, new IdentifierValue("pg_database")));
         when(statement.getFrom()).thenReturn(tableSegment);
-        Optional<DatabaseAdminExecutor> executorOptional = postgreSQLAdminExecutorFactory.newInstance(statement, "");
+        Optional<DatabaseAdminExecutor> executorOptional = postgreSQLAdminExecutorFactory.newInstance(statement, "", Optional.empty());
         assertTrue(executorOptional.isPresent());
         assertThat(executorOptional.get(), instanceOf(SelectDatabaseExecutor.class));
     }

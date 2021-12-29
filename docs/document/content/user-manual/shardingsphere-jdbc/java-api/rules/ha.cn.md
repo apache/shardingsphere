@@ -23,7 +23,7 @@ weight = 3
 
 | *名称*                     | *数据类型*             | *说明*                                            | *默认值*       |
 | -------------------------- | -------------------- | ------------------------------------------------- | ------------- |
-| name (+)                   | String               | 数据源名称                                          | -             |
+| groupName (+)              | String               | 数据库发现组名称                                    | -             |
 | dataSourceNames (+)        | Collection\<String\> | 数据源名称，多个数据源用逗号分隔 如：ds_0, ds_1        | -             |
 | discoveryHeartbeatName (+) | String               | 监听心跳名称                                        | -             |
 | discoveryTypeName (+)      | String               | 数据库发现类型名称                                   | -             |

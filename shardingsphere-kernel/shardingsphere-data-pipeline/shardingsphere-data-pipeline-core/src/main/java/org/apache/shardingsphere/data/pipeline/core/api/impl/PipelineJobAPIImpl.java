@@ -30,8 +30,9 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.exception.DataCheckFailException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
@@ -248,10 +249,10 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final RuleAlteredJobContext jobContext, final DataConsistencyCheckAlgorithm checkAlgorithm) {
         long jobId = jobContext.getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
-        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
-            Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck(checkAlgorithm);
-            result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
+        if (result.values().stream().allMatch(DataConsistencyCheckResult::isRecordsCountMatched)) {
+            Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkRecordsContent(checkAlgorithm);
+            result.forEach((key, value) -> value.setRecordsContentMatched(contentCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
@@ -264,10 +265,11 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
-            boolean isDataValid = entry.getValue().isDataValid();
-            boolean isCountValid = entry.getValue().isCountValid();
-            if (!isDataValid || !isCountValid) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, entry.getKey(), isDataValid, isCountValid);
+            boolean recordsCountMatched = entry.getValue().isRecordsCountMatched();
+            boolean recordsContentMatched = entry.getValue().isRecordsContentMatched();
+            if (!recordsContentMatched || !recordsCountMatched) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
+                    jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
                 return false;
             }
         }
@@ -282,12 +284,12 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             Optional<Boolean> checkResultOptional = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
             if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
-                throw new DataCheckFailException("Data consistency check not finished or failed.");
+                throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getRuleConfig().getTarget().getParameter(), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
@@ -301,10 +303,14 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void reset(final long jobId) throws SQLException {
+    public void reset(final long jobId) {
         log.info("Scaling job {} reset target table", jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
-        new ScalingEnvironmentManager().resetTargetTable(new RuleAlteredJobContext(getJobConfig(jobId)));
+        try {
+            new ScalingEnvironmentManager().resetTargetTable(new RuleAlteredJobContext(getJobConfig(jobId)));
+        } catch (final SQLException ex) {
+            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
+        }
     }
     
     @Override

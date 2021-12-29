@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionContext;
@@ -48,14 +49,17 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropLanguageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSequenceContext;
@@ -110,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateFunctionStatement;
@@ -120,12 +125,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropLanguageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
@@ -596,5 +604,25 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitAlterLanguage(final AlterLanguageContext ctx) {
         return new OpenGaussAlterLanguageStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
+        return new OpenGaussDropLanguageStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
+        return new OpenGaussCreateConversionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateType(final CreateTypeContext ctx) {
+        return new OpenGaussCreateTypeStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropConversion(final DropConversionContext ctx) {
+        return new OpenGaussDropConversionStatement();
     }
 }

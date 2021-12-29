@@ -48,7 +48,6 @@ public final class ShadowDefaultAlgorithmConfiguration extends BaseShadowConfigu
     
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setDefaultShadowAlgorithmName("simple-note-algorithm");
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
@@ -78,7 +77,7 @@ public final class ShadowDefaultAlgorithmConfiguration extends BaseShadowConfigu
     
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "shadow-ds"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
     }
 }

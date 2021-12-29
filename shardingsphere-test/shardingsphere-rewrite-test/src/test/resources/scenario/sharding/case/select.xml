@@ -52,6 +52,12 @@
         <output sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account_0 t WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_count_fun_and_distinct_with_group_by">
+        <input sql="SELECT COUNT(DISTINCT amount), account_id FROM t_account GROUP BY account_id" />
+        <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_0  ORDER BY account_id ASC " />
+        <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_1  ORDER BY account_id ASC " />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_having" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>

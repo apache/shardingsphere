@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +115,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
+        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
+    }
+    
+    @Override
     public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
@@ -141,6 +149,13 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     @Override
     public String buildCountSQL(final String tableName) {
         return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    }
+    
+    @Override
+    public String buildChunkedQuerySQL(final String tableName, final String uniqueKey, final Number startUniqueValue) {
+        Preconditions.checkNotNull(uniqueKey, "uniqueKey is null");
+        Preconditions.checkNotNull(startUniqueValue, "startUniqueValue is null");
+        return "SELECT * FROM " + quote(tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
     }
     
     @Override

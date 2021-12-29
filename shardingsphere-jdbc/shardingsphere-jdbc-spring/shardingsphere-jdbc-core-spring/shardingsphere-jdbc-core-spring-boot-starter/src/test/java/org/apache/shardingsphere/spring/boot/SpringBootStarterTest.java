@@ -145,7 +145,6 @@ public class SpringBootStarterTest {
     }
     
     private void assertShadowRule(final ShadowRule rule) {
-        assertThat(rule.isEnable(), is(true));
         assertShadowDataSourceMappings(rule.getShadowDataSourceMappings());
         assertShadowAlgorithms(rule.getShadowAlgorithms());
         assertShadowTableRules(rule.getShadowTableRules());
@@ -166,7 +165,7 @@ public class SpringBootStarterTest {
     private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
         assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
         assertCacheOption(sqlParserRule.getSqlStatementCache());
-        assertCacheOption(sqlParserRule.getParserTreeCache());
+        assertCacheOption(sqlParserRule.getParseTreeCache());
     }
 
     private void assertCacheOption(final CacheOption cacheOption) {

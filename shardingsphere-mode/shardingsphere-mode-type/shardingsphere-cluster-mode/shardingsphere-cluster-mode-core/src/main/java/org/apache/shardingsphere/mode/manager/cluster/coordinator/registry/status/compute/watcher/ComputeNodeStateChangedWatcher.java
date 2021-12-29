@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.mode.instance.Instance;
+import org.apache.shardingsphere.infra.instance.Instance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;

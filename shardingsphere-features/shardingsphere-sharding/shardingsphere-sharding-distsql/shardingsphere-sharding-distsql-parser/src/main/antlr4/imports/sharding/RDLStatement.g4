@@ -79,16 +79,20 @@ dropShardingAlgorithm
     : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    ;
+
 shardingTableRuleDefinition
     : (shardingAutoTableRule | shardingTableRule)
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
     ;
 
 keyGeneratorDefination
@@ -120,7 +124,19 @@ shardingColumn
     ;
 
 shardingAlgorithm
+    : existingAlgorithm | autoCreativeAlgorithm
+    ;
+
+existingAlgorithm
     : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+autoCreativeAlgorithm
+    : SHARDING_ALGORITHM LP algorithmDefinition RP
+    ;
+
+keyGenerator
+    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -135,8 +151,16 @@ tableStrategy
     : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
-keyGenerateStrategy
+keyGenerateDeclaration
+    : keyGenerateDefinition | keyGenerateStrategy
+    ;
+
+keyGenerateDefinition
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+keyGenerateStrategy
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition

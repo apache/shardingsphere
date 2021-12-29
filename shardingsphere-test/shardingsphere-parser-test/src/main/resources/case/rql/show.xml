@@ -94,4 +94,6 @@
     <show-sharding-key-generators sql-case-id="show-sharding-key-generators">
         <schema name="sharding_db" start-index="34" stop-index="44"/>
     </show-sharding-key-generators>
+
+    <show-transaction-rule sql-case-id="show-transaction-rule" />
 </sql-parser-test-cases>

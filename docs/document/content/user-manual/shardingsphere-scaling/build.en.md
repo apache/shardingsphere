@@ -18,24 +18,15 @@ The binary packages:
 
 Or get binary package from [download page]( https://shardingsphere.apache.org/document/current/en/downloads/ ).
 
-> Scaling is an experimental feature, if scaling job fail, you could try nightly version, click here to [download latest version]( https://github.com/apache/shardingsphere#nightly-builds ).
+> Scaling is an experimental feature, if scaling job fail, you could try nightly version, click here to [download nightly build]( https://github.com/apache/shardingsphere#nightly-builds ).
 
 2. Unzip the proxy distribution package, modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/) for more details.
 
-3. Modify the configuration file `conf/server.yaml`. Type of `mode` must be `Cluster` for now, please start the registry center before running proxy.
+3. Modify the configuration file `conf/server.yaml`. Please refer to [Mode Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for more details.
+Type of `mode` must be `Cluster` for now, please start the registry center before running proxy.
 
-Configuration after enabling `scaling` and `mode`:
+Configuration Example:
 ```yaml
-scaling:
-  blockQueueSize: 10000
-  workerThread: 40
-  clusterAutoSwitchAlgorithm:
-    type: IDLE
-    props:
-      incremental-task-idle-minute-threshold: 30
-  dataConsistencyCheckAlgorithm:
-    type: DEFAULT
-
 mode:
   type: Cluster
   repository:
@@ -50,19 +41,77 @@ mode:
   overwrite: false
 ```
 
-Enable `clusterAutoSwitchAlgorithm` indicate system will detect when scaling job is finished and switch cluster configuration automatically. Currently, system supply `IDLE` type implementation.
+4. Modify `scalingName` and `scaling` configuration in `conf/config-sharding.yaml`. 
 
-Enable `dataConsistencyCheckAlgorithm` indicate system will use this defined algorithm to do data consistency check when it's emitted, if it's disabled, then data consistency check will be ignored. Currently, system supply `DEFAULT` type implementation, it supports following database types: `MySQL`, you could not enable it if you're running other database types for now, support of other database types is under development.
+Configuration Items Explanation:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: # Enabled scaling action config name
+  scaling:
+    <scaling-action-config-name> (+):
+      blockQueueSize: # Data channel blocking queue size
+      workerThread: # Worker thread pool size for inventory data ingestion and data importing
+      readBatchSize: # Maximum records count of a query operation returning
+      rateLimiter: # Rate limit algorithm
+        type: # Algorithm type. Options: SOURCE
+        props: # Algorithm properties
+          qps: # QPS property. Available for types: SOURCE
+      completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
+        type: # Algorithm type. Options: IDLE
+        props: # Algorithm properties
+          incremental-task-idle-minute-threshold: # If incremental tasks is idle more than so much minutes, then it could be considered as almost completed. Available for types: IDLE
+      sourceWritingStopper: # Lock algorithm for stopping source writing. If it's not configured, then system will skip this step.
+        type: # Algorithm type. Options: DEFAULT
+      dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
+        type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
+        props: # Algorithm properties
+          chunk-size: # Maximum records count of a query operation for check
+      checkoutLocker: # Lock algorithm for metadata checkout. If it's not configured, then system will skip this step.
+        type: # Algorithm type. Options: DEFAULT
+```
 
-You could customize an auto switch algorithm by implementing `ScalingClusterAutoSwitchAlgorithm` SPI interface, and customize a check algorithm by implementing `ScalingDataConsistencyCheckAlgorithm` SPI interface. Please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+Configuration Example:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: default_scaling
+  scaling:
+    default_scaling:
+      blockQueueSize: 10000
+      workerThread: 40
+      readBatchSize: 1000
+      rateLimiter:
+        type: SOURCE
+        props:
+          qps: 50
+      completionDetector:
+        type: IDLE
+        props:
+          incremental-task-idle-minute-threshold: 30
+      sourceWritingStopper:
+        type: DEFAULT
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+      checkoutLocker:
+        type: DEFAULT
+```
 
-3. Start up ShardingSphere-Proxy:
+You could customize `rateLimiter`, `completionDetector`, `sourceWritingStopper`, `dataConsistencyChecker` and `checkoutLocker` algorithm by implementing SPI. Current implementation could be referenced, please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+
+5. Start up ShardingSphere-Proxy:
 
 ```
 sh bin/start.sh
 ```
 
-4. Check proxy log `logs/stdout.log`:
+6. Check proxy log `logs/stdout.log`:
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
@@ -75,18 +124,3 @@ It means `proxy` start up successfully.
 ```
 sh bin/stop.sh
 ```
-
-## Configuration
-
-The existing configuration items are as follows, we can modify them in `conf/server.yaml`:
-
-| 1st key | 2nd key                       | 3rd key                                      | Desc                                                                                         | Default value   |
-| ------- | ----------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------- |
-| scaling |                               | blockQueueSize                               | Queue size of data transmission channel                                                      | 10000           |
-|         |                               | workerThread                                 | Worker thread pool size, the number of migration task threads allowed to run concurrently    | 40              |
-|         | clusterAutoSwitchAlgorithm    | type                                         | Enable automatic detection of task completion and switch configuration, currently the system provides IDLE type implementation |           |
-|         |                               | props:incremental-task-idle-minute-threshold | The maximum idle time of incremental synchronization, if it exceeds this value, enter the next state    | 30 (minutes) |
-|         | dataConsistencyCheckAlgorithm | type                                         | Configure the dataConsistencyCheckAlgorithm, configure it to enable data consistency check. At present, system provides `DEFAULT` type of implementation, only MySQL implement `DEFAULT` algorithm for now. Please refer to [Data consistency check algorithm](/en/dev-manual/scaling/#scalingdataconsistencycheckalgorithm) for more details. |           |
-| mode    | type                          | Cluster                                      |                                                                                              |                |
-|         | repository                    | type, props                                  | registry center, now support Zookeeper, Etcd                                                 |                |
-|         | overwrite                     |                                              | Control whether the configuration file covers the registry center metadata, which can generally be used during testing. | false     |
