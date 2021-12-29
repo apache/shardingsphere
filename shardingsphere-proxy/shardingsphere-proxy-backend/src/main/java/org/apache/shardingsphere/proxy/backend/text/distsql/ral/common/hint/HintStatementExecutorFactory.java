@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
-import java.lang.UnsupportedOperationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
