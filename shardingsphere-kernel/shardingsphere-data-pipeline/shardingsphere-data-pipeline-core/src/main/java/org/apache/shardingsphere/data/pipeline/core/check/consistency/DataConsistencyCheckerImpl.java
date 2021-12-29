@@ -27,14 +27,14 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.common.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -127,13 +126,6 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
-        Map<String, TableMetaData> tableMetaDataMap = getTablesColumnsMap(sourceDataSourceConfig, logicTableNames);
-        logicTableNames.forEach(each -> {
-            //TODO put to preparer
-            if (!tableMetaDataMap.containsKey(each)) {
-                throw new PipelineDataConsistencyCheckFailedException(String.format("could not get columns for table '%s'", each));
-            }
-        });
         String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
         String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
         SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
@@ -144,9 +136,17 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+            PipelineTableMetaDataLoader tableMetaDataLoader = getTableMetaDataLoader(sourceDataSource);
+            logicTableNames.forEach(each -> {
+                //TODO put to preparer
+                if (null == tableMetaDataLoader.getTableMetaData(each)) {
+                    throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
+                }
+            });
             for (String each : logicTableNames) {
-                Collection<String> columnNames = tableMetaDataMap.get(each).getColumns().keySet();
-                String uniqueKey = tableMetaDataMap.get(each).getPrimaryKeyColumns().get(0);
+                PipelineTableMetaData tableMetaData = tableMetaDataLoader.getTableMetaData(each);
+                Collection<String> columnNames = tableMetaData.getColumnNames();
+                String uniqueKey = tableMetaData.getPrimaryKeys().get(0);
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
@@ -170,7 +170,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 result.put(each, calculateResultsEquals);
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("data check failed");
+            throw new PipelineDataConsistencyCheckFailedException("data check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -185,22 +185,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     // TODO reuse metadata
-    private Map<String, TableMetaData> getTablesColumnsMap(final PipelineDataSourceConfiguration dataSourceConfig, final Collection<String> tableNames) {
-        try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig)) {
-            Map<String, TableMetaData> result = new LinkedHashMap<>();
-            for (String each : tableNames) {
-                Optional<TableMetaData> tableMetaDataOptional;
-                try {
-                    tableMetaDataOptional = TableMetaDataLoader.load(dataSource, each, dataSourceConfig.getDatabaseType());
-                } catch (final SQLException ex) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("get columns failed for table '%s'", each), ex);
-                }
-                TableMetaData tableMetaData = tableMetaDataOptional.orElseThrow(() -> new PipelineDataConsistencyCheckFailedException(String.format("get metadata failed for table '%s'", each)));
-                result.put(each, tableMetaData);
-            }
-            return result;
-        } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("create data source failed", ex);
+    private PipelineTableMetaDataLoader getTableMetaDataLoader(final PipelineDataSourceWrapper sourceDataSource) throws SQLException {
+        try (Connection connection = sourceDataSource.getConnection()) {
+            return new PipelineTableMetaDataLoader(connection, "%");
         }
     }
 }
