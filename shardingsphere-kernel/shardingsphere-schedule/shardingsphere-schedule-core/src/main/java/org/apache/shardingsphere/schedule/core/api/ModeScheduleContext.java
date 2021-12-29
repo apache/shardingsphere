@@ -31,6 +31,8 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.schedule.CronJob;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -39,6 +41,8 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public final class ModeScheduleContext {
+    
+    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
     
     private final CoordinatorRegistryCenter registryCenter;
     
@@ -112,9 +116,13 @@ public final class ModeScheduleContext {
             log.warn("registryCenter is null, ignore, jobName={}, cron={}", job.getJobName(), job.getCron());
             return;
         }
+        if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName())) {
+            SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).shutdown();
+        }
         JobConfiguration jobConfig = JobConfiguration.newBuilder(job.getJobName(), 1).cron(job.getCron()).build();
         ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job.getJob()), jobConfig);
-        bootstrap.schedule();
+        SCHEDULE_JOB_BOOTSTRAP_MAP.put(job.getJobName(), bootstrap);
+        SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).schedule();
     }
     
     /**
