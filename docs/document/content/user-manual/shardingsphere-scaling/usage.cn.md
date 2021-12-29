@@ -33,7 +33,8 @@ weight = 2
 | 全量迁移               | 支持           | 支持           | 支持           |
 | 增量迁移               | 支持           | 支持           | 支持           |
 | 自动建表               | 支持           | 不支持         | 支持           |
-| 默认数据一致性校验算法   | 支持           | 不支持         | 不支持          |
+| DATA_MATCH一致性校验   | 支持           | 支持           | 支持           |
+| CRC32_MATCH一致性校验  | 支持           | 不支持         | 不支持          |
 
 **注意**：
 
@@ -41,16 +42,25 @@ weight = 2
 
 ### 权限要求
 #### MySQL
-MySQL 需要开启 `binlog`，且迁移时所使用用户需要赋予 Replication 相关权限。
-执行以下命令，确认是否有开启binlog：
+1. 开启 `binlog`
 
+MySQL 5.7 `my.cnf` 示例配置：
+```
+[mysqld]
+server-id=1
+log-bin=mysql-bin
+binlog-format=row
+binlog-row-image=full
+max_connections=600
+```
+
+执行以下命令，确认是否有开启binlog：
 ```
 show variables like '%log_bin%';
 show variables like '%binlog%';
 ```
 
 如以下显示，则说明binlog已开启
-
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -61,11 +71,14 @@ show variables like '%binlog%';
 +-----------------------------------------+---------------------------------------+
 ```
 
-执行以下命令，查看该用户是否有迁移权限
+2. 赋予 MySQL 账号 Replication 相关权限。
+
+执行以下命令，查看该用户是否有迁移权限：
 ```
 SHOW GRANTS 'user';
 ```
 
+示例结果：
 ```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
@@ -76,7 +89,18 @@ SHOW GRANTS 'user';
 ```
 
 #### PostgreSQL
-PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
+
+1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
+
+2. 调整 WAL 配置
+
+`postgresql.conf` 示例配置：
+```
+wal_level = logical
+max_replication_slots = 10
+```
+
+详情请参见 [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) 和 [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html )。
 
 ### DistSQL 自动模式接口
 
@@ -112,15 +136,26 @@ mysql> preview select count(1) from t_order;
 示例：
 ```sql
 ADD RESOURCE ds_2 (
-    URL="jdbc:mysql://127.0.0.1:3306/db2?serverTimezone=UTC&useSSL=false",
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_2?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+), ds_3 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_3?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+), ds_4 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_4?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
--- ds_3, ds_4
 ```
 
 2. 修改分片规则
+
+目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
 
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
@@ -137,12 +172,12 @@ DistSQL 字段含义和 YAML 配置保持一致，详情请参见[YAML配置#数
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
+TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
 GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-比如说修改了 `RESOURCES` 和 `sharding-count` 会触发迁移。
+`RESOURCES` 从 `(ds_0, ds_1)` 改为了 `(ds_2, ds_3, ds_4)`，`sharding-count` 从 `4` 改为了 `6`，会触发迁移。
 
 `TableRule`修改示例：
 ```sql
@@ -163,7 +198,7 @@ GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=12
 );
 ```
 
-比如说修改了 `database_inline` 的 `algorithm-expression` 和 `t_order` 的 `DATANODES` 会触发迁移。
+`database_inline` 的 `algorithm-expression` 从 `ds_${user_id % 2}` 改为 `ds_${user_id % 3 + 2}`，`t_order` 的 `DATANODES` 从 `ds_${0..1}.t_order_${0..1}` 改为 `ds_${2..4}.t_order_${0..1}`，会触发迁移。
 
 #### 查询所有迁移任务
 
@@ -180,8 +215,8 @@ mysql> show scaling list;
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 | id                 | tables                | sharding_total_count | active | create_time         | stop_time           |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
-| 659853312085983232 | t_order_item, t_order | 2                    | 0      | 2021-10-26 20:21:31 | 2021-10-26 20:24:01 |
-| 660152090995195904 | t_order_item, t_order | 2                    | 0      | 2021-10-27 16:08:43 | 2021-10-27 16:11:00 |
+| 659853312085983232 | t_order_item, t_order | 2                    | false  | 2021-10-26 20:21:31 | 2021-10-26 20:24:01 |
+| 660152090995195904 | t_order_item, t_order | 2                    | false  | 2021-10-27 16:08:43 | 2021-10-27 16:11:00 |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 2 rows in set (0.04 sec)
 ```

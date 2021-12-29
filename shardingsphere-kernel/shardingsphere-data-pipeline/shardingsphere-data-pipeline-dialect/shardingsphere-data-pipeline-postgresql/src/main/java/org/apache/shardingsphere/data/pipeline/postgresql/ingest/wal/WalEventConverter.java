@@ -125,7 +125,9 @@ public final class WalEventConverter {
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final TableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0; i < values.size(); i++) {
-            dataRecord.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), values.get(i), true, tableMetaData.isPrimaryKey(i)));
+            Object primaryKeyOldValue = tableMetaData.isPrimaryKey(i) ? values.get(i) : null;
+            Column column = new Column(tableMetaData.getColumnMetaData(i).getName(), primaryKeyOldValue, values.get(i), true, tableMetaData.isPrimaryKey(i));
+            dataRecord.addColumn(column);
         }
     }
 }

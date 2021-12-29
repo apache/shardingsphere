@@ -46,7 +46,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" enable="true">
+    <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds_0" shadow-data-source-name="demo_ds_1"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
@@ -59,6 +59,5 @@
     <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0,demo_ds_1" rule-refs="shadowRule">
         <props>
             <prop key="sql-show">true</prop>
-            <prop key="sql-comment-parse-enabled">true</prop>
         </props>
     </shardingsphere:data-source>

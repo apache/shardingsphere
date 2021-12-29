@@ -15,7 +15,7 @@ route to production DB or shadow DB.
 
 Shadow rules include shadow data source mapping, shadow tables, and shadow algorithms.
 
-![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
+![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_v5.1.0_en.png)
 
 **data-sources**：Production data source name and shadow data source name mappings.
 
@@ -79,11 +79,10 @@ the pressure testing related table `t_order` is a shadow table，the production 
 The shadow configuration for example(YAML)：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -102,12 +101,12 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
 **Note**: If you use the Hint shadow algorithm, the parse SQL comment configuration item `sql-comment-parse-enabled: true` need to be turned on. turned off by default.
-please refer to [Configuration Props]( https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/configuration/props/) 
+please refer to [SQL-PARSER Configuration](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/) 
 
 ### Shadow DB environment
 
@@ -120,6 +119,28 @@ please refer to [Configuration Props]( https://shardingsphere.apache.org/documen
 CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*foo:bar,...*/
 ``` 
 Execute to the shadow DB.
+
+**Note**: If use the MySQL client for testing, the link needs to use the parameter `-c`, for example:
+
+```sql
+mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
+```
+
+Parameter description: keep the comment, send the comment to the server
+
+Execute SQL containing annotations, for example:
+
+```sql
+SELECT * FROM table_name /*shadow:true,foo:bar*/;
+```
+
+Comment statement will be intercepted by the MySQL client if parameter `-c` not be used, for example:
+
+```sql
+SELECT * FROM table_name;
+```
+
+Affect test results.
 
 ### Shadow algorithm example
 
@@ -214,11 +235,10 @@ Both will be executed to shadow DB, other data executed to production DB.
 Default shadow algorithm configuration (YAML):
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -238,7 +258,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 

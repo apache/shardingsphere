@@ -73,6 +73,9 @@ public final class ResultSetUtil {
         if (value instanceof byte[]) {
             return convertByteArrayValue(value, convertType);
         }
+        if (boolean.class.equals(convertType)) {
+            return convertBooleanValue(value);
+        }
         if (String.class.equals(convertType)) {
             return value.toString();
         } else {
@@ -169,7 +172,7 @@ public final class ResultSetUtil {
         Number number = (Number) value;
         switch (convertType.getName()) {
             case "boolean":
-                return 0 != number.longValue();
+                return longToBoolean(number.longValue());
             case "byte":
                 return number.byteValue();
             case "short":
@@ -224,4 +227,22 @@ public final class ResultSetUtil {
                 return value;
         }
     }
+
+    private static Object convertBooleanValue(final Object value) {
+        if (value instanceof Boolean) {
+            return value;
+        }
+        String stringVal = value.toString();
+        if (stringVal.length() > 0) {
+            int firstChar = Character.toLowerCase(stringVal.charAt(0));
+            return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
+        } else {
+            return false;
+        }
+    }
+
+    private static Boolean longToBoolean(final long longVal) {
+        return -1 == longVal || longVal > 0;
+    }
+    
 }
