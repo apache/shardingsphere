@@ -66,16 +66,16 @@ public final class DataCalculateParameter {
     
     /**
      * Used for range query.
-     * If it's configured, then it could be translated to SQL like "uniqueColumn >= pair.left AND uniqueColumn <= pair.right".
+     * If it's configured, then it could be translated to SQL like "uniqueKey >= pair.left AND uniqueKey <= pair.right".
      * One of left and right of pair could be null.
      */
-    private Pair<Object, Object> uniqueColumnValueRange;
+    private volatile Pair<Object, Object> uniqueKeyValueRange;
     
     /**
      * Used for multiple records query.
-     * If it's configured, then it could be translated to SQL like "uniqueColumn IN (value1,value2,value3)".
+     * If it's configured, then it could be translated to SQL like "uniqueKey IN (value1,value2,value3)".
      */
-    private Collection<Object> uniqueColumnValues;
+    private volatile Collection<Object> uniqueKeyValues;
     
     /**
      * Previous calculated result will be transferred to next call.

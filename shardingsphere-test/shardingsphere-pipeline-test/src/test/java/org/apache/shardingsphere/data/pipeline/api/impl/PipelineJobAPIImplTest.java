@@ -180,7 +180,6 @@ public final class PipelineJobAPIImplTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
     public void assertResetTargetTable() {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());

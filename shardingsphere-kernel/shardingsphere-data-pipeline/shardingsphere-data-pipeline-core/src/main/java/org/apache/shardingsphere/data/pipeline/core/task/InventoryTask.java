@@ -45,7 +45,7 @@ import java.util.concurrent.Future;
  * Inventory task.
  */
 @Slf4j
-@ToString(exclude = {"dataSourceManager", "dumper"})
+@ToString(exclude = {"importerExecuteEngine", "dataSourceManager", "dumper"})
 public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter

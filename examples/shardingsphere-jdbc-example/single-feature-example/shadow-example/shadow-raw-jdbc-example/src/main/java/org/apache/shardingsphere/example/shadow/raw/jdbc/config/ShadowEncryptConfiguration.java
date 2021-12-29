@@ -54,7 +54,6 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
@@ -63,7 +62,7 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "shadow-ds"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
     }
     

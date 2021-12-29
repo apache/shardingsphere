@@ -31,7 +31,6 @@ dataSources:
 
 rules:
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
       sourceDataSourceName: ds
@@ -51,19 +50,19 @@ rules:
       type: VALUE_MATCH
       props:
         operation: insert
-        column: user_id
+        column: user_type
         value: 1
     user-id-select-match-algorithm:
       type: VALUE_MATCH
       props:
         operation: select
-        column: user_id
+        column: user_type
         value: 1
     user-id-delete-match-algorithm:
       type: VALUE_MATCH
       props:
         operation: delete
-        column: user_id
+        column: user_type
         value: 1
     simple-hint-algorithm:
       type: SIMPLE_HINT

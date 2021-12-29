@@ -31,10 +31,6 @@ showShadowAlgorithms
     : SHOW SHADOW ALGORITHMS (FROM schemaName)?
     ;
 
-showShadowStatus
-    : SHOW SHADOW RULE STATUS (FROM schemaName)?
-    ;
-
 shadowRule
     : RULE ruleName
     ;

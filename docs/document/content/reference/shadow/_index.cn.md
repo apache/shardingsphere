@@ -16,8 +16,6 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ![规则](https://shardingsphere.apache.org/document/current/img/shadow/rule_cn.png)
 
-**影子库开关**：影子库功能开关，默认值 `false`。可选值 `true`/`false`
-
 **影子库映射**：生产数据源名称和影子数据源名称映射关系。
 
 **影子表**：压测相关的影子表。影子表必须存在于指定的影子库中，并且需要指定影子算法。
@@ -33,7 +31,7 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 执行影子路由判定流程，判定执行SQL满足影子规则的配置，数据路由到与之对应的影子库，生产数据则维持不变。
 
 ## 影子判定流程
-影子库开关开启时，会对执行的 SQL 语句进行影子判定。影子判定支持两种类型算法，用户可根据实际业务需求选择一种或者组合使用。
+影子库功能对执行的 SQL 语句进行影子判定。影子判定支持两种类型算法，用户可根据实际业务需求选择一种或者组合使用。
 
 ### DML 语句
 
@@ -62,11 +60,10 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 建议配置如下（YAML 格式展示）：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -85,7 +82,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
@@ -197,11 +194,10 @@ SELECT * FROM t_xxx_3 WHERE order_id = xxx /*foo:bar,...*/;
 配置如下（YAML 格式展示）：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -221,7 +217,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 

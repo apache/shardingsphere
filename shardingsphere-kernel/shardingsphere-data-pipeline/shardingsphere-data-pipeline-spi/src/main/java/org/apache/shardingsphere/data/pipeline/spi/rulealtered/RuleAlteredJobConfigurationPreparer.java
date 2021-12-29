@@ -29,7 +29,6 @@ import java.util.Collection;
  */
 public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     
-    // TODO put referenced configuration to SPI
     /**
      * Create handle configuration, used to build job configuration.
      *
