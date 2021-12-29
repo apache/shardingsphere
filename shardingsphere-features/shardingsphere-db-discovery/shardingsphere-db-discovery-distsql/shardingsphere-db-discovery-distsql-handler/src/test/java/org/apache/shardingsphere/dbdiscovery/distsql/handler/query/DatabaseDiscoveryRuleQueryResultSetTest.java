@@ -56,13 +56,13 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         Collection<String> columnNames = resultSet.getColumnNames();
         ArrayList<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(5));
-        columnNames.containsAll(Arrays.asList("name", "data_source_names", "primary_data_source_name", "discover_type", "heartbeat"));
+        columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discover_type", "heartbeat"));
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), is("ms_group"));
         assertThat(actual.get(1), is("ds_0,ds_1"));
         assertThat(actual.get(2), is(""));
-        assertThat(actual.get(3).toString(), is("{name=type_test, type=MGR, props={}}"));
-        assertThat(actual.get(4).toString(), is("{name=heartbeat_test, props={}}"));
+        assertThat(actual.get(3).toString(), is("{group_name=type_test, type=MGR, props={}}"));
+        assertThat(actual.get(4).toString(), is("{group_name=heartbeat_test, props={}}"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
