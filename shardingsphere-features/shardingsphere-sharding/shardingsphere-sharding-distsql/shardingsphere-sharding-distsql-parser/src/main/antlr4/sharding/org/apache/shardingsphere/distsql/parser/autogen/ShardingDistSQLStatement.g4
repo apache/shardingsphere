@@ -46,5 +46,6 @@ execute
     | createShardingKeyGenerator
     | alterShardingKeyGenerator
     | showShardingKeyGenerators
+    | dropShardingKeyGenerator
     ) SEMI?
     ;

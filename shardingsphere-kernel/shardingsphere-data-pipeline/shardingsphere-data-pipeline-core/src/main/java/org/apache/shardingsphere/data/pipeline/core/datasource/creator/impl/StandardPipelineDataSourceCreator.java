@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator.impl;
 
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 
 import javax.sql.DataSource;
 

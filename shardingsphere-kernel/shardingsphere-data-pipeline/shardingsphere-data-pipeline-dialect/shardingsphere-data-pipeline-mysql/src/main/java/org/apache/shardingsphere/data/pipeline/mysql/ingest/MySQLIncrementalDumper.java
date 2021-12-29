@@ -22,6 +22,7 @@ import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQ
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.io.Serializable;
@@ -87,7 +87,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
-        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
+        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new PipelineDataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     @Override

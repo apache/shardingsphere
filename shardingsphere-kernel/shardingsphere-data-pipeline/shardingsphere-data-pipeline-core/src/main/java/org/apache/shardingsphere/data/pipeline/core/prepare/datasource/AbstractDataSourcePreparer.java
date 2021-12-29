@@ -19,12 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -48,13 +48,13 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
-    protected final DataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
+    protected final PipelineDataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
         return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
     }
     
-    protected final DataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
+    protected final PipelineDataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
         return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
     }
     

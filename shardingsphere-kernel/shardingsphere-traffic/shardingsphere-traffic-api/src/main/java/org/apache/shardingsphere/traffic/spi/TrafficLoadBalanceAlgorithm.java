@@ -18,10 +18,21 @@
 package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
+
+import java.util.List;
 
 /**
  * Traffic load balance algorithm.
  */
 public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
+    
+    /**
+     * Get dataSource config.
+     * 
+     * @param dataSourceConfigs dataSource config collection
+     * @return dataSource config
+     */
+    DataSourceConfiguration getDataSourceConfig(List<DataSourceConfiguration> dataSourceConfigs);
 }

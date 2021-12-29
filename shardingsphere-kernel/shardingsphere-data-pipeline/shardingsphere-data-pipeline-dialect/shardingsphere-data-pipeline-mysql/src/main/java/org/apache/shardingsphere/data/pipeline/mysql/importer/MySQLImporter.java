@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.importer;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public final class MySQLImporter extends AbstractImporter {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         super(importerConfig, dataSourceManager);
         importerConfig.getDataSourceConfig().appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
     }

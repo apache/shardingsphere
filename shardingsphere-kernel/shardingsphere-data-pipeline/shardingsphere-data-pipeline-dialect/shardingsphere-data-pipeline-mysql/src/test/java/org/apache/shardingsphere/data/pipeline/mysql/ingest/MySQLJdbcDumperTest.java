@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLJdbcDumperTest {
     
-    private DataSourceManager dataSourceManager;
+    private PipelineDataSourceManager dataSourceManager;
     
     private MySQLInventoryDumper mysqlJdbcDumper;
     
@@ -53,7 +53,7 @@ public final class MySQLJdbcDumperTest {
     
     @Before
     public void setUp() {
-        dataSourceManager = new DataSourceManager();
+        dataSourceManager = new PipelineDataSourceManager();
         mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     

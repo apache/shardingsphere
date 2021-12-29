@@ -190,7 +190,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
+                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
                 CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getName(),
                     each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())

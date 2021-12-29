@@ -47,13 +47,13 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 </#if>
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,17 +74,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
     private static final String USER_NAME = "${username}";
     
     private static final String PASSWORD = "${(password)?c}";
-<#if feature=="sharding">
-    <#include "shardingConfiguration.ftl">
-<#elseif feature=="readwrite-splitting">
-    <#include "readwritesplittingConfiguration.ftl">
-<#elseif feature=="encrypt">
-    <#include "encryptConfiguration.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowConfiguration.ftl">
-<#elseif feature=="db-discovery">
-    <#include "dbDiscoveryConfiguration.ftl">
-</#if>
+<#include "${feature}.ftl">
 <#if feature!="db-discovery">
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();

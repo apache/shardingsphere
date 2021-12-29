@@ -32,7 +32,6 @@
                 <xsd:element ref="default-shadow-algorithm-name" minOccurs="0" maxOccurs="unbounded" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="enable" type="xsd:boolean"/>
         </xsd:complexType>
     </xsd:element>
 

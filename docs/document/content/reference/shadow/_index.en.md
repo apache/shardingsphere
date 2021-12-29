@@ -17,8 +17,6 @@ Shadow rules include shadow data source mapping, shadow tables, and shadow algor
 
 ![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
 
-**enable**：Shadow DB switch. Optional value `true`/`false`, default value is `false`.
-
 **data-sources**：Production data source name and shadow data source name mappings.
 
 **tables**：Shadow tables related to stress testing. Shadow tables must exist in the specified shadow DB, and the shadow algorithm needs to be specified.
@@ -38,7 +36,7 @@ It determined that the execution of SQL satisfies the configuration of the shado
 
 ## Shadow Judgment Process
 
-When the shadow DB switch turned on, shadow judgment will be made on the executed SQL statements.
+The Shadow DB performs shadow judgment on the executed SQL statements.
 
 Shadow judgment supports two types of algorithms, users can choose one or combine them according to actual business needs.
 
@@ -81,11 +79,10 @@ the pressure testing related table `t_order` is a shadow table，the production 
 The shadow configuration for example(YAML)：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -104,7 +101,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
@@ -216,11 +213,10 @@ Both will be executed to shadow DB, other data executed to production DB.
 Default shadow algorithm configuration (YAML):
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -240,7 +236,7 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 

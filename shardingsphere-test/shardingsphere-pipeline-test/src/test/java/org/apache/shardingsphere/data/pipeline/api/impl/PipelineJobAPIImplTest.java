@@ -31,8 +31,8 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -180,7 +180,6 @@ public final class PipelineJobAPIImplTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
     public void assertResetTargetTable() {
         Optional<Long> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());

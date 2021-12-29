@@ -30,48 +30,47 @@ dataSources:
     password:
 
 rules:
-  - !SHADOW
-    enable: true
-    dataSources:
-      shadowDataSource:
-        sourceDataSourceName: ds
-        shadowDataSourceName: ds_shadow
-    tables:
-      t_user:
-        dataSourceNames:
-          - shadowDataSource
-        shadowAlgorithmNames:
-          - user-id-insert-match-algorithm
-          - user-id-select-match-algorithm
-          - user-id-update-match-algorithm
-          - user-id-delete-match-algorithm
-    defaultShadowAlgorithmName: simple-hint-algorithm
-    shadowAlgorithms:
-      user-id-insert-match-algorithm:
-        type: REGEX_MATCH
-        props:
-          operation: insert
-          column: user_id
-          regex: "[1]"
-      user-id-select-match-algorithm:
-        type: REGEX_MATCH
-        props:
-          operation: select
-          column: user_id
-          regex: "[1]"
-      user-id-delete-match-algorithm:
-        type: REGEX_MATCH
-        props:
-          operation: delete
-          column: user_id
-          regex: "[1]"
-      simple-hint-algorithm:
-        type: SIMPLE_HINT
-        props:
-          shadow: true
-          foo: bar
-  - !SQL_PARSER
-    sqlCommentParseEnabled: true
+- !SHADOW
+  dataSources:
+    shadowDataSource:
+      sourceDataSourceName: ds
+      shadowDataSourceName: ds_shadow
+  tables:
+    t_user:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-select-match-algorithm
+        - user-id-update-match-algorithm
+        - user-id-delete-match-algorithm
+  defaultShadowAlgorithmName: simple-hint-algorithm
+  shadowAlgorithms:
+    user-id-insert-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: insert
+        column: user_type
+        regex: "[1]"
+    user-id-select-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: select
+        column: user_type
+        regex: "[1]"
+    user-id-delete-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: delete
+        column: user_type
+        regex: "[1]"
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        shadow: true
+        foo: bar
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 
 props:
   sql-show: true

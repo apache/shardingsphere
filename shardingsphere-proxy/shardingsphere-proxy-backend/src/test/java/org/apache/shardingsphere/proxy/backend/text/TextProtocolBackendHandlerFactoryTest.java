@@ -189,8 +189,18 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithSet() throws SQLException {
         String sql = "set @num=1";
+        ProxyContext instance = ProxyContext.getInstance();
+        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithSetNoResource() throws SQLException {
+        String sql = "set @num=1";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
+        assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
     }
     
     @Test
@@ -212,6 +222,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithQuery() throws SQLException {
         String sql = "select * from t_order limit 1";
+        ProxyContext instance = ProxyContext.getInstance();
+        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";
