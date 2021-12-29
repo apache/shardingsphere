@@ -30,6 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class HikariDataSourcePoolCreatorTest {
@@ -65,7 +66,7 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        assertThat(hikariDataSource.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertNull(hikariDataSource.getDataSourceClassName());
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(hikariDataSource.getDriverClassName(), is("org.h2.Driver"));
         assertThat(hikariDataSource.getUsername(), is("root"));
