@@ -22,17 +22,17 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import javax.sql.DataSource;
 
 /**
- * Data source pool parameter decorator.
+ * Data source pool decorator.
  * 
  * @param <T> type of data source
  */
-public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
+public interface DataSourcePoolDecorator<T extends DataSource> extends TypedSPI {
     
     /**
-     * Decorate data source.
+     * Decorate data source pool.
      * 
-     * @param dataSource data source to be decorated
-     * @return decorated data source
+     * @param dataSource data source pool to be decorated
+     * @return decorated data source pool
      */
     T decorate(T dataSource);
 }

@@ -26,13 +26,13 @@ import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Data source pool parameter decorator factory.
+ * Data source pool decorator factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourcePoolParameterDecoratorFactory {
+public final class DataSourcePoolDecoratorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourcePoolParameterDecorator.class);
+        ShardingSphereServiceLoader.register(DataSourcePoolDecorator.class);
     }
     
     /**
@@ -43,7 +43,7 @@ public final class DataSourcePoolParameterDecoratorFactory {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static DataSource decorate(final DataSource dataSource) {
-        Optional<DataSourcePoolParameterDecorator> decorator = TypedSPIRegistry.findRegisteredService(DataSourcePoolParameterDecorator.class, dataSource.getClass().getCanonicalName(), null);
+        Optional<DataSourcePoolDecorator> decorator = TypedSPIRegistry.findRegisteredService(DataSourcePoolDecorator.class, dataSource.getClass().getCanonicalName(), null);
         return decorator.isPresent() ? decorator.get().decorate(dataSource) : dataSource;
     }
 }

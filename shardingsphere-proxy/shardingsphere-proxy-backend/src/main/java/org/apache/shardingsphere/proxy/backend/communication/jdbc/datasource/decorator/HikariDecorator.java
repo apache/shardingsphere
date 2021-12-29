@@ -19,39 +19,39 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolParameterDecorator;
+import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolDecorator;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionURLParser;
 
 import java.util.Map;
 
 /**
- * Data source pool parameter decorator for Hikari.
+ * Hikari decorator.
  */
-public final class HikariParameterDecorator implements DataSourcePoolParameterDecorator<HikariDataSource> {
+public final class HikariDecorator implements DataSourcePoolDecorator<HikariDataSource> {
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {
         Map<String, String> props = new ConnectionURLParser(dataSource.getJdbcUrl()).getProperties();
-        setProperty(dataSource, props, "useServerPrepStmts", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "cachePrepStmts", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "prepStmtCacheSize", "200000");
-        setProperty(dataSource, props, "prepStmtCacheSqlLimit", "2048");
-        setProperty(dataSource, props, "useLocalSessionState", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "rewriteBatchedStatements", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "cacheResultSetMetadata", Boolean.FALSE.toString());
-        setProperty(dataSource, props, "cacheServerConfiguration", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "elideSetAutoCommits", Boolean.TRUE.toString());
-        setProperty(dataSource, props, "maintainTimeStats", Boolean.FALSE.toString());
-        setProperty(dataSource, props, "netTimeoutForStreamingResults", "0");
-        setProperty(dataSource, props, "tinyInt1isBit", Boolean.FALSE.toString());
-        setProperty(dataSource, props, "useSSL", Boolean.FALSE.toString());
-        setProperty(dataSource, props, "serverTimezone", "UTC");
+        addPropertyIfAbsent(dataSource, props, "useServerPrepStmts", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "cachePrepStmts", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "prepStmtCacheSize", "200000");
+        addPropertyIfAbsent(dataSource, props, "prepStmtCacheSqlLimit", "2048");
+        addPropertyIfAbsent(dataSource, props, "useLocalSessionState", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "rewriteBatchedStatements", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "cacheResultSetMetadata", Boolean.FALSE.toString());
+        addPropertyIfAbsent(dataSource, props, "cacheServerConfiguration", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "elideSetAutoCommits", Boolean.TRUE.toString());
+        addPropertyIfAbsent(dataSource, props, "maintainTimeStats", Boolean.FALSE.toString());
+        addPropertyIfAbsent(dataSource, props, "netTimeoutForStreamingResults", "0");
+        addPropertyIfAbsent(dataSource, props, "tinyInt1isBit", Boolean.FALSE.toString());
+        addPropertyIfAbsent(dataSource, props, "useSSL", Boolean.FALSE.toString());
+        addPropertyIfAbsent(dataSource, props, "serverTimezone", "UTC");
         HikariDataSource result = new HikariDataSource(dataSource);
         dataSource.close();
         return result;
     }
     
-    private void setProperty(final HikariConfig config, final Map<String, String> props, final String key, final String value) {
+    private void addPropertyIfAbsent(final HikariConfig config, final Map<String, String> props, final String key, final String value) {
         if (props.isEmpty() || !props.containsKey(key)) {
             config.getDataSourceProperties().setProperty(key, value);
         }
