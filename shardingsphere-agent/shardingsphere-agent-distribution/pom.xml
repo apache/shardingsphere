@@ -77,7 +77,7 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>shardingsphere-agent</id>
+                                <id>shardingsphere-agent-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
