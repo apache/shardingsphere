@@ -164,6 +164,23 @@ public final class ShardingRuleStatementCheckerTest {
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, null);
     }
+
+    @Test
+    public void assertCheckNullAlgorithmNameAndAlgorithmSegment() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${product_id% 2}"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null, databaseAlgorithmSegment));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+    }
+
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckNullAlgorithmNameAndNullAlgorithmSegment() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null, null));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+    }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
@@ -178,7 +195,11 @@ public final class ShardingRuleStatementCheckerTest {
         result.getKeyGenerators().put("t_order_item_snowflake", new ShardingSphereAlgorithmConfiguration("snowflake", newProperties("worker-id", "123")));
         return result;
     }
-    
+
+    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
+        return new AlgorithmSegment(name, properties);
+    }
+
     private static Properties newProperties(final String key, final String value) {
         Properties properties = new Properties();
         properties.put(key, value);
