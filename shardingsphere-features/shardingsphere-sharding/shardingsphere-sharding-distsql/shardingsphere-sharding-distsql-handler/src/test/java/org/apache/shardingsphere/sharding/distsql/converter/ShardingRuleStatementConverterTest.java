@@ -55,7 +55,7 @@ public final class ShardingRuleStatementConverterTest {
         ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
         assertThat(tableRule.getActualDataNodes(), is("ds0,ds1"));
-        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("order_id_algorithm"));
+        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("order_id_algorithm"));
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
@@ -69,7 +69,7 @@ public final class ShardingRuleStatementConverterTest {
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         autoTableRule = autoTableConfigIterator.next();
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake_algorithm"));
-        assertThat(config.getShardingAlgorithms().size(), is(2));
+        assertThat(config.getShardingAlgorithms().size(), is(3));
         assertThat(config.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
         assertThat(config.getShardingAlgorithms().get("t_order_MOD").getProps().get("sharding_count"), is("2"));
         assertThat(config.getKeyGenerators().size(), is(1));
@@ -81,16 +81,21 @@ public final class ShardingRuleStatementConverterTest {
         Collection<AbstractTableRuleSegment> result = new LinkedList<>();
         AutoTableRuleSegment autoTableRuleSegment1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")), null);
+        AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${product_id% 2}"));
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")), new KeyGenerateSegment("order_id", "snowflake_algorithm"));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
-                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
-                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm"),
+                new ShardingStrategySegment("standard", "order_id", null, databaseAlgorithmSegment),
+                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm", null),
                 new KeyGenerateSegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))));
         result.add(autoTableRuleSegment1);
         result.add(autoTableRuleSegment2);
         result.add(tableRuleSegment);
         return result;
+    }
+    
+    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
+        return new AlgorithmSegment(name, properties);
     }
     
     private static Properties newProperties(final String key, final String value) {

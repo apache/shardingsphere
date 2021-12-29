@@ -74,7 +74,13 @@ shardingColumn:
     SHARDING_COLUMN=columnName
     
 shardingAlgorithm:
+    existingAlgorithm | autoCreativeAlgorithm
+
+existingAlgorithm:
     SHARDING_ALGORITHM=shardingAlgorithmName
+
+autoCreativeAlgorithm:
+    SHARDING_ALGORITHM(algorithmDefinition)
 
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
@@ -96,6 +102,7 @@ algorithmProperty:
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`
 - `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)
 - `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) 
+- 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`
 
 ### Sharding Binding Table Rule
 
@@ -162,15 +169,13 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}"))
-),table_inline (
+CREATE SHARDING ALGORITHM table_inline (
 TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
 );
 
 CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
 );
