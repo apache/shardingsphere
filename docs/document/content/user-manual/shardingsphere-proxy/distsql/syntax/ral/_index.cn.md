@@ -46,6 +46,13 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | show readwrite_splitting read resources [from schema]         | 查询所有读库的状态                                    | show readwrite_splitting read resources         |
 
 
+## 解析引擎配置
+
+| 语句                                                                                                                                                                                                                | 说明                                                                                                             | 示例                                                                                                                                                                                                                   |
+|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SHOW SQL_PARSER RULE                                                                                                                                                                                              | 查询当前解析引擎相关配置                                                                                                   | SHOW SQL_PARSER RULE                                                                                                                                                                                                 |
+| ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=xx,PARSER_TREE_CACHE(INITIAL_CAPACITY=xx, MAXIMUM_SIZE=xx,CONCURRENCY_LEVEL=xx), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=xxx, MAXIMUM_SIZE=xxx,CONCURRENCY_LEVEL=xxx) | 更新当前解析引擎配置，SQL_COMMENT_PARSE_ENABLE：是否解析 SQL 注释，PARSER_TREE_CACHE：语法树本地缓存配置，SQL_STATEMENT_CACHE：sql语句本地缓存配置项   | ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=false,PARSER_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=1), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=100)    |
+
 ## 其他
 
 | 语句                                                                         | 说明                                                         | 示例                                            |

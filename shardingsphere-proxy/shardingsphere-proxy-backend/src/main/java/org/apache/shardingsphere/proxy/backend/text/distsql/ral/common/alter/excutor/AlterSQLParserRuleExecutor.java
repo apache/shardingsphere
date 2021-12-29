@@ -66,8 +66,8 @@ public final class AlterSQLParserRuleExecutor implements AlterStatementExecutor 
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled() 
                 : sqlStatement.getSqlCommentParseEnable());
-        result.setParseTreeCache(null == sqlStatement.getParserTreeCache() ? ruleConfiguration.getParseTreeCache()
-                : buildCacheOption(ruleConfiguration.getParseTreeCache(), sqlStatement.getParserTreeCache()));
+        result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? ruleConfiguration.getParseTreeCache()
+                : buildCacheOption(ruleConfiguration.getParseTreeCache(), sqlStatement.getParseTreeCache()));
         result.setSqlStatementCache(null == sqlStatement.getSqlStatementCache() ? ruleConfiguration.getSqlStatementCache()
                 : buildCacheOption(ruleConfiguration.getSqlStatementCache(), sqlStatement.getSqlStatementCache()));
         return result;

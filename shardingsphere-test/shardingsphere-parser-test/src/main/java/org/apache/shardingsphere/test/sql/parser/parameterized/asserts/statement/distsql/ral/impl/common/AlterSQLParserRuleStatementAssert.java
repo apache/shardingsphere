@@ -48,7 +48,7 @@ public final class AlterSQLParserRuleStatementAssert {
         }
         assertNotNull(actual);
         assertNotNull(expected.getSqlParserRule());
-        assertCacheOption(assertContext, actual.getParserTreeCache(), expected.getSqlParserRule().getParseTreeCache());
+        assertCacheOption(assertContext, actual.getParseTreeCache(), expected.getSqlParserRule().getParseTreeCache());
         assertCacheOption(assertContext, actual.getSqlStatementCache(), expected.getSqlParserRule().getSqlStatementCache());
     }
     

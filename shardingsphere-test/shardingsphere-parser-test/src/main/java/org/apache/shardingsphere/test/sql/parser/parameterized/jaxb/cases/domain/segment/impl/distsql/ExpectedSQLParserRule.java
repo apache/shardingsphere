@@ -34,7 +34,7 @@ public final class ExpectedSQLParserRule extends AbstractExpectedIdentifierSQLSe
     @XmlAttribute
     private boolean sqlCommentParseEnabled;
     
-    @XmlElement(name = "parser-tree-cache")
+    @XmlElement(name = "parse-tree-cache")
     private ExpectedCacheOption parseTreeCache;
 
     @XmlElement(name = "sql-statement-cache")

@@ -31,7 +31,7 @@ public final class AlterSQLParserRuleStatement extends AlterDistSQLStatement {
     
     private Boolean sqlCommentParseEnable;
     
-    private CacheOptionSegment parserTreeCache;
+    private CacheOptionSegment parseTreeCache;
     
     private CacheOptionSegment sqlStatementCache;
 }
