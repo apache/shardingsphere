@@ -30,7 +30,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class HikariDataSourcePoolCreatorTest {
@@ -66,7 +65,6 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        assertNull(hikariDataSource.getDataSourceClassName());
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(hikariDataSource.getDriverClassName(), is("org.h2.Driver"));
         assertThat(hikariDataSource.getUsername(), is("root"));
@@ -78,7 +76,6 @@ public final class HikariDataSourcePoolCreatorTest {
     
     private DataSourceConfiguration createDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("driverClassName", "org.h2.Driver");
         props.put("username", "root");
@@ -86,7 +83,7 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
         props.put("dataSourceProperties", getDataSourceProperties());
-        DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
+        DataSourceConfiguration result = new DataSourceConfiguration("com.zaxxer.hikari.HikariDataSource");
         result.getProps().putAll(props);
         return result;
     }

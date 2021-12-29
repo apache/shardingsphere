@@ -44,7 +44,6 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
     }
     
     private void buildInvalidProperties() {
-        invalidProperties.put("dataSourceClassName", HikariDataSource.class.getCanonicalName());
         invalidProperties.put("minimumIdle", -1);
         invalidProperties.put("maximumPoolSize", -1);
     }
