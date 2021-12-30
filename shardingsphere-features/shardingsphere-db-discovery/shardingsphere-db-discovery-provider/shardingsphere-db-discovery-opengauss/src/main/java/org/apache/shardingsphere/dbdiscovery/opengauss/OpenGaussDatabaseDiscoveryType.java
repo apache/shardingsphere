@@ -105,21 +105,13 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     
     @Override
     public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        determineDisabledDataSource(schemaName, activeDataSourceMap);
-    }
-    
-    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (oldPrimaryDataSource.equals(entry.getKey())) {
                 continue;
             }
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
-                Statement statement = connection.createStatement();
+                 Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
                     if (resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
