@@ -168,7 +168,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         if (null == getJdbcUrlPropertyName() || null == getDataSourcePropertiesPropertyName()) {
             return;
         }
-        setDataSourcePropertiesIfAbsent(getDataSourcePropertiesFromDataSource(dataSource), getJdbcUrlProperties(dataSource));
+        new DefaultDataSourcePropertiesHandler(getDataSourcePropertiesFromDataSource(dataSource), getJdbcUrl(dataSource), getDefaultDataSourceProperties()).addDefaultProperties();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -178,20 +178,9 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Map<String, String> getJdbcUrlProperties(final DataSource dataSource) {
+    private String getJdbcUrl(final DataSource dataSource) {
         String getJdbcUrlMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getJdbcUrlPropertyName());
-        String jdbcUrl = (String) dataSource.getClass().getMethod(getJdbcUrlMethodName).invoke(dataSource);
-        return new ConnectionURLParser(jdbcUrl).getProperties();
-    }
-    
-    private void setDataSourcePropertiesIfAbsent(final Properties dataSourceProps, final Map<String, String> jdbcUrlProps) {
-        for (Entry<Object, Object> entry : getDefaultDataSourceProperties().entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            if (!dataSourceProps.containsKey(key) && !jdbcUrlProps.containsKey(key)) {
-                dataSourceProps.setProperty(key, value);
-            }
-        }
+        return (String) dataSource.getClass().getMethod(getJdbcUrlMethodName).invoke(dataSource);
     }
     
     protected abstract Map<String, String> getPropertySynonyms();
