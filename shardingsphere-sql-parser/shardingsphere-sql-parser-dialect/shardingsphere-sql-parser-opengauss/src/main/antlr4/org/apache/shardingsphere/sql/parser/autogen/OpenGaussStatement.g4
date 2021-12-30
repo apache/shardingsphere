@@ -69,6 +69,7 @@ execute
     | createRule
     | createSchema
     | createType
+    | createTextSearch
     | dropDatabase
     | dropFunction
     | dropProcedure
