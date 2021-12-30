@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="create_text_search_dictionary" value="CREATE TEXT SEARCH DICTIONARY alt_ts_dict1 (template=simple)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_text_search_template" value="CREATE TEXT SEARCH TEMPLATE alt_ts_temp1 (lexize=dsimple_lexize)" />
 </sql-cases>
