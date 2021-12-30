@@ -23,6 +23,9 @@ import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Random traffic load balance algorithm.
+ */
 public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
     @Override
