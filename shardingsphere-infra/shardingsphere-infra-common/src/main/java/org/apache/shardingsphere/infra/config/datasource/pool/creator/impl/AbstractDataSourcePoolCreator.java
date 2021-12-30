@@ -95,7 +95,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         Method[] methods = result.getClass().getMethods();
         addPropertySynonym(dataSourceConfig);
         setConfiguredFields(dataSourceConfig, result, methods);
-        setDefaultDataSourceProperties(result);
+        new DefaultDataSourcePropertiesHandler(result).addDefaultDataSourceProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
     
@@ -162,13 +162,6 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
-    }
-    
-    private void setDefaultDataSourceProperties(final DataSource dataSource) {
-        if (null == getJdbcUrlFieldName() || null == getDataSourcePropertiesFieldName()) {
-            return;
-        }
-        new DefaultDataSourcePropertiesHandler(dataSource).addDefaultDataSourceProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
     }
     
     protected abstract Map<String, String> getPropertySynonyms();

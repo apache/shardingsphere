@@ -44,6 +44,9 @@ public final class DefaultDataSourcePropertiesHandler {
      * @param defaultDataSourceProps default data source properties
      */
     public void addDefaultDataSourceProperties(final String dataSourcePropertiesFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
+        if (null == dataSourcePropertiesFieldName || null == jdbcUrlFieldName) {
+            return;
+        }
         Properties targetDataSourceProps = getDataSourceProperties(dataSourcePropertiesFieldName);
         Map<String, String> jdbcUrlProps = new ConnectionURLParser(getJdbcUrl(jdbcUrlFieldName)).getProperties();
         for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
