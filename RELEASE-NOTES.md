@@ -1,3 +1,109 @@
+## 5.1.0
+
+### New feature
+
+1. Support SQL hint
+1. New DistSQL syntax: CREATE DEFAULT SINGLE TABLE RULE
+1. New DistSQL syntax: SHOW SINGLE TABLES & SHOW SINGLE TABLE RULES
+1. New DistSQL syntax: SHOW SHARDING TABLE NODES
+1. New DistSQL syntax: CREATE/ALTER/DROP SHARDING KEY GENERATOR
+1. New DistSQL syntax: REFRESH TABLE METADATA
+1. New DistSQL syntax: PARSE SQL
+1. Scaling: Add `rateLimiter` configuration
+1. Scaling: Add DATA_MATCH data consistency check algorithm
+1. Scaling: Add `readBatchSize` configuration to avoid possible OOME
+1. Scaling: Add `sourceWritingStopper` configuration
+1. Scaling: Add `checkoutLocker` configuration
+1. Database discovery adds support for JDBC Spring Boot
+1. Database discovery adds support for JDBC Spring Namespace 
+1. Database discovery adds support for openGauss
+1. Shadow DB adds support for logical data source transfer
+1. Add data type validator for column matching shadow algorithm
+1. Add support for xa start/end/prepare/commit/recover in encrypt case with only one data source
+
+### API Change
+
+1. Redesign the database discovery related DistSQL syntax
+1. Native authority provider is marked as deprecated and will be removed in a future version
+1. Scaling: Redesign the scaling API to support different scenarios
+1. Scaling: Move scaling configuration from `server.yaml` to `config-sharding.yaml`
+1. Scaling: Rename default algorithm type of data consistency checker to CRC32_MATCH
+1. Database discovery module API refactoring
+1. Shadow DB remove the enable configuration
+
+### Enhancement
+
+1. Improve load multi single table performance
+1. Remove automatically added order by primary key clause
+1. Optimize binding table route logic without sharding column in join condition
+1. Support update sharding key when the sharding routing result keep the same
+1. Optimize rewrite engine performance
+1. Support select union/union all ... statements by federation engine
+1. Support insert on duplicate key update sharding column when route context keep same
+1. Use union all to merge sql route units for simple select to improve performance
+1. Supports autocommit in ShardingSphere-Proxy
+1. ShardingSphere openGauss Proxy supports sha256 authentication method
+1. Remove property java.net.preferIPv4Stack=true from Proxy startup script
+1. Remove the verification of null rules for JDBC
+1. Shadow algorithm decision logic optimization to improve performance
+
+### Refactor
+
+1. Refactor federation engine scan table logic
+1. Avoid duplicated TCL SQL parsing when executing prepared statement in Proxy
+1. Scaling: Add pipeline module to redesign scaling
+1. Scaling: Refactor several job configuration structure
+1. Scaling: Precalculate tasks splitting and persist in job configuration
+1. Scaling: Add basic support for pipeline-core code reuse for encryption job
+1. Scaling: Add basic support for scaling job and encryption job combined running
+1. Optimize JDBC to load only the specified schema
+1. Optimize meta data structure of the registry center
+1. Rename Note shadow algorithm to HINT shadow algorithm
+
+### Bug Fix
+
+1. Support parsing function
+1. Fix alter table drop constrain
+1. Fix optimize table route
+1. Support Route resource group
+1. Support parsing binlog
+1. Support PostgreSQL/openGauss '&' and '|' operator
+1. Support parsing openGauss insert on duplicate key
+1. Support parse PostgreSQL/openGauss union 
+1. Support query which table has column contains keyword 
+1. Fix missing parameter in function
+1. Fix sub query table with no alias
+1. Fix utc timestamp function
+1. Fix alter encrypt column
+1. Support alter column with position encrypt column
+1. Fix delete with schema for PostgreSQL
+1. Fix wrong route result caused by oracle parser ambiguity
+1. Fix projection count error when use sharding and encrypt
+1. Fix NPE when using shadow and readwrite-splitting
+1. Fix wrong metadata when actual table is case insensitive
+1. Fix encrypt rewrite exception when execute multiple table join query
+1. Fix encrypt rewrite wrong result with table level `queryWithCipherColumn`
+1. Fix null charset exception occurs when connecting Proxy with some PostgreSQL client 
+1. Fix executing commit in prepared statement cause transaction status incorrect in MySQL Proxy
+1. Fix client connected to Proxy may stuck if error occurred in PostgreSQL with non English locale
+1. Fix file not found when path of configurations contains blank character
+1. Fix transaction status may be incorrect cause by early flush
+1. Fix the unsigned datatype problem when query with PrepareStatement
+1. Fix protocol violation in implementations of prepared statement in MySQL Proxy
+1. Fix caching too many connections in openGauss batch bind
+1. Fix missing data in SHOW READWRITE_SPLITTING RULES when database-discovery and readwrite-splitting are used together
+1. Fix missing data in SHOW READWRITE_SPLITTING READ RESOURCES when database-discovery and readwrite-splitting are used together
+1. When the provider is SCHEMA_PRIVILEGES_PERMITTED, the user may query the unauthorized logic schema
+1. Scaling: Fix DB connection leak on XA initialization which triggered by data consistency check
+1. Scaling: Fix PostgreSQL replication stream exception on multiple data sources
+1. Scaling: Fix migrating updated record exception on PostgreSQL incremental phase
+1. Fix database discovery failed to modify cron configuration
+1. Fix column value matching shadow algorithm data type conversion exception
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/17)
+
 ## 5.0.0
 
 ### New feature
