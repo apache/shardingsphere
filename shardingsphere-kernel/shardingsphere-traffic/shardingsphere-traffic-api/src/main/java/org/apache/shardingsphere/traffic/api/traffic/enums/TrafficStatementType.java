@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic;
+package org.apache.shardingsphere.traffic.api.traffic.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
-import java.util.Optional;
-
 /**
  * Traffic statement type.
  */
@@ -34,7 +32,7 @@ import java.util.Optional;
 @Getter
 public enum TrafficStatementType {
     
-    INSERT(InsertStatement.class), DELETE(DeleteStatement.class), UPDATE(UpdateStatement.class), SELECT(SelectStatement.class);
+    INSERT(InsertStatement.class), DELETE(DeleteStatement.class), UPDATE(UpdateStatement.class), SELECT(SelectStatement.class), ALL(SQLStatement.class);
     
     private final Class<? extends SQLStatement> clazz;
     
@@ -44,13 +42,13 @@ public enum TrafficStatementType {
      * @param clazz class
      * @return statement type
      */
-    public static Optional<TrafficStatementType> getStatementTypeByClazz(final Class<? extends SQLStatement> clazz) {
+    public static TrafficStatementType getStatementTypeByClazz(final Class<? extends SQLStatement> clazz) {
         for (TrafficStatementType each : values()) {
             if (each.getClazz().isAssignableFrom(clazz)) {
-                return Optional.of(each);
+                return each;
             }
         }
-        return Optional.empty();
+        return TrafficStatementType.ALL;
     }
 }
     

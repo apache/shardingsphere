@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.traffic.algorithm.match.hint.SQLHintTrafficAlgorithm
-org.apache.shardingsphere.traffic.algorithm.match.segment.SegmentMatchTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.segment.SegmentMatchTrafficAlgorithm

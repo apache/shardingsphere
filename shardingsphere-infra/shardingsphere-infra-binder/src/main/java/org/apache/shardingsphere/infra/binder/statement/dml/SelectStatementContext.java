@@ -284,19 +284,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     @Override
     public Collection<SQLSegment> getAllSegments() {
         SelectStatement selectStatement = getSqlStatement();
-        Collection<SQLSegment> result = new LinkedList<>(selectStatement.getProjections().getProjections());
+        Collection<SQLSegment> result = new LinkedList<>();
         result.add(selectStatement.getFrom());
         selectStatement.getWhere().ifPresent(result::add);
         selectStatement.getGroupBy().ifPresent(result::add);
-        selectStatement.getHaving().ifPresent(result::add);
         selectStatement.getOrderBy().ifPresent(result::add);
-        selectStatement.getWithSegment().ifPresent(result::add);
-        result.addAll(selectStatement.getUnionSegments());
         SelectStatementHandler.getLimitSegment(selectStatement).ifPresent(result::add);
-        SelectStatementHandler.getLockSegment(selectStatement).ifPresent(result::add);
-        SelectStatementHandler.getWithSegment(selectStatement).ifPresent(result::add);
-        SelectStatementHandler.getWindowSegment(selectStatement).ifPresent(result::add);
-        SelectStatementHandler.getModelSegment(selectStatement).ifPresent(result::add);
         return result;
     }
 }

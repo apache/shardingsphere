@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic;
+package org.apache.shardingsphere.traffic.api.traffic.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
-import javax.swing.text.Segment;
-import java.util.Optional;
-
 /**
  * Traffic segment type.
  */
@@ -36,7 +33,7 @@ import java.util.Optional;
 @Getter
 public enum TrafficSegmentType {
     
-    TABLE(TableSegment.class), WHERE(WhereSegment.class), GROUP_BY(GroupBySegment.class), ORDER_BY(OrderBySegment.class), LIMIT(LimitSegment.class);
+    TABLE(TableSegment.class), WHERE(WhereSegment.class), GROUP_BY(GroupBySegment.class), ORDER_BY(OrderBySegment.class), LIMIT(LimitSegment.class), ALL(SQLSegment.class);
     
     private final Class<? extends SQLSegment> clazz;
     
@@ -46,12 +43,12 @@ public enum TrafficSegmentType {
      * @param clazz class
      * @return segment type
      */
-    public static Optional<TrafficSegmentType> getSegmentTypeByClazz(final Class<? extends Segment> clazz) {
+    public static TrafficSegmentType getSegmentTypeByClazz(final Class<? extends SQLSegment> clazz) {
         for (TrafficSegmentType each : values()) {
             if (each.getClazz().isAssignableFrom(clazz)) {
-                return Optional.of(each);
+                return each;
             }
         }
-        return Optional.empty();
+        return TrafficSegmentType.ALL;
     }
 }

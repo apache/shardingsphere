@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.config.strategy;
+package org.apache.shardingsphere.traffic.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

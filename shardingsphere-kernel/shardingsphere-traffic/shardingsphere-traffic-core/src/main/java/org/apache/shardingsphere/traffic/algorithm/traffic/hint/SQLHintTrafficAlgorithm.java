@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.algorithm.match.hint;
+package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -43,11 +43,6 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<Strin
     }
     
     @Override
-    public String getType() {
-        return "SQL_HINT";
-    }
-    
-    @Override
     public boolean match(final HintTrafficValue<String> hintTrafficValue) {
         Properties sqlHintProps = SQLHintUtils.getSQLHintProps(hintTrafficValue.getValue());
         for (Entry<Object, Object> each : props.entrySet()) {
@@ -56,5 +51,10 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<Strin
             }
         }
         return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "SQL_HINT";
     }
 }
