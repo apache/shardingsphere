@@ -92,9 +92,8 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     @Override
     public final DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
-        Method[] methods = result.getClass().getMethods();
         addPropertySynonym(dataSourceConfig);
-        setConfiguredFields(dataSourceConfig, result, methods);
+        setConfiguredFields(dataSourceConfig, result, result.getClass().getMethods());
         new DataSourcePropertiesHandler(result).addDefaultProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
@@ -166,11 +165,11 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     
     protected abstract Map<String, String> getPropertySynonyms();
     
+    protected abstract Map<String, Object> getInvalidProperties();
+    
     protected abstract String getDataSourcePropertiesFieldName();
     
     protected abstract String getJdbcUrlFieldName();
     
     protected abstract Properties getDefaultDataSourceProperties();
-    
-    protected abstract Map<String, Object> getInvalidProperties();
 }
