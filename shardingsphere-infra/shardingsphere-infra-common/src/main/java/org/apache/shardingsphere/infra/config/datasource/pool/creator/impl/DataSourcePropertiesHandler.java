@@ -37,13 +37,13 @@ public final class DataSourcePropertiesHandler {
     private final DataSource dataSource;
             
     /**
-     * Add default data source properties to target data source properties.
+     * Add default data source properties to target data source.
      * 
      * @param dataSourcePropertiesFieldName data source properties field name
      * @param jdbcUrlFieldName JDBC URL field name
      * @param defaultDataSourceProps default data source properties
      */
-    public void addDefaultDataSourceProperties(final String dataSourcePropertiesFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
+    public void addDefaultProperties(final String dataSourcePropertiesFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
         if (null == dataSourcePropertiesFieldName || null == jdbcUrlFieldName) {
             return;
         }

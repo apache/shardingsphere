@@ -95,7 +95,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         Method[] methods = result.getClass().getMethods();
         addPropertySynonym(dataSourceConfig);
         setConfiguredFields(dataSourceConfig, result, methods);
-        new DataSourcePropertiesHandler(result).addDefaultDataSourceProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
+        new DataSourcePropertiesHandler(result).addDefaultProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
     
