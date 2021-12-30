@@ -25,6 +25,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,6 +56,7 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(configuration.getProps().get("password"), is("root"));
         assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
         assertThat(configuration.getProps().get("minimumIdle"), is(1));
+        assertDataSourceProperties((Properties) configuration.getProps().get("dataSourceProperties"));
     }
     
     @Test
@@ -63,26 +65,40 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        assertThat(hikariDataSource.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(hikariDataSource.getDriverClassName(), is("org.h2.Driver"));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
+        assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
     }
     
     private DataSourceConfiguration createDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("driverClassName", "org.h2.Driver");
         props.put("username", "root");
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
-        DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
+        props.put("dataSourceProperties", getDataSourceProperties());
+        DataSourceConfiguration result = new DataSourceConfiguration("com.zaxxer.hikari.HikariDataSource");
         result.getProps().putAll(props);
         return result;
+    }
+    
+    private Properties getDataSourceProperties() {
+        Properties result = new Properties();
+        result.put("prepStmtCacheSqlLimit", 1024);
+        result.put("cachePrepStmts", true);
+        result.put("prepStmtCacheSize", 1000);
+        return result;
+    }
+    
+    private void assertDataSourceProperties(final Properties props) {
+        assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(props.get("cachePrepStmts"), is(true));
+        assertThat(props.get("prepStmtCacheSize"), is(1000));
     }
 }

@@ -30,14 +30,6 @@ alterShadowRule
 dropShadowRule
     : DROP SHADOW RULE ruleName (COMMA ruleName)*
     ;
-    
-disableShadowRule
-    : DISABLE SHADOW RULES
-    ;
-
-enableShadowRule
-    : ENABLE SHADOW RULES
-    ;
    
 createShadowAlgorithm
     : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*

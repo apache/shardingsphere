@@ -55,7 +55,7 @@ public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
         }
         AuthorityRuleConfiguration authorityRuleConfiguration = authorityRuleConfigurationOptional.get();
         List<Object> row = new LinkedList<>();
-        row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee() + ":" + each.getPassword()).collect(Collectors.joining("; ")));
+        row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
         row.add(authorityRuleConfiguration.getProvider().getType());
         row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
         LinkedList<List<Object>> rows = new LinkedList<>();

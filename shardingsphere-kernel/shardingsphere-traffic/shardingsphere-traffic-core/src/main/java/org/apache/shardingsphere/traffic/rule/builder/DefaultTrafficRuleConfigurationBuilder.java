@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
-import org.apache.shardingsphere.traffic.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 
 /**

@@ -24,11 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -122,7 +119,6 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
                     log.debug("dump, event={}, record={}", event, record);
                 }
-                updateRecordOldValue(record);
                 pushRecord(record);
             }
         } catch (final SQLException ex) {
@@ -130,21 +126,6 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 return;
             }
             throw new IngestException(ex);
-        }
-    }
-    
-    private void updateRecordOldValue(final Record record) {
-        if (!(record instanceof DataRecord)) {
-            return;
-        }
-        DataRecord dataRecord = (DataRecord) record;
-        if (!IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
-            return;
-        }
-        for (Column each: dataRecord.getColumns()) {
-            if (each.isPrimaryKey() && each.isUpdated()) {
-                each.setOldValue(each.getValue());
-            }
         }
     }
     

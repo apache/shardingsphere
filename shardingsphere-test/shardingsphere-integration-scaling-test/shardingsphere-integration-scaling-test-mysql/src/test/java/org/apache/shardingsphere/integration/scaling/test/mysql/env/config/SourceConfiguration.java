@@ -85,7 +85,7 @@ public final class SourceConfiguration {
     }
     
     /**
-     * Create host sharding jdbc data source.
+     * Create host ShardingSphere data source.
      *
      * @param tableRules table rules
      * @return data source

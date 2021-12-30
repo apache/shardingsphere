@@ -18,23 +18,16 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-> Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载最新版本]( https://github.com/apache/shardingsphere#nightly-builds )
+> Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
 2. 解压缩 proxy 发布包，修改配置文件`conf/config-sharding.yaml`。详情请参见[proxy启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
-3. 修改配置文件 `conf/server.yaml`，目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。
-开启 `scaling` 和 `mode` 之后的配置：
-```yaml
-scaling:
-  blockQueueSize: 10000
-  workerThread: 40
-  clusterAutoSwitchAlgorithm:
-    type: IDLE
-    props:
-      incremental-task-idle-minute-threshold: 30
-  dataConsistencyCheckAlgorithm:
-    type: DEFAULT
+3. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
+目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。
+
+配置示例：
+```yaml
 mode:
   type: Cluster
   repository:
@@ -49,21 +42,77 @@ mode:
   overwrite: false
 ```
 
-打开`clusterAutoSwitchAlgorithm`配置代表开启自动检测任务是否完成及切换配置，目前系统提供了`IDLE`类型实现。
+4. 修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
-打开`dataConsistencyCheckAlgorithm`配置设置数据校验算法，关闭该配置系统将不进行数据校验。目前系统提供了`DEFAULT`类型实现，`DEFAULT`算法目前支持的数据库：`MySQL`。其他数据库还不能打开这个配置项，相关支持还在开发中。
+配置项说明：
+```yaml
+rules:
+- !SHARDING
+  # 忽略的配置
+  
+  scalingName: # 启用的弹性伸缩配置名称
+  scaling:
+    <scaling-action-config-name> (+):
+      blockQueueSize: # 数据通道阻塞队列大小
+      workerThread: # 给全量数据摄取和数据导入使用的工作线程池大小
+      readBatchSize: # 一次查询操作返回的最大记录数
+      rateLimiter: # 限流算法
+        type: # 算法类型。可选项：SOURCE
+        props: # 算法属性
+          qps: # QPS属性。适用算法类型：SOURCE
+      completionDetector: # 作业是否接近完成检测算法。如果不配置，那么系统无法自动进行后续步骤，可以通过 DistSQL 手动操作。
+        type: # 算法类型。可选项：IDLE
+        props: # 算法属性
+          incremental-task-idle-minute-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
+      sourceWritingStopper: # 源端停写算法。如果不配置，那么系统会跳过这个步骤。
+        type: # 算法类型。可选项：DEFAULT
+      dataConsistencyChecker: # 数据一致性校验算法。如果不配置，那么系统会跳过这个步骤。
+        type: # 算法类型。可选项：DATA_MATCH, CRC32_MATCH
+        props: # 算法属性
+          chunk-size: # 一次查询操作返回的最大记录数
+      checkoutLocker: # 元数据切换算法。如果不配置，那么系统会跳过这个步骤。
+        type: # 算法类型。可选项：DEFAULT
+```
 
-可以通过`ScalingClusterAutoSwitchAlgorithm`接口自定义一个SPI实现，通过`ScalingDataConsistencyCheckAlgorithm`接口自定义一个SPI实现。详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+配置示例：
+```yaml
+rules:
+- !SHARDING
+  # 忽略的配置
+  
+  scalingName: default_scaling
+  scaling:
+    default_scaling:
+      blockQueueSize: 10000
+      workerThread: 40
+      readBatchSize: 1000
+      rateLimiter:
+        type: SOURCE
+        props:
+          qps: 50
+      completionDetector:
+        type: IDLE
+        props:
+          incremental-task-idle-minute-threshold: 30
+      sourceWritingStopper:
+        type: DEFAULT
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+      checkoutLocker:
+        type: DEFAULT
+```
 
-`overwrite` 字段含义为：控制配置文件是否覆盖注册中心元数据，一般可在测试时使用。
+以上的 `rateLimiter`，`completionDetector`，`sourceWritingStopper`，`dataConsistencyChecker` 和 `checkoutLocker` 都可以通过实现SPI自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
 
-3. 启动 ShardingSphere-Proxy：
+5. 启动 ShardingSphere-Proxy：
 
 ```
 sh bin/start.sh
 ```
 
-4. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
+6. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
@@ -76,18 +125,3 @@ sh bin/start.sh
 ```
  sh bin/stop.sh
 ```
-
-## 应用配置项
-
-应用现有配置项如下，相应的配置可在 `conf/server.yaml` 中修改：
-
-| 一级Key  | 二级Key                        | 三级Key                                                      | 说明                                                          | 默认值     |
-| ------- | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------- |
-| scaling |                               | blockQueueSize                                               | 数据传输通道队列大小                                             | 10000     |
-|         |                               | workerThread                                                 | 工作线程池大小，允许同时运行的迁移任务线程数                         | 40        |
-|         | clusterAutoSwitchAlgorithm    | type                                                         | 开启自动检测任务是否完成及切换配置，目前系统提供了IDLE类型实现         |           |
-|         |                               | props:incremental-task-idle-minute-threshold                 | 增量同步空闲时间最大值，超过该值，进入下一状态                       | 30 (分钟)  |
-|         | dataConsistencyCheckAlgorithm | type                                                         | 配置数据校验算法，关闭该配置系统将不进行数据校验。目前系统提供了DEFAULT类型实现，DEFAULT算法目前支持的数据库：MySQL。其他数据库还不能打开这个配置项，相关支持还在开发中。详情请参见[开发者手册#弹性伸缩#数据一致性算法](/cn/dev-manual/scaling/#scalingdataconsistencycheckalgorithm)。 |          |
-| mode    | type                          | Cluster                                                      |                                                               |           |
-|         | repository                    | type、props                                                  | 注册中心，当前支持Zookeeper，Etcd                                 |           |
-|         | overwrite                     |                                                              | 控制配置文件是否覆盖注册中心元数据，一般可在测试时使用。               | false     |

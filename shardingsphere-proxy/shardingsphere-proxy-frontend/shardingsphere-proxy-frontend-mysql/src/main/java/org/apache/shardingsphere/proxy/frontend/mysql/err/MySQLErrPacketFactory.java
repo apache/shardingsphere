@@ -76,7 +76,9 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
         if (cause instanceof SchemaNotExistedException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName());
+            return null != ((SchemaNotExistedException) cause).getSchemaName()
+                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName())
+                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
@@ -110,7 +112,7 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), 
+            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(),
                     exception.getSchemaName(), exception.getTimeoutMilliseconds());
         }
         if (cause instanceof TableLockedException) {

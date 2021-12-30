@@ -25,6 +25,7 @@ weight = 5
 | shadow-data-source-name | 属性 | 影子数据源名称 |
 
 \<shadow:default-shadow-algorithm-name />
+
 | *名称* | *类型*  | *说明* |
 | ----- | ------ | ------ |
 | name | 属性 | 默认影子算法名称 |

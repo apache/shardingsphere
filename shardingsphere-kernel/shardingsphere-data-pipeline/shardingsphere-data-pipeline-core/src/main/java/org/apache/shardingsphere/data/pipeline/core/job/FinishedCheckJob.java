@@ -22,12 +22,12 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredCheckoutLockAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredSourceWritingStopAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -52,18 +52,20 @@ public final class FinishedCheckJob implements SimpleJob {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
                 RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-                if (!RuleAlteredJobProgressDetector.almostFinished(pipelineJobAPI.getProgress(jobId), jobConfig.getHandleConfig(), ruleAlteredContext)) {
+                if (null == ruleAlteredContext.getCompletionDetectAlgorithm()) {
+                    log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
+                    continue;
+                }
+                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), pipelineJobAPI.getProgress(jobId).values());
+                if (!ruleAlteredContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
-                if (null == ruleAlteredContext.getCompletionDetectAlgorithm()) {
-                    log.info("completionDetector not configured, auto switch will not be enabled. You could query migration progress and switch manually with DistSQL.");
-                }
-                RuleAlteredSourceWritingStopAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
+                RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
                 String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
                 try {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.stopSourceWriting(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
                     }
                     if (!pipelineJobAPI.isDataConsistencyCheckNeeded(jobId)) {
                         log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
@@ -74,11 +76,11 @@ public final class FinishedCheckJob implements SimpleJob {
                         log.error("data consistency check failed, job {}", jobId);
                         continue;
                     }
-                    RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
+                    RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
                     switchClusterConfiguration(schemaName, jobId, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.resumeSourceWriting(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.releaseLock(schemaName, jobId + "");
                     }
                 }
                 log.info("job {} finished", jobId);
@@ -95,7 +97,7 @@ public final class FinishedCheckJob implements SimpleJob {
         return pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
     
-    private void switchClusterConfiguration(final String schemaName, final long jobId, final RuleAlteredCheckoutLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String schemaName, final long jobId, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
         try {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.lock(schemaName, jobId + "");
