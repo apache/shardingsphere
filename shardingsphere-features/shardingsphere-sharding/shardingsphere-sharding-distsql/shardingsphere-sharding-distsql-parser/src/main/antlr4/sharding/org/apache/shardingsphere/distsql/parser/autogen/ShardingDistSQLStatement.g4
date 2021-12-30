@@ -47,5 +47,7 @@ execute
     | alterShardingKeyGenerator
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
+    | alterDefaultShardingStrategy
+    | dropDefaultShardingStrategy
     ) SEMI?
     ;

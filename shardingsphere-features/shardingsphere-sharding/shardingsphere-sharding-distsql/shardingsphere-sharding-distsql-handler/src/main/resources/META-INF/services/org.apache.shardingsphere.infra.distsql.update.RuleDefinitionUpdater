@@ -31,3 +31,5 @@ org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithm
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGeneratorStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGeneratorStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorStatementUpdater
+org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyStatementUpdater
+org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater
