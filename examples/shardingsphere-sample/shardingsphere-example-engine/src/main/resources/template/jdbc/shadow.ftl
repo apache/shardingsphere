@@ -78,7 +78,7 @@
 
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "shadow-ds"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("demo_ds_0", "ds_shadow"));
         return result;
     }
 
