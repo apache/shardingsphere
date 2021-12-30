@@ -92,10 +92,9 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     @Override
     public final DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
-        Method[] methods = result.getClass().getMethods();
         addPropertySynonym(dataSourceConfig);
-        setConfiguredFields(dataSourceConfig, result, methods);
-        setDefaultDataSourceProperties(result);
+        setConfiguredFields(dataSourceConfig, result, result.getClass().getMethods());
+        new DataSourcePropertiesHandler(result).addDefaultProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
     
@@ -164,44 +163,13 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
     
-    private void setDefaultDataSourceProperties(final DataSource dataSource) {
-        if (null == getJdbcUrlPropertyName() || null == getDataSourcePropertiesPropertyName()) {
-            return;
-        }
-        setDataSourcePropertiesIfAbsent(getDataSourcePropertiesFromDataSource(dataSource), getJdbcUrlProperties(dataSource));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Properties getDataSourcePropertiesFromDataSource(final DataSource dataSource) {
-        String getDataSourcePropertiesMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getDataSourcePropertiesPropertyName());
-        Properties result = (Properties) dataSource.getClass().getMethod(getDataSourcePropertiesMethodName).invoke(dataSource);
-        return null == result ? new Properties() : result;
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Map<String, String> getJdbcUrlProperties(final DataSource dataSource) {
-        String getJdbcUrlMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getJdbcUrlPropertyName());
-        String jdbcUrl = (String) dataSource.getClass().getMethod(getJdbcUrlMethodName).invoke(dataSource);
-        return new ConnectionURLParser(jdbcUrl).getProperties();
-    }
-    
-    private void setDataSourcePropertiesIfAbsent(final Properties dataSourceProps, final Map<String, String> jdbcUrlProps) {
-        for (Entry<Object, Object> entry : getDefaultDataSourceProperties().entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            if (!dataSourceProps.containsKey(key) && !jdbcUrlProps.containsKey(key)) {
-                dataSourceProps.setProperty(key, value);
-            }
-        }
-    }
-    
     protected abstract Map<String, String> getPropertySynonyms();
     
-    protected abstract String getJdbcUrlPropertyName();
+    protected abstract Map<String, Object> getInvalidProperties();
     
-    protected abstract String getDataSourcePropertiesPropertyName();
+    protected abstract String getDataSourcePropertiesFieldName();
+    
+    protected abstract String getJdbcUrlFieldName();
     
     protected abstract Properties getDefaultDataSourceProperties();
-    
-    protected abstract Map<String, Object> getInvalidProperties();
 }
