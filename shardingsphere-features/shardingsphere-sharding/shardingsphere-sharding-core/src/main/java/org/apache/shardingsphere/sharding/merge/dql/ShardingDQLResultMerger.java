@@ -54,7 +54,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        if (1 == queryResults.size()) {
+        if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
@@ -62,6 +62,10 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         selectStatementContext.setIndexes(columnLabelIndexMap);
         MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         return decorate(queryResults, selectStatementContext, mergedResult);
+    }
+    
+    private boolean isNeedAggregateRewrite(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isNeedAggregateRewrite();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {

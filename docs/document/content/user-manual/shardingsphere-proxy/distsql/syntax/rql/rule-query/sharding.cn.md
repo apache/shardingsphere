@@ -12,6 +12,8 @@ SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
 
 SHOW SHARDING ALGORITHMS [FROM schemaName]
 
+SHOW SHARDING TABLE NODES;
+
 tableRule:
     RULE tableName
 ```
@@ -58,6 +60,13 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | name  | 分片算法名称    |
 | type  | 分片算法类型    |
 | props | 分片算法参数    |
+
+### Sharding Table Nodes
+
+| 列     | 说明          |
+| ------| --------------|
+| name  | 分片规则名称    |
+| nodes | 分片节点       |
 
 ### Sharding Binding Table Rule
 
@@ -109,6 +118,18 @@ mysql> show sharding algorithms;
 | t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
 +-------------------------+--------+-----------------------------------------------------+
 2 row in set (0.01 sec)
+```
+
+*SHOW SHARDING TABLE NODES*
+
+```sql
+mysql> show sharding table nodes;
++---------+----------------------------------------------------------------+
+| name    | nodes                                                          |
++---------+----------------------------------------------------------------+
+| t_order | ds_0.t_order_0, ds_1.t_order_1, ds_0.t_order_2, ds_1.t_order_3 |
++---------+----------------------------------------------------------------+
+1 row in set (0.02 sec)
 ```
 
 ### Sharding Binding Table Rule

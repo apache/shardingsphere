@@ -19,8 +19,10 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -45,7 +47,10 @@ import static org.mockito.Mockito.when;
 public final class BackendTransactionManagerTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
+    
+    @Mock
+    private JDBCBackendConnection backendConnection;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -61,8 +66,9 @@ public final class BackendTransactionManagerTest {
     @Before
     public void setUp() {
         setTransactionContexts();
-        when(backendConnection.getSchemaName()).thenReturn("schema");
-        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+        when(connectionSession.getSchemaName()).thenReturn("schema");
+        when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -201,7 +207,7 @@ public final class BackendTransactionManagerTest {
     }
     
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();

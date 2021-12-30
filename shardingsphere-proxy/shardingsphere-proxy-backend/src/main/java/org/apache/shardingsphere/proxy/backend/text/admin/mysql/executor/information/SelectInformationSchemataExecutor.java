@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.inform
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,14 +59,31 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private final SelectStatement sqlStatement;
     
+    private String schemaNameAlias = SCHEMA_NAME;
+    
+    private boolean queryDatabase;
+    
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
         super(sql);
         this.sqlStatement = sqlStatement;
     }
     
     @Override
-    protected List<String> getSchemaNames() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+    protected void createPreProcessing() {
+        removeDuplicatedRow();
+    }
+    
+    private void removeDuplicatedRow() {
+        if (queryDatabase) {
+            List<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
+                    .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
+            reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
+        }
+    }
+    
+    @Override
+    protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
         List<String> result = schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
@@ -77,10 +96,11 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        String alias = aliasMap.getOrDefault(SCHEMA_NAME, "");
-        String rowValue = rowMap.getOrDefault(alias, "").toString();
+        schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
+        String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
+        queryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rowMap.replace(alias, schemaName);
+            rowMap.replace(schemaNameAlias, schemaName);
         } else {
             rowMap.clear();
         }

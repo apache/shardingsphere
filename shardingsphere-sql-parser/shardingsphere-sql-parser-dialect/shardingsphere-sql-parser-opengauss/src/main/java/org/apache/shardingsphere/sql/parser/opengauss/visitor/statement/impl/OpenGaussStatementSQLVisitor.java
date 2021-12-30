@@ -641,7 +641,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         } else {
             String value = ctx.start.getInputStream().getText(new Interval(ctx.VALUES().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-            expressionSegment = new CommonExpressionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), value);
+            FunctionSegment functionSegment = new FunctionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), value);
+            functionSegment.getParameters().add(new ColumnSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().getText())));
+            expressionSegment = functionSegment;
         }
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }

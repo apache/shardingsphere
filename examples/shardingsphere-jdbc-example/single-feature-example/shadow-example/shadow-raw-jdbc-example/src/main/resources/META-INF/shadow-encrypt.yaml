@@ -41,17 +41,16 @@ rules:
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptorName: pwd_encryptor
+          encryptorName: pwd-encryptor
   encryptors:
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    pwd_encryptor:
+    pwd-encryptor:
       type: assistedTest
 
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
       sourceDataSourceName: ds
@@ -71,26 +70,27 @@ rules:
       type: REGEX_MATCH
       props:
         operation: insert
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-select-match-algorithm:
       type: REGEX_MATCH
       props:
         operation: select
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-delete-match-algorithm:
       type: REGEX_MATCH
       props:
         operation: delete
-        column: user_id
+        column: user_type
         regex: "[1]"
     simple-hint-algorithm:
       type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 
 props:
   sql-show: true
-  sql-comment-parse-enabled: true

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
@@ -40,13 +40,13 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     
     private final PostgreSQLComClosePacket packet;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         switch (packet.getType()) {
             case PREPARED_STATEMENT:
-                PostgreSQLPreparedStatementRegistry.getInstance().unregister(backendConnection.getConnectionId(), packet.getName());
+                PostgreSQLPreparedStatementRegistry.getInstance().unregister(connectionSession.getConnectionId(), packet.getName());
                 break;
             case PORTAL:
                 closePortal();

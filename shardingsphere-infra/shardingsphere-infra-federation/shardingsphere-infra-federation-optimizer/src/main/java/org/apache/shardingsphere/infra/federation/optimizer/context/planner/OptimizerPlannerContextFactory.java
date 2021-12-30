@@ -68,9 +68,26 @@ public final class OptimizerPlannerContextFactory {
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
             CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-            result.put(schemaName, new OptimizerPlannerContext(validator, createConverter(catalogReader, validator, relDataTypeFactory)));
+            SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
+            result.put(schemaName, new OptimizerPlannerContext(validator, converter));
         }
         return result;
+    }
+    
+    /**
+     * Create optimizer planner context.
+     *
+     * @param schemaMetaData federation schema meta data
+     * @return created optimizer planner context
+     */
+    public static OptimizerPlannerContext create(final FederationSchemaMetaData schemaMetaData) {
+        FederationSchema federationSchema = new FederationSchema(schemaMetaData);
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
+        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
+        CalciteCatalogReader catalogReader = createCatalogReader(schemaMetaData.getName(), federationSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
+        SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
+        return new OptimizerPlannerContext(validator, converter);
     }
     
     private static Properties createConnectionProperties() {

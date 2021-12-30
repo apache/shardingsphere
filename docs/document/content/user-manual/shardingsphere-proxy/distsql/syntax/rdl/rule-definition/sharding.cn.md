@@ -26,10 +26,10 @@ shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
    
 shardingAutoTableRule:
-    tableName(resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)?)
+    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)?)
     
 shardingTableRule:
-    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)?)
+    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)?)
 
 resources:
     RESOURCES(resource [, resource] ...)
@@ -49,7 +49,10 @@ shardingColumn:
 algorithmDefinition:
     TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties])])
 
-keyGenerateStrategy:
+keyGenerateDeclaration:
+    keyGenerateDefinition | keyGenerateConstruction
+
+keyGenerateDefinition:
     GENERATED_KEY(COLUMN=columnName, strategyDefinition)
 
 shardingScope:
@@ -61,6 +64,9 @@ databaseStrategy:
 tableStrategy:
     TABLE_STRATEGY(shardingStrategy)
 
+keyGenerateConstruction
+    GENERATED_KEY(COLUMN=columnName, GENERATED_KEY_ALGORITHM=keyGenerateAlgorithmName)
+
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
 
@@ -68,7 +74,13 @@ shardingColumn:
     SHARDING_COLUMN=columnName
     
 shardingAlgorithm:
+    existingAlgorithm | autoCreativeAlgorithm
+
+existingAlgorithm:
     SHARDING_ALGORITHM=shardingAlgorithmName
+
+autoCreativeAlgorithm:
+    SHARDING_ALGORITHM(algorithmDefinition)
 
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
@@ -89,6 +101,8 @@ algorithmProperty:
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`
 - `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)
+- `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) 
+- 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`
 
 ### Sharding Binding Table Rule
 
@@ -119,50 +133,73 @@ DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 
 ### Sharding Table Rule
 
+*Key Generator*
+
+```sql
+CREATE SHARDING KEY GENERATOR snowflake_key_generator (
+TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=123))
+);
+
+ALTER SHARDING KEY GENERATOR snowflake_key_generator (
+TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
+);
+
+DROP SHARDING KEY GENERATOR snowflake_key_generator;
+```
+
+*Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
-SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
-),t_order_item (
-DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
+SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
-SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
+SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
 GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
-),t_order_item (
-DATANODES("resource_${0..3}.t_order_item${0..3}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+);
+
+DROP SHARDING TABLE RULE t_order;
+
+DROP SHARDING ALGORITHM t_order_hash_mod;
+```
+
+*Table*
+
+```sql
+CREATE SHARDING ALGORITHM table_inline (
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+);
+
+CREATE SHARDING TABLE RULE t_order_item (
+DATANODES("resource_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=uuid,PROPERTIES("worker-id"=123)))
-);
-
-DROP SHARDING TABLE RULE t_order, t_order_item;
-
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
-);
-
-CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}"))
-),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 2}"))
+GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
 TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
 ),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${order_id % 4}"))
+TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
 );
 
-DROP SHARDING ALGORITHM t_order_hash_mod;
+ALTER SHARDING TABLE RULE t_order_item (
+DATANODES("resource_${0..3}.t_order_item${0..3}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
+GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
+);
+
+DROP SHARDING TABLE RULE t_order_item;
+
+DROP SHARDING ALGORITHM database_inline;
+
+CREATE DEFAULT SHARDING DATABASE STRATEGY (
+TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
+);
 ```
 
 ### Sharding Binding Table Rule

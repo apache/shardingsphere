@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingStrategyType;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelEnum;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 
 import java.util.Collections;
@@ -37,20 +41,31 @@ import java.util.Optional;
  */
 public final class CreateDefaultShardingStrategyStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
-    private static final String STRATEGY_TYPE_TABLE = "TABLE";
-    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkAlgorithm(schemaName, currentRuleConfig, sqlStatement);
         checkExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(currentRuleConfig != null, new RequiredRuleMissedException("Sharding", schemaName));
+    }
+    
     private void checkAlgorithm(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final CreateDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
-        DistSQLException.predictionThrow(ShardingStrategyType.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        DistSQLException.predictionThrow(ShardingStrategyTypeEnum.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        DistSQLException.predictionThrow(isAlgorithmDefinitionExists(sqlStatement), new RequiredAlgorithmMissedException());
+        if (null == sqlStatement.getShardingAlgorithmName() && null != sqlStatement.getAlgorithmSegment()) {
+            return;
+        }
         boolean isAlgorithmExist = currentRuleConfig.getShardingAlgorithms().containsKey(sqlStatement.getShardingAlgorithmName());
         DistSQLException.predictionThrow(isAlgorithmExist, new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getShardingAlgorithmName())));
+    }
+    
+    private boolean isAlgorithmDefinitionExists(final CreateDefaultShardingStrategyStatement sqlStatement) {
+        return null != sqlStatement.getShardingAlgorithmName() || null != sqlStatement.getAlgorithmSegment();
     }
     
     private void checkExist(final String schemaName, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -60,7 +75,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
-        ShardingStrategyConfiguration result = type.equalsIgnoreCase(STRATEGY_TYPE_TABLE)
+        ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())
                 ? currentRuleConfig.getDefaultTableShardingStrategy() : currentRuleConfig.getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
@@ -68,14 +83,36 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        String shardingAlgorithmName = getShardingAlgorithmName(sqlStatement, result);
         ShardingStrategyConfiguration strategyConfiguration = ShardingTableRuleStatementConverter.createStrategyConfiguration(sqlStatement.getStrategyType(),
-                sqlStatement.getShardingColumn(), sqlStatement.getShardingAlgorithmName());
+                sqlStatement.getShardingColumn(), shardingAlgorithmName);
         setStrategyConfiguration(result, sqlStatement.getDefaultType(), strategyConfiguration);
         return result;
     }
     
+    private String getShardingAlgorithmName(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfiguration) {
+        if (null != sqlStatement.getShardingAlgorithmName()) {
+            return sqlStatement.getShardingAlgorithmName();
+        }
+        return createDefaultAlgorithm(sqlStatement, shardingRuleConfiguration);
+    }
+    
+    private String createDefaultAlgorithm(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfiguration) {
+        String algorithmName = getDefaultShardingAlgorithmName(sqlStatement.getDefaultType(), sqlStatement.getAlgorithmSegment().getName());
+        shardingRuleConfiguration.getShardingAlgorithms().put(algorithmName, createAlgorithmConfiguration(sqlStatement.getAlgorithmSegment()));
+        return algorithmName;
+    }
+
+    private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
+        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+    }
+
+    private static String getDefaultShardingAlgorithmName(final String defaultType, final String algorithmType) {
+        return String.format("default_%s_%s", defaultType.toLowerCase(), algorithmType);
+    }
+    
     private void setStrategyConfiguration(final ShardingRuleConfiguration configuration, final String type, final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        if (type.equalsIgnoreCase(STRATEGY_TYPE_TABLE)) {
+        if (type.equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())) {
             configuration.setDefaultTableShardingStrategy(shardingStrategyConfiguration);
         } else {
             configuration.setDefaultDatabaseShardingStrategy(shardingStrategyConfiguration);
@@ -84,6 +121,9 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (!toBeCreatedRuleConfig.getShardingAlgorithms().isEmpty()) {
+            currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
+        }
         if (toBeCreatedRuleConfig.getDefaultTableShardingStrategy() != null && currentRuleConfig.getDefaultTableShardingStrategy() == null) {
             currentRuleConfig.setDefaultTableShardingStrategy(toBeCreatedRuleConfig.getDefaultTableShardingStrategy());
         }

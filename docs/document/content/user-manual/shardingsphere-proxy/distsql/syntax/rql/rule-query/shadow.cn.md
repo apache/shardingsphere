@@ -45,6 +45,12 @@ shadowRule:
 | type                  | 算法类型      |
 | props                 | 算法参数      |
 
+### Shadow Rule status
+
+| 列                    | 说明          |
+| -------------------   | ------------ |
+| status                | 是否启用      |
+
 ## 示例
 
 *SHOW SHADOW RULES*

@@ -204,7 +204,7 @@ functionName
     ;
 
 dbLink
-    : identifier
+    : identifier (DOT_ identifier)*
     ;
 
 parameterValue
@@ -1187,4 +1187,20 @@ inCondition
 
 isOfTypeCondition
     : expr IS NOT? OF TYPE? LP_ ONLY? typeName (COMMA_ ONLY? typeName)* RP_
+    ;
+
+databaseCharset
+    : AL32UTF8
+    ;
+
+nationalCharset
+    : AL16UTF16 | UTF8
+    ;
+
+filenamePattern
+    : STRING_
+    ;
+
+connectString
+    : STRING_
     ;

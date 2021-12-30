@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -40,16 +39,17 @@ public final class AdvancedDistSQLBackendHandlerFactory {
      *
      * @param databaseType database type
      * @param sqlStatement advanced dist sql statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return advanced dist sql backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final AdvancedDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final AdvancedDistSQLStatement sqlStatement,
+                                                         final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof PreviewStatement) {
-            return new PreviewDistSQLBackendHandler((PreviewStatement) sqlStatement, backendConnection);
+            return new PreviewDistSQLBackendHandler((PreviewStatement) sqlStatement, connectionSession);
         } else if (sqlStatement instanceof ParseStatement) {
-            return new ParseDistSQLBackendHandler(databaseType, (ParseStatement) sqlStatement, backendConnection);
+            return new ParseDistSQLBackendHandler(databaseType, (ParseStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

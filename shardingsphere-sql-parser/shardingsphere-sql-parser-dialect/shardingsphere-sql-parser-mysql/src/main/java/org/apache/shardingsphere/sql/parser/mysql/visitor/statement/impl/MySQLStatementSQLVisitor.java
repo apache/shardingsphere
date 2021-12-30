@@ -797,7 +797,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        ASTNode exprSegment = visit(ctx.expr());
+        if (exprSegment instanceof ColumnSegment) {
+            result.getParameters().add((ColumnSegment) exprSegment);
+        } else if (exprSegment instanceof LiteralExpressionSegment) {
+            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        }
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
     }
     
     @Override
@@ -846,7 +854,12 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitValuesFunction(final ValuesFunctionContext ctx) {
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
+        if (!ctx.columnRefList().columnRef().isEmpty()) {
+            ColumnSegment columnSegment = (ColumnSegment) visit(ctx.columnRefList().columnRef(0));
+            result.getParameters().add(columnSegment);
+        }
+        return result; 
     }
     
     @Override

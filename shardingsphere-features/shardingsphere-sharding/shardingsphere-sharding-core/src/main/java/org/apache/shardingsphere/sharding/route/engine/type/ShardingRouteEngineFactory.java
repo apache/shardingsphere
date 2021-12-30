@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
@@ -97,7 +99,7 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(shardingRule, metaData, sqlStatementContext);
         }
-        return getDQLRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, props);
+        return getDQLRoutingEngine(shardingRule, metaData.getSchema(), sqlStatementContext, shardingConditions, props);
     }
     
     private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
@@ -174,7 +176,7 @@ public final class ShardingRouteEngineFactory {
         return false;
     }
     
-    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
+    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, 
                                                            final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (shardingRule.isAllBroadcastTables(tableNames)) {
@@ -187,32 +189,37 @@ public final class ShardingRouteEngineFactory {
         if (shardingLogicTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
         }
-        return getDQLRouteEngineForShardingTable(shardingRule, sqlStatementContext, shardingConditions, shardingLogicTableNames, props);
+        return getDQLRouteEngineForShardingTable(shardingRule, schema, sqlStatementContext, shardingConditions, props, shardingLogicTableNames);
     }
     
-    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
-                                                                         final ShardingConditions shardingConditions, final Collection<String> tableNames, final ConfigurationProperties props) {
-        if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule, shardingConditions, props)) {
+    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, 
+                                                                         final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> tableNames) {
+        boolean allBindingTables = tableNames.size() > 1 && shardingRule.isAllBindingTables(schema, sqlStatementContext, tableNames);
+        if (isShardingFederatedQuery(shardingRule, sqlStatementContext, shardingConditions, props, tableNames, allBindingTables)) {
             return new ShardingFederatedRoutingEngine(tableNames);
         }
-        if (isShardingStandardQuery(tableNames, shardingRule)) {
+        if (isShardingStandardQuery(shardingRule, tableNames, allBindingTables)) {
             return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
         }
         // TODO config for cartesian set
-        return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
+        return new ShardingComplexRoutingEngine(shardingConditions, props, tableNames);
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
-        return shardingConditions.getConditions().stream().flatMap(each -> each.getValues().stream())
-                .map(ShardingConditionValue::getTableName).findFirst().orElseGet(() -> tableNames.iterator().next());
+        for (ShardingCondition each : shardingConditions.getConditions()) {
+            for (ShardingConditionValue shardingConditionValue : each.getValues()) {
+                return shardingConditionValue.getTableName();
+            }
+        }
+        return tableNames.iterator().next();
     }
     
-    private static boolean isShardingStandardQuery(final Collection<String> tableNames, final ShardingRule shardingRule) {
-        return 1 == tableNames.size() && shardingRule.isAllShardingTables(tableNames) || shardingRule.isAllBindingTables(tableNames);
+    private static boolean isShardingStandardQuery(final ShardingRule shardingRule, final Collection<String> tableNames, final boolean allBindingTables) {
+        return 1 == tableNames.size() && shardingRule.isAllShardingTables(tableNames) || allBindingTables;
     }
     
-    private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, 
-                                                    final ShardingRule shardingRule, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
+    private static boolean isShardingFederatedQuery(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, final ShardingConditions shardingConditions, 
+                                                    final ConfigurationProperties props, final Collection<String> tableNames, final boolean allBindingTables) {
         boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
         if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
@@ -221,12 +228,12 @@ public final class ShardingRouteEngineFactory {
         if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
             return false;
         }
-        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsPartialDistinctAggregation()) {
+        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsUnion() || select.isContainsPartialDistinctAggregation()) {
             return true;
         }
         if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        return tableNames.size() > 1 && !shardingRule.isAllBindingTables(tableNames);
+        return tableNames.size() > 1 && !allBindingTables;
     }
 }

@@ -19,6 +19,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | *Name*                     | *Type*     | *Description*                                                           |
 | -------------------------- | ---------- | ----------------------------------------------------------------------- |
 | id                         | Attribute  | Readwrite-splitting data source rule name                               |
+| auto-aware-data-source-name| Attribute  | Auto aware data source name(Use with database discovery)                     |
 | write-data-source-name     | Attribute  | Write data source name                                                  |
 | read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |

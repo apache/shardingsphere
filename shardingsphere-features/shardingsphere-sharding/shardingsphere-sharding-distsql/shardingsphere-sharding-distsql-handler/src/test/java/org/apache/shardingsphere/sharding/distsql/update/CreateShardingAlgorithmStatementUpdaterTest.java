@@ -70,6 +70,15 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertExecuteWithoutRuleConfiguration() throws DistSQLException {
+        Properties properties = new Properties();
+        properties.put("inputKey", "inputValue");
+        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
+        ShardingRuleConfiguration shardingRuleConfiguration = null;
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");

@@ -43,7 +43,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Test
-    public void assertValidateCreateViewForMySQL() {
+    public void assertPreValidateCreateViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
@@ -53,7 +53,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateCreateViewWithShardingTableForMySQL() {
+    public void assertPreValidateCreateViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();

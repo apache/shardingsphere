@@ -56,16 +56,18 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
         LinkedList<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
-        checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        if (currentRuleConfig != null) {
+            checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        }
     }
     
-    private static void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
-    private static void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
         Set<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }

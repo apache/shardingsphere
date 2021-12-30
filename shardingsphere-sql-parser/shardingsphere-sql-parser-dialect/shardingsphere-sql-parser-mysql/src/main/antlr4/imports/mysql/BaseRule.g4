@@ -615,7 +615,7 @@ schemaNames
     ;
     
 charsetName
-    : textOrIdentifier | BINARY
+    : textOrIdentifier | BINARY | DEFAULT
     ;
     
 schemaPairs
@@ -641,6 +641,10 @@ indexName
 constraintName
     : identifier
     ;
+
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
 
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
@@ -1045,7 +1049,7 @@ regularFunctionName
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
-    | CURRENT_DATE | CURRENT_TIME | identifier
+    | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
     ;
     
 matchExpression
@@ -1110,7 +1114,7 @@ dataType
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
-    | dataTypeName = SIGNED
+    | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -1118,7 +1122,7 @@ dataType
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
     | dataTypeName = TIME typeDatetimePrecision?
-    | dataTypeName = UNSIGNED
+    | dataTypeName = UNSIGNED (INTEGER | INT)?
     | dataTypeName = TIMESTAMP typeDatetimePrecision?
     | dataTypeName = DATETIME typeDatetimePrecision?
     | dataTypeName = TINYBLOB

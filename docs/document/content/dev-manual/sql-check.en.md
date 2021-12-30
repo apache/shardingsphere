@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.10. </b>"
+pre = "<b>6.12. </b>"
 title = "SQL Checker"
-weight = 10
+weight = 12
 chapter = true
 +++
 

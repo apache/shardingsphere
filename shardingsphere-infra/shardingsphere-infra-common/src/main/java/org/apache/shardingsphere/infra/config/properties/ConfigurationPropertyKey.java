@@ -99,11 +99,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * Whether enable SQL comment parse.
-     */
-    SQL_COMMENT_PARSE_ENABLED("sql-comment-parse-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
      * Proxy frontend executor size. The default value is 0, which means let Netty decide.
      */
     PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class),
@@ -122,22 +117,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable sql federation.
      */
-    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-
-    /**
-     * SQL Statement cache initial capacity.
-     */
-    SQL_CACHE_INITIAL_CAPACITY("sql-cache-initial-capacity", String.valueOf(2000), int.class),
-
-    /**
-     * SQL statement cache maximum size.
-     */
-    SQL_CACHE_MAXIMUM_SIZE("sql-cache-maximum-size", String.valueOf(65535L), long.class),
-
-    /**
-     * SQL statement cache concurrency level.
-     */
-    SQL_CACHE_CONCURRENCY_LEVEL("sql-cache-concurrency-level", String.valueOf(4), int.class);
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

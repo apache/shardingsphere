@@ -30,13 +30,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -47,6 +48,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Preview dist sql backend handler.
@@ -57,7 +59,7 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
     
     private final PreviewStatement previewStatement;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -68,15 +70,16 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
     @Override
     public ResponseHeader execute() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String defaultSchemaName = backendConnection.getDefaultSchemaName();
+        String defaultSchemaName = connectionSession.getDefaultSchemaName();
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(defaultSchemaName).getResource().getDatabaseType());
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, metaDataContexts.getProps()).parse(previewStatement.getSql(), false);
+        Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get()).parse(previewStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, defaultSchemaName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
         }
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }

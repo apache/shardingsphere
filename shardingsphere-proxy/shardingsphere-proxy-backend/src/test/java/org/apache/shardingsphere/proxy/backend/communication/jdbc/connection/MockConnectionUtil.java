@@ -31,7 +31,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mock backend connection utility.
+ * Mock JDBC connection session utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MockConnectionUtil {
@@ -44,7 +44,7 @@ final class MockConnectionUtil {
      * @param connectionSize connection size
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    static void setCachedConnections(final BackendConnection backendConnection, final String dataSourceName, final int connectionSize) {
+    static void setCachedConnections(final JDBCBackendConnection backendConnection, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(dataSourceName, mockNewConnections(connectionSize));
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");

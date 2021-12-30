@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 
@@ -53,9 +53,9 @@ public final class ShowTablesStatusExecutor implements DatabaseAdminQueryExecuto
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
+    public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(backendConnection.getSchemaName()));
+        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession.getSchemaName()));
     }
     
     private QueryResult getQueryResult(final String schemaName) {

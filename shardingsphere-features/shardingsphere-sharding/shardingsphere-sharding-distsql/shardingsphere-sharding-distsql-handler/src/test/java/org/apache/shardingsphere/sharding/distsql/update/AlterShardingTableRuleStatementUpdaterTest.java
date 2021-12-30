@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
@@ -102,8 +101,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
-        assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
-        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertTrue(tableRule.getDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
@@ -130,8 +129,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
-        assertTrue(tableRule.getDatabaseShardingStrategy() instanceof HintShardingStrategyConfiguration);
-        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertTrue(tableRule.getDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_item_database_inline"));
         assertThat(currentRuleConfiguration.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
@@ -152,10 +151,15 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     private TableRuleSegment createCompleteTableRule(final String logicTableName) {
         TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}.t_order${0..1}"));
-        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", "t_order_algorithm"));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm"));
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", "t_order_algorithm", null));
+        AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${user_id% 2}"));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", null, databaseAlgorithmSegment));
         result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("SNOWFLAKE_TEST", newProperties("work", "123"))));
         return result;
+    }
+
+    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
+        return new AlgorithmSegment(name, properties);
     }
     
     private ShardingRuleConfiguration createCurrentShardingRuleConfiguration() {

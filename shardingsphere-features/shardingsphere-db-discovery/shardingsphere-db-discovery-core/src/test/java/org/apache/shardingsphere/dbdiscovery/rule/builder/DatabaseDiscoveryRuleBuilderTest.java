@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -48,9 +49,11 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "TEST");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
+                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "TEST");
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(dataSourceConfig), Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
+                Collections.singleton(dataSourceConfig), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));

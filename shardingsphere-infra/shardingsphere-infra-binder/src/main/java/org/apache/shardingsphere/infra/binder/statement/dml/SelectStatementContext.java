@@ -89,6 +89,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     @Setter
     private SubqueryType subqueryType;
     
+    @Setter
+    private boolean needAggregateRewrite;
+    
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
@@ -147,6 +150,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      */
     public boolean isContainsHaving() {
         return getSqlStatement().getHaving().isPresent();
+    }
+    
+    /**
+     * Judge whether contains union or not.
+     *
+     * @return whether contains union or not
+     */
+    public boolean isContainsUnion() {
+        return !getSqlStatement().getUnionSegments().isEmpty();
     }
     
     /**
@@ -255,11 +267,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Collection<TableSegment> getAllTableSegments() {
-        Collection<TableSegment> result = new LinkedList<>();
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
-        result.addAll(tableExtractor.getRewriteTables());
-        result.addAll(tableExtractor.getTableContext().stream().filter(each -> each instanceof SubqueryTableSegment).collect(Collectors.toList()));
+        Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
+        for (TableSegment each : tableExtractor.getTableContext()) {
+            if (each instanceof SubqueryTableSegment) {
+                result.add(each);
+            }
+        }
         return result;
     }
 }

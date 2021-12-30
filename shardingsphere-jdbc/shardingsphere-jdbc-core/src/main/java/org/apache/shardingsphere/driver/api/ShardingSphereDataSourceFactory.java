@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.driver.api;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -75,7 +74,6 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String schemaName, final ModeConfiguration modeConfig, 
                                               final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        Preconditions.checkArgument(null != configs && !configs.isEmpty(), "ShardingSphere rule configuration cannot be null or empty.");
         return new ShardingSphereDataSource(Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName, modeConfig, dataSourceMap, configs, props);
     }
     

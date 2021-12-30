@@ -54,7 +54,6 @@ public final class ShadowRuleQueryResultSetTest {
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getDataSources().put("shadow_rule", new ShadowDataSourceConfiguration("source", "shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.emptyList()));

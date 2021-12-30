@@ -69,28 +69,34 @@ sql-show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: 
+ds_0:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
-ds_1: 
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-1
+ds_1:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-2
 ```
 
 ### /metadata/${schemaName}/rules

@@ -124,27 +124,38 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-traffic-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <!-- TODO now why it need distsql-parser and distsql-handler here? -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-distsql-handler</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-distsql-parser</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-mysql</artifactId>
+            <artifactId>shardingsphere-data-pipeline-mysql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-postgresql</artifactId>
+            <artifactId>shardingsphere-data-pipeline-postgresql</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-opengauss</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

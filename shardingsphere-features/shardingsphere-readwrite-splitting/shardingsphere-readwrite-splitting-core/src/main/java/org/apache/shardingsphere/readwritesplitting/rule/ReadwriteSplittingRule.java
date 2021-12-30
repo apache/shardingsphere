@@ -20,10 +20,12 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -38,11 +40,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule {
+public final class ReadwriteSplittingRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
     
     static {
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
@@ -111,6 +114,24 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
             }
         }
+    }
+    
+    @Override
+    public Map<String, Object> export() {
+        Map<String, Object> result = new HashMap<>(1, 1);
+        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
+        return result;
+    }
+
+    private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
+        Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
+        dataSourceRules.forEach((name, dataSourceRule) -> result.put(dataSourceRule.getName(), dataSourceRule.getAutoAwareDataSources()));
+        return result;
+    }
+    
+    private Collection<String> exportAutoAwareDataSourceNames() {
+        return dataSourceRules.values().stream().map(ReadwriteSplittingDataSourceRule::getAutoAwareDataSourceName).collect(Collectors.toSet());
     }
     
     @Override

@@ -34,8 +34,6 @@
     <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL,openGauss" />
-    <sql-case id="show_tables" value="SHOW FULL TABLES FROM `sharding_db`" db-types="MySQL" />
-    <sql-case id="show_tables_with_filter" value="SHOW FULL TABLES FROM `sharding_db` LIKE 't_order'" db-types="MySQL" />
     <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL" />
     <sql-case id="show_schemas" value="SHOW SCHEMAS" db-types="MySQL" />
     <sql-case id="show_databases_with_like" value="SHOW DATABASES LIKE 'sharding_db'" db-types="MySQL" />
@@ -64,7 +62,13 @@
     <sql-case id="show_open_tables_with_like_pattern" value="SHOW OPEN TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
     <sql-case id="show_open_tables_with_where_expr" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
     <sql-case id="show_open_tables_with_where_expr_no_parameter" value="SHOW OPEN TABLES FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
-    <sql-case id="show_triggers_with_filter" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'acc%'" db-types="MySQL"/>
+    <sql-case id="show_triggers" value="SHOW TRIGGERS" db-types="MySQL"/>
+    <sql-case id="show_triggers_from_schema" value="SHOW TRIGGERS FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_triggers_in_schema" value="SHOW TRIGGERS IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_triggers_no_schema" value="SHOW TRIGGERS LIKE 'sys%'" db-types="MySQL" />
+    <sql-case id="show_triggers_with_like_pattern" value="SHOW TRIGGERS FROM `sharding_db` LIKE 'sys%'" db-types="MySQL" />
+    <sql-case id="show_triggers_with_where_expr" value="SHOW TRIGGERS FROM `sharding_db` WHERE `table` = ?" db-types="MySQL" />
+    <sql-case id="show_triggers_with_where_expr_no_parameter" value="SHOW TRIGGERS FROM `sharding_db` WHERE `table` = 't_order'" db-types="MySQL" />
     <sql-case id="show_table_status" value="SHOW TABLE STATUS" db-types="MySQL" />
     <sql-case id="show_table_status_from_schema" value="SHOW TABLE STATUS FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_table_status_in_schema" value="SHOW TABLE STATUS IN `sharding_db`" db-types="MySQL" />
@@ -76,4 +80,32 @@
     <sql-case id="show_status_with_like_pattern" value="SHOW GLOBAL STATUS LIKE 'Key%'" db-types="MySQL" />
     <sql-case id="show_status_with_where_expr" value="SHOW GLOBAL STATUS WHERE variable_name = ?" db-types="MySQL" />
     <sql-case id="show_status_with_where_expr_no_parameter" value="SHOW GLOBAL STATUS WHERE variable_name = 'open_tables'" db-types="MySQL" />
+    <sql-case id="show_events" value="SHOW EVENTS" db-types="MySQL" />
+    <sql-case id="show_events_from_schema" value="SHOW EVENTS FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_events_in_schema" value="SHOW EVENTS IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_events_no_schema" value="SHOW EVENTS LIKE 'sharding_%'" db-types="MySQL" />
+    <sql-case id="show_events_with_like_pattern" value="SHOW EVENTS FROM `sharding_db` LIKE 'sharding_%'" db-types="MySQL" />
+    <sql-case id="show_events_with_where_expr" value="SHOW EVENTS FROM `sharding_db` WHERE db = ?" db-types="MySQL" />
+    <sql-case id="show_events_with_where_expr_no_parameter" value="SHOW EVENTS FROM `sharding_db` WHERE db = 'sharding_db'" db-types="MySQL" />
+    <sql-case id="show_tables" value="SHOW TABLES" db-types="MySQL" />
+    <sql-case id="show_extended_full_tables" value="SHOW EXTENDED FULL TABLES" db-types="MySQL" />
+    <sql-case id="show_tables_from_schema" value="SHOW TABLES FROM `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_tables_in_schema" value="SHOW TABLES IN `sharding_db`" db-types="MySQL" />
+    <sql-case id="show_tables_with_like_pattern" value="SHOW TABLES FROM `sharding_db` LIKE 't_order_%'" db-types="MySQL" />
+    <sql-case id="show_tables_with_where_expr" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = ?" db-types="MySQL" />
+    <sql-case id="show_tables_with_where_expr_no_parameter" value="SHOW EXTENDED FULL TABLES FROM `sharding_db` WHERE `table_type` = 'BASE TABLE'" db-types="MySQL" />
+    <sql-case id="show_character_set" value="SHOW CHARACTER SET" db-types="MySQL" />
+    <sql-case id="show_character_set_with_like_pattern" value="SHOW CHARACTER SET LIKE 'latin%'" db-types="MySQL" />
+    <sql-case id="show_character_set_with_where_expr" value="SHOW CHARACTER SET WHERE `Charset` = ?" db-types="MySQL" />
+    <sql-case id="show_character_set_with_where_expr_no_parameter" value="SHOW CHARACTER SET WHERE `Charset` = 'latin1'" db-types="MySQL" />
+    <sql-case id="show_collation" value="SHOW COLLATION" db-types="MySQL" />
+    <sql-case id="show_collation_with_like_pattern" value="SHOW COLLATION LIKE 'latin%'" db-types="MySQL" />
+    <sql-case id="show_collation_with_where_expr" value="SHOW COLLATION WHERE Charset = ?" db-types="MySQL" />
+    <sql-case id="show_collation_with_where_expr_no_parameter" value="SHOW COLLATION WHERE Charset = 'latin1'" db-types="MySQL" />
+    <sql-case id="show_variables" value="SHOW VARIABLES" db-types="MySQL" />
+    <sql-case id="show_global_variables" value="SHOW GLOBAL VARIABLES" db-types="MySQL" />
+    <sql-case id="show_session_variables" value="SHOW SESSION VARIABLES" db-types="MySQL" />
+    <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL" />
+    <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL" />
+    <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL" />
 </sql-cases>

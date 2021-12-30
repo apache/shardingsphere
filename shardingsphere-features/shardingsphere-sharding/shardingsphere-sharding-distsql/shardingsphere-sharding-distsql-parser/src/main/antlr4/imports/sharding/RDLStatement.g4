@@ -39,6 +39,10 @@ createDefaultShardingStrategy
     : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
     ;
 
+createShardingKeyGenerator
+    : CREATE SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
+    ;
+
 alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
@@ -53,6 +57,10 @@ alterShardingBroadcastTableRules
 
 alterShardingAlgorithm
     : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
+alterShardingKeyGenerator
+    : ALTER SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
     ;
 
 dropShardingTableRule
@@ -71,16 +79,28 @@ dropShardingAlgorithm
     : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    ;
+
 shardingTableRuleDefinition
     : (shardingAutoTableRule | shardingTableRule)
     ;
 
 shardingAutoTableRule
-    : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
+    ;
+
+keyGeneratorDefination
+    : keyGeneratorName LP algorithmDefinition RP
+    ;
+
+keyGeneratorName
+    : IDENTIFIER
     ;
 
 resources
@@ -104,7 +124,19 @@ shardingColumn
     ;
 
 shardingAlgorithm
+    : existingAlgorithm | autoCreativeAlgorithm
+    ;
+
+existingAlgorithm
     : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+autoCreativeAlgorithm
+    : SHARDING_ALGORITHM LP algorithmDefinition RP
+    ;
+
+keyGenerator
+    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -119,8 +151,16 @@ tableStrategy
     : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
-keyGenerateStrategy
+keyGenerateDeclaration
+    : keyGenerateDefinition | keyGenerateStrategy
+    ;
+
+keyGenerateDefinition
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+keyGenerateStrategy
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition

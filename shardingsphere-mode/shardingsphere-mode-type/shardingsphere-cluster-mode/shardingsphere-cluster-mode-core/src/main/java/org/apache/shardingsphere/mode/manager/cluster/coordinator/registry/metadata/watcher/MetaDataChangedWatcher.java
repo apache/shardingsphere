@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -71,8 +71,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
+        schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
+        String tableName = SchemaMetaDataNode.getTableName(schemaName, event.getKey());
+        if (!Strings.isNullOrEmpty(tableName) && !Strings.isNullOrEmpty(event.getValue())) {
+            return createTableMetaDataChangedEvent(schemaName, tableName, event);
+        }
         if (Type.ADDED == event.getType() && !Strings.isNullOrEmpty(event.getValue())) {
-            schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
             Optional<String> ruleCacheId = getRuleCacheId(schemaName, event.getKey());
             return ruleCacheId.isPresent() ? Optional.of(new RuleConfigurationCachedEvent(ruleCacheId.get(), schemaName)) : Optional.empty();
         }
@@ -102,9 +106,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
-        }
-        if (isSchemaChangedEvent(schemaName, event.getKey())) {
-            return Optional.of(createSchemaChangedEvent(schemaName, event));
         }
         return Optional.empty();
     }
@@ -141,11 +142,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     
-    private boolean isSchemaChangedEvent(final String schemaName, final String key) {
-        return SchemaMetaDataNode.getMetaDataSchemaPath(schemaName).equals(key);
-    }
-    
-    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
-        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
+    private Optional<GovernanceEvent> createTableMetaDataChangedEvent(final String schemaName, final String table, final DataChangedEvent event) {
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
+            return Optional.of(new SchemaChangedEvent(schemaName, null, table));
+        }
+        return Optional.of(new SchemaChangedEvent(schemaName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null));
     }
 }

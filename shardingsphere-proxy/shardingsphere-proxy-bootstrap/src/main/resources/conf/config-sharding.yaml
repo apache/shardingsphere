@@ -87,12 +87,35 @@
 #      type: INLINE
 #      props:
 #        algorithm-expression: t_order_item_${order_id % 2}
-#  
+#
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
 #      props:
 #        worker-id: 123
+#
+#  scalingName: default_scaling
+#  scaling:
+#    default_scaling:
+#      blockQueueSize: 10000
+#      workerThread: 40
+#      readBatchSize: 1000
+#      rateLimiter:
+#        type: SOURCE
+#        props:
+#          qps: 50
+#      completionDetector:
+#        type: IDLE
+#        props:
+#          incremental-task-idle-minute-threshold: 30
+#      sourceWritingStopper:
+#        type: DEFAULT
+#      dataConsistencyChecker:
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
+#      checkoutLocker:
+#        type: DEFAULT
 
 ######################################################################################################
 #
@@ -171,3 +194,26 @@
 #      type: SNOWFLAKE
 #      props:
 #        worker-id: 123
+#
+#  scalingName: default_scaling
+#  scaling:
+#    default_scaling:
+#      blockQueueSize: 10000
+#      workerThread: 40
+#      readBatchSize: 1000
+#      rateLimiter:
+#        type: SOURCE
+#        props:
+#          qps: 50
+#      completionDetector:
+#        type: IDLE
+#        props:
+#          incremental-task-idle-minute-threshold: 30
+#      sourceWritingStopper:
+#        type: DEFAULT
+#      dataConsistencyChecker:
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
+#      checkoutLocker:
+#        type: DEFAULT

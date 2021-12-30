@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Database discovery data source rule configuration for YAML.
@@ -34,7 +33,7 @@ public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements Y
 
     private List<String> dataSourceNames = new ArrayList<>();
     
-    private String discoveryTypeName;
+    private String discoveryHeartbeatName;
     
-    private Properties props = new Properties();
+    private String discoveryTypeName;
 }

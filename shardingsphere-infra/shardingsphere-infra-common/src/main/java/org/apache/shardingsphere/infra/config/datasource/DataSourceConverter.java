@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.config.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourceCreatorFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolDecoratorFactory;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -34,18 +34,14 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceConverter {
     
-    static {
-        ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
-    }
-    
     /**
      * Get data source.
      * 
-     * @param dataSourceConfiguration data source configuration
+     * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        return JDBCParameterDecoratorHelper.decorate(DataSourceCreatorFactory.getDataSourceCreator(dataSourceConfiguration.getDataSourceClassName()).createDataSource(dataSourceConfiguration));
+    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
+        return DataSourcePoolDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig));
     }
     
     /**
@@ -55,7 +51,7 @@ public final class DataSourceConverter {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
-        return DataSourceCreatorFactory.getDataSourceCreator(dataSource.getClass().getName()).createDataSourceConfiguration(dataSource);
+        return DataSourcePoolCreatorFactory.getInstance(dataSource.getClass().getName()).createDataSourceConfiguration(dataSource);
     }
     
     /**
