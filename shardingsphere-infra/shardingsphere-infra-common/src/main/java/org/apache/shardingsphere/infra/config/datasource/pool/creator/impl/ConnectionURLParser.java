@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -47,10 +46,7 @@ public final class ConnectionURLParser {
     
     public ConnectionURLParser(final String jdbcURL) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
-        if (!matcher.matches()) {
-            throw new ShardingSphereConfigurationException("Incorrect JDBC URL format: %s", jdbcURL);
-        }
-        props = matcher.group(PROPS_GROUP_KEY);
+        props = !matcher.matches() ? "" : matcher.group(PROPS_GROUP_KEY);
     }
     
     /**

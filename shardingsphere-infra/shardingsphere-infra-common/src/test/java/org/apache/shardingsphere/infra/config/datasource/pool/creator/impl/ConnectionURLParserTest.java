@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,18 +56,16 @@ public final class ConnectionURLParserTest {
     
     @Test
     public void assertParseMicrosoftSQLServerWithoutProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds");
-        assertTrue(connectionUrlParser.getProperties().isEmpty());
+        assertTrue(new ConnectionURLParser("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds").getProperties().isEmpty());
     }
     
     @Test
     public void assertParseMockSQLWithoutProps() {
-        ConnectionURLParser connectionUrlParser = new ConnectionURLParser("mock:jdbc://127.0.0.1:3306/demo_ds");
-        assertTrue(connectionUrlParser.getProperties().isEmpty());
+        assertTrue(new ConnectionURLParser("mock:jdbc://127.0.0.1:3306/demo_ds").getProperties().isEmpty());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test
     public void assertParseIncorrectURL() {
-        new ConnectionURLParser("jdbc:mysql://127.0.0.1:3306//demo_ds");
+        assertTrue(new ConnectionURLParser("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL").getProperties().isEmpty());
     }
 }

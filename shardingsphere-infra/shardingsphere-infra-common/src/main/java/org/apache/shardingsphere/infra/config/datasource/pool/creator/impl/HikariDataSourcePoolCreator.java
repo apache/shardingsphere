@@ -22,6 +22,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Hikari data source pool creator.
@@ -31,10 +32,13 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
+    private final Properties defaultDataSourceProperties = new Properties();
+    
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
     public HikariDataSourcePoolCreator() {
         buildPropertySynonyms();
+        buildDefaultDataSourceProperties();
         buildInvalidProperties();
     }
     
@@ -43,9 +47,36 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }
     
+    private void buildDefaultDataSourceProperties() {
+        defaultDataSourceProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultDataSourceProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultDataSourceProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("cachedefaultDataSourcePropsSetMetadata", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("netTimeoutForStreamingdefaultDataSourcePropss", "0");
+        defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("serverTimezone", "UTC");
+    }
+    
     private void buildInvalidProperties() {
         invalidProperties.put("minimumIdle", -1);
         invalidProperties.put("maximumPoolSize", -1);
+    }
+    
+    @Override
+    protected String getJdbcUrlPropertyName() {
+        return "jdbcUrl";
+    }
+    
+    @Override
+    protected String getDataSourcePropertiesPropertyName() {
+        return "dataSourceProperties";
     }
     
     @Override
