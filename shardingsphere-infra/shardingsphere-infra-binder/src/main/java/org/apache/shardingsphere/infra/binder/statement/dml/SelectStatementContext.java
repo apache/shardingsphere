@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
-import org.apache.shardingsphere.infra.binder.type.SegmentAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -44,7 +43,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -59,7 +57,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,7 +70,7 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable, SegmentAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
@@ -278,18 +275,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 result.add(each);
             }
         }
-        return result;
-    }
-    
-    @Override
-    public Collection<SQLSegment> getAllSegments() {
-        SelectStatement selectStatement = getSqlStatement();
-        Collection<SQLSegment> result = new LinkedList<>();
-        result.add(selectStatement.getFrom());
-        selectStatement.getWhere().ifPresent(result::add);
-        selectStatement.getGroupBy().ifPresent(result::add);
-        selectStatement.getOrderBy().ifPresent(result::add);
-        SelectStatementHandler.getLimitSegment(selectStatement).ifPresent(result::add);
         return result;
     }
 }

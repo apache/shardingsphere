@@ -19,11 +19,8 @@ package org.apache.shardingsphere.traffic.api.traffic.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
-
-import java.util.Collection;
 
 /**
  * Segment traffic value.
@@ -33,6 +30,4 @@ import java.util.Collection;
 public final class SegmentTrafficValue implements TrafficValue {
     
     private final SQLStatement statement;
-    
-    private final Collection<SQLSegment> segments;
 }

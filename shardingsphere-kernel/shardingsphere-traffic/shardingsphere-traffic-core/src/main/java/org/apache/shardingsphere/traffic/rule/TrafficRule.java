@@ -20,11 +20,9 @@ package org.apache.shardingsphere.traffic.rule;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SegmentAvailable;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -36,7 +34,6 @@ import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -98,7 +95,7 @@ public final class TrafficRule implements GlobalRule {
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SegmentTrafficAlgorithm segmentTrafficAlgorithm = (SegmentTrafficAlgorithm) trafficAlgorithm;
-            SegmentTrafficValue segmentTrafficValue = getSegmentTrafficValue(statementContext);
+            SegmentTrafficValue segmentTrafficValue = new SegmentTrafficValue(statementContext.getSqlStatement());
             return segmentTrafficAlgorithm.match(segmentTrafficValue);
         }
         return false;
@@ -112,11 +109,6 @@ public final class TrafficRule implements GlobalRule {
             }
         }
         return result;
-    }
-    
-    private SegmentTrafficValue getSegmentTrafficValue(final SQLStatementContext<?> statementContext) {
-        Collection<SQLSegment> sqlSegments = statementContext instanceof SegmentAvailable ? ((SegmentAvailable) statementContext).getAllSegments() : Collections.emptyList();
-        return new SegmentTrafficValue(statementContext.getSqlStatement(), sqlSegments);
     }
     
     /**
