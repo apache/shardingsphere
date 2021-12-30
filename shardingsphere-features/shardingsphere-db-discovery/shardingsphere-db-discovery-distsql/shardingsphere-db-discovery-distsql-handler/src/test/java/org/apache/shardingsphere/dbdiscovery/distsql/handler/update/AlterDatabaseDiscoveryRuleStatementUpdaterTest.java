@@ -124,9 +124,9 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration 
                 = (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         assertThat(databaseDiscoveryRuleConfiguration.getDataSources().size(), is(2));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName)
+        assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_1")));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName)
+        assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_2")));
         assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("pr_ds_2_mgr"));
         assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("pr_ds_2_heartbeat"));
@@ -145,9 +145,9 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
                 new HashMap<>(Collections.singletonMap("discovery_type_name", null)), new HashMap<>(Collections.singletonMap("heartbeat_name", null)));
         updater.updateCurrentRuleConfiguration(currentConfiguration, toBeCreatedRuleConfig);
         assertThat(currentConfiguration.getDataSources().size(), is(2));
-        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName)
+        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_1")));
-        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName)
+        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_2")));
         assertTrue(currentConfiguration.getDiscoveryTypes().containsKey("pr_ds_2_mgr"));
         assertTrue(currentConfiguration.getDiscoveryHeartbeats().containsKey("pr_ds_2_heartbeat"));

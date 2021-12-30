@@ -59,7 +59,7 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         assertTrue(actual.getDataSources().iterator().hasNext());
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
-        assertThat(ruleConfig.getName(), is("name"));
+        assertThat(ruleConfig.getGroupName(), is("name"));
         assertNotNull(actual.getDiscoveryHeartbeats());
         assertThat(actual.getDiscoveryHeartbeats().keySet(), is(Collections.singleton("mgr_heartbeat")));
     }

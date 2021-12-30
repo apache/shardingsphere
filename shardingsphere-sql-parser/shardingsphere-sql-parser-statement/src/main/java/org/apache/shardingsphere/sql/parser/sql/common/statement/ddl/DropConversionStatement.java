@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.decorator;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
-import javax.sql.DataSource;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Data source pool parameter decorator.
- * 
- * @param <T> type of data source
+ * Drop conversion statement.
  */
-public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
-    
-    /**
-     * Decorate data source.
-     * 
-     * @param dataSource data source to be decorated
-     * @return decorated data source
-     */
-    T decorate(T dataSource);
+@ToString
+public abstract class DropConversionStatement extends AbstractSQLStatement implements DDLStatement {
 }

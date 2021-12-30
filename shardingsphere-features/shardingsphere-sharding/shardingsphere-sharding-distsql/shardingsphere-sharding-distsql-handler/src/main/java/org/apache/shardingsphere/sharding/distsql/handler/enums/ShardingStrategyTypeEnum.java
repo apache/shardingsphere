@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.converter;
+package org.apache.shardingsphere.sharding.distsql.handler.enums;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import java.util.Arrays;
 
 /**
- * Sharding strategy type.
+ * Sharding strategy type enum.
  */
-public enum ShardingStrategyType {
+public enum ShardingStrategyTypeEnum {
     
     STANDARD {
         @Override
@@ -68,7 +68,7 @@ public enum ShardingStrategyType {
      * @param name name
      * @return sharding strategy type
      */
-    public static ShardingStrategyType getValueOf(final String name) {
+    public static ShardingStrategyTypeEnum getValueOf(final String name) {
         try {
             return valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {

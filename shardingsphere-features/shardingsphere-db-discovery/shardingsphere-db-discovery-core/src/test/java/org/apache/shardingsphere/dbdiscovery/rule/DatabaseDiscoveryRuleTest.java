@@ -60,7 +60,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
-        assertThat(actual.getName(), is("test_pr"));
+        assertThat(actual.getGroupName(), is("test_pr"));
         assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     

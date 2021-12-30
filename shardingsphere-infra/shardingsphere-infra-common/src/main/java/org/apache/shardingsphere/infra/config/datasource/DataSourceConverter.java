@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorFactory;
-import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolParameterDecoratorFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolDecoratorFactory;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -41,7 +41,7 @@ public final class DataSourceConverter {
      * @return data source
      */
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
-        return DataSourcePoolParameterDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig));
+        return DataSourcePoolDecoratorFactory.decorate(DataSourcePoolCreatorFactory.getInstance(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig));
     }
     
     /**

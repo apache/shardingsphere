@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.api.ingest.record;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Column.
  */
+@RequiredArgsConstructor
 @Getter
 public final class Column {
     
@@ -31,8 +32,7 @@ public final class Column {
     /**
      * Value are available only when the primary key column is updated.
      */
-    @Setter
-    private Object oldValue;
+    private final Object oldValue;
     
     private final Object value;
     
@@ -42,14 +42,6 @@ public final class Column {
     
     public Column(final String name, final Object value, final boolean updated, final boolean primaryKey) {
         this(name, null, value, updated, primaryKey);
-    }
-    
-    public Column(final String name, final Object oldValue, final Object value, final boolean updated, final boolean primaryKey) {
-        this.name = name;
-        this.oldValue = oldValue;
-        this.value = value;
-        this.updated = updated;
-        this.primaryKey = primaryKey;
     }
     
     @Override
