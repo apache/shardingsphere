@@ -16,40 +16,56 @@
   -->
     
     /**
-     * Execute test.
+     * Initialize the database test environment.
+     * @throws SQLException
      */
-    public void run() {
+    private void initEnvironment() {
+        userRepository.createTableIfNotExists();
+        userRepository.truncateTable();
+    }
+    
+    private void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Integer> usersIds = insertData();
+        List<Long> orderIds = insertData();
         printData(); 
-        deleteData(usersIds);
+        deleteData(orderIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
 
-    private List<Integer> insertData() {
+    private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
-        List<Integer> result = new ArrayList<>(10);
+        List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             User user = new User();
+            user.setUserId(i);
+            user.setUserType(i % 2);
             user.setUserName("test_" + i);
             user.setPwd("pwd" + i);
-            repository.insertUser(user);
-            result.add(user.getUserId());
+            userRepository.insert(user);
+            result.add((long) user.getUserId());
         }
         return result;
     }
 
-    private void deleteData(final List<Integer> userIds) {
+    private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
-        for (Integer each : userIds) {
-            repository.deleteUser(each);
+        for (Long each : orderIds) {
+            userRepository.delete(each);
         }
     }
     
     private void printData() {
-        System.out.println("---------------------------- Print User Data -----------------------");
-        for (Object each : repository.selectAllUsers()) {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (User each : userRepository.selectAll()) {
             System.out.println(each);
         }
+    }
+    
+    /**
+     * Restore the environment.
+     * @throws SQLException
+     */
+    private void cleanEnvironment() {
+        userRepository.dropTable();
     }

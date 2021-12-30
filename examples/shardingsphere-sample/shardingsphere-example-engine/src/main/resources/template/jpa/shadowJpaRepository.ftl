@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<#--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -15,20 +14,21 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<configuration>
-    <property name="log.context.name" value="shardingsphere-example" />
-    <property name="log.charset" value="UTF-8" />
-    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
-    <contextName>${log.context.name}</contextName>
     
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder charset="${log.charset}">
-            <pattern>${log.pattern}</pattern>
-        </encoder>
-    </appender>
-    <root>
-        <level value="INFO" />
-        <appender-ref ref="STDOUT" />
-    </root>
-</configuration>
+    public int insertUser(final User user) {
+        entityManager.persist(user);
+        return user.getUserId();
+    }
+    
+    public List<User> selectUsers(final int userType) {
+        Query query = entityManager.createQuery("SELECT o FROM User o WHERE o.userType = ?1");
+        query.setParameter(1, userType);
+        return (List<User>) query.getResultList();
+    }
+
+    public void deleteUser(final int userId, final int userType) {
+        Query query = entityManager.createQuery("DELETE FROM User o WHERE o.userId = ?1 AND o.userType = ?2");
+        query.setParameter(1, userId);
+        query.setParameter(2, userType);
+        query.executeUpdate();
+    }
