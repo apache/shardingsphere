@@ -22,6 +22,8 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -66,6 +68,7 @@ public final class MemoryLocalShadowJdbcConfiguration {
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     
@@ -75,8 +78,14 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;
+    } 
+            
+    private RuleConfiguration createSQLParserRuleConfiguration() {
+        SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
+        result.setSqlCommentParseEnabled(true);
+        return result;
     }
-
+    
     private Map<String, ShadowTableConfiguration> createShadowTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         result.put("t_user", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
@@ -127,7 +136,6 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
-    
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

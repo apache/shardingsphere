@@ -36,9 +36,12 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
+    @Column(name = "user_type")
+    private int userType;
+    
     @Column(name = "user_name")
     private String userName;
-
+    
     @Column(name = "pwd")
     private String pwd;
     
@@ -48,6 +51,14 @@ public class User implements Serializable {
     
     public void setUserId(final int userId) {
         this.userId = userId;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(final int userType) {
+        this.userType = userType;
     }
     
     public String getUserName() {

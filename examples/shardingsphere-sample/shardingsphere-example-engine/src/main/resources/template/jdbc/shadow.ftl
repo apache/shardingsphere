@@ -31,13 +31,13 @@
     private Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        result.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), "true");
         return result;
     }
 
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     
@@ -47,8 +47,14 @@
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;
+    } 
+            
+    private RuleConfiguration createSQLParserRuleConfiguration() {
+        SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
+        result.setSqlCommentParseEnabled(true);
+        return result;
     }
-
+    
     private Map<String, ShadowTableConfiguration> createShadowTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         result.put("t_user", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
@@ -99,3 +105,4 @@
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
+    

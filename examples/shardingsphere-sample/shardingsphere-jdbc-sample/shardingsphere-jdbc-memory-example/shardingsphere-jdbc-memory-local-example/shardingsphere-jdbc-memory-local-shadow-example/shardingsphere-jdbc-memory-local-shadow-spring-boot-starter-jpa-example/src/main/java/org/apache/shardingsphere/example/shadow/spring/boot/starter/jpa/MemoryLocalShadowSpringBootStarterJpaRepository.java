@@ -32,19 +32,22 @@ public class MemoryLocalShadowSpringBootStarterJpaRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
-
+    
     public int insertUser(final User user) {
         entityManager.persist(user);
         return user.getUserId();
     }
     
-    public List<User> selectAllUsers() {
-        return (List<User>) entityManager.createQuery("SELECT o FROM User o").getResultList();
+    public List<User> selectUsers(final int userType) {
+        Query query = entityManager.createQuery("SELECT o FROM User o WHERE o.userType = ?1");
+        query.setParameter(1, userType);
+        return (List<User>) query.getResultList();
     }
 
-    public void deleteUser(final int userId) {
-        Query query = entityManager.createQuery("DELETE FROM User o WHERE o.userId = ?1");
+    public void deleteUser(final int userId, final int userType) {
+        Query query = entityManager.createQuery("DELETE FROM User o WHERE o.userId = ?1 AND o.userType = ?2");
         query.setParameter(1, userId);
+        query.setParameter(2, userType);
         query.executeUpdate();
     }
 }

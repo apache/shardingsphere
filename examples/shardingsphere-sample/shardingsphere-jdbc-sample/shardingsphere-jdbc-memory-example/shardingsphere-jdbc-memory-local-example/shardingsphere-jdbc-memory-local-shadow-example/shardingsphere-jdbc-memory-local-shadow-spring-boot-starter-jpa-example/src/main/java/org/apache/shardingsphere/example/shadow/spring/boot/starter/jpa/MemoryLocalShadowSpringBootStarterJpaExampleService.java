@@ -29,7 +29,7 @@ public final class MemoryLocalShadowSpringBootStarterJpaExampleService {
 
     @Resource
     private MemoryLocalShadowSpringBootStarterJpaRepository repository;
-
+    
     /**
      * Execute test.
      */
@@ -49,6 +49,7 @@ public final class MemoryLocalShadowSpringBootStarterJpaExampleService {
             User user = new User();
             user.setUserName("test_" + i);
             user.setPwd("pwd" + i);
+            user.setUserType(i % 2);
             repository.insertUser(user);
             result.add(user.getUserId());
         }
@@ -58,13 +59,17 @@ public final class MemoryLocalShadowSpringBootStarterJpaExampleService {
     private void deleteData(final List<Integer> userIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Integer each : userIds) {
-            repository.deleteUser(each);
+            repository.deleteUser(each, 0);
+            repository.deleteUser(each, 1);
         }
     }
     
     private void printData() {
         System.out.println("---------------------------- Print User Data -----------------------");
-        for (Object each : repository.selectAllUsers()) {
+        for (Object each : repository.selectUsers(0)) {
+            System.out.println(each);
+        }
+        for (Object each : repository.selectUsers(1)) {
             System.out.println(each);
         }
     }

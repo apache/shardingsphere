@@ -17,8 +17,8 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.shadow.spring.boot.starter.mybatis.repository.UserRepository">
-    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.shadow.spring.boot.starter.mybatis.entity.User">
+<mapper namespace="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.UserRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User">
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="user_type" property="userType" jdbcType="INTEGER"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
@@ -50,18 +50,18 @@
     </update>
 
     <insert id="insert">
-        INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (#{userId,jdbcType=INTEGER}, #{userType,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR})
+        INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (${r"#{userId,jdbcType=INTEGER}, #{userType,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}"})
     </insert>
 
     <delete id="deleteByUserIdAndUserType">
-        DELETE FROM t_user WHERE user_id = #{userId,jdbcType=INTEGER} AND user_type = #{userType,jdbcType=INTEGER};
+        DELETE FROM t_user WHERE user_id = ${r"#{userId,jdbcType=INTEGER}"} AND user_type = ${r"#{userType,jdbcType=INTEGER}"};
     </delete>
 
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT * FROM t_user WHERE user_type = #{userType,jdbcType=INTEGER};
+        SELECT * FROM t_user WHERE user_type = ${r"#{userType,jdbcType=INTEGER}"};
     </select>
 
     <select id="selectAllByUserType" resultMap="baseResultMap">
-        SELECT * FROM t_user WHERE user_type = #{userType,jdbcType=INTEGER};
+        SELECT * FROM t_user WHERE user_type = ${r"#{userType,jdbcType=INTEGER}"};
     </select>
 </mapper>
