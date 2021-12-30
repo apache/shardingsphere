@@ -174,8 +174,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     @SneakyThrows(ReflectiveOperationException.class)
     private Properties getDataSourcePropertiesFromDataSource(final DataSource dataSource) {
         String getDataSourcePropertiesMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getDataSourcePropertiesPropertyName());
-        Properties result = (Properties) dataSource.getClass().getMethod(getDataSourcePropertiesMethodName).invoke(dataSource);
-        return null == result ? new Properties() : result;
+        return (Properties) dataSource.getClass().getMethod(getDataSourcePropertiesMethodName).invoke(dataSource);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
