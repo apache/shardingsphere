@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
+import com.google.common.base.CaseFormat;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
+import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -24,30 +29,47 @@ import java.util.Properties;
 /**
  * Default data source properties handler.
  */
+@RequiredArgsConstructor
 public final class DefaultDataSourcePropertiesHandler {
     
-    private final Properties targetDataSourceProps;
+    private static final String GETTER_PREFIX = "get";
     
-    private final Map<String, String> jdbcUrlProps;
-    
-    private final Properties defaultDataSourceProps;
-    
-    public DefaultDataSourcePropertiesHandler(final Properties targetDataSourceProps, final String jdbcUrl, final Properties defaultDataSourceProps) {
-        this.targetDataSourceProps = targetDataSourceProps;
-        jdbcUrlProps = new ConnectionURLParser(jdbcUrl).getProperties();
-        this.defaultDataSourceProps = defaultDataSourceProps;
-    }
-    
+    private final DataSource dataSource;
+            
     /**
      * Add default data source properties to target data source properties.
+     * 
+     * @param dataSourcePropertiesFieldName data source properties field name
+     * @param jdbcUrlFieldName JDBC URL field name
+     * @param defaultDataSourceProps default data source properties
      */
-    public void addDefaultProperties() {
+    public void addDefaultDataSourceProperties(final String dataSourcePropertiesFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
+        Properties targetDataSourceProps = getDataSourceProperties(dataSourcePropertiesFieldName);
+        Map<String, String> jdbcUrlProps = new ConnectionURLParser(getJdbcUrl(jdbcUrlFieldName)).getProperties();
         for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            if (!targetDataSourceProps.containsKey(key) && !jdbcUrlProps.containsKey(key)) {
-                targetDataSourceProps.setProperty(key, value);
+            String defaultPropertyKey = entry.getKey().toString();
+            String defaultPropertyValue = entry.getValue().toString();
+            if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, jdbcUrlProps)) {
+                targetDataSourceProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
+    }
+    
+    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Map<String, String> jdbcUrlProps) {
+        return targetDataSourceProps.containsKey(defaultPropertyKey) || jdbcUrlProps.containsKey(defaultPropertyKey);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Properties getDataSourceProperties(final String dataSourcePropertiesFieldName) {
+        return (Properties) dataSource.getClass().getMethod(getGetterMethodName(dataSourcePropertiesFieldName)).invoke(dataSource);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private String getJdbcUrl(final String jdbcUrlFieldName) {
+        return (String) dataSource.getClass().getMethod(getGetterMethodName(getGetterMethodName(jdbcUrlFieldName))).invoke(dataSource);
+    }
+    
+    private String getGetterMethodName(final String fieldName) {
+        return GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
     }
 }

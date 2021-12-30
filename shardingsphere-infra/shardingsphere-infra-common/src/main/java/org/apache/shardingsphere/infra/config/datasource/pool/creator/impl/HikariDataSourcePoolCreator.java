@@ -70,13 +70,13 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
     }
     
     @Override
-    protected String getJdbcUrlPropertyName() {
-        return "jdbcUrl";
+    protected String getDataSourcePropertiesFieldName() {
+        return "dataSourceProperties";
     }
     
     @Override
-    protected String getDataSourcePropertiesPropertyName() {
-        return "dataSourceProperties";
+    protected String getJdbcUrlFieldName() {
+        return "jdbcUrl";
     }
     
     @Override

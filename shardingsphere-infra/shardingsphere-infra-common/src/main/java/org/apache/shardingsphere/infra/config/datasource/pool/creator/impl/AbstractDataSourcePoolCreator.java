@@ -165,29 +165,17 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     }
     
     private void setDefaultDataSourceProperties(final DataSource dataSource) {
-        if (null == getJdbcUrlPropertyName() || null == getDataSourcePropertiesPropertyName()) {
+        if (null == getJdbcUrlFieldName() || null == getDataSourcePropertiesFieldName()) {
             return;
         }
-        new DefaultDataSourcePropertiesHandler(getDataSourcePropertiesFromDataSource(dataSource), getJdbcUrl(dataSource), getDefaultDataSourceProperties()).addDefaultProperties();
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Properties getDataSourcePropertiesFromDataSource(final DataSource dataSource) {
-        String getDataSourcePropertiesMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getDataSourcePropertiesPropertyName());
-        return (Properties) dataSource.getClass().getMethod(getDataSourcePropertiesMethodName).invoke(dataSource);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private String getJdbcUrl(final DataSource dataSource) {
-        String getJdbcUrlMethodName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, getJdbcUrlPropertyName());
-        return (String) dataSource.getClass().getMethod(getJdbcUrlMethodName).invoke(dataSource);
+        new DefaultDataSourcePropertiesHandler(dataSource).addDefaultDataSourceProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
     }
     
     protected abstract Map<String, String> getPropertySynonyms();
     
-    protected abstract String getJdbcUrlPropertyName();
+    protected abstract String getDataSourcePropertiesFieldName();
     
-    protected abstract String getDataSourcePropertiesPropertyName();
+    protected abstract String getJdbcUrlFieldName();
     
     protected abstract Properties getDefaultDataSourceProperties();
     

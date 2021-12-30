@@ -32,12 +32,12 @@ public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCr
     }
     
     @Override
-    protected String getJdbcUrlPropertyName() {
+    protected String getDataSourcePropertiesFieldName() {
         return null;
     }
     
     @Override
-    protected String getDataSourcePropertiesPropertyName() {
+    protected String getJdbcUrlFieldName() {
         return null;
     }
     
