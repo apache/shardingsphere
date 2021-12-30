@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.1.0</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -1111,7 +1111,7 @@
         <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
         <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
         <url>https://github.com/apache/shardingsphere.git</url>
-      <tag>HEAD</tag>
+      <tag>5.1.0</tag>
     </scm>
     
     <mailingLists>
