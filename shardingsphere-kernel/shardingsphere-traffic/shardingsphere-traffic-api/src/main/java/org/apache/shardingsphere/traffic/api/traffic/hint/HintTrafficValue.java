@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.config.strategy;
+package org.apache.shardingsphere.traffic.api.traffic.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
 
 /**
- * Traffic strategy configuration.
+ * Hint traffic value.
+ *
+ * @param <T> class type of hint value
  */
 @RequiredArgsConstructor
 @Getter
-public final class TrafficStrategyConfiguration {
+public final class HintTrafficValue<T extends Comparable<?>> implements TrafficValue {
     
-    private final String name;
-    
-    private final Collection<String> labels;
-    
-    private final String algorithmName;
-    
-    private final String loadBalancerName;
+    private final T value;
 }

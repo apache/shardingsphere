@@ -36,8 +36,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DataSourceConfigurationTest {
     
@@ -166,4 +168,38 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getMaximumPoolSize(), is(30));
         assertThat(actual.getIdleTimeout(), is(30000L));
     }
+    
+    @Test
+    public void assertGetAllProperties() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", "root");
+        props.put("loginTimeout", "5000");
+        Properties customPoolProps = new Properties();
+        customPoolProps.setProperty("maximumPoolSize", "30");
+        customPoolProps.setProperty("idleTimeout", "30000");
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        originalDataSourceConfig.getProps().putAll(props);
+        originalDataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
+        Map<String, Object> actualAllProperties = originalDataSourceConfig.getAllProperties();
+        assertNotNull(actualAllProperties);
+        assertThat(actualAllProperties.size(), is(7));
+        assertTrue(actualAllProperties.containsKey("driverClassName"));
+        assertTrue(actualAllProperties.containsValue("org.h2.Driver"));
+        assertTrue(actualAllProperties.containsKey("jdbcUrl"));
+        assertTrue(actualAllProperties.containsValue("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertTrue(actualAllProperties.containsKey("username"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("password"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("loginTimeout"));
+        assertTrue(actualAllProperties.containsValue("5000"));
+        assertTrue(actualAllProperties.containsKey("maximumPoolSize"));
+        assertTrue(actualAllProperties.containsValue("30"));
+        assertTrue(actualAllProperties.containsKey("idleTimeout"));
+        assertTrue(actualAllProperties.containsValue("30000"));
+    }
+    
 }

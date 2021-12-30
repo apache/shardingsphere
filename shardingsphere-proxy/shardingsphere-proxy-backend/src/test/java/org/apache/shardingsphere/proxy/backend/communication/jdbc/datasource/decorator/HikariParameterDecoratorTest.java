@@ -34,7 +34,7 @@ public final class HikariParameterDecoratorTest {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc");
-        HikariDataSource actual = new HikariParameterDecorator().decorate(dataSource);
+        HikariDataSource actual = new HikariDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
@@ -57,7 +57,7 @@ public final class HikariParameterDecoratorTest {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(MockedDriver.class.getName());
         dataSource.setJdbcUrl("mock:jdbc://127.0.0.1:3306/test0?tinyInt1isBit=true&useSSL=false");
-        HikariDataSource actual = new HikariParameterDecorator().decorate(dataSource);
+        HikariDataSource actual = new HikariDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));

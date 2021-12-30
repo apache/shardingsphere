@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.decorator;
-
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
-import javax.sql.DataSource;
+package org.apache.shardingsphere.traffic.api.traffic;
 
 /**
- * Data source pool parameter decorator.
- * 
- * @param <T> type of data source
+ * Traffic value.
  */
-public interface DataSourcePoolParameterDecorator<T extends DataSource> extends TypedSPI {
-    
-    /**
-     * Decorate data source.
-     * 
-     * @param dataSource data source to be decorated
-     * @return decorated data source
-     */
-    T decorate(T dataSource);
+public interface TrafficValue {
 }

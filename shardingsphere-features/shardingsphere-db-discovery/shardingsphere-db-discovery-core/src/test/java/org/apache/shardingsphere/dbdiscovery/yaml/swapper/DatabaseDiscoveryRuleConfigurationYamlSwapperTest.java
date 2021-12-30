@@ -88,7 +88,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     
     private void assertHARuleConfiguration(final DatabaseDiscoveryRuleConfiguration actual) {
         DatabaseDiscoveryDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("ha_ds"));
+        assertThat(group.getGroupName(), is("ha_ds"));
         assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
