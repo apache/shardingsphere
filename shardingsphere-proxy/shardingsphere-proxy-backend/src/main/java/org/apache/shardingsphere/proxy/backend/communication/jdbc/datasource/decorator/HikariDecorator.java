@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.pool.decorator.DataSourcePoolDecorator;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionURLParser;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.ConnectionURLParser;
 
 import java.util.Map;
 

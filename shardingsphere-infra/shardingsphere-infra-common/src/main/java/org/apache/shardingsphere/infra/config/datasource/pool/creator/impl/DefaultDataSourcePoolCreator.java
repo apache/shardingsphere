@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Default data source pool creator.
@@ -28,6 +29,21 @@ public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCr
     @Override
     protected Map<String, String> getPropertySynonyms() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    protected String getJdbcUrlPropertyName() {
+        return null;
+    }
+    
+    @Override
+    protected String getDataSourcePropertiesPropertyName() {
+        return null;
+    }
+    
+    @Override
+    protected Properties getDefaultDataSourceProperties() {
+        return new Properties();
     }
     
     @Override
