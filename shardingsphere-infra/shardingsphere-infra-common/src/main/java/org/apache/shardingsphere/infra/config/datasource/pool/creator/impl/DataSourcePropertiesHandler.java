@@ -27,10 +27,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Default data source properties handler.
+ * Data source properties handler.
  */
 @RequiredArgsConstructor
-public final class DefaultDataSourcePropertiesHandler {
+public final class DataSourcePropertiesHandler {
     
     private static final String GETTER_PREFIX = "get";
     
