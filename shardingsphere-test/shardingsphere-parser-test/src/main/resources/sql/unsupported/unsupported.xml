@@ -48,7 +48,6 @@
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
     <sql-case id="alter_text_search_dictionary" value="ALTER TEXT SEARCH DICTIONARY alt_ts_dict1 RENAME TO alt_ts_dict2" db-types="PostgreSQL" />
     <sql-case id="alter_text_search_template" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp1 RENAME TO alt_ts_temp2" db-types="PostgreSQL" />
-    <sql-case id="create_tex_search_parser" value="CREATE TEXT SEARCH PARSER alt_ts_prs1 (start = prsd_start, gettoken = prsd_nexttoken, end = prsd_end, lextypes = prsd_lextype)" db-types="PostgreSQL" />
     <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL" />
     <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />

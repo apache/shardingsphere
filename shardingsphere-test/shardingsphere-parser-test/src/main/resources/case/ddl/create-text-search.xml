@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <create-text-search sql-case-id="create_text_search_dictionary" />
     <create-text-search sql-case-id="create_text_search_template" />
+    <create-text-search sql-case-id="create_text_search_parser" />
 </sql-parser-test-cases>

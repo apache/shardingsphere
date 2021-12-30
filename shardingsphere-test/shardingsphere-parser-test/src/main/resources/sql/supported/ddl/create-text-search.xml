@@ -18,5 +18,6 @@
 
 <sql-cases>
     <sql-case id="create_text_search_dictionary" value="CREATE TEXT SEARCH DICTIONARY alt_ts_dict1 (template=simple)" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_text_search_template" value="CREATE TEXT SEARCH TEMPLATE alt_ts_temp1 (lexize=dsimple_lexize)" />
+    <sql-case id="create_text_search_template" value="CREATE TEXT SEARCH TEMPLATE alt_ts_temp1 (lexize=dsimple_lexize)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_text_search_parser" value="CREATE TEXT SEARCH PARSER alt_ts_prs1 (start = prsd_start, gettoken = prsd_nexttoken, end = prsd_end, lextypes = prsd_lextype)" db-types="PostgreSQL,openGauss" />
 </sql-cases>
