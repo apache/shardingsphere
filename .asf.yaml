@@ -41,7 +41,6 @@ github:
     - devops
     - rdbms
     - oltp
-    - sql-server
     - bigdata
     - machine-learning
   features:
