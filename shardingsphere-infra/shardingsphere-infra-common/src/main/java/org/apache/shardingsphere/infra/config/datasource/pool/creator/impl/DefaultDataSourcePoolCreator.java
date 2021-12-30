@@ -32,6 +32,11 @@ public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCr
     }
     
     @Override
+    protected Map<String, Object> getInvalidProperties() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
     protected String getDataSourcePropertiesFieldName() {
         return null;
     }
@@ -44,11 +49,6 @@ public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCr
     @Override
     protected Properties getDefaultDataSourceProperties() {
         return new Properties();
-    }
-    
-    @Override
-    protected Map<String, Object> getInvalidProperties() {
-        return Collections.emptyMap();
     }
     
     @Override
