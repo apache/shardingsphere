@@ -5,7 +5,7 @@ weight = 6
 
 ## Configuration Item Explanation
 
-Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.0.0.xsd)
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.0.xsd)
 
 \<sql-parser:rule />
 
