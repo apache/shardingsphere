@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public final class ShadowExtractorTest {
 
     @Test
-    public void extractValuesIsSimpleExpressionSegment() {
+    public void assertExtractValuesSimpleExpressionSegment() {
         SimpleExpressionSegment simpleExpressionSegment = new LiteralExpressionSegment(1, 2, "expected");
         List<Object> parametersList = new LinkedList<>();
         assertTrue(ShadowExtractor.extractValues(simpleExpressionSegment, parametersList).isPresent());
