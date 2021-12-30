@@ -18,23 +18,22 @@
 package org.apache.shardingsphere.traffic.api.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
- * Traffic rule configuration.
+ * Traffic strategy configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class TrafficRuleConfiguration implements GlobalRuleConfiguration {
+public final class TrafficStrategyConfiguration {
     
-    private final Collection<TrafficStrategyConfiguration> trafficStrategies = new LinkedList<>();
+    private final String name;
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = new LinkedHashMap<>();
+    private final Collection<String> labels;
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    private final String algorithmName;
+    
+    private final String loadBalancerName;
 }

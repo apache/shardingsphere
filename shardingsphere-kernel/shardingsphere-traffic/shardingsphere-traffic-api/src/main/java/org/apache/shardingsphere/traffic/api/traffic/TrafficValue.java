@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.config.strategy;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+package org.apache.shardingsphere.traffic.api.traffic;
 
 /**
- * Traffic strategy configuration.
+ * Traffic value.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TrafficStrategyConfiguration {
-    
-    private final String name;
-    
-    private final Collection<String> labels;
-    
-    private final String algorithmName;
-    
-    private final String loadBalancerName;
+public interface TrafficValue {
 }

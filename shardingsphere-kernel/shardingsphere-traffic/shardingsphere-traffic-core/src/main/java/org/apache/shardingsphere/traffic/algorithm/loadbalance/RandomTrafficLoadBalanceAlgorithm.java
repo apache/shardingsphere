@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.config;
+package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Traffic rule configuration.
+ * Random traffic load balance algorithm.
  */
-@Getter
-public final class TrafficRuleConfiguration implements GlobalRuleConfiguration {
+public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
-    private final Collection<TrafficStrategyConfiguration> trafficStrategies = new LinkedList<>();
+    @Override
+    public DataSourceConfiguration getDataSourceConfig(final List<DataSourceConfiguration> dataSourceConfigs) {
+        return dataSourceConfigs.get(ThreadLocalRandom.current().nextInt(dataSourceConfigs.size()));
+    }
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = new LinkedHashMap<>();
-    
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    @Override
+    public String getType() {
+        return "RANDOM";
+    }
 }

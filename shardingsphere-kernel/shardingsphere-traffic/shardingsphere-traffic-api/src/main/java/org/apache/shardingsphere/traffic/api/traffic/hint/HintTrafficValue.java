@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.config;
+package org.apache.shardingsphere.traffic.api.traffic.hint;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
 
 /**
- * Traffic rule configuration.
+ * Hint traffic value.
+ *
+ * @param <T> class type of hint value
  */
+@RequiredArgsConstructor
 @Getter
-public final class TrafficRuleConfiguration implements GlobalRuleConfiguration {
+public final class HintTrafficValue<T extends Comparable<?>> implements TrafficValue {
     
-    private final Collection<TrafficStrategyConfiguration> trafficStrategies = new LinkedList<>();
-    
-    private final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = new LinkedHashMap<>();
-    
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    private final T value;
 }
