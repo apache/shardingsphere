@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.shadow.route.engine.util;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShadowExtractorTest {
 
     @Test
     public void extractValuesIsSimpleExpressionSegment() {
-        LiteralExpressionSegment LiteralExpressionSegment = new LiteralExpressionSegment(1, 2, "");
+        SimpleExpressionSegment simpleExpressionSegment = new LiteralExpressionSegment(1, 2, "expected");
         List<Object> parametersList = new LinkedList<>();
-        Collection<Comparable<?>> result = new LinkedList<>();
-        result.add((Comparable<?>) LiteralExpressionSegment.getLiterals());
-        assertThat(ShadowExtractor.extractValues(LiteralExpressionSegment, parametersList), is(Optional.of(result)));
+        assertTrue(ShadowExtractor.extractValues(simpleExpressionSegment, parametersList).isPresent());
+        assertThat(ShadowExtractor.extractValues(simpleExpressionSegment, parametersList).get().iterator().next(), is("expected"));
     }
 }
