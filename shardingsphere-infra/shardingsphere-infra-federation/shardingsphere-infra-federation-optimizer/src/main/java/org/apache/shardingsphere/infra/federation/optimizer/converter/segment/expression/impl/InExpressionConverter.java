@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -51,19 +53,26 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
         expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(sqlNodes::add);
+        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(sqlNode -> {
+            if (sqlNode instanceof SqlBasicCall) {
+                SqlNodeList sqlNodeList = new SqlNodeList(Arrays.asList(((SqlBasicCall) sqlNode).getOperands().clone()), SqlParserPos.ZERO);
+                sqlNodes.add(sqlNodeList);
+            } else {
+                sqlNodes.add(sqlNode);
+            }
+        });
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     @Override
     public Optional<InExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
+         if (null == sqlBasicCall) {
             return Optional.empty();
         }
         ExpressionConverter expressionConverter = new ExpressionConverter();
         ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall) + 1, left, right, not));
+        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, not));
     }
 }
