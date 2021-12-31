@@ -69,7 +69,7 @@ public final class DataSourcePropertiesHandler {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private String getJdbcUrl(final String jdbcUrlFieldName) {
-        return (String) dataSource.getClass().getMethod(getGetterMethodName(getGetterMethodName(jdbcUrlFieldName))).invoke(dataSource);
+        return (String) dataSource.getClass().getMethod(getGetterMethodName(jdbcUrlFieldName)).invoke(dataSource);
     }
     
     private String getGetterMethodName(final String fieldName) {
