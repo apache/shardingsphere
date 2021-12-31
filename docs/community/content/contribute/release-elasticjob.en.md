@@ -48,6 +48,10 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 ./mvnw deploy -DrepositoryId=apache.snapshots.https -T1C
 ```
 
+**3. Check if artifacts present in Snapshot Repository**
+
+<https://repository.apache.org/content/groups/snapshots/org/apache/shardingsphere/elasticjob/>
+
 ## Publishing Apache Release
 
 ### Deploying to Apache Maven Central Repository

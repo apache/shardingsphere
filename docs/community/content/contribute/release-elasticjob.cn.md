@@ -48,6 +48,10 @@ chapter = true
 ./mvnw deploy -DrepositoryId=apache.snapshots.https -T1C
 ```
 
+**3. 检查 Snapshot 仓库上传结果**
+
+<https://repository.apache.org/content/groups/snapshots/org/apache/shardingsphere/elasticjob/>
+
 ## Apache Release 发布
 
 ### 部署到 Apache Maven 中央仓库
