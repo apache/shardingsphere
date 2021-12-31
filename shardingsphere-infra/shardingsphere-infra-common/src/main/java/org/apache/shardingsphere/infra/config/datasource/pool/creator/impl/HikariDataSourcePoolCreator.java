@@ -30,16 +30,21 @@ import java.util.Properties;
 @Getter
 public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
     
+    private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
+    
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
     private final Properties defaultDataSourceProperties = new Properties();
     
-    private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
-    
     public HikariDataSourcePoolCreator() {
+        buildInvalidProperties();
         buildPropertySynonyms();
         buildDefaultDataSourceProperties();
-        buildInvalidProperties();
+    }
+    
+    private void buildInvalidProperties() {
+        invalidProperties.put("minimumIdle", -1);
+        invalidProperties.put("maximumPoolSize", -1);
     }
     
     private void buildPropertySynonyms() {
@@ -62,11 +67,6 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
         defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("serverTimezone", "UTC");
-    }
-    
-    private void buildInvalidProperties() {
-        invalidProperties.put("minimumIdle", -1);
-        invalidProperties.put("maximumPoolSize", -1);
     }
     
     @Override
