@@ -65,7 +65,6 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        assertThat(hikariDataSource.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(hikariDataSource.getDriverClassName(), is("org.h2.Driver"));
         assertThat(hikariDataSource.getUsername(), is("root"));
@@ -77,7 +76,6 @@ public final class HikariDataSourcePoolCreatorTest {
     
     private DataSourceConfiguration createDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("driverClassName", "org.h2.Driver");
         props.put("username", "root");
@@ -85,7 +83,7 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
         props.put("dataSourceProperties", getDataSourceProperties());
-        DataSourceConfiguration result = new DataSourceConfiguration(String.valueOf(props.get("dataSourceClassName")));
+        DataSourceConfiguration result = new DataSourceConfiguration("com.zaxxer.hikari.HikariDataSource");
         result.getProps().putAll(props);
         return result;
     }
@@ -102,5 +100,16 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
         assertThat(props.get("cachePrepStmts"), is(true));
         assertThat(props.get("prepStmtCacheSize"), is(1000));
+        assertThat(props.get("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("cachedefaultDataSourcePropsSetMetadata"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("netTimeoutForStreamingdefaultDataSourcePropss"), is("0"));
+        assertThat(props.get("tinyInt1isBit"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("serverTimezone"), is("UTC"));
     }
 }

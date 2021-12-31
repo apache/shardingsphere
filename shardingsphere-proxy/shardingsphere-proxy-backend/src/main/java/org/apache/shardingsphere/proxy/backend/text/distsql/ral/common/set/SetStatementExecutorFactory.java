@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
@@ -52,6 +51,6 @@ public final class SetStatementExecutorFactory {
         if (sqlStatement instanceof SetInstanceStatusStatement) {
             return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }
