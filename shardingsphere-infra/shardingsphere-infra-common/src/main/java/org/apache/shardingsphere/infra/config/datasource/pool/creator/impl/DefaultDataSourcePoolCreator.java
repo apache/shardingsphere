@@ -27,12 +27,12 @@ import java.util.Properties;
 public final class DefaultDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
     
     @Override
-    protected Map<String, String> getPropertySynonyms() {
+    protected Map<String, Object> getInvalidProperties() {
         return Collections.emptyMap();
     }
     
     @Override
-    protected Map<String, Object> getInvalidProperties() {
+    protected Map<String, String> getPropertySynonyms() {
         return Collections.emptyMap();
     }
     

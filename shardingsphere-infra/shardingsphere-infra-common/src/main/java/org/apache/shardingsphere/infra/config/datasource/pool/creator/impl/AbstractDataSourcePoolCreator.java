@@ -63,7 +63,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Map<String, Object> findAllGetterProperties(final Object target) {
+    private Map<String, Object> findAllGetterProperties(final DataSource target) {
         Collection<Method> getterMethods = findAllGetterMethods(target.getClass());
         Map<String, Object> result = new LinkedHashMap<>(getterMethods.size(), 1);
         for (Method each : getterMethods) {
@@ -163,9 +163,9 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
     
-    protected abstract Map<String, String> getPropertySynonyms();
-    
     protected abstract Map<String, Object> getInvalidProperties();
+    
+    protected abstract Map<String, String> getPropertySynonyms();
     
     protected abstract String getDataSourcePropertiesFieldName();
     
