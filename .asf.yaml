@@ -34,7 +34,6 @@ github:
     - mysql
     - postgresql
     - shard
-    - readwrite-splitting
     - encrypt
     - hacktoberfest
     - dba
