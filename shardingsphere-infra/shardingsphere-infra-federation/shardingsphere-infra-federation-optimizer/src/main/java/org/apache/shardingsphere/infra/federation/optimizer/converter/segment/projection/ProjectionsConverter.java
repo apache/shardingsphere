@@ -121,7 +121,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         return Optional.empty();
     }
     
-    private boolean isOwnerShorthandProjection(SqlIdentifier sqlIdentifier){
+    private boolean isOwnerShorthandProjection(final SqlIdentifier sqlIdentifier) {
         return 2 == sqlIdentifier.names.size() 
                 && SqlIdentifier.STAR.names.equals(ImmutableList.of(sqlIdentifier.names.get(1)));
     }

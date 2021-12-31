@@ -38,8 +38,8 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
         if (null == segment) {
             return Optional.empty();
         }
-        return segment.getOwner().map(ownerSegment -> Optional.of(SqlIdentifier.star(Arrays.asList(ownerSegment.getIdentifier().getValue(), ""), SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO))))
-                .orElseGet(() -> Optional.of(SqlIdentifier.star(SqlParserPos.ZERO)));
+        return segment.getOwner().map(ownerSegment -> Optional.of(SqlIdentifier.star(Arrays.asList(ownerSegment.getIdentifier().getValue(), ""), 
+                SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)))).orElseGet(() -> Optional.of(SqlIdentifier.star(SqlParserPos.ZERO)));
     }
     
     @Override
