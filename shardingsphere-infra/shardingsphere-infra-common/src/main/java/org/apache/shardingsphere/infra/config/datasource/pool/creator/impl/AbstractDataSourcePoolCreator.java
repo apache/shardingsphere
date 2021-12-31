@@ -17,24 +17,14 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceReflection;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -42,58 +32,28 @@ import java.util.Properties;
  */
 public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCreator {
     
-    static {
-        GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class);
-        SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout");
-    }
-    
-    private static final Collection<Class<?>> GENERAL_CLASS_TYPES;
-    
-    private static final Collection<String> SKIPPED_PROPERTY_KEYS;
-    
-    private static final String GETTER_PREFIX = "get";
-    
-    private static final String SETTER_PREFIX = "set";
-    
     @Override
     public final DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
-        result.getProps().putAll(findAllGetterProperties(dataSource));
+        filterInvalidProperties(result, new DataSourceReflection(dataSource).convertToProperties());
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Map<String, Object> findAllGetterProperties(final DataSource target) {
-        Collection<Method> getterMethods = findAllGetterMethods(target.getClass());
-        Map<String, Object> result = new LinkedHashMap<>(getterMethods.size(), 1);
-        for (Method each : getterMethods) {
-            String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
-            if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_KEYS.contains(propertyName)) {
-                Object propertyValue = each.invoke(target);
-                if (null != propertyValue && !isInvalidProperty(propertyName, propertyValue)) {
-                    result.put(propertyName, propertyValue);
-                }
+    private void filterInvalidProperties(final DataSourceConfiguration dataSourceConfig, final Map<String, Object> reflectionProps) {
+        for (Entry<String, Object> entry : reflectionProps.entrySet()) {
+            String propertyName = entry.getKey();
+            Object propertyValue = entry.getValue();
+            if (isValidProperty(propertyName, propertyValue)) {
+                dataSourceConfig.getProps().put(propertyName, propertyValue);
             }
         }
-        return result;
-    }
-    
-    private static Collection<Method> findAllGetterMethods(final Class<?> clazz) {
-        Method[] methods = clazz.getMethods();
-        Collection<Method> result = new HashSet<>(methods.length);
-        for (Method each : methods) {
-            if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
-                result.add(each);
-            }
-        }
-        return result;
     }
     
     @Override
     public final DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         addPropertySynonym(dataSourceConfig);
-        setConfiguredFields(dataSourceConfig, result, result.getClass().getMethods());
+        setConfiguredFields(dataSourceConfig, result);
         new DataSourcePropertiesHandler(result).addDefaultProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
@@ -109,58 +69,19 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         }
     }
     
-    private void setConfiguredFields(final DataSourceConfiguration dataSourceConfig, final DataSource dataSource, final Method[] methods) {
+    private void setConfiguredFields(final DataSourceConfiguration dataSourceConfig, final DataSource dataSource) {
+        DataSourceReflection dataSourceReflection = new DataSourceReflection(dataSource);
         for (Entry<String, Object> entry : dataSourceConfig.getAllProperties().entrySet()) {
-            String propertyName = entry.getKey();
-            Object propertyValue = entry.getValue();
-            if (!isSkippedProperty(propertyName) && !isInvalidProperty(propertyName, propertyValue)) {
-                setField(dataSource, methods, propertyName, propertyValue);
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
+            if (isValidProperty(fieldName, fieldValue)) {
+                dataSourceReflection.setField(fieldName, fieldValue);
             }
         }
     }
     
-    private boolean isSkippedProperty(final String key) {
-        return SKIPPED_PROPERTY_KEYS.contains(key);
-    }
-    
-    private boolean isInvalidProperty(final String key, final Object value) {
-        return getInvalidProperties().containsKey(key) && null != value && value.equals(getInvalidProperties().get(key));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    protected final void setField(final DataSource dataSource, final Method[] methods, final String propertyName, final Object value) {
-        try {
-            Optional<Method> setterMethod = findSetterMethod(methods, propertyName);
-            if (setterMethod.isPresent() && null != value) {
-                setDataSourceField(setterMethod.get(), dataSource, value);
-            }
-        } catch (final IllegalArgumentException ex) {
-            throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", propertyName, ex.getMessage());
-        }
-    }
-    
-    private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
-        Class<?> paramType = method.getParameterTypes()[0];
-        if (paramType == int.class) {
-            method.invoke(target, Integer.parseInt(value.toString()));
-        } else if (paramType == long.class) {
-            method.invoke(target, Long.parseLong(value.toString()));
-        } else if (paramType == boolean.class || paramType == Boolean.class) {
-            method.invoke(target, Boolean.parseBoolean(value.toString()));
-        } else if (paramType == String.class) {
-            method.invoke(target, value.toString());
-        } else if (paramType == Properties.class) {
-            Properties props = new Properties();
-            props.putAll((Map) value);
-            method.invoke(target, props);
-        } else {
-            method.invoke(target, value);
-        }
-    }
-    
-    private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
-        String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property);
-        return Arrays.stream(methods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
+    private boolean isValidProperty(final String key, final Object value) {
+        return !getInvalidProperties().containsKey(key) || null == value || !value.equals(getInvalidProperties().get(key));
     }
     
     protected abstract Map<String, Object> getInvalidProperties();
