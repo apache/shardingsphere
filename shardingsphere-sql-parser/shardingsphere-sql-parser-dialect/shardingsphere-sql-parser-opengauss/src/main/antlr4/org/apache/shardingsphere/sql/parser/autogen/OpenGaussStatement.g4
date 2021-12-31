@@ -97,5 +97,6 @@ execute
     | createConversion
     | dropConversion
     | alterTextSearchDictionary
+    | alterTextSearchTemplate
     ) SEMI_?
     ;

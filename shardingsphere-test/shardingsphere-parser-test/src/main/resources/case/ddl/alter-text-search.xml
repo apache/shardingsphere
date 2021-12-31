@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <alter-text-search sql-case-id="alter_text_search_dictionary"/>
+    <alter-text-search sql-case-id="alter_text_search_template"/>
 </sql-parser-test-cases>

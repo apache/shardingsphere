@@ -378,7 +378,9 @@ public enum SQLVisitorRule {
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
     
-    ALTER_TEXT_SEARCH_DICTIONARY("AlterTextSearchDictionary", SQLStatementType.DDL);
+    ALTER_TEXT_SEARCH_DICTIONARY("AlterTextSearchDictionary", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL);
 
     private final String name;
     
