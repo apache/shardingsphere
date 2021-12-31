@@ -25,12 +25,15 @@ import java.util.Properties;
  */
 public final class ShardingSphereVersion {
     
+    public static final String VERSION = "${project.version}";
+    
     static {
         Properties info = new Properties();
         try {
             info.load(ShardingSphereVersion.class.getResourceAsStream("/current-git-commit.properties"));
         } catch (final Exception ignored) {
         }
+        IS_SNAPSHOT = VERSION.endsWith("SNAPSHOT");
         BUILD_BRANCH = info.getProperty("git.branch", "");
         BUILD_TIME = info.getProperty("git.build.time", "");
         BUILD_GIT_COMMIT_ID = info.getProperty("git.commit.id", "");
@@ -40,7 +43,7 @@ public final class ShardingSphereVersion {
         BUILD_GIT_DIRTY = Boolean.parseBoolean(info.getProperty("git.dirty"));
     }
     
-    public static final String VERSION = "${project.version}";
+    public static final boolean IS_SNAPSHOT;
     
     public static final String BUILD_BRANCH;
     
@@ -71,7 +74,7 @@ public final class ShardingSphereVersion {
     private static String getVerboseVersion() {
         String result = "";
         result += String.format("ShardingSphere-%s%n", VERSION);
-        if (!BUILD_GIT_COMMIT_ID.isEmpty()) {
+        if (IS_SNAPSHOT && !BUILD_GIT_COMMIT_ID.isEmpty()) {
             result += String.format("Commit ID: %s%s%n", BUILD_GIT_DIRTY ? "dirty-" : "", BUILD_GIT_COMMIT_ID);
             result += String.format("Commit Message: %s%n", BUILD_GIT_COMMIT_MESSAGE_SHORT);
             result += BUILD_GIT_TAG.isEmpty() ? String.format("Branch: %s%n", BUILD_BRANCH) : String.format("Tag: %s%n", BUILD_GIT_TAG);

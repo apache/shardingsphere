@@ -121,7 +121,7 @@ public final class BootstrapInitializer {
     
     private String getShardingSphereVersion() {
         String result = ShardingSphereVersion.VERSION;
-        if (Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
             return result;
         }
         result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
