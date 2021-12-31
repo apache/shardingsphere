@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -134,5 +135,45 @@ public final class DataSourceReflection {
     private Optional<Method> findSetterMethod(final String fieldName) {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
         return Arrays.stream(dataSourceMethods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
+    }
+    
+    /**
+     * Add default data source properties.
+     *
+     * @param dataSourcePropsFieldName data source properties field name
+     * @param jdbcUrlFieldName JDBC URL field name
+     * @param defaultDataSourceProps default data source properties
+     */
+    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
+        if (null == dataSourcePropsFieldName || null == jdbcUrlFieldName) {
+            return;
+        }
+        Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
+        Map<String, String> jdbcUrlProps = new ConnectionURLParser(getJdbcUrl(jdbcUrlFieldName)).getProperties();
+        for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
+            String defaultPropertyKey = entry.getKey().toString();
+            String defaultPropertyValue = entry.getValue().toString();
+            if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, jdbcUrlProps)) {
+                targetDataSourceProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+            }
+        }
+    }
+    
+    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Map<String, String> jdbcUrlProps) {
+        return targetDataSourceProps.containsKey(defaultPropertyKey) || jdbcUrlProps.containsKey(defaultPropertyKey);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Properties getDataSourcePropertiesFieldName(final String dataSourcePropsFieldName) {
+        return (Properties) dataSource.getClass().getMethod(getGetterMethodName(dataSourcePropsFieldName)).invoke(dataSource);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private String getJdbcUrl(final String jdbcUrlFieldName) {
+        return (String) dataSource.getClass().getMethod(getGetterMethodName(jdbcUrlFieldName)).invoke(dataSource);
+    }
+    
+    private String getGetterMethodName(final String fieldName) {
+        return GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
     }
 }
