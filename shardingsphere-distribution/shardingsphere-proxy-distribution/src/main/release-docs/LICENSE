@@ -225,11 +225,11 @@ The text of each license is the standard Apache 2.0 license.
     calcite-linq4j 1.27.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.10: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
-    commons-dbcp 1.4: https://github.com/apache/commons-dbcp, Apache 2.0
+    commons-dbcp 2.2.0: https://github.com/apache/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.8.0: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
-    commons-lang3 3.4: https://github.com/apache/commons-lang, Apache 2.0
+    commons-lang3 3.8: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
     curator-client 5.1.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.1.0:  https://github.com/apache/curator, Apache 2.0
