@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Sharding strategy type enum.
@@ -32,24 +34,63 @@ public enum ShardingStrategyTypeEnum {
     
     STANDARD {
         @Override
-        public ShardingStrategyConfiguration getConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
+        public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);
         }
         
+        @Override
+        public Class<? extends ShardingStrategyConfiguration> getImplementedClass() {
+            return StandardShardingStrategyConfiguration.class;
+        }
+        
+        @Override
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
+            return Arrays.asList(((StandardShardingStrategyConfiguration) strategyConfiguration).getShardingColumn(), strategyConfiguration.getShardingAlgorithmName());
+        }
     }, NONE {
         @Override
-        public ShardingStrategyConfiguration getConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
+        public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new NoneShardingStrategyConfiguration();
+        }
+        
+        @Override
+        public Class<? extends ShardingStrategyConfiguration> getImplementedClass() {
+            return NoneShardingStrategyConfiguration.class;
+        }
+        
+        @Override
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
+            return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
         }
     }, HINT {
         @Override
-        public ShardingStrategyConfiguration getConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
+        public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new HintShardingStrategyConfiguration(shardingAlgorithmName);
+        }
+        
+        @Override
+        public Class<? extends ShardingStrategyConfiguration> getImplementedClass() {
+            return HintShardingStrategyConfiguration.class;
+        }
+        
+        @Override
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
+            return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
         }
     }, COMPLEX {
         @Override
-        public ShardingStrategyConfiguration getConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
+        public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new ComplexShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);
+        }
+        
+        @Override
+        public Class<? extends ShardingStrategyConfiguration> getImplementedClass() {
+            return ComplexShardingStrategyConfiguration.class;
+        }
+        
+        @Override
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
+            return Arrays.asList(((ComplexShardingStrategyConfiguration) strategyConfiguration).getShardingColumns(), strategyConfiguration.getShardingAlgorithmName());
         }
     };
     
@@ -60,7 +101,22 @@ public enum ShardingStrategyTypeEnum {
      * @param shardingColumn sharding column
      * @return sharding strategy configuration
      */
-    public abstract ShardingStrategyConfiguration getConfiguration(String shardingAlgorithmName, String shardingColumn);
+    public abstract ShardingStrategyConfiguration createConfiguration(String shardingAlgorithmName, String shardingColumn);
+    
+    /**
+     * Get the class that implements the strategy.
+     *
+     * @return Class implementing the strategy
+     */
+    public abstract Class<? extends ShardingStrategyConfiguration> getImplementedClass();
+    
+    /**
+     * Get the content in the configuration.
+     * @param strategyConfiguration sharding strategy configuration.
+     * 
+     * @return Content list
+     */
+    public abstract Collection<String> getConfigurationContents(ShardingStrategyConfiguration strategyConfiguration);
     
     /**
      * Returns the sharding strategy type.
@@ -77,7 +133,21 @@ public enum ShardingStrategyTypeEnum {
     }
     
     /**
+     * Returns the sharding strategy type.
+     *
+     * @param shardingStrategyConfiguration Implementation class of sharding strategy configuration
+     * @return sharding strategy type
+     */
+    public static ShardingStrategyTypeEnum getValueOf(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        Optional<ShardingStrategyTypeEnum> type = Arrays.stream(values())
+                .filter(each -> shardingStrategyConfiguration.getClass().getCanonicalName().equals(each.getImplementedClass().getCanonicalName())).findFirst();
+        type.orElseThrow(() -> new UnsupportedOperationException(String.format("unsupported strategy type %s", shardingStrategyConfiguration.getClass().getName())));
+        return type.get();
+    }
+    
+    /**
      * Determine whether the specified type is included.
+     *
      * @param name name
      * @return have data or not
      */
