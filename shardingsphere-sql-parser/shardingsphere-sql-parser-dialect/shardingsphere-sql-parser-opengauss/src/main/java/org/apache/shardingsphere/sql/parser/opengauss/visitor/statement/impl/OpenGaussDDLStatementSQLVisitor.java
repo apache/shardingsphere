@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTextSearchDictionaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTextSearchParserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTextSearchTemplateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
@@ -643,6 +644,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitAlterTextSearchTemplate(final AlterTextSearchTemplateContext ctx) {
+        return new OpenGaussAlterTextSearchStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterTextSearchParser(final AlterTextSearchParserContext ctx) {
         return new OpenGaussAlterTextSearchStatement();
     }
 }

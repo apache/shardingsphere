@@ -46,9 +46,6 @@
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
-    
-    <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL" />
-    
     <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
     <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />

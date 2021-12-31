@@ -98,5 +98,6 @@ execute
     | dropConversion
     | alterTextSearchDictionary
     | alterTextSearchTemplate
+    | alterTextSearchParser
     ) SEMI_?
     ;

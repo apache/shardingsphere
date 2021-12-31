@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="alter_text_search_dictionary" value="ALTER TEXT SEARCH DICTIONARY alt_ts_dict1 RENAME TO alt_ts_dict2" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_text_search_template" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp1 RENAME TO alt_ts_temp2" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL,openGauss" />
 </sql-cases>
