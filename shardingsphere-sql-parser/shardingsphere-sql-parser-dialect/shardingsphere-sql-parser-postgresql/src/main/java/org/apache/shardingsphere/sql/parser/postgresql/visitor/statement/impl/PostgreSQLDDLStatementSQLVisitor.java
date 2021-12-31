@@ -498,7 +498,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         PostgreSQLDropDatabaseStatement result = new PostgreSQLDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         if (null != ctx.existClause()) {
-            result.setAllowNotExist(true);
+            result.setContainsNotExistClause(true);
         }
         return result;
     }
