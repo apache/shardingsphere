@@ -73,7 +73,6 @@ public final class DataSourcePropertiesHandler {
     }
     
     private String getGetterMethodName(final String fieldName) {
-        String methodName =  GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
-        return methodName;
+        return GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
     }
 }
