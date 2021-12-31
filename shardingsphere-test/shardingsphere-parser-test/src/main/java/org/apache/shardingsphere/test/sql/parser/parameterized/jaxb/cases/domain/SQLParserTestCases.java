@@ -98,6 +98,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -920,6 +921,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-text-search")
+    private final List<AlterTextSearchStatementTestCase> alterTextSearchStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1149,6 +1153,7 @@ public final class SQLParserTestCases {
         putAll(createTypeStatementTestCases, result);
         putAll(dropConversionTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
+        putAll(alterTextSearchStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
