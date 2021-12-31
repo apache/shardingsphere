@@ -1,18 +1,18 @@
 +++
-title = "ElasticJob发布指南"
+title = "ElasticJob 发布指南"
 weight = 9
 chapter = true
 +++
 
-## GPG设置
+## 发布准备
+
+### GPG 设置
 
 详情请参见[发布指南](/cn/contribute/release/)。
 
-## 发布Apache Maven中央仓库
+### 设置 settings.xml 文件
 
-**1. 设置settings.xml文件**
-
-将以下模板添加到 `~/.m2/settings.xml`中，所有密码需要加密后再填入。
+将以下模板添加到 `~/.m2/settings.xml` 中，所有密码需要加密后再填入。
 加密设置可参考[这里](http://maven.apache.org/guides/mini/guide-encryption.html)。
 
 ```xml
@@ -31,7 +31,28 @@ chapter = true
   </servers>
 </settings>
 ```
-**2. 更新版本说明和示例版本**
+
+## Apache Snapshot 发布
+
+### 部署到 Apache Snapshot 仓库
+
+**1. 确保本地构建项目正常**
+
+```bash
+./mvnw clean install
+```
+
+**2. 部署 Snapshot 仓库**
+
+```bash
+./mvnw deploy -DrepositoryId=apache.snapshots.https -T1C
+```
+
+## Apache Release 发布
+
+### 部署到 Apache Maven 中央仓库
+
+**1. 更新版本说明和示例版本**
 
 在Github主干上更新如下文件，并提交PR到主干：
 
@@ -41,7 +62,7 @@ https://github.com/apache/shardingsphere-elasticjob/blob/master/RELEASE-NOTES.md
 
 更新`examples`模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
 
-**3. 创建发布分支**
+**2. 创建发布分支**
 
 假设从github下载的ElasticJob源代码在`~/elasticjob/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
 创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
@@ -55,7 +76,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-**4. 发布预校验**
+**3. 发布预校验**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
@@ -67,7 +88,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DdryRun=true：演练，即不产生版本号提交，不生成新的tag。
 
-**5. 准备发布**
+**4. 准备发布**
 
 首先清理发布预校验本地信息。
 
@@ -90,7 +111,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-**6. 部署发布**
+**5. 部署发布**
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
@@ -101,7 +122,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
-## 发布Apache SVN仓库
+### 发布Apache SVN仓库
 
 **1. 检出shardingsphere发布目录**
 
@@ -152,7 +173,7 @@ svn add *
 svn --username=${APACHE LDAP 用户名} commit -m "release elasticjob-${RELEASE.VERSION}"
 ```
 
-## 检查发布结果
+### 检查发布结果
 
 **检查sha512哈希**
 
@@ -232,7 +253,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
   - 依赖许可证的完整版全部在`license`目录
   - 如果依赖的是Apache许可证并且存在`NOTICE`文件，那么这些`NOTICE`文件也需要加入到版本的`NOTICE`文件中
 
-## 发起投票
+### 发起投票
 
 **投票阶段**
 
@@ -332,7 +353,7 @@ Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 ```
 
-## 完成发布
+### 完成发布
 
 **1. 将源码、二进制包以及KEYS从svn的dev目录移动到release目录**
 
