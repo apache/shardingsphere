@@ -53,8 +53,9 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     public final DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         addPropertySynonym(dataSourceConfig);
-        setConfiguredFields(dataSourceConfig, result);
-        new DataSourcePropertiesHandler(result).addDefaultProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
+        DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
+        setConfiguredFields(dataSourceConfig, dataSourceReflection);
+        dataSourceReflection.addDefaultDataSourceProperties(getDataSourcePropertiesFieldName(), getJdbcUrlFieldName(), getDefaultDataSourceProperties());
         return result;
     }
     
@@ -69,8 +70,7 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         }
     }
     
-    private void setConfiguredFields(final DataSourceConfiguration dataSourceConfig, final DataSource dataSource) {
-        DataSourceReflection dataSourceReflection = new DataSourceReflection(dataSource);
+    private void setConfiguredFields(final DataSourceConfiguration dataSourceConfig, final DataSourceReflection dataSourceReflection) {
         for (Entry<String, Object> entry : dataSourceConfig.getAllProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();

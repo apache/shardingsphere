@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import org.junit.Test;
 
