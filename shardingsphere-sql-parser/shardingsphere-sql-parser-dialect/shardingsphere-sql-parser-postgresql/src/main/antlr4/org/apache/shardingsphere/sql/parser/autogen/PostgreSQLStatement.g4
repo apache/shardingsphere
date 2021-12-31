@@ -96,5 +96,6 @@ execute
     | dropLanguage
     | createConversion
     | dropConversion
+    | alterTextSearchDictionary
     ) SEMI_?
     ;
