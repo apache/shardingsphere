@@ -35,18 +35,16 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
     @Override
     public final DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
-        Map<String, Object> reflectionProps = new DataSourceReflection(dataSource).convertToProperties();
-        filterInvalidProperty(reflectionProps);
-        result.getProps().putAll(reflectionProps);
+        filterInvalidProperties(result, new DataSourceReflection(dataSource).convertToProperties());
         return result;
     }
     
-    private void filterInvalidProperty(final Map<String, Object> reflectionProps) {
+    private void filterInvalidProperties(final DataSourceConfiguration dataSourceConfig, final Map<String, Object> reflectionProps) {
         for (Entry<String, Object> entry : reflectionProps.entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
-            if (isInvalidProperty(propertyName, propertyValue)) {
-                reflectionProps.remove(propertyName);
+            if (isValidProperty(propertyName, propertyValue)) {
+                dataSourceConfig.getProps().put(propertyName, propertyValue);
             }
         }
     }
@@ -76,14 +74,14 @@ public abstract class AbstractDataSourcePoolCreator implements DataSourcePoolCre
         for (Entry<String, Object> entry : dataSourceConfig.getAllProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
-            if (!isInvalidProperty(fieldName, fieldValue)) {
+            if (isValidProperty(fieldName, fieldValue)) {
                 dataSourceReflection.setField(fieldName, fieldValue);
             }
         }
     }
     
-    private boolean isInvalidProperty(final String key, final Object value) {
-        return getInvalidProperties().containsKey(key) && null != value && value.equals(getInvalidProperties().get(key));
+    private boolean isValidProperty(final String key, final Object value) {
+        return !getInvalidProperties().containsKey(key) || null == value || !value.equals(getInvalidProperties().get(key));
     }
     
     protected abstract Map<String, Object> getInvalidProperties();
