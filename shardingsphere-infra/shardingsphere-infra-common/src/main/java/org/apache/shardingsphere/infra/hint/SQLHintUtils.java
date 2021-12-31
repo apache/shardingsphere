@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.infra.hint;
 
+import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -32,7 +35,9 @@ public final class SQLHintUtils {
     
     private static final String SQL_HINT_TOKEN = "shardingsphere hint:";
     
-    private static final String SQL_HINT_SPLIT = "=";
+    private static final String SQL_HINT_SPLIT = ",";
+    
+    private static final String SQL_HINT_VALUE_SPLIT = "=";
     
     /**
      * Get SQL hint props.
@@ -48,9 +53,12 @@ public final class SQLHintUtils {
         }
         startIndex = startIndex + SQL_HINT_TOKEN.length();
         int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
-        String[] hintValue = comment.substring(startIndex, endIndex).trim().split(SQL_HINT_SPLIT);
-        if (2 == hintValue.length && hintValue[0].trim().length() > 0 && hintValue[1].trim().length() > 0) {
-            result.put(hintValue[0].trim(), hintValue[1].trim());
+        Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(comment.substring(startIndex, endIndex).trim());
+        for (String each : sqlHints) {
+            List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
+            if (2 == hintValues.size()) {
+                result.put(hintValues.get(0), hintValues.get(1));
+            }
         }
         return result;
     }
