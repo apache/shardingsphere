@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -73,6 +74,6 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         ExpressionConverter expressionConverter = new ExpressionConverter();
         ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, not));
+        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), sqlBasicCall.getOperandList().get(1) instanceof SqlSelect ? getStopIndex(sqlBasicCall) + 1 : getStopIndex(sqlBasicCall), left, right, not));
     }
 }
