@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceReflection;
+import org.apache.shardingsphere.infra.config.datasource.reflection.DataSourceReflection;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 
 import javax.sql.DataSource;
