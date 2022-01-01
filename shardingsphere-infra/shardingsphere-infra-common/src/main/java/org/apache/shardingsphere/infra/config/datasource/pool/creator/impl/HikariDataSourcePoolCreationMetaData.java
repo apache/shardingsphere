@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.Properties;
  * Hikari data source pool creator.
  */
 @Getter
-public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
+public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
     
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
@@ -36,7 +37,7 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
     
     private final Properties defaultDataSourceProperties = new Properties();
     
-    public HikariDataSourcePoolCreator() {
+    public HikariDataSourcePoolCreationMetaData() {
         buildInvalidProperties();
         buildPropertySynonyms();
         buildDefaultDataSourceProperties();
@@ -70,12 +71,12 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
     }
     
     @Override
-    protected String getDataSourcePropertiesFieldName() {
+    public String getDataSourcePropertiesFieldName() {
         return "dataSourceProperties";
     }
     
     @Override
-    protected String getJdbcUrlFieldName() {
+    public String getJdbcUrlFieldName() {
         return "jdbcUrl";
     }
     

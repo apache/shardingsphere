@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.reflection;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator.reflection;
 
 import org.junit.Test;
 
