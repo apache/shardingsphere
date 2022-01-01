@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -377,7 +377,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private boolean isModifiedDataSource(final Map<String, DataSource> originalDataSources, final String dataSourceName, final DataSourceConfiguration dataSourceConfiguration) {
-        DataSourceConfiguration dataSourceConfig = DataSourceConverter.getDataSourceConfigurationMap(originalDataSources).get(dataSourceName);
+        DataSourceConfiguration dataSourceConfig = DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(originalDataSources).get(dataSourceName);
         return null != dataSourceConfig && !dataSourceConfiguration.equals(dataSourceConfig);
     }
     
@@ -411,7 +411,7 @@ public final class ContextManager implements AutoCloseable {
     private MetaDataContexts buildChangedMetaDataContextWithAddedDataSource(final ShardingSphereMetaData originalMetaData, 
                                                                             final Map<String, DataSourceConfiguration> addedDataSourceConfigs) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(originalMetaData.getResource().getDataSources());
-        dataSourceMap.putAll(DataSourceConverter.getDataSourceMap(addedDataSourceConfigs));
+        dataSourceMap.putAll(DataSourcePoolCreatorUtil.getDataSourceMap(addedDataSourceConfigs));
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(originalMetaData.getName(), dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(originalMetaData.getName(), originalMetaData.getRuleMetaData().getConfigurations());
         Properties props = metaDataContexts.getProps().getProps();
@@ -458,11 +458,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private Map<String, DataSource> getAddedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !originalMetaData.getResource().getDataSources().containsKey(each)));
+        return DataSourcePoolCreatorUtil.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !originalMetaData.getResource().getDataSources().containsKey(each)));
     }
     
     private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        return DataSourceConverter.getDataSourceMap(getChangedDataSourceConfiguration(originalMetaData, newDataSourceConfigs));
+        return DataSourcePoolCreatorUtil.getDataSourceMap(getChangedDataSourceConfiguration(originalMetaData, newDataSourceConfigs));
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {

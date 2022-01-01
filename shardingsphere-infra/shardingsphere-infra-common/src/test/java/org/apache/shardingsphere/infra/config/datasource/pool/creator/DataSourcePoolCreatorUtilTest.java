@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -34,19 +33,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class DataSourceConverterTest {
+public final class DataSourcePoolCreatorUtilTest {
     
     @Test
     public void assertGetDataSourceMap() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(1, 1);
         dataSourceConfigurationMap.put("ds_0", createDataSourceConfiguration());
-        Map<String, DataSource> actual = DataSourceConverter.getDataSourceMap(dataSourceConfigurationMap);
+        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(createDataSourceMap());
+        Map<String, DataSourceConfiguration> actual = DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(createDataSourceMap());
         assertThat(actual.size(), is(2));
         assertNotNull(actual.get("ds_0"));
         assertNotNull(actual.get("ds_1"));
@@ -60,7 +59,7 @@ public final class DataSourceConverterTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setLoginTimeout(1);
-        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -71,7 +70,7 @@ public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(createDataSourceConfiguration());
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(createDataSourceConfiguration());
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
@@ -91,7 +90,7 @@ public final class DataSourceConverterTest {
         props.put("loginTimeout", "5000");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(dataSourceConfig);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
