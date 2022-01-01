@@ -118,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -525,6 +526,11 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         MySQLExplainStatement result = new MySQLExplainStatement();
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            if (null != ctx.columnRef()) {
+                result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
+            } else if (null != ctx.textString()) {
+                result.setColumnWild((ColumnSegment) visit(ctx.textString()));
+            }
         } else if (null != ctx.explainableStatement()) {
             result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
         } else if (null != ctx.select()) {
