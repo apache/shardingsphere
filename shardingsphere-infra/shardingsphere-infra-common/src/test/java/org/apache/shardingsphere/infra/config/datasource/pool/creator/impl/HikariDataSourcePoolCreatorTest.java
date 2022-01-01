@@ -40,14 +40,14 @@ public final class HikariDataSourcePoolCreatorTest {
         dataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
-        DataSourceConfiguration dataSourceConfiguration = new DefaultDataSourcePoolCreator().createDataSourceConfiguration(dataSource);
+        DataSourceConfiguration dataSourceConfiguration = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceConfiguration(dataSource);
         Map<String, Object> props = dataSourceConfiguration.getProps();
         assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
     }
     
     @Test
     public void assertCreateDataSourceConfiguration() {
-        DataSourcePoolCreator dataSourcePoolCreator = new HikariDataSourcePoolCreator();
+        DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
         DataSourceConfiguration configuration = dataSourcePoolCreator.createDataSourceConfiguration(dataSourcePoolCreator.createDataSource(createDataSourceConfiguration()));
         assertThat(configuration.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(configuration.getProps().get("jdbcUrl"), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -61,7 +61,7 @@ public final class HikariDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        DataSourcePoolCreator dataSourcePoolCreator = new HikariDataSourcePoolCreator();
+        DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
