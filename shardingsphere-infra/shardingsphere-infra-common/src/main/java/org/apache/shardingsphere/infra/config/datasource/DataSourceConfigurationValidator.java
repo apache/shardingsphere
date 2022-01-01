@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
@@ -55,7 +56,7 @@ public final class DataSourceConfigurationValidator {
     private void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourceConverter.getDataSource(dataSourceConfig);
+            dataSource = DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

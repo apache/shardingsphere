@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
 import javax.sql.DataSource;
@@ -49,7 +49,7 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
     @Override
     public ResultSet executeQuery(final LogicSQL logicSQL, final DataSourceConfiguration dataSourceConfig) throws SQLException {
         dataSourceConfigValidator.validate(createDataSourceConfigs(dataSourceConfig));
-        DataSource dataSource = DataSourceConverter.getDataSource(dataSourceConfig);
+        DataSource dataSource = DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
         Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(logicSQL.getSql());
         this.statement = statement;
