@@ -47,7 +47,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQ
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.config.datasource.JdbcUrlParser;
+import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrl;
+import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.io.Serializable;
@@ -99,15 +100,15 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private void dump() {
         HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
         log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        JdbcUrlParser jdbcUrlParser = new JdbcUrlParser(hikariConfig.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), jdbcUrlParser.getHostname(), jdbcUrlParser.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
+        JdbcUrl jdbcUrl = new JdbcUrlParser().parse(hikariConfig.getJdbcUrl());
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), jdbcUrl.getHostname(), jdbcUrl.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
-                handleEvent(jdbcUrlParser, event);
+                handleEvent(jdbcUrl, event);
                 eventCount++;
             }
         }
@@ -115,8 +116,8 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private void handleEvent(final JdbcUrlParser jdbcUrlParser, final AbstractBinlogEvent event) {
-        if (event instanceof PlaceholderEvent || filter(jdbcUrlParser.getDatabase(), (AbstractRowsEvent) event)) {
+    private void handleEvent(final JdbcUrl jdbcUrl, final AbstractBinlogEvent event) {
+        if (event instanceof PlaceholderEvent || filter(jdbcUrl.getDatabase(), (AbstractRowsEvent) event)) {
             createPlaceholderRecord(event);
             return;
         }

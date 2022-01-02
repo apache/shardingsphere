@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 
 import java.util.Collections;
 import java.util.Map;
@@ -48,35 +47,22 @@ public final class JdbcUrlParser {
     
     private static final String QUERY_GROUP_KEY = "query";
     
-    private final String jdbcURL;
-    
-    private final String authority;
-    
-    @Getter
-    private final String database;
-    
-    private final String query;
-    
-    public JdbcUrlParser(final String jdbcURL) {
-        this.jdbcURL = jdbcURL;
+    /**
+     * Parse JDBC URL.
+     * 
+     * @param jdbcURL JDBC URL to be parsed
+     * @return parsed JDBC URL
+     */
+    public JdbcUrl parse(final String jdbcURL) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (matcher.matches()) {
-            authority = matcher.group(AUTHORITY_GROUP_KEY);
-            database = matcher.group(PATH_GROUP_KEY);
-            query = matcher.group(QUERY_GROUP_KEY);
-        } else {
-            authority = "";
-            database = "";
-            query = "";
+            String authority = matcher.group(AUTHORITY_GROUP_KEY);
+            return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
+        return new JdbcUrl("", -1, "", Collections.emptyMap());
     }
     
-    /**
-     * Get hostname.
-     *
-     * @return hostname
-     */
-    public String getHostname() {
+    private String parseHostname(final String authority) {
         if (!authority.contains(":")) {
             return authority;
         }
@@ -88,12 +74,7 @@ public final class JdbcUrlParser {
         return null;
     }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    public int getPort() {
+    private int parsePort(final String authority) {
         if (!authority.contains(":")) {
             // TODO adapt other databases
             return 3306;
@@ -106,24 +87,20 @@ public final class JdbcUrlParser {
         return -1;
     }
     
-    /**
-     * Get query properties from JDBC connection URL.
-     *
-     * @return query properties
-     */
-    public Map<String, String> getQueryProperties() {
+    private Map<String, String> parseQueryProperties(final String query) {
         return Strings.isNullOrEmpty(query) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(query);
     }
     
     /**
      * Append query properties.
      *
-     * @param queryProps query properties
-     * @return new JDBC URL
+     * @param jdbcURL JDBC URL to be appended
+     * @param queryProps query properties to be appended
+     * @return appended JDBC URL
      */
-    public String appendQueryProperties(final Map<String, String> queryProps) {
+    public String appendQueryProperties(final String jdbcURL, final Map<String, String> queryProps) {
         StringBuilder result = new StringBuilder(jdbcURL);
-        String delimiter = Strings.isNullOrEmpty(query) ? "?" : "&";
+        String delimiter = parse(jdbcURL).getQueryProperties().isEmpty() ? "?" : "&";
         result.append(delimiter);
         for (Entry<String, String> entry : queryProps.entrySet()) {
             result.append(entry.getKey());
