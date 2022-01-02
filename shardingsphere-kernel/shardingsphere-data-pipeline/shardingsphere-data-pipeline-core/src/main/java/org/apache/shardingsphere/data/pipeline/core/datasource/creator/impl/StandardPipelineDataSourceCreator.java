@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator.impl;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 
 import javax.sql.DataSource;
 
@@ -31,7 +31,7 @@ public final class StandardPipelineDataSourceCreator implements PipelineDataSour
     
     @Override
     public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) {
-        return DataSourceConverter.getDataSource((DataSourceConfiguration) pipelineDataSourceConfig);
+        return DataSourcePoolCreatorUtil.getDataSource((DataSourceConfiguration) pipelineDataSourceConfig);
     }
     
     @Override
