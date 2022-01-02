@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,15 +34,6 @@ public final class JdbcUri {
     
     public JdbcUri(final String jdbcUrl) {
         jdbcUri = URI.create(jdbcUrl.substring(5));
-    }
-    
-    /**
-     * Get scheme.
-     *
-     * @return scheme name
-     */
-    public String getScheme() {
-        return jdbcUri.getScheme();
     }
     
     /**
@@ -62,15 +52,6 @@ public final class JdbcUri {
      */
     public int getPort() {
         return -1 == jdbcUri.getPort() ? 3306 : jdbcUri.getPort();
-    }
-    
-    /**
-     * Get host.
-     *
-     * @return host
-     */
-    public String getHost() {
-        return String.format("%s:%d", getHostname(), getPort());
     }
     
     /**
@@ -98,17 +79,12 @@ public final class JdbcUri {
      * @return new JDBC URL
      */
     public String appendParameters(final Map<String, String> parameters) {
-        return String.format("jdbc:%s://%s/%s?%s", getScheme(), getHost(), getDatabase(), mergeParameters(parameters));
-    }
-    
-    private String mergeParameters(final Map<String, String> appendParameters) {
-        Map<String, String> parameters = new LinkedHashMap<>(getParameters());
-        parameters.putAll(appendParameters);
-        return formatParameters(parameters);
+        return String.format("jdbc:%s%s", jdbcUri, formatParameters(parameters));
     }
     
     private String formatParameters(final Map<String, String> parameters) {
-        StringBuilder result = new StringBuilder();
+        String prefix = (Strings.isNullOrEmpty(jdbcUri.getQuery())) ? "?" : "&";
+        StringBuilder result = new StringBuilder(prefix);
         for (Entry<String, String> entry : parameters.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {

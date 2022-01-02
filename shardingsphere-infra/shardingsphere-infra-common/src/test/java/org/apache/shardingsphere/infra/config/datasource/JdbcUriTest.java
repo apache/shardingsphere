@@ -32,9 +32,7 @@ public final class JdbcUriTest {
         JdbcUri jdbcUri = new JdbcUri("jdbc:mysql://127.0.0.1:3306/test_db");
         assertThat(jdbcUri.getHostname(), is("127.0.0.1"));
         assertThat(jdbcUri.getPort(), is(3306));
-        assertThat(jdbcUri.getHost(), is("127.0.0.1:3306"));
         assertThat(jdbcUri.getDatabase(), is("test_db"));
-        assertThat(jdbcUri.getScheme(), is("mysql"));
     }
     
     @Test

@@ -42,19 +42,19 @@ public final class ConnectionURLParser {
     
     private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + PROPS_PATTERN);
     
-    private final String props;
+    private final String query;
     
     public ConnectionURLParser(final String jdbcURL) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
-        props = !matcher.matches() ? "" : matcher.group(PROPS_GROUP_KEY);
+        query = !matcher.matches() ? "" : matcher.group(PROPS_GROUP_KEY);
     }
     
     /**
-     * Get properties from JDBC connection URL.
+     * Get query properties from JDBC connection URL.
      *
-     * @return properties
+     * @return query properties
      */
-    public Map<String, String> getProperties() {
-        return Strings.isNullOrEmpty(props) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(props);
+    public Map<String, String> getQueryProperties() {
+        return Strings.isNullOrEmpty(query) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(query);
     }
 }
