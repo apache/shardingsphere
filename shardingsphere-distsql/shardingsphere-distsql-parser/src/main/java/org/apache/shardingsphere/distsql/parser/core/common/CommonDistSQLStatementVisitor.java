@@ -106,7 +106,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             url = new IdentifierValue(ctx.urlSource().url().getText()).getValue();
         }
         if (null != ctx.simpleSource()) {
-            hostname = ctx.simpleSource().hostName().getText();
+            hostname = ctx.simpleSource().hostname().getText();
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
