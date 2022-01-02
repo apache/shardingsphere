@@ -42,7 +42,7 @@ public final class ConnectionURLParserTest {
     
     @Test
     public void assertParseMySQLWithReplication() {
-        ConnectionURLParser connectionURLParser = new ConnectionURLParser("jdbc:mysql://master-ip:3306/demo_ds?useUnicode=true");
+        ConnectionURLParser connectionURLParser = new ConnectionURLParser("jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/demo_ds?useUnicode=true");
         assertThat(connectionURLParser.getQueryProperties().size(), is(1));
         assertThat(connectionURLParser.getQueryProperties().get("useUnicode"), is("true"));
     }
