@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.reflection;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUrlParser;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -149,18 +150,18 @@ public final class DataSourceReflection {
             return;
         }
         Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
-        Map<String, String> jdbcUrlProps = new ConnectionURLParser(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
+        Map<String, String> queryProps = new JdbcUrlParser(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
         for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, jdbcUrlProps)) {
+            if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, queryProps)) {
                 targetDataSourceProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
     }
     
-    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Map<String, String> jdbcUrlProps) {
-        return targetDataSourceProps.containsKey(defaultPropertyKey) || jdbcUrlProps.containsKey(defaultPropertyKey);
+    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Map<String, String> queryProps) {
+        return targetDataSourceProps.containsKey(defaultPropertyKey) || queryProps.containsKey(defaultPropertyKey);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

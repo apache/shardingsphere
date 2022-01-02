@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.reflection;
+package org.apache.shardingsphere.infra.config.datasource;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -28,9 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * JDBC connection URL parser.
+ * JDBC URL parser.
  */
-public final class ConnectionURLParser {
+public final class JdbcUrlParser {
     
     private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
     
@@ -57,7 +57,7 @@ public final class ConnectionURLParser {
     
     private final String query;
     
-    public ConnectionURLParser(final String jdbcURL) {
+    public JdbcUrlParser(final String jdbcURL) {
         this.jdbcURL = jdbcURL;
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (matcher.matches()) {
