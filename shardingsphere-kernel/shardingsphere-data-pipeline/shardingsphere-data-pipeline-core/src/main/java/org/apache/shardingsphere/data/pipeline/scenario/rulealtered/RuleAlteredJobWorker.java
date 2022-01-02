@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
-import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
+import org.apache.shardingsphere.infra.config.datasource.JdbcUrlParser;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -258,10 +258,10 @@ public final class RuleAlteredJobWorker {
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
-        Map<String, String> parameters = ImmutableMap.of("useSSL", "false");
+        Map<String, String> queryProps = ImmutableMap.of("useSSL", "false");
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
             jdbcUrl = (String) entry.getValue().get("jdbcUrl");
-            entry.getValue().put("jdbcUrl", new JdbcUri(jdbcUrl).appendParameters(parameters));
+            entry.getValue().put("jdbcUrl", new JdbcUrlParser(jdbcUrl).appendQueryProperties(queryProps));
         }
     }
 }
