@@ -45,18 +45,13 @@ public final class ResourceSegmentsConverter {
     public static Map<String, DataSourceConfiguration> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            DataSourceParameter dataSource = new DataSourceParameter();
-            dataSource.setUrl(getURL(databaseType, each));
-            dataSource.setUsername(each.getUser());
-            dataSource.setPassword(each.getPassword());
-            dataSource.setCustomPoolProps(each.getProperties());
             result.put(each.getName(), createDataSourceConfiguration(databaseType, each));
         }
         return result;
     }
     
     private static DataSourceConfiguration createDataSourceConfiguration(final DatabaseType databaseType, final DataSourceSegment segment) {
-        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getCanonicalName());
         result.getProps().put("jdbcUrl", getURL(databaseType, segment));
         result.getProps().put("username", segment.getUser());
         result.getProps().put("password", segment.getPassword());
@@ -72,10 +67,10 @@ public final class ResourceSegmentsConverter {
         return result;
     }
     
-    private static String getURL(final DatabaseType databaseType, final DataSourceSegment dataSourceSegment) {
-        if (null != dataSourceSegment.getUrl()) {
-            return dataSourceSegment.getUrl();
+    private static String getURL(final DatabaseType databaseType, final DataSourceSegment segment) {
+        if (null != segment.getUrl()) {
+            return segment.getUrl();
         }
-        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), dataSourceSegment.getHostName(), dataSourceSegment.getPort(), dataSourceSegment.getDb());
+        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), segment.getHostName(), segment.getPort(), segment.getDb());
     }
 }
