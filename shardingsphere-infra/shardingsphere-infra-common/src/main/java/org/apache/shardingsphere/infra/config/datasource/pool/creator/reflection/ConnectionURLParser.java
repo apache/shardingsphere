@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator.reflectio
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import lombok.Getter;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,23 +31,75 @@ import java.util.regex.Pattern;
  */
 public final class ConnectionURLParser {
     
-    private static final String PROPS_GROUP_KEY = "props";
-    
     private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
     
     private static final String AUTHORITY_PATTERN = "(?://(?<authority>[^/?#]*))?\\s*";
     
     private static final String PATH_PATTERN = "(?:/(?!\\s*/)(?<path>[^?#]*))?";
     
-    private static final String PROPS_PATTERN = "(?:\\?(?!\\s*\\?)(?<props>[^#]*))?";
+    private static final String QUERY_PATTERN = "(?:\\?(?!\\s*\\?)(?<query>[^#]*))?";
     
-    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + PROPS_PATTERN);
+    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + QUERY_PATTERN);
+    
+    private static final String AUTHORITY_GROUP_KEY = "authority";
+    
+    private static final String PATH_GROUP_KEY = "path";
+    
+    private static final String QUERY_GROUP_KEY = "query";
+    
+    private final String authority;
+    
+    @Getter
+    private final String database;
     
     private final String query;
     
     public ConnectionURLParser(final String jdbcURL) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
-        query = !matcher.matches() ? "" : matcher.group(PROPS_GROUP_KEY);
+        if (matcher.matches()) {
+            authority = matcher.group(AUTHORITY_GROUP_KEY);
+            database = matcher.group(PATH_GROUP_KEY);
+            query = matcher.group(QUERY_GROUP_KEY);
+        } else {
+            authority = "";
+            database = "";
+            query = "";
+        }
+    }
+    
+    /**
+     * Get hostname.
+     *
+     * @return hostname
+     */
+    public String getHostname() {
+        if (!authority.contains(":")) {
+            return authority;
+        }
+        String[] values = authority.split(":");
+        if (2 == values.length) {
+            return values[0];
+        }
+        // TODO process with multiple services, for example: replication, failover etc
+        return null;
+    }
+    
+    /**
+     * Get port.
+     * 
+     * @return port
+     */
+    public int getPort() {
+        if (!authority.contains(":")) {
+            // TODO adapt other databases
+            return 3306;
+        }
+        String[] values = authority.split(":");
+        if (2 == values.length) {
+            return Integer.parseInt(values[1]);
+        }
+        // TODO process with multiple services, for example: replication, failover etc
+        return -1;
     }
     
     /**
