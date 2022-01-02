@@ -49,6 +49,6 @@ public final class JdbcUriTest {
     public void assertAppendJDBCParameters() {
         JdbcUri jdbcUri = new JdbcUri("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false");
         String jdbcUrl = jdbcUri.appendParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        assertThat(jdbcUrl, is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
+        assertThat(jdbcUrl, is("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
 }

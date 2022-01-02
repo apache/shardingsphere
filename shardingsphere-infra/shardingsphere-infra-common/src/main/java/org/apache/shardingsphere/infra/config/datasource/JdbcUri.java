@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import java.net.URI;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Jdbc uri.
+ * JDBC URI.
  */
 public final class JdbcUri {
     
@@ -85,16 +87,8 @@ public final class JdbcUri {
      * @return parameters.
      */
     public Map<String, String> getParameters() {
-        Map<String, String> result = new HashMap<>();
-        if (Strings.isNullOrEmpty(jdbcUri.getQuery())) {
-            return result;
-        }
-        String[] parameters = jdbcUri.getQuery().split("&");
-        for (String each : parameters) {
-            String[] args = each.split("=");
-            result.put(args[0], 1 == args.length ? null : args[1]);
-        }
-        return result;
+        String query = jdbcUri.getQuery();
+        return Strings.isNullOrEmpty(query) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(query);
     }
     
     /**
@@ -104,10 +98,11 @@ public final class JdbcUri {
      * @return new JDBC URL
      */
     public String appendParameters(final Map<String, String> parameters) {
-        return String.format("jdbc:%s://%s/%s?%s", getScheme(), getHost(), getDatabase(), mergeParameters(getParameters(), parameters));
+        return String.format("jdbc:%s://%s/%s?%s", getScheme(), getHost(), getDatabase(), mergeParameters(parameters));
     }
     
-    private String mergeParameters(final Map<String, String> parameters, final Map<String, String> appendParameters) {
+    private String mergeParameters(final Map<String, String> appendParameters) {
+        Map<String, String> parameters = new LinkedHashMap<>(getParameters());
         parameters.putAll(appendParameters);
         return formatParameters(parameters);
     }
