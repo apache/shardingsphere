@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.JdbcUrlParser;
+import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -97,7 +97,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     @Override
     public void appendJDBCQueryProperties(final Map<String, String> queryProps) {
-        hikariConfig.setJdbcUrl(new JdbcUrlParser(hikariConfig.getJdbcUrl()).appendQueryProperties(queryProps));
+        hikariConfig.setJdbcUrl(new JdbcUrlParser().appendQueryProperties(hikariConfig.getJdbcUrl(), queryProps));
     }
     
     // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)
