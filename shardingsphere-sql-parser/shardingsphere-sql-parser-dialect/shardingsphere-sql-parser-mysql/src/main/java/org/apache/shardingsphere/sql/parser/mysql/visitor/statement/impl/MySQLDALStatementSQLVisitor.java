@@ -412,8 +412,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitPartitionName(final PartitionNameContext ctx) {
-        PartitionSegment result = new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-        return result;
+        return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override
@@ -492,7 +491,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             CloneInstanceContext cloneInstance = ctx.cloneInstance();
             CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment(cloneInstance.start.getStartIndex(), cloneInstance.stop.getStopIndex());
             cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
-            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(cloneInstance.hostName())).getValue());
+            cloneInstanceSegment.setHostname(((StringLiteralValue) visit(cloneInstance.hostname())).getValue());
             cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());
             cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.string_())).getValue());
             if (null != ctx.SSL() && null == ctx.NO()) {

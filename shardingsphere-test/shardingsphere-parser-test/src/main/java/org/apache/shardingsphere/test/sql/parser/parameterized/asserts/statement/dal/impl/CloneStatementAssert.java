@@ -46,7 +46,7 @@ public final class CloneStatementAssert {
         }
         if (null != expected.getInstance()) {
             CloneInstanceSegment instance = actual.getCloneActionSegment().getCloneInstance();
-            assertThat(assertContext.getText("Actual instance hostname does not match: "), instance.getHostName(), is(expected.getInstance().getHostname()));
+            assertThat(assertContext.getText("Actual instance hostname does not match: "), instance.getHostname(), is(expected.getInstance().getHostname()));
             assertThat(assertContext.getText("Actual instance username does not match: "), instance.getUserName(), is(expected.getInstance().getUsername()));
             assertThat(assertContext.getText("Actual instance port does not match: "), instance.getPort(), is(expected.getInstance().getPort()));
             assertThat(assertContext.getText("Actual instance password does not match: "), instance.getPassword(), is(expected.getInstance().getPassword()));

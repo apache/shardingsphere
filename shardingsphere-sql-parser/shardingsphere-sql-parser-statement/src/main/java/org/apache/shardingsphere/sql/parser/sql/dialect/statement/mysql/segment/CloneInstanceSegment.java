@@ -38,7 +38,7 @@ public final class CloneInstanceSegment implements SQLSegment {
 
     private String userName;
 
-    private String hostName;
+    private String hostname;
 
     private String password;
 

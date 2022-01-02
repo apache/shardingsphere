@@ -720,7 +720,7 @@ pluginName
     : identifier
     ;
     
-hostName
+hostname
     : string_
     ;
     
@@ -729,7 +729,7 @@ port
     ;
     
 cloneInstance
-    : userName AT_ hostName COLON_ port
+    : userName AT_ hostname COLON_ port
     ;
     
 cloneDir

@@ -71,6 +71,6 @@ public final class ResourceSegmentsConverter {
         if (null != segment.getUrl()) {
             return segment.getUrl();
         }
-        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), segment.getHostName(), segment.getPort(), segment.getDb());
+        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), segment.getHostname(), segment.getPort(), segment.getDatabase());
     }
 }
