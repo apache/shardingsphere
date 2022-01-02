@@ -98,6 +98,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -114,6 +115,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
@@ -210,6 +212,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadwriteSplittingRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowAlgorithmsStatementTestCase;
@@ -898,6 +901,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-sharding-key-generators")
     private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-default-sharding-strategy")
+    private final List<ShowDefaultShardingStrategyStatementTestCase> showDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "delimiter")
     private final List<DelimiterStatementTestCase> delimiterStatementTestCases = new LinkedList<>();
     
@@ -915,6 +921,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-text-search")
+    private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-text-search")
+    private final List<AlterTextSearchStatementTestCase> alterTextSearchStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1133,6 +1145,7 @@ public final class SQLParserTestCases {
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
         putAll(showShardingKeyGeneratorsStatementTestCases,result);
+        putAll(showDefaultShardingStrategyStatementTestCases,result);
         putAll(dropShardingKeyGeneratorStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
         putAll(dropDomainStatementTestCases, result);
@@ -1144,6 +1157,8 @@ public final class SQLParserTestCases {
         putAll(alterSQLParserRuleStatementTestCases, result);
         putAll(createTypeStatementTestCases, result);
         putAll(dropConversionTestCase, result);
+        putAll(createTextSearchStatementTestCases, result);
+        putAll(alterTextSearchStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

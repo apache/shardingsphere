@@ -34,7 +34,7 @@ public final class MySQLImporter extends AbstractImporter {
     
     public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         super(importerConfig, dataSourceManager);
-        importerConfig.getDataSourceConfig().appendJDBCParameters(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        importerConfig.getDataSourceConfig().appendJDBCQueryProperties(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
     }
     
     @Override

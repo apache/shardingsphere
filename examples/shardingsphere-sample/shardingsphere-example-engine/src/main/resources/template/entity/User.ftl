@@ -41,6 +41,11 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     </#if>
     private int userId;
+
+    <#if framework?contains("jpa")>
+    @Column(name = "user_type")
+    </#if>
+    private int userType;
     
     <#if framework?contains("jpa")>
     @Column(name = "user_name")
@@ -58,6 +63,14 @@ public class User implements Serializable {
     
     public void setUserId(final int userId) {
         this.userId = userId;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(final int userType) {
+        this.userType = userType;
     }
     
     public String getUserName() {

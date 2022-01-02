@@ -51,20 +51,44 @@ public final class MemoryLocalShadowSpringBootStarterJdbcExampleService {
         }
     }
     
-
     /**
      * Initialize the database test environment.
      * @throws SQLException
      */
     private void initEnvironment() throws SQLException {
-        String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user" 
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
-        String truncateUserTable = "TRUNCATE TABLE t_user";
-        
+        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        createTableIfNotExistsShadow(createSql);
+        createTableIfNotExistsNative(createSql);
+        String truncateSql = "TRUNCATE TABLE t_user";
+        truncateTableShadow(truncateSql);
+        truncateTableNative(truncateSql);
+    }
+    
+    private void createTableIfNotExistsNative(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(createUserTableSql);
-            statement.executeUpdate(truncateUserTable);
+            statement.executeUpdate(sql);
+        }
+    }
+
+    private void createTableIfNotExistsShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + "/*shadow:true,foo:bar*/");
+        }
+    }
+    
+    private void truncateTableNative(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    private void truncateTableShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + "/*shadow:true,foo:bar*/");
         }
     }
     
@@ -76,13 +100,14 @@ public final class MemoryLocalShadowSpringBootStarterJdbcExampleService {
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
+            user.setUserType(i % 2);
             user.setUserName("test_" + i);
             user.setPwd("pwd" + i);
             insert(user);
@@ -91,52 +116,31 @@ public final class MemoryLocalShadowSpringBootStarterJdbcExampleService {
         return result;
     }
     
-    private long insert(final User user) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
+    public void insert(final User entity) throws SQLException {
+        String sql = "INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getUserName());
-            preparedStatement.setString(3, user.getPwd());
+            preparedStatement.setInt(1, entity.getUserId());
+            preparedStatement.setInt(2, entity.getUserType());
+            preparedStatement.setString(3, entity.getUserName());
+            preparedStatement.setString(4, entity.getPwd());
             preparedStatement.executeUpdate();
-        }
-        return user.getUserId();
-    }
-
-    private void deleteData(final List<Long> orderIds) throws SQLException {
-        System.out.println("---------------------------- Delete Data ----------------------------");
-        String sql = "DELETE FROM t_user WHERE user_id=?";
-        for (Long each : orderIds) {
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, each);
-                preparedStatement.executeUpdate();
-            }
         }
     }
     
     private void printData() throws SQLException {
         System.out.println("---------------------------- Print User Data -----------------------");
-        for (Object each : this.getUsers()) {
+        for (Object each : this.selectAll()) {
             System.out.println(each);
         }
     }
-
-    protected List<User> getUsers() throws SQLException {
-        List<User> result = new LinkedList<>();
-        String sql = "SELECT * FROM t_user";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                User user = new User();
-                user.setUserId(resultSet.getInt("user_id"));
-                user.setUserName(resultSet.getString("user_name"));
-                user.setPwd(resultSet.getString("pwd"));
-                result.add(user);
-            }
+    
+    private void deleteData(final List<Long> userIds) throws SQLException {
+        String sql = "DELETE FROM t_user WHERE user_id = ? AND user_type = ?";
+        for (long id : userIds) {
+            deleteUser(sql, id, 0);
+            deleteUser(sql, id, 1);
         }
-        return result;
     }
     
     /**
@@ -144,10 +148,56 @@ public final class MemoryLocalShadowSpringBootStarterJdbcExampleService {
      * @throws SQLException
      */
     private void cleanEnvironment() throws SQLException {
-        String dropUserSql = "DROP TABLE t_user";
+        String sql = "DROP TABLE IF EXISTS t_user;";
+        dropTableShadow(sql);
+        dropTableNative(sql);
+    }
+    
+    private void dropTableNative(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(dropUserSql);
+            statement.executeUpdate(sql);
         }
+    }
+
+    private void dropTableShadow(final String sql) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql + "/*shadow:true,foo:bar*/");
+        }
+    }
+    
+    private void deleteUser(final String sql, final Long id, final int userType) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.setInt(2, userType);
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    public List<User> selectAll() throws SQLException {
+        String sql = "SELECT * FROM t_user where user_type = ?";
+        List<User> users = getUsers(sql, 1);
+        users.addAll(getUsers(sql, 0));
+        return users;
+    }
+
+    private List<User> getUsers(final String sql, final int userType) throws SQLException {
+        List<User> result = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userType);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                User user = new User();
+                user.setUserId(resultSet.getInt("user_id"));
+                user.setUserType(resultSet.getInt("user_type"));
+                user.setUserName(resultSet.getString("user_name"));
+                user.setPwd(resultSet.getString("pwd"));
+                result.add(user);
+            }
+        }
+        return result;
     }
 }
