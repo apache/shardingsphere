@@ -23,6 +23,7 @@ import lombok.Getter;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +48,8 @@ public final class ConnectionURLParser {
     
     private static final String QUERY_GROUP_KEY = "query";
     
+    private final String jdbcURL;
+    
     private final String authority;
     
     @Getter
@@ -55,6 +58,7 @@ public final class ConnectionURLParser {
     private final String query;
     
     public ConnectionURLParser(final String jdbcURL) {
+        this.jdbcURL = jdbcURL;
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (matcher.matches()) {
             authority = matcher.group(AUTHORITY_GROUP_KEY);
@@ -109,5 +113,26 @@ public final class ConnectionURLParser {
      */
     public Map<String, String> getQueryProperties() {
         return Strings.isNullOrEmpty(query) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(query);
+    }
+    
+    /**
+     * Append query properties.
+     *
+     * @param queryProps query properties
+     * @return new JDBC URL
+     */
+    public String appendQueryProperties(final Map<String, String> queryProps) {
+        StringBuilder result = new StringBuilder(jdbcURL);
+        String delimiter = Strings.isNullOrEmpty(query) ? "?" : "&";
+        result.append(delimiter);
+        for (Entry<String, String> entry : queryProps.entrySet()) {
+            result.append(entry.getKey());
+            if (null != entry.getValue()) {
+                result.append("=").append(entry.getValue());
+            }
+            result.append("&");
+        }
+        result.deleteCharAt(result.length() - 1);
+        return result.toString();
     }
 }

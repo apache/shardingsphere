@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator.reflection;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -83,5 +84,19 @@ public final class ConnectionURLParserTest {
         assertThat(connectionURLParser.getPort(), is(3306));
         assertThat(connectionURLParser.getDatabase(), is(""));
         assertTrue(connectionURLParser.getQueryProperties().isEmpty());
+    }
+    
+    @Test
+    public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
+        ConnectionURLParser connectionURLParser = new ConnectionURLParser("jdbc:mysql://192.168.0.1:3306/demo_ds");
+        String actual = connectionURLParser.appendQueryProperties(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?rewriteBatchedStatements=true"));
+    }
+    
+    @Test
+    public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
+        ConnectionURLParser connectionURLParser = new ConnectionURLParser("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false");
+        String actual = connectionURLParser.appendQueryProperties(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
 }
