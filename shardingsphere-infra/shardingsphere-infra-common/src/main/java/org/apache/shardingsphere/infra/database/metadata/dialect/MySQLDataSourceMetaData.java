@@ -33,7 +33,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 3306;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -48,7 +48,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = matcher.group(4);
+        hostname = matcher.group(4);
         port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(5));
         catalog = matcher.group(6);
         schema = null;

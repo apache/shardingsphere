@@ -99,18 +99,18 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
         String url = null;
-        String hostName = null;
+        String hostname = null;
         String port = null;
         String dbName = null;
         if (null != ctx.urlSource()) {
             url = new IdentifierValue(ctx.urlSource().url().getText()).getValue();
         }
         if (null != ctx.simpleSource()) {
-            hostName = ctx.simpleSource().hostName().getText();
+            hostname = ctx.simpleSource().hostName().getText();
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
-        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostName, port, dbName,
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName,
                 ctx.user().getText(), null == ctx.password() ? "" : getPassword(ctx.password()),
                 null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
     }
