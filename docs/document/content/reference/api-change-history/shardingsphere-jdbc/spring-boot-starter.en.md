@@ -187,7 +187,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strate
 # The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with readwrite-splitting
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.props.algorithm-expression=t_user_$->{user_id % 2}
 
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
