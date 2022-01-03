@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.shadow.jdbc;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.example.shadow.jdbc.entity.User;
 
 import javax.sql.DataSource;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class MemoryLocalShadowJdbcExampleService {
     
     private final DataSource dataSource;
@@ -38,7 +38,7 @@ public final class MemoryLocalShadowJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -51,10 +51,11 @@ public final class MemoryLocalShadowJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
-        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         createTableIfNotExistsShadow(createSql);
         createTableIfNotExistsNative(createSql);
         String truncateSql = "TRUNCATE TABLE t_user";
@@ -106,7 +107,7 @@ public final class MemoryLocalShadowJdbcExampleService {
             User user = new User();
             user.setUserId(i);
             user.setUserType(i % 2);
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             insert(user);
             result.add((long) user.getUserId());
@@ -115,12 +116,12 @@ public final class MemoryLocalShadowJdbcExampleService {
     }
     
     public void insert(final User entity) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, user_type, username, pwd) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getUserId());
             preparedStatement.setInt(2, entity.getUserType());
-            preparedStatement.setString(3, entity.getUserName());
+            preparedStatement.setString(3, entity.getUsername());
             preparedStatement.setString(4, entity.getPwd());
             preparedStatement.executeUpdate();
         }
@@ -143,7 +144,8 @@ public final class MemoryLocalShadowJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_user;";
@@ -191,7 +193,7 @@ public final class MemoryLocalShadowJdbcExampleService {
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
                 user.setUserType(resultSet.getInt("user_type"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUsername(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
