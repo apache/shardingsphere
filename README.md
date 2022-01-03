@@ -29,7 +29,7 @@ The concepts at the core of the project are Connect, Enhance and Pluggable.
 
 - `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and heterogeneous databases.
 - `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
-- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
+- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibly. Developers can customize their ShardingSphere just like building with LEGO blocks.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
  
@@ -110,13 +110,13 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ### Solution
 
-| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*              | *Stress Testing* |
-| -------------------- | ----------------------- | ---------------------| ------------------------------- | ---------------- |
+| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*                | *Stress Testing* |
+| -------------------- | ----------------------- | ---------------------| --------------------------------- | ---------------- |
 |                      | Data Sharding           | Data Encrypt         | Heterogeneous Databases Supported | Shadow Database  |
-|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)    | Observability    |
-|                      | Distributed Transaction | SQL Audit (TODO)     |                                 |                  |
-|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                 |                  |
-|                      | Highly Available        |                      |                                 |                  |
+|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
+|                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
+|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
+|                      | Highly Available        |                      |                                   |                  |
 
 ### Roadmap
 
