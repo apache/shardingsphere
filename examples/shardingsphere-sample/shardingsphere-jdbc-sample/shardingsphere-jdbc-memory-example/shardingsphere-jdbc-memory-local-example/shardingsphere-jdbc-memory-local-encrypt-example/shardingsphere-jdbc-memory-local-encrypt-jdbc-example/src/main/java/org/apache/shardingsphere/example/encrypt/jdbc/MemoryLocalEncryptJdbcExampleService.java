@@ -38,7 +38,7 @@ public final class MemoryLocalEncryptJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -52,11 +52,12 @@ public final class MemoryLocalEncryptJdbcExampleService {
 
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user" 
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+                + "(user_id INT NOT NULL AUTO_INCREMENT, username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         String truncateUserTable = "TRUNCATE TABLE t_user";
         
         try (Connection connection = dataSource.getConnection();
@@ -81,7 +82,7 @@ public final class MemoryLocalEncryptJdbcExampleService {
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             insert(user);
             result.add((long) user.getUserId());
@@ -90,11 +91,11 @@ public final class MemoryLocalEncryptJdbcExampleService {
     }
     
     private long insert(final User user) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, username, pwd) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getUserName());
+            preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPwd());
             preparedStatement.executeUpdate();
         }
@@ -129,7 +130,7 @@ public final class MemoryLocalEncryptJdbcExampleService {
             while (resultSet.next()) {
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUsername(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
@@ -139,13 +140,14 @@ public final class MemoryLocalEncryptJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
-        String dropUserSql = "DROP TABLE t_user";
+        String sql = "DROP TABLE t_user";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(dropUserSql);
+            statement.executeUpdate(sql);
         }
     }
 }

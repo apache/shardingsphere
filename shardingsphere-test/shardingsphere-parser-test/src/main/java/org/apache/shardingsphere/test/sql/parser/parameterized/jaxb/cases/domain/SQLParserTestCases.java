@@ -86,6 +86,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
@@ -922,6 +923,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-conversion")
+    private final List<AlterConversionStatementTestCase> alterConversionTestCase = new LinkedList<>();
+    
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
     
@@ -1157,6 +1161,7 @@ public final class SQLParserTestCases {
         putAll(alterSQLParserRuleStatementTestCases, result);
         putAll(createTypeStatementTestCases, result);
         putAll(dropConversionTestCase, result);
+        putAll(alterConversionTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         return result;

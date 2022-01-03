@@ -490,7 +490,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.cloneInstance()) {
             CloneInstanceContext cloneInstance = ctx.cloneInstance();
             CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment(cloneInstance.start.getStartIndex(), cloneInstance.stop.getStopIndex());
-            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
+            cloneInstanceSegment.setUsername(((StringLiteralValue) visitUsername(cloneInstance.username())).getValue());
             cloneInstanceSegment.setHostname(((StringLiteralValue) visit(cloneInstance.hostname())).getValue());
             cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());
             cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.string_())).getValue());
@@ -809,7 +809,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
         MySQLShowCreateUserStatement result = new MySQLShowCreateUserStatement();
-        result.setName(((IdentifierValue) visit(ctx.userName())).getValue());
+        result.setName(((IdentifierValue) visit(ctx.username())).getValue());
         return result;
     }
     

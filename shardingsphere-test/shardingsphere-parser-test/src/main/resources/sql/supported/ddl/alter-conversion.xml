@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -14,20 +15,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
-    <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
-        <props>
-            <prop key="aes-key-value">123456</prop>
-        </props>
-    </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
-    
-    <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_user">
-            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
-        </encrypt:table>
-    </encrypt:rule>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0" rule-refs="encryptRule" />
 
+<sql-cases>
+    <sql-case id="alter_conversion" value="ALTER CONVERSION alt_conv1 RENAME TO alt_conv2" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_conversion_owner" value="ALTER CONVERSION name OWNER TO CURRENT_USER" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_conversion_set_schema" value="ALTER CONVERSION name SET SCHEMA new_schema" db-types="PostgreSQL,openGauss" />
+</sql-cases>

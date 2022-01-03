@@ -36,11 +36,11 @@ import java.util.List;
 public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
     
     private final DataSource dataSource;
-
+    
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -50,17 +50,15 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
             this.cleanEnvironment();
         }
     }
-
-
+    
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
-        String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user" 
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         String truncateUserTable = "TRUNCATE TABLE t_user";
-        
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(createUserTableSql);
@@ -76,14 +74,14 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             insert(user);
             result.add((long) user.getUserId());
@@ -92,17 +90,17 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
     }
     
     private long insert(final User user) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, username, pwd) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getUserName());
+            preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPwd());
             preparedStatement.executeUpdate();
         }
         return user.getUserId();
     }
-
+    
     private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         String sql = "DELETE FROM t_user WHERE user_id=?";
@@ -121,7 +119,7 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
             System.out.println(each);
         }
     }
-
+    
     protected List<User> getUsers() throws SQLException {
         List<User> result = new LinkedList<>();
         String sql = "SELECT * FROM t_user";
@@ -131,7 +129,7 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
             while (resultSet.next()) {
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUsername(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
@@ -141,13 +139,14 @@ public final class MemoryLocalEncryptSpringNamespaceJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
-        String dropUserSql = "DROP TABLE t_user";
+        String sql = "DROP TABLE t_user";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(dropUserSql);
+            statement.executeUpdate(sql);
         }
     }
 }

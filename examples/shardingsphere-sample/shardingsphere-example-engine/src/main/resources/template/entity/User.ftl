@@ -48,9 +48,9 @@ public class User implements Serializable {
     private int userType;
     
     <#if framework?contains("jpa")>
-    @Column(name = "user_name")
+    @Column(name = "username")
     </#if>
-    private String userName;
+    private String username;
     
     <#if framework?contains("jpa")>
     @Column(name = "pwd")
@@ -73,12 +73,12 @@ public class User implements Serializable {
         this.userType = userType;
     }
     
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
+    public void setUsername(final String username) {
+        this.username = username;
     }
     
     public String getPwd() {
@@ -91,6 +91,6 @@ public class User implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
+        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
     }
 }

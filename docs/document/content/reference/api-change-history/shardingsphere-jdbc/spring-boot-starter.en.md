@@ -167,8 +167,8 @@ spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.shard
 
 # Data encrypt configuration
 # Table `t_user` is the name of the logical table that uses for data sharding configuration.
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
 

@@ -15,38 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.core.jpa.entity;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.example.core.api.entity.User;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "t_user")
-public final class UserEntity extends User {
-    
-    private static final long serialVersionUID = -3708998745561667721L;
-    
-    @Id
-    @Column(name = "user_id")
-    @Override
-    public int getUserId() {
-        return super.getUserId();
-    }
-    
-    @Column(name = "username")
-    @Override
-    public String getUsername() {
-        return super.getUsername();
-    }
-    
-    @Column(name = "pwd")
-    @Override
-    public String getPwd() {
-        return super.getPwd();
-    }
-    
+/**
+ * Alter conversion statement test case.
+ */
+public final class AlterConversionStatementTestCase extends SQLParserTestCase {
 }

@@ -15,38 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.core.jpa.entity;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.example.core.api.entity.User;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterConversionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "t_user")
-public final class UserEntity extends User {
-    
-    private static final long serialVersionUID = -3708998745561667721L;
-    
-    @Id
-    @Column(name = "user_id")
-    @Override
-    public int getUserId() {
-        return super.getUserId();
-    }
-    
-    @Column(name = "username")
-    @Override
-    public String getUsername() {
-        return super.getUsername();
-    }
-    
-    @Column(name = "pwd")
-    @Override
-    public String getPwd() {
-        return super.getPwd();
-    }
-    
+/**
+ * PostgreSQL alter conversion statement.
+ */
+@ToString
+public final class PostgreSQLAlterConversionStatement extends AlterConversionStatement implements PostgreSQLStatement {
 }
