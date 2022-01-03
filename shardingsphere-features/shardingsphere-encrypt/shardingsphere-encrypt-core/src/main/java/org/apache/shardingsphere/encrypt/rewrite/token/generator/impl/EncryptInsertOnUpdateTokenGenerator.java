@@ -68,12 +68,11 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
                 boolean leftEncryptorPresent = getEncryptRule().findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
                 ColumnSegment rightColumn = (ColumnSegment) ((FunctionSegment) each.getValue()).getParameters().stream().findFirst().get();
                 boolean rightEncryptorPresent = getEncryptRule().findEncryptor(schemaName, tableName, rightColumn.getIdentifier().getValue()).isPresent();
-                if (leftEncryptorPresent || rightEncryptorPresent) {
-                    generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
+                if (!leftEncryptorPresent && !rightEncryptorPresent) {
+                    continue;
                 }
-            } else {
-                generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
-            }
+            } 
+            generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
         }
         return result;
     }
