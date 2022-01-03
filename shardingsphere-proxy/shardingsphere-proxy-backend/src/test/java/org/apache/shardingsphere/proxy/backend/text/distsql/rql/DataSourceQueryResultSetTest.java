@@ -60,17 +60,31 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        String url = "jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8";
-        DatabaseAccessConfiguration configuration = new DatabaseAccessConfiguration(url, "root");
-        Map<String, DatabaseAccessConfiguration> databaseAccessConfigs = new HashMap<>(1, 1);
-        databaseAccessConfigs.put("ds_0", configuration);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        MockedDataSource ds0 = mock(MockedDataSource.class);
-        dataSourceMap.put("ds_0", ds0);
         DatabaseType databaseType = new MySQLDatabaseType();
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, databaseAccessConfigs);
-        ShardingSphereResource resource = new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, null, databaseType);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, createDatabaseAccessConfigurationMap());
+        ShardingSphereResource resource = new ShardingSphereResource(createDataSourceMap(), dataSourcesMetaData, null, databaseType);
         when(shardingSphereMetaData.getResource()).thenReturn(resource);
+    }
+    
+    private Map<String, DatabaseAccessConfiguration> createDatabaseAccessConfigurationMap() {
+        Map<String, DatabaseAccessConfiguration> result = new HashMap<>(1, 1);
+        result.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://localhost/demo_ds", "root"));
+        return result;
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        MockedDataSource ds0 = createDataSource();
+        result.put("ds_0", ds0);
+        return result;
+    }
+    
+    private MockedDataSource createDataSource() {
+        MockedDataSource result = new MockedDataSource();
+        result.setUrl("jdbc:mysql://localhost/demo_ds");
+        result.setUsername("root");
+        result.setPassword("password");
+        return result;
     }
     
     @Test
@@ -89,11 +103,10 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"maxLifetimeMilliseconds\":1800000,\"readOnly\":false,"
-                + "\"minPoolSize\":1,\"idleTimeoutMilliseconds\":60000,\"maxPoolSize\":50,\"connectionTimeoutMilliseconds\":30000}"));
+        assertThat(rowData.next(), is("{\"url\":\"jdbc:mysql://localhost/demo_ds\",\"password\":\"password\",\"username\":\"root\"}"));
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(persistService.getDataSourceService().load(any())).thenReturn(mockDataSourceConfigurationMap());
-        when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.ofNullable(persistService));
+        when(persistService.getDataSourceService().load(any())).thenReturn(createDataSourceConfigurationMap());
+        when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(persistService));
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
@@ -103,11 +116,10 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"maxLifetimeMilliseconds\":1800000,\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"},"
-                + "\"minPoolSize\":1,\"idleTimeoutMilliseconds\":60000,\"maxPoolSize\":50,\"connectionTimeoutMilliseconds\":30000}"));
+        assertThat(rowData.next(), is("{\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
     }
     
-    private Map<String, DataSourceConfiguration> mockDataSourceConfigurationMap() {
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
         Map<String, DataSourceConfiguration> result = new HashMap<>();
         DataSourceConfiguration ds0 = new DataSourceConfiguration("ds_0");
         ds0.getCustomPoolProps().put("test", "test");
