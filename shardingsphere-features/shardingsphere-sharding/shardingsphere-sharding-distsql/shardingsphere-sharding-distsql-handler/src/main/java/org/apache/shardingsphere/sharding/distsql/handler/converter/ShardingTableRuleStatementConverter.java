@@ -157,7 +157,7 @@ public final class ShardingTableRuleStatementConverter {
      */
     public static ShardingStrategyConfiguration createStrategyConfiguration(final String strategyType, final String shardingColumn, final String shardingAlgorithmName) {
         ShardingStrategyTypeEnum shardingStrategyType = ShardingStrategyTypeEnum.getValueOf(strategyType);
-        return shardingStrategyType.getConfiguration(shardingAlgorithmName, shardingColumn);
+        return shardingStrategyType.createConfiguration(shardingAlgorithmName, shardingColumn);
     }
     
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {

@@ -47,7 +47,7 @@ public final class MemoryLocalEncryptSpringNamespaceJpaExampleService {
         List<Integer> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             User user = new User();
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             repository.insertUser(user);
             result.add(user.getUserId());

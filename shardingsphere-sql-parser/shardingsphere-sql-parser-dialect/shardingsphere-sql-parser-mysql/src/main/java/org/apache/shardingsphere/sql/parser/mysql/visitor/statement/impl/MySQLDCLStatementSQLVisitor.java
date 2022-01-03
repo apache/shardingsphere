@@ -87,7 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUsageContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ACLTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PrivilegeTypeEnum;
@@ -132,7 +132,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();
         fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
-        for (UserNameContext each : ctx.userList().userName()) {
+        for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
         }
         return result;
@@ -147,7 +147,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setAllPrivileges(true);
         }
         result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
-        for (UserNameContext each : ctx.userList().userName()) {
+        for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
         }
         if (null != ctx.aclType()) {
@@ -171,7 +171,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         MySQLGrantStatement result = new MySQLGrantStatement();
         MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), PrivilegeTypeEnum.GRANT);
         result.getRoleOrPrivileges().add(new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
-        for (UserNameContext each : ctx.userList().userName()) {
+        for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
         }
         return result;
@@ -440,7 +440,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         } else if (null != ctx.ALL()) {
             result.setAllPrivileges(true);
         }
-        for (UserNameContext each : ctx.userList().userName()) {
+        for (UsernameContext each : ctx.userList().username()) {
             result.getFromUsers().add((UserSegment) visit(each));
         }
         return result;
@@ -456,12 +456,12 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         } else if (null != ctx.PROXY()) {
             MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ROLE);
             result.getRoleOrPrivileges().add(new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
-            result.setOnUser((UserSegment) visit(ctx.userName()));
+            result.setOnUser((UserSegment) visit(ctx.username()));
         }
         if (null != ctx.grantIdentifier()) {
             result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
         }
-        for (UserNameContext each : ctx.userList().userName()) {
+        for (UsernameContext each : ctx.userList().username()) {
             result.getFromUsers().add((UserSegment) visit(each));
         }
         return result;
@@ -542,7 +542,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitCreateUserEntryNoOption(final CreateUserEntryNoOptionContext ctx) {
-        UserSegment result = (UserSegment) visit(ctx.userName());
+        UserSegment result = (UserSegment) visit(ctx.username());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         return result;
@@ -550,7 +550,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitCreateUserEntryIdentifiedBy(final CreateUserEntryIdentifiedByContext ctx) {
-        UserSegment result = (UserSegment) visit(ctx.userName());
+        UserSegment result = (UserSegment) visit(ctx.username());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.string_()) {
@@ -570,7 +570,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitCreateUserEntryIdentifiedWith(final CreateUserEntryIdentifiedWithContext ctx) {
-        UserSegment result = (UserSegment) visit(ctx.userName());
+        UserSegment result = (UserSegment) visit(ctx.username());
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.textOrIdentifier()) {
@@ -709,7 +709,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitUserName(final UserNameContext ctx) {
+    public ASTNode visitUsername(final UsernameContext ctx) {
         UserSegment result = new UserSegment();
         if (null != ctx.userIdentifierOrText()) {
             result.setUser(new IdentifierValue(ctx.userIdentifierOrText().textOrIdentifier(0).getText()).getValue());
@@ -723,7 +723,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
         MySQLDropUserStatement result = new MySQLDropUserStatement();
-        result.getUsers().addAll(ctx.userName().stream().map(UserNameContext::getText).collect(Collectors.toList()));
+        result.getUsers().addAll(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
         return result;
     }
     

@@ -20,13 +20,13 @@
 <mapper namespace="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.UserRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User">
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
         <result column="pwd" property="pwd" jdbcType="VARCHAR"/>
         <result column="assisted_query_pwd" property="assistedQueryPwd" jdbcType="VARCHAR"/>
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id));
+        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id));
     </update>
 
     <update id="truncateTable">
@@ -38,7 +38,7 @@
     </update>
 
     <insert id="insert">
-        INSERT INTO t_user (user_id, user_name, pwd) VALUES (${r"#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}"})
+        INSERT INTO t_user (user_id, username, pwd) VALUES (${r"#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}"})
     </insert>
 
     <delete id="delete">

@@ -59,7 +59,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
-                .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostName())
+                .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostname())
                 .withTag(Tags.PEER_PORT.getKey(), metaData.getPort())
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.DB_STATEMENT.getKey(), executionUnit.getExecutionUnit().getSqlUnit().getSql())

@@ -20,8 +20,8 @@
     <alter-user sql-case-id="alter_user_identified_without_hostname" />
     <alter-user sql-case-id="alter_user_identified_with_hostname" />
     <alter-user sql-case-id="alter_user_account" />
-    <alter-user sql-case-id="alter_user_name_with_name" />
-    <alter-user sql-case-id="alter_user_name_rename" />
+    <alter-user sql-case-id="alter_username_with_name" />
+    <alter-user sql-case-id="alter_username_rename" />
     <alter-user sql-case-id="alter_user_passwd_with_equality" />
     <alter-user sql-case-id="alter_user_passwd_without_equality" />
     <alter-user sql-case-id="alter_user" />

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreator
-org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreator
+org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.HikariDataSourcePoolCreationMetaData
+org.apache.shardingsphere.infra.config.datasource.pool.creator.impl.DefaultDataSourcePoolCreationMetaData

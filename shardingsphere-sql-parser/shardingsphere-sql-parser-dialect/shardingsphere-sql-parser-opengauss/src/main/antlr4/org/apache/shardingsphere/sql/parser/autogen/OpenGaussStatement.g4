@@ -95,6 +95,7 @@ execute
     | alterLanguage
     | dropLanguage
     | createConversion
+    | alterConversion
     | dropConversion
     | alterTextSearchDictionary
     | alterTextSearchTemplate

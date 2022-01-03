@@ -33,7 +33,7 @@ public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 5431;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -48,7 +48,7 @@ public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = matcher.group(1);
+        hostname = matcher.group(1);
         port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(2));
         catalog = matcher.group(3);
         schema = null;
