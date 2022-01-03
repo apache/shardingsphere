@@ -24,13 +24,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Literal assignment token for encrypt.
+ * Function assignment token for encrypt.
  */
-public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken {
+public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken {
     
     private final Collection<LiteralAssignment> assignments = new LinkedList<>();
     
-    public EncryptLiteralAssignmentToken(final int startIndex, final int stopIndex) {
+    public EncryptFunctionAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex, stopIndex);
     }
     
@@ -42,6 +42,14 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
      */
     public void addAssignment(final String columnName, final Object value) {
         assignments.add(new LiteralAssignment(columnName, value));
+    }
+    
+    /**
+     * Get assignments.
+     * @return LiteralAssignment collection
+     */
+    public Collection<LiteralAssignment> getAssignment() {
+        return assignments;
     }
     
     @Override
@@ -62,7 +70,7 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         }
     
         private String toString(final Object value) {
-            return String.class == value.getClass() ? String.format("'%s'", value) : value.toString();
+            return String.class == value.getClass() ? String.format("%s", value) : value.toString();
         }
     }
 }
