@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -54,7 +54,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.isPresent()
                 ? persistService.get().getDataSourceService().load(metaData.getName())
-                : DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources());
+                : DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(metaData.getResource().getDataSources());
         dataSourceParameterMap = DataSourceQueryResultSetConverter.covert(dataSourceConfigs);
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
@@ -74,7 +74,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData dataSourceMetaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         String type = resource.getDatabaseType().getName();
-        String host = dataSourceMetaData.getHostName();
+        String host = dataSourceMetaData.getHostname();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
         return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));

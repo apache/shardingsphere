@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 public final class MockDataSourceMetaData implements DataSourceMetaData {
     
     @Override
-    public String getHostName() {
+    public String getHostname() {
         return "mock.host";
     }
     
