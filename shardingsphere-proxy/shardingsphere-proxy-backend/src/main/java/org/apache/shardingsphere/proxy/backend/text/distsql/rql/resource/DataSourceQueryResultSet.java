@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -34,7 +35,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -77,28 +77,29 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     }
     
     private Map<String, Object> getAttributeMap(final DataSourceConfiguration dataSourceConfig) {
-        Map<String, Object> result = new LinkedHashMap<>(dataSourceConfig.getProps().size() + 1, 1);
-        for (Entry<String, Object> entry : dataSourceConfig.getProps().entrySet()) {
-            getNotNullValue(entry.getValue()).ifPresent(optional -> result.put(entry.getKey(), optional));
-        }
+        Map<String, Object> result = new LinkedHashMap<>(7, 1);
+        result.put("connectionTimeoutMilliseconds", getProperty(dataSourceConfig, "connectionTimeoutMilliseconds", DataSourceParameter.DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS, "connectionTimeout"));
+        result.put("idleTimeoutMilliseconds", getProperty(dataSourceConfig, "idleTimeoutMilliseconds", DataSourceParameter.DEFAULT_IDLE_TIMEOUT_MILLISECONDS, "idleTimeout"));
+        result.put("maxLifetimeMilliseconds", getProperty(dataSourceConfig, "maxLifetimeMilliseconds", DataSourceParameter.DEFAULT_MAX_LIFETIME_MILLISECONDS, "maxLifetime"));
+        result.put("maxPoolSize", getProperty(dataSourceConfig, "maxPoolSize", DataSourceParameter.DEFAULT_MAX_POOL_SIZE, "maximumPoolSize"));
+        result.put("minPoolSize", getProperty(dataSourceConfig, "minPoolSize", DataSourceParameter.DEFAULT_MIN_POOL_SIZE, "minimumIdle"));
+        result.put("readOnly", getProperty(dataSourceConfig, "readOnly", DataSourceParameter.DEFAULT_READ_ONLY));
         if (!dataSourceConfig.getCustomPoolProps().isEmpty()) {
             result.put(DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY, dataSourceConfig.getCustomPoolProps());
         }
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
-    private Optional<Object> getNotNullValue(final Object value) {
-        if (null == value) {
-            return Optional.empty();
+    private Object getProperty(final DataSourceConfiguration dataSourceConfig, final String key, final Object defaultValue, final String... synonym) {
+        if (dataSourceConfig.getProps().containsKey(key)) {
+            return dataSourceConfig.getProps().get(key);
         }
-        if (value instanceof Collection && ((Collection) value).isEmpty()) {
-            return Optional.empty();
+        for (String each : synonym) {
+            if (dataSourceConfig.getProps().containsKey(each)) {
+                return dataSourceConfig.getProps().get(each);
+            }
         }
-        if (value instanceof Map && ((Map) value).isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(value);
+        return defaultValue;
     }
     
     @Override

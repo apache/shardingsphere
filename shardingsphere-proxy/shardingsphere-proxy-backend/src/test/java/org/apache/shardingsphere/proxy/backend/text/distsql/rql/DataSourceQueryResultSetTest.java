@@ -103,7 +103,8 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"url\":\"jdbc:mysql://localhost/demo_ds\",\"password\":\"password\",\"username\":\"root\"}"));
+        assertThat(rowData.next(), 
+                is("{\"connectionTimeoutMilliseconds\":30000,\"idleTimeoutMilliseconds\":60000,\"maxLifetimeMilliseconds\":1800000,\"maxPoolSize\":50,\"minPoolSize\":1,\"readOnly\":false}"));
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(persistService.getDataSourceService().load(any())).thenReturn(createDataSourceConfigurationMap());
         when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(persistService));
@@ -116,7 +117,9 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
+        assertThat(rowData.next(), 
+                is("{\"connectionTimeoutMilliseconds\":30000,\"idleTimeoutMilliseconds\":60000,\"maxLifetimeMilliseconds\":1800000,\"maxPoolSize\":50,\"minPoolSize\":1,"
+                        + "\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
