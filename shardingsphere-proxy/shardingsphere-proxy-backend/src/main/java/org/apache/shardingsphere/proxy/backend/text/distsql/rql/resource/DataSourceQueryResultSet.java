@@ -48,8 +48,11 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     private ShardingSphereResource resource;
     
+    private String schemaName;
+    
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        schemaName = metaData.getName();
         resource = metaData.getResource();
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.isPresent()
@@ -61,7 +64,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "attribute");
+        return Arrays.asList("schema", "name", "type", "host", "port", "db", "attribute");
     }
     
     @Override
@@ -77,7 +80,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         String host = dataSourceMetaData.getHostName();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
-        return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));
+        return Arrays.asList(schemaName, dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));
     }
     
     private Map<Object, Object> getAttributeMap(final DataSourceParameter dataSourceParameter) {

@@ -70,6 +70,7 @@ public final class DataSourceQueryResultSetTest {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, databaseAccessConfigs);
         ShardingSphereResource resource = new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, null, databaseType);
+        when(shardingSphereMetaData.getName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.getResource()).thenReturn(resource);
     }
     
@@ -82,8 +83,9 @@ public final class DataSourceQueryResultSetTest {
         DistSQLResultSet resultSet = new DataSourceQueryResultSet();
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(7));
         Iterator<Object> rowData = actual.iterator();
+        assertThat(rowData.next(), is("sharding_db"));
         assertThat(rowData.next(), is("ds_0"));
         assertThat(rowData.next(), is("MySQL"));
         assertThat(rowData.next(), is("localhost"));
@@ -96,8 +98,9 @@ public final class DataSourceQueryResultSetTest {
         when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.ofNullable(persistService));
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(7));
         rowData = actual.iterator();
+        assertThat(rowData.next(), is("sharding_db"));
         assertThat(rowData.next(), is("ds_0"));
         assertThat(rowData.next(), is("MySQL"));
         assertThat(rowData.next(), is("localhost"));
