@@ -139,7 +139,7 @@ showCreateTrigger
     ;
 
 showCreateUser
-    : SHOW CREATE USER userName
+    : SHOW CREATE USER username
     ;
 
 showCreateView
@@ -175,7 +175,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
     ;
 
 showMasterStatus

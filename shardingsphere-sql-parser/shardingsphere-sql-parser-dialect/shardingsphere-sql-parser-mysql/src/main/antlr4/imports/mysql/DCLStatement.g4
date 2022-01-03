@@ -23,7 +23,7 @@ grant
     : GRANT roleOrPrivileges TO userList withGrantOption? # grantRoleOrPrivilegeTo
     | GRANT roleOrPrivileges ON aclType? grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
     | GRANT ALL PRIVILEGES? ON aclType? grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
-    | GRANT PROXY ON userName TO userList withGrantOption? # grantProxy
+    | GRANT PROXY ON username TO userList withGrantOption? # grantProxy
     ;
 
 revoke
@@ -31,11 +31,11 @@ revoke
     | REVOKE roleOrPrivileges ON aclType? grantIdentifier FROM userList # revokeOnFrom
     | REVOKE ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList # revokeOnFrom
     | REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList # revokeFrom
-    | REVOKE PROXY ON userName FROM userList # revokeOnFrom
+    | REVOKE PROXY ON username FROM userList # revokeOnFrom
     ;
 
 userList
-    : userName (COMMA_ userName)*
+    : username (COMMA_ username)*
     ;
 
 roleOrPrivileges
@@ -95,13 +95,13 @@ createUser
     ;
 
 createUserEntry
-    : userName # createUserEntryNoOption
-    | userName IDENTIFIED BY string_ # createUserEntryIdentifiedBy
-    | userName IDENTIFIED BY RANDOM PASSWORD # createUserEntryIdentifiedBy
-    | userName IDENTIFIED WITH textOrIdentifier # createUserEntryIdentifiedWith
-    | userName IDENTIFIED WITH textOrIdentifier AS string_ # createUserEntryIdentifiedWith
-    | userName IDENTIFIED WITH textOrIdentifier BY string_ # createUserEntryIdentifiedWith
-    | userName IDENTIFIED WITH textOrIdentifier BY RANDOM PASSWORD # createUserEntryIdentifiedWith
+    : username # createUserEntryNoOption
+    | username IDENTIFIED BY string_ # createUserEntryIdentifiedBy
+    | username IDENTIFIED BY RANDOM PASSWORD # createUserEntryIdentifiedBy
+    | username IDENTIFIED WITH textOrIdentifier # createUserEntryIdentifiedWith
+    | username IDENTIFIED WITH textOrIdentifier AS string_ # createUserEntryIdentifiedWith
+    | username IDENTIFIED WITH textOrIdentifier BY string_ # createUserEntryIdentifiedWith
+    | username IDENTIFIED WITH textOrIdentifier BY RANDOM PASSWORD # createUserEntryIdentifiedWith
     ;
 
 createUserList
@@ -137,11 +137,11 @@ accountLockPasswordExpireOption
 alterUser
     : ALTER USER (IF EXISTS)? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
     | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption
-    | ALTER USER (IF EXISTS)? userName DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
+    | ALTER USER (IF EXISTS)? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
 
 alterUserEntry
-    : userName userAuthOption?
+    : username userAuthOption?
     ;
 
 alterUserList
@@ -149,7 +149,7 @@ alterUserList
     ;
 
 dropUser
-    : DROP USER (IF EXISTS)? userName (COMMA_ userName)*
+    : DROP USER (IF EXISTS)? username (COMMA_ username)*
     ;
 
 createRole
@@ -161,11 +161,11 @@ dropRole
     ;
 
 renameUser
-    : RENAME USER userName TO userName (COMMA_ userName TO userName)*
+    : RENAME USER username TO username (COMMA_ username TO username)*
     ;
 
 setDefaultRole
-    : SET DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*) TO userName (COMMA_ userName)*
+    : SET DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*) TO username (COMMA_ username)*
     ;
 
 setRole
@@ -173,7 +173,7 @@ setRole
     ;
 
 setPassword
-    : SET PASSWORD (FOR userName)? authOption (REPLACE string_)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR username)? authOption (REPLACE string_)? (RETAIN CURRENT PASSWORD)?
     ;
 
 authOption
@@ -193,7 +193,7 @@ roles
     ;
 
 grantAs
-    : AS userName withRoles?
+    : AS username withRoles?
     ;
 
 withRoles
