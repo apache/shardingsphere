@@ -77,7 +77,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData dataSourceMetaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         String type = resource.getDatabaseType().getName();
-        String host = dataSourceMetaData.getHostName();
+        String host = dataSourceMetaData.getHostname();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
         return Arrays.asList(schemaName, dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));

@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
+package org.apache.shardingsphere.infra.config.datasource.url;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+
+import java.util.Map;
 
 /**
- * Clone instance segment.
+ * JDBC URL.
  */
 @RequiredArgsConstructor
-@ToString
 @Getter
-@Setter
-public final class CloneInstanceSegment implements SQLSegment {
-
-    private final int startIndex;
-
-    private final int stopIndex;
-
-    private String userName;
-
-    private String hostname;
-
-    private String password;
-
-    private int port;
-
-    private boolean sslRequired;
+public final class JdbcUrl {
+    
+    private final String hostname;
+    
+    private final int port;
+    
+    private final String database;
+    
+    private final Map<String, String> queryProperties;
 }
