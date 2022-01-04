@@ -26,6 +26,8 @@
        xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
+       xmlns:database-discovery="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
+       xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -42,10 +44,13 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
+                           http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.shadow.spring.namespace.jdbc"/>
-    
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
@@ -91,7 +96,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" enable="true">
+    <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds_0" shadow-data-source-name="demo_ds_1"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
@@ -100,11 +105,15 @@
             <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
-
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0,demo_ds_1" rule-refs="shadowRule">
+    
+    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
+    
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    
+    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0,demo_ds_1" rule-refs="shadowRule, sqlParseRule">
         <props>
             <prop key="sql-show">true</prop>
-            <prop key="sql-comment-parse-enabled">true</prop>
         </props>
     </shardingsphere:data-source>
     

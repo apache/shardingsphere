@@ -29,7 +29,7 @@ public final class MariaDBDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithPort() {
         MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
@@ -38,7 +38,7 @@ public final class MariaDBDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithDefaultPort() {
         MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb:replication://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertNull(actual.getSchema());
     }

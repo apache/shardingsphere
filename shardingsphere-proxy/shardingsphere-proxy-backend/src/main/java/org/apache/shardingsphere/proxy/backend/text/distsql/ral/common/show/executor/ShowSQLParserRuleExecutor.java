@@ -46,7 +46,7 @@ public final class ShowSQLParserRuleExecutor extends AbstractShowExecutor {
 
     private static final String SQL_COMMENT_PARSE_ENABLE = "sql_comment_parse_enable";
 
-    private static final String PARSE_TREE_CACHE = "parser_tree_cache";
+    private static final String PARSE_TREE_CACHE = "parse_tree_cache";
 
     private static final String SQL_STATEMENT_CACHE = "sql_statement_cache";
     

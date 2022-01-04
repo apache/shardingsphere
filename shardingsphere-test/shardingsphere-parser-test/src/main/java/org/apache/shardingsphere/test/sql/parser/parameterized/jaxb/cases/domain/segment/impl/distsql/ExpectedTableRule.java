@@ -35,7 +35,7 @@ public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegmen
     
     @XmlElement(name = "data-source")
     private List<String> dataSources;
-
+    
     @XmlElement(name = "table-strategy")
     private ExpectedShardingStrategy tableStrategy;
     
@@ -47,5 +47,4 @@ public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegmen
     
     @XmlElement(name = "key-generate-strategy")
     private ExpectedAlgorithm keyGenerateStrategy;
-    
 }

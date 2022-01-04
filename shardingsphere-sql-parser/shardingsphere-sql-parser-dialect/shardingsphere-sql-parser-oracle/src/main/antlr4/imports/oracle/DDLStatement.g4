@@ -1862,11 +1862,11 @@ noAudit
     ;
 
 auditPolicyClause
-    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 noAuditPolicyClause
-    : POLICY policyName (byUsersWithRoles | BY userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | BY username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 byUsersWithRoles
@@ -1874,7 +1874,7 @@ byUsersWithRoles
     ;
 
 contextClause
-    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY userName (COMMA_ userName)*)?
+    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY username (COMMA_ username)*)?
     ;
 
 contextNamespaceAttributesClause
@@ -1921,8 +1921,8 @@ renameToTable
 purge
     : PURGE (TABLE tableName
     | INDEX indexName
-    | TABLESPACE tablespaceName (USER userName)?
-    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | TABLESPACE tablespaceName (USER username)?
+    | TABLESPACE SET tablespaceSetName (USER username)?
     | RECYCLEBIN
     | DBA_RECYCLEBIN)
     ;
@@ -2016,9 +2016,9 @@ createDatabaseLink
     ;
 
 connectToClause
-    : CONNECT TO (CURRENT_USER | userName IDENTIFIED BY password dbLinkAuthentication?)
+    : CONNECT TO (CURRENT_USER | username IDENTIFIED BY password dbLinkAuthentication?)
     ;
 
 dbLinkAuthentication
-    : AUTHENTICATED BY userName IDENTIFIED BY password
+    : AUTHENTICATED BY username IDENTIFIED BY password
     ;

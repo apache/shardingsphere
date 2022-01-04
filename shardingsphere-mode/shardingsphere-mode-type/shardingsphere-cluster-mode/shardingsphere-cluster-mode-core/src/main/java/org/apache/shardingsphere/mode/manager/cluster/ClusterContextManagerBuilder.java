@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.SchedulerRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -41,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
+import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -49,8 +48,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -83,9 +82,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         beforeBuildContextManager(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, port, schemaName);
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts, new ModeScheduleContext(modeConfig));
+        contextManager.init(metaDataContexts, transactionContexts, null);
         afterBuildContextManager();
-        startMonitor();
         return contextManager;
     }
     
@@ -94,9 +92,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                            final Properties props, final boolean isOverwrite, final Integer port, final String schemaName) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         registryCenter = new RegistryCenter(repository, port);
+        ModeScheduleContextFactory.getInstance().init(modeConfig);
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Arrays.asList(schemaName);
+        Collection<String> schemaNames = Strings.isNullOrEmpty(schemaName) ? metaDataPersistService.getSchemaMetaDataService().loadAllNames() : Collections.singletonList(schemaName);
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, dataSourcesMap, schemaNames);
         Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties clusterProps = metaDataPersistService.getPropsService().load();
@@ -145,7 +144,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurations(final Map<String, Map<String, DataSource>> dataSourcesMap) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(dataSourcesMap.size(), 1);
         for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(entry.getValue()));
+            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(entry.getValue()));
         }
         return result;
     }
@@ -194,7 +193,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private Map<String, DataSourceConfiguration> getChangedDataSourcesConfigurations(final Map<String, DataSource> dataSourceMap, 
                                                                                      final Map<String, DataSourceConfiguration> loadedDataSourceConfigurationMap) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceConverter.getDataSourceConfigurationMap(dataSourceMap);
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(dataSourceMap);
         return loadedDataSourceConfigurationMap.entrySet().stream().filter(entry -> !dataSourceConfigurationMap.containsKey(entry.getKey()) 
                 || !dataSourceConfigurationMap.get(entry.getKey()).equals(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
@@ -207,7 +206,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Map<String, Map<String, DataSource>> getChangedDataSources(final Map<String, Map<String, DataSourceConfiguration>> changedDataSourceConfigurations) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(changedDataSourceConfigurations.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : changedDataSourceConfigurations.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
+            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(entry.getValue()));
         }
         return result;
     }
@@ -228,15 +227,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
         schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
-    }
-    
-    private void startMonitor() {
-        metaDataContexts.getAllSchemaNames().forEach(each -> metaDataContexts.getMetaData(each).getRuleMetaData().getRules().stream().filter(rule -> rule instanceof SchedulerRule)
-                .forEach(rule -> startSchedules(each, metaDataContexts.getMetaData(each).getResource().getDataSources(), (SchedulerRule) rule)));
-    }
-    
-    private void startSchedules(final String schemaName, final Map<String, DataSource> dataSources, final SchedulerRule schedulerRule) {
-        schedulerRule.getCronJobs(schemaName, dataSources).forEach(each -> contextManager.getModeScheduleContext().startCronJob(each));
     }
     
     @Override

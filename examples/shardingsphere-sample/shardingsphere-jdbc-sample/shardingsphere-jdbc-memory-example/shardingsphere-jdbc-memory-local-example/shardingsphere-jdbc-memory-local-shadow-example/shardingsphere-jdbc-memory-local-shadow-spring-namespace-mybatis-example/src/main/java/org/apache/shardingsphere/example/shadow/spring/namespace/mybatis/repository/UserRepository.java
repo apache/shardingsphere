@@ -18,22 +18,56 @@
 package org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.repository;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper
 public interface UserRepository {
     
-    void createTableIfNotExists();
+    default void createTableIfNotExists() {
+        createTableIfNotExistsNative();
+        createTableIfNotExistsShadow();
+    }
+
+    void createTableIfNotExistsNative();
+
+    void createTableIfNotExistsShadow();
     
-    void truncateTable();
+    default void truncateTable() {
+        truncateTableShadow();
+        truncateTableNative();
+    }
+
+    void truncateTableNative();
+
+    void truncateTableShadow();
     
-    void dropTable();
+    default void dropTable() {
+        dropTableShadow();
+        dropTableNative();
+    }
     
     void insert(User user);
+
+    void dropTableNative();
+
+    void dropTableShadow();
     
-    void delete(long userId);
+    default List<User> selectAll() {
+        List<User> result = new ArrayList<>();
+        result.addAll(selectAllByUserType(0));
+        result.addAll(selectAllByUserType(1));
+        return result;
+    }
+
+    List<User> selectAllByUserType(int userType);
     
-    List<User> selectAll();
+    default void delete(Long userId) {
+        deleteByUserIdAndUserType(userId, (int) (userId % 2));
+    }
+
+    void deleteByUserIdAndUserType(@Param("userId") Long userId, @Param("userType") int userType);
 }

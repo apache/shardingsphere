@@ -44,4 +44,5 @@
     <distsql-case id="alter-sharding-algorithm" value="ALTER SHARDING ALGORITHM algorithm_name(TYPE(NAME=inline,PROPERTIES('algorithm-expression' = 't_order_${order_id % 2}')))" />
     <distsql-case id="alter-default-single-table" value="ALTER DEFAULT SINGLE TABLE RULE RESOURCE = ds_0" />
     <distsql-case id="alter-sharding-key-generator" value="ALTER SHARDING KEY GENERATOR uuid_key_generator(TYPE(NAME=uuid,PROPERTIES('worker-id' = '123')))" />
+    <distsql-case id="alter-default-sharding-strategy" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=algorithms_name)" />
 </sql-cases>

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.reposit
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +33,6 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
 
     /**
      * Execute test.
-     *
-     * @throws SQLException
      */
     public void run() {
         try {
@@ -48,7 +45,6 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
      */
     private void initEnvironment() {
         userRepository.createTableIfNotExists();
@@ -70,8 +66,9 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_mybatis_" + i);
-            user.setPwd("pwd_mybatis_" + i);
+            user.setUserType(i % 2);
+            user.setUsername("test_" + i);
+            user.setPwd("pwd" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }
@@ -87,17 +84,15 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
     
     private void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : userRepository.selectAll()) {
+        for (User each : userRepository.selectAll()) {
             System.out.println(each);
         }
     }
     
     /**
      * Restore the environment.
-     * @throws SQLException
      */
     private void cleanEnvironment() {
         userRepository.dropTable();
     }
-
 }

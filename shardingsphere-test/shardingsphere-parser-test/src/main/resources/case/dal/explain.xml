@@ -192,4 +192,34 @@
             </select>
         </create-table>
     </describe>
+    <describe sql-case-id="desc_table">
+        <table name="tableName" start-index="5" stop-index="13" />
+    </describe>
+    <describe sql-case-id="desc_table_with_col_name">
+        <table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="colName" start-index="15" stop-index="21" />
+    </describe>
+    <describe sql-case-id="desc_table_with_placeholder">
+        <table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    <describe sql-case-id="desc_table_with_wild">
+        <table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
+    <describe sql-case-id="describe_table">
+        <table name="tableName" start-index="9" stop-index="17" />
+    </describe>
+    <describe sql-case-id="describe_table_with_col_name">
+        <table name="tableName" start-index="9" stop-index="17" />
+        <column-wild name="colName" start-index="19" stop-index="25" />
+    </describe>
+    <describe sql-case-id="describe_table_with_placeholder">
+        <table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    <describe sql-case-id="describe_table_with_wild">
+        <table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
 </sql-parser-test-cases>

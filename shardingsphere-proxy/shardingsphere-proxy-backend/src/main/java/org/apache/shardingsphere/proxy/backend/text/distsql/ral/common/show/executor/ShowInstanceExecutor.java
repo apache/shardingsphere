@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
-import org.apache.shardingsphere.mode.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -45,6 +45,10 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String ID = "instance_id";
     
+    private static final String HOST = "host";
+    
+    private static final String PORT = "port";
+    
     private static final String STATUS = "status";
     
     private static final String DISABLE = "disable";
@@ -55,6 +59,8 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
                 new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", HOST, HOST, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", PORT, PORT, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
         );
     }
@@ -91,6 +97,9 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private List<Object> buildRow(final String instanceId, final String status) {
-        return Stream.of(instanceId, status).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
+        String[] splitInstanceId = instanceId.split(DELIMITER);
+        String host = splitInstanceId[0];
+        String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
+        return Stream.of(instanceId, host, port, status).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
     }
 }
