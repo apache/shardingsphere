@@ -39,6 +39,8 @@ public final class SQLHintUtils {
     
     private static final String SQL_HINT_VALUE_SPLIT = "=";
     
+    private static final int SQL_HINT_VALUE_SIZE = 2;
+    
     /**
      * Get SQL hint props.
      *
@@ -56,7 +58,7 @@ public final class SQLHintUtils {
         Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(comment.substring(startIndex, endIndex).trim());
         for (String each : sqlHints) {
             List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
-            if (2 == hintValues.size()) {
+            if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
                 result.put(hintValues.get(0), hintValues.get(1));
             }
         }
