@@ -130,9 +130,9 @@ public final class OpenGaussBatchedInsertsExecutor {
         }
     }
     
-    private void prepareJDBCExecutionUnit(final JDBCExecutionUnit each) throws SQLException {
-        PreparedStatement preparedStatement = (PreparedStatement) each.getStorageResource();
-        for (List<Object> eachGroupParameter : executionUnitParameters.getOrDefault(each.getExecutionUnit(), Collections.emptyList())) {
+    private void prepareJDBCExecutionUnit(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+        PreparedStatement preparedStatement = (PreparedStatement) jdbcExecutionUnit.getStorageResource();
+        for (List<Object> eachGroupParameter : executionUnitParameters.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
             ListIterator<Object> parametersIterator = eachGroupParameter.listIterator();
             while (parametersIterator.hasNext()) {
                 preparedStatement.setObject(parametersIterator.nextIndex() + 1, parametersIterator.next());
