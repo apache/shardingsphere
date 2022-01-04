@@ -39,6 +39,14 @@ createDefaultShardingStrategy
     : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
     ;
 
+alterDefaultShardingStrategy
+    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    ;
+
+dropDefaultShardingStrategy
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY 
+    ;
+
 createShardingKeyGenerator
     : CREATE SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
     ;

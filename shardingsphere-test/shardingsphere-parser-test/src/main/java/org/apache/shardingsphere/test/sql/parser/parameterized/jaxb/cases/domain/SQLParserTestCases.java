@@ -169,6 +169,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
@@ -202,6 +203,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
@@ -823,6 +825,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-default-sharding-strategy")
     private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+  
+    @XmlElement(name = "alter-default-sharding-strategy")
+    private final List<AlterDefaultShardingStrategyStatementTestCase> alterDefaultShardingStrategyStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-default-shadow-algorithm")
     private final List<CreateDefaultShadowAlgorithmStatementTestCase> createDefaultShadowAlgorithmStatementTestCases = new LinkedList<>();
@@ -844,6 +849,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-sharding-key-generator")
     private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-default-sharding-strategy")
+    private final List<DropDefaultShardingStrategyStatementTestCase> dropDefaultShardingStrategyStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset")
     private final List<ResetStatementTestCase> resetStatementTestCases = new LinkedList<>();
@@ -1121,6 +1129,7 @@ public final class SQLParserTestCases {
         putAll(createShardingAlgorithmStatementTestCases, result);
         putAll(createShardingKeyGeneratorStatementTestCases, result);
         putAll(createDefaultShardingStrategyStatementTestCases, result);
+        putAll(alterDefaultShardingStrategyStatementTestCases, result);
         putAll(createShardingTableRuleTestCases, result);
         putAll(alterShardingTableRuleTestCases, result);
         putAll(resetStatementTestCases, result);
@@ -1151,6 +1160,7 @@ public final class SQLParserTestCases {
         putAll(showShardingKeyGeneratorsStatementTestCases,result);
         putAll(showDefaultShardingStrategyStatementTestCases,result);
         putAll(dropShardingKeyGeneratorStatementTestCases, result);
+        putAll(dropDefaultShardingStrategyStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
         putAll(dropDomainStatementTestCases, result);
         putAll(showSQLParserRuleStatementTestCases, result);
