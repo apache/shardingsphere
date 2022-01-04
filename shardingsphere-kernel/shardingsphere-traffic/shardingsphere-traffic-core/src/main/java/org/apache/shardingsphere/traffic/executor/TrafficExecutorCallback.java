@@ -17,24 +17,23 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Traffic executor factory.
+ * Traffic executor callback.
+ * 
+ * @param <T> type of return value
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TrafficExecutorFactory {
+public interface TrafficExecutorCallback<T> {
     
     /**
-     * Create new instance of traffic executor factory.
-     * 
-     * @param metaDataContexts meta data context map
-     * @return new instance of traffic executor
+     * Execute.
+     *
+     * @param statement statement
+     * @param sql SQL
+     * @return execution result
+     * @throws SQLException throw when execute failure
      */
-    public static TrafficExecutor newInstance(final MetaDataContexts metaDataContexts) {
-        return new JDBCTrafficExecutor(metaDataContexts);
-    }
+    T execute(Statement statement, String sql) throws SQLException;
 }

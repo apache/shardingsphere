@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.executor;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Traffic executor factory.
+ * JDBC executor unit builder.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TrafficExecutorFactory {
+public interface TrafficExecutorContextBuilder<T extends Statement> extends TypedSPI {
     
     /**
-     * Create new instance of traffic executor factory.
+     * Build traffic executor context.
      * 
-     * @param metaDataContexts meta data context map
-     * @return new instance of traffic executor
+     * @param logicSQL logic SQL
+     * @param connection connection
+     * @return traffic executor context
+     * @throws SQLException SQL exception
      */
-    public static TrafficExecutor newInstance(final MetaDataContexts metaDataContexts) {
-        return new JDBCTrafficExecutor(metaDataContexts);
-    }
+    TrafficExecutorContext<T> build(LogicSQL logicSQL, Connection connection) throws SQLException;
 }

@@ -75,6 +75,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
+import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
@@ -184,8 +186,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             TrafficContext trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceConfig().isPresent()) {
-                return executor.getTrafficExecutor().executeQuery(logicSQL, trafficContext.getDataSourceConfig().get());
+            if (trafficContext.getDataSourceName().isPresent()) {
+                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
+                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
+                return trafficExecutor.executeQuery(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
             // TODO move federation route logic to binder
             executionContext = createExecutionContext(logicSQL);
@@ -254,8 +258,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             TrafficContext trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceConfig().isPresent()) {
-                return executor.getTrafficExecutor().executeUpdate(logicSQL, trafficContext.getDataSourceConfig().get());
+            if (trafficContext.getDataSourceName().isPresent()) {
+                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
+                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
+                return trafficExecutor.executeUpdate(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             }
             executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
@@ -305,8 +311,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             TrafficContext trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceConfig().isPresent()) {
-                return executor.getTrafficExecutor().execute(logicSQL, trafficContext.getDataSourceConfig().get());
+            if (trafficContext.getDataSourceName().isPresent()) {
+                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
+                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
+                return trafficExecutor.execute(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
             executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
