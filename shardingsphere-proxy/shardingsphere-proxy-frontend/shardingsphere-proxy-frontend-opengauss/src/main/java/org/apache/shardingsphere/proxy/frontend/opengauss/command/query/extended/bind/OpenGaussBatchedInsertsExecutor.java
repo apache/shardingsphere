@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -143,20 +144,8 @@ public final class OpenGaussBatchedInsertsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
-                metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType(), preparedStatement.getSqlStatement(), isExceptionThrown) {
-            
-            @Override
-            protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                return statement.executeBatch();
-            }
-            
-            @SuppressWarnings("OptionalContainsCollection")
-            @Override
-            protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.empty();
-            }
-        };
+        DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
+        JDBCExecutorCallback<int[]> callback = new BatchedInsertsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -165,5 +154,27 @@ public final class OpenGaussBatchedInsertsExecutor {
             }
         }
         return result;
+    }
+    
+    private static class BatchedInsertsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
+    
+        public BatchedInsertsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(databaseType, sqlStatement, isExceptionThrown);
+        }
+    
+        @Override
+        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            try {
+                return statement.executeBatch();
+            } finally {
+                statement.close();
+            }
+        }
+    
+        @SuppressWarnings("OptionalContainsCollection")
+        @Override
+        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+            return Optional.empty();
+        }
     }
 }
