@@ -1,6 +1,6 @@
 +++
 title = "Properties"
-weight = 4
+weight = 2
 chapter = true
 +++
 

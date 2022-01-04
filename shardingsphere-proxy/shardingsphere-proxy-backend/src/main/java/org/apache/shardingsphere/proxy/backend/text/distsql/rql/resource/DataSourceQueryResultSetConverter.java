@@ -72,18 +72,18 @@ public final class DataSourceQueryResultSetConverter {
         dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
     }
     
-    private static void setDataSourceParameterField(final Field field, final DataSourceParameter object, final Object value) throws IllegalAccessException {
+    private static void setDataSourceParameterField(final Field field, final DataSourceParameter target, final Object value) throws IllegalAccessException {
         Class<?> fieldType = field.getType();
         if (fieldType == int.class) {
-            field.set(object, Integer.parseInt(value.toString()));
+            field.set(target, Integer.parseInt(value.toString()));
         } else if (fieldType == long.class) {
-            field.set(object, Long.parseLong(value.toString()));
+            field.set(target, Long.parseLong(value.toString()));
         } else if (fieldType == boolean.class) {
-            field.set(object, Boolean.parseBoolean(value.toString()));
+            field.set(target, Boolean.parseBoolean(value.toString()));
         } else if (fieldType == String.class) {
-            field.set(object, value.toString());
+            field.set(target, value.toString());
         } else {
-            field.set(object, value);
+            field.set(target, value);
         }
     }
 }

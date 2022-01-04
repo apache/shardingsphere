@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorFactory;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * Data source converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceConverter {
+public final class DataSourcePoolCreatorUtil {
     
     /**
      * Get data source.
@@ -40,7 +40,7 @@ public final class DataSourceConverter {
      * @return data source
      */
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
-        return DataSourcePoolCreatorFactory.getInstance(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig);
+        return new DataSourcePoolCreator(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig);
     }
     
     /**
@@ -50,7 +50,7 @@ public final class DataSourceConverter {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
-        return DataSourcePoolCreatorFactory.getInstance(dataSource.getClass().getName()).createDataSourceConfiguration(dataSource);
+        return new DataSourcePoolCreator(dataSource.getClass().getCanonicalName()).createDataSourceConfiguration(dataSource);
     }
     
     /**

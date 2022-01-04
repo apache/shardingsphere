@@ -66,24 +66,23 @@
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_user">
-            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
             <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
         </encrypt:table>
     </encrypt:rule>
     
     <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0" rule-refs="encryptRule" />
-
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
     <tx:annotation-driven />
-
+    
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
     </bean>
-
+    
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

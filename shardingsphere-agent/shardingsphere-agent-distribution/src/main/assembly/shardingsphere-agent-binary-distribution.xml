@@ -20,10 +20,10 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
     <id>shardingsphere-agent-bin</id>
     <formats>
-        <format>dir</format>
         <format>tar.gz</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}-shardingsphere-agent-bin</baseDirectory>
     
     <fileSets>
         <fileSet>
@@ -41,7 +41,7 @@
         </fileSet>
         
         <fileSet>
-            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-logging/target/plugins</directory>
+            <directory>../shardingsphere-agent-plugins/shardingsphere-agent-plugin-logging/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
@@ -49,14 +49,14 @@
         </fileSet>
         
         <fileSet>
-            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
+            <directory>../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-metrics/target/plugins</directory>
+            <directory>../shardingsphere-agent-plugins/shardingsphere-agent-plugin-metrics/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>

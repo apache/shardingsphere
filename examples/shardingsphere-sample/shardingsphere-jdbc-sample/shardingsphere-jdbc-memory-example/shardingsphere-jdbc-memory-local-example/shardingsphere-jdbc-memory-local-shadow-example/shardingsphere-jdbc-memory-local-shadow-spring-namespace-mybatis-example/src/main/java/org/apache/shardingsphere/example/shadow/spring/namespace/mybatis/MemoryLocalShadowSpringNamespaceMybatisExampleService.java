@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.shadow.spring.namespace.mybatis.reposit
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +33,6 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
 
     /**
      * Execute test.
-     *
-     * @throws SQLException
      */
     public void run() {
         try {
@@ -48,7 +45,6 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
      */
     private void initEnvironment() {
         userRepository.createTableIfNotExists();
@@ -71,7 +67,7 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
             User user = new User();
             user.setUserId(i);
             user.setUserType(i % 2);
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());
@@ -95,7 +91,6 @@ public final class MemoryLocalShadowSpringNamespaceMybatisExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
      */
     private void cleanEnvironment() {
         userRepository.dropTable();

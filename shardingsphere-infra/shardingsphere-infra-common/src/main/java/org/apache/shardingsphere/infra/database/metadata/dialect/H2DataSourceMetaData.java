@@ -44,10 +44,10 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final String MODEL_FILE = "file:";
     
     private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
-            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
-    private final String hostName;
+    private final String hostname;
 
     private final String model;
 
@@ -66,10 +66,10 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         String catalogFromMatcher = matcher.group("catalog");
         String nameFromMatcher = matcher.group("name");
         String fileNameFromMatcher = matcher.group("fileName");
-        String hostNameFromMatcher = matcher.group("hostName");
+        String hostnameFromMatcher = matcher.group("hostname");
         boolean setPort = null != portFromMatcher && !portFromMatcher.isEmpty();
         String name = null == nameFromMatcher ? fileNameFromMatcher : nameFromMatcher;
-        hostName = null == hostNameFromMatcher ? DEFAULT_HOST_NAME : hostNameFromMatcher;
+        hostname = null == hostnameFromMatcher ? DEFAULT_HOST_NAME : hostnameFromMatcher;
         port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
         catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
@@ -91,7 +91,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (!isSameModel(getModel(), ((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
             return false;
         }
-        return DEFAULT_HOST_NAME.equals(hostName) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
+        return DEFAULT_HOST_NAME.equals(hostname) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
                 : DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
     }
     

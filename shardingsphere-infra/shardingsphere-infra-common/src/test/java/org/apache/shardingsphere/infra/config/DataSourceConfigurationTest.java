@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -53,7 +53,7 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
@@ -132,7 +132,7 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("url").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -160,7 +160,7 @@ public final class DataSourceConfigurationTest {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
         dataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
-        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(dataSourceConfig);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
