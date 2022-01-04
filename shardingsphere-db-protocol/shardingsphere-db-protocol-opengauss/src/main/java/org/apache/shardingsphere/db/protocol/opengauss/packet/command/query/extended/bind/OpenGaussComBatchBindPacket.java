@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValue
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -83,21 +82,6 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     }
     
     /**
-     * Check if batch bind packet has next parameters.
-     *
-     * @return has next parameters
-     */
-    public boolean hasNextParameters() {
-        if (payload.getByteBuf().readableBytes() < 1) {
-            return false;
-        }
-        payload.getByteBuf().markReaderIndex();
-        int c = payload.readInt1();
-        payload.getByteBuf().resetReaderIndex();
-        return 'E' != c;
-    }
-    
-    /**
      * Read parameter sets from payload.
      *
      * @return parameter sets
@@ -139,8 +123,6 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     
     private Object getTextParameters(final String textValue, final PostgreSQLColumnType columnType) {
         switch (columnType) {
-            case POSTGRESQL_TYPE_UNSPECIFIED:
-                return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
             case POSTGRESQL_TYPE_BOOL:
                 return Boolean.valueOf(textValue);
             case POSTGRESQL_TYPE_INT2:
