@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -99,9 +100,32 @@ public final class JdbcUrlParser {
      * @return appended JDBC URL
      */
     public String appendQueryProperties(final String jdbcURL, final Map<String, String> queryProps) {
+        Map<String, String> currentQueryProps = parse(jdbcURL).getQueryProperties();
+        if (hasConflictedQueryProperties(currentQueryProps, queryProps)) {
+            Map<String, String> newQueryProps = new LinkedHashMap<>(currentQueryProps);
+            newQueryProps.putAll(queryProps);
+            StringBuilder result = new StringBuilder(jdbcURL.substring(0, jdbcURL.indexOf('?')));
+            result.append('?');
+            appendQueryPropertiesOnURLBuilder(result, newQueryProps);
+            return result.toString();
+        }
         StringBuilder result = new StringBuilder(jdbcURL);
-        String delimiter = parse(jdbcURL).getQueryProperties().isEmpty() ? "?" : "&";
+        String delimiter = currentQueryProps.isEmpty() ? "?" : "&";
         result.append(delimiter);
+        appendQueryPropertiesOnURLBuilder(result, queryProps);
+        return result.toString();
+    }
+    
+    private boolean hasConflictedQueryProperties(final Map<String, String> currentQueryProps, final Map<String, String> queryProps) {
+        for (Entry<String, String> entry : queryProps.entrySet()) {
+            if (currentQueryProps.containsKey(entry.getKey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void appendQueryPropertiesOnURLBuilder(final StringBuilder result, final Map<String, String> queryProps) {
         for (Entry<String, String> entry : queryProps.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {
@@ -110,6 +134,5 @@ public final class JdbcUrlParser {
             result.append("&");
         }
         result.deleteCharAt(result.length() - 1);
-        return result.toString();
     }
 }
