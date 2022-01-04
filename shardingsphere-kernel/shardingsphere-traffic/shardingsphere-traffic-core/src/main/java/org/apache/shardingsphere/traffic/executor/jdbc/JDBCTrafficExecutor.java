@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
@@ -57,13 +57,13 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
         ShardingSphereServiceLoader.register(TrafficExecutorContextBuilder.class);
     }
     
-    public JDBCTrafficExecutor(final MetaDataContexts metaDataContexts) {
-        dataSources.putAll(DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(metaDataContexts)));
+    public JDBCTrafficExecutor(final ContextManager contextManager) {
+        dataSources.putAll(DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs()));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final MetaDataContexts metaDataContexts) {
+    private Map<String, DataSourceConfiguration> createDataSourceConfigs() {
         // TODO Use governance API to create data source configuration
-        return Collections.emptyMap(); 
+        return Collections.emptyMap();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
