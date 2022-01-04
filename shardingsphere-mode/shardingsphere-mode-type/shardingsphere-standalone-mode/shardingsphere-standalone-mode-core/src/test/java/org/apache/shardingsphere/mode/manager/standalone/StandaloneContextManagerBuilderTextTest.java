@@ -56,7 +56,8 @@ public final class StandaloneContextManagerBuilderTextTest {
         Properties props = new Properties();
         ModeConfiguration modeConfiguration = new ModeConfiguration("testType", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
-        ContextManager actual = standaloneContextManagerBuilder.build(modeConfiguration, dataSourceMap, schemaRuleConfigs, globalRuleConfigurationCollection, props, false, 1000);
+        ContextManager actual = standaloneContextManagerBuilder.build(modeConfiguration, dataSourceMap, schemaRuleConfigs, 
+                globalRuleConfigurationCollection, props, false, 1000, null);
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
         assertNotNull(metaDataContexts.getExecutorEngine());

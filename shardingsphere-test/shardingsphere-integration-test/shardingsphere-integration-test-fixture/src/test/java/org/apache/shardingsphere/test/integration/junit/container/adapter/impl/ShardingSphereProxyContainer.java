@@ -55,7 +55,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      * Mount path into container from classpath.
      *
      * @param classPathResource resource path in classpath
-     * @param containerPath     path in container
+     * @param containerPath path in container
      * @return self
      */
     public ShardingSphereProxyContainer withClassPathResourceMapping(final String classPathResource, final String containerPath) {
@@ -101,7 +101,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     /**
      * Get DataSource.
      *
-     * @return DataSource
+     * @return data source
      */
     private DataSource getDataSource() {
         DataSource dataSource = dataSourceProvider.get();
@@ -125,7 +125,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
      * Get governance data source.
      *
      * @param serverLists server list
-     * @return data source.
+     * @return data source
      */
     public DataSource getDataSourceForReader(final String serverLists) {
         return getDataSource();

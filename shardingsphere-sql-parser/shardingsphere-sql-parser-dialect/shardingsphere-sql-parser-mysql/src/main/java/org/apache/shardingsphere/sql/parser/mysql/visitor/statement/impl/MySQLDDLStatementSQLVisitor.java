@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColu
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCheckContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterConvertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFunctionContext;
@@ -44,6 +45,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterVi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharsetNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CollationNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompoundStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDatabaseContext;
@@ -90,8 +93,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidSt
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CollateClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnAfterPositionSegment;
@@ -105,6 +111,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -258,6 +265,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
                     result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                } else if (each instanceof ChangeColumnDefinitionSegment) {
+                    result.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
                 } else if (each instanceof AddConstraintDefinitionSegment) {
@@ -266,6 +275,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
+                } else if (each instanceof ConvertTableDefinitionSegment) {
+                    result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
                 }
             }
         }
@@ -305,7 +316,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             if (each instanceof AlterTableDropContext) {
                 AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
                 if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
-                    return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(alterTableDrop.identifier()));
+                    ConstraintSegment constraintSegment = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
+                            (IdentifierValue) visit(alterTableDrop.identifier()));
+                    result.getValue().add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
                 } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
                 }
@@ -316,8 +329,30 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             if (each instanceof AlterRenameTableContext) {
                 result.getValue().add((RenameTableDefinitionSegment) visit(each));
             }
+            if (each instanceof AlterConvertContext) {
+                result.getValue().add((ConvertTableDefinitionSegment) visit(each));
+            }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterConvert(final AlterConvertContext ctx) {
+        ConvertTableDefinitionSegment result = new ConvertTableDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (CharsetNameSegment) visit(ctx.charsetName()));
+        if (null != ctx.collateClause()) {
+            result.setCollateClause((CollateClauseSegment) visit(ctx.collateClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCollationName(final CollationNameContext ctx) {
+        return new CollateClauseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitCharsetName(final CharsetNameContext ctx) {
+        return new CharsetNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -353,15 +388,10 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return modifyColumnDefinition;
     }
     
-    private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
-        ColumnDefinitionSegment columnDefinition = (ColumnDefinitionSegment) visit(ctx.columnDefinition());
-        columnDefinition.setColumnName(new ColumnSegment(
-                columnDefinition.getColumnName().getStartIndex(),
-                columnDefinition.getColumnName().getStopIndex(),
-                new IdentifierValue(ctx.columnInternalRef.getText())
-        ));
-        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
-        result.setPreviousColumnDefinition(columnDefinition);
+    private ChangeColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
+        ChangeColumnDefinitionSegment result = new ChangeColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        result.setPreviousColumn(new ColumnSegment(ctx.columnInternalRef.getStart().getStartIndex(), ctx.columnInternalRef.getStop().getStopIndex(),
+                new IdentifierValue(ctx.columnInternalRef.getText())));
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }

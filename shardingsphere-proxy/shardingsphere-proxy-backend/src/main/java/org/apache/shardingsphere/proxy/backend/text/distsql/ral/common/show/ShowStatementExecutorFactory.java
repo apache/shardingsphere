@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAuthorityRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 
@@ -38,20 +43,29 @@ public final class ShowStatementExecutorFactory {
      * Create show statement executor instance.
      *
      * @param sqlStatement show statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return show command executor
      * @throws SQLException SQL exception
      */
-    public static ShowStatementExecutor newInstance(final ShowDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static ShowStatementExecutor newInstance(final ShowDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof ShowInstanceStatement) {
             return new ShowInstanceExecutor();
         }
-        if (sqlStatement instanceof ShowVariableStatement) {
-            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, backendConnection);
-        }
         if (sqlStatement instanceof ShowReadwriteSplittingReadResourcesStatement) {
-            return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, backendConnection);
+            return new ShowReadwriteSplittingReadResourcesExecutor((ShowReadwriteSplittingReadResourcesStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        if (sqlStatement instanceof ShowAllVariablesStatement) {
+            return new ShowAllVariablesExecutor(connectionSession);
+        }
+        if (sqlStatement instanceof ShowVariableStatement) {
+            return new ShowVariableExecutor((ShowVariableStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof ShowSQLParserRuleStatement) {
+            return new ShowSQLParserRuleExecutor((ShowSQLParserRuleStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof ShowAuthorityRuleStatement) {
+            return new ShowAuthorityRuleExecutor(connectionSession);
+        }
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

@@ -25,9 +25,6 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -90,17 +87,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
-        Optional<Collection<ShadowColumnCondition>> shadowColumnConditions = shadowRouteEngine.parseShadowColumnConditions();
-        assertTrue(shadowColumnConditions.isPresent());
-        Collection<ShadowColumnCondition> shadowColumns = shadowColumnConditions.get();
-        assertThat(shadowColumns.size(), is(1));
-        Iterator<ShadowColumnCondition> iterator = shadowColumns.iterator();
-        ShadowColumnCondition userId = iterator.next();
-        assertThat(userId.getColumn(), is("user_id"));
-        assertThat(userId.getTable(), is("t_order"));
-        assertThat(userId.getValues().iterator().next(), is("1"));
-        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSqlNotes();
+        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
@@ -110,7 +97,6 @@ public final class ShadowUpdateStatementRoutingEngineTest {
 
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
         result.setShadowAlgorithms(createShadowAlgorithms());
@@ -146,11 +132,6 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
-    }
-    
-    @Test
-    public void assertCreateShadowDetermineCondition() {
-        assertThat(shadowRouteEngine.createShadowDetermineCondition().getShadowOperationType(), is(ShadowOperationType.UPDATE));
     }
     
     @Test

@@ -22,8 +22,9 @@ import io.netty.util.concurrent.EventExecutor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -59,28 +60,64 @@ public final class OKProxyStateTest {
     private DatabaseProtocolFrontendEngine frontendEngine;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private BackendConnection connection;
+    private ConnectionSession connectionSession;
     
     @BeforeClass
     public static void setupGlobal() {
         originContextManager = swapContextManager(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
     }
     
     @Before
     public void setup() {
-        when(connection.getConnectionId()).thenReturn(1);
-        when(connection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));
     }
     
     @Test
-    public void assertExecuteWhenRequireOccupyThreadForConnection() {
-        when(frontendEngine.getFrontendContext().isOccupyThreadForPerConnection()).thenReturn(true);
+    public void assertExecuteWithProxyHintEnabled() {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connection);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
+    }
+    
+    @Test
+    public void assertExecuteWithDistributedTransaction() {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
+        ExecutorService executorService = registerMockExecutorService(1);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        verify(executorService).execute(any(CommandExecutorTask.class));
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
+    }
+    
+    @Test
+    public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
+        EventExecutor eventExecutor = mock(EventExecutor.class);
+        when(context.executor()).thenReturn(eventExecutor);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        verify(eventExecutor).execute(any(CommandExecutorTask.class));
+    }
+    
+    @Test
+    public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLAP");
+        when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection()).thenReturn(true);
+        ExecutorService executorService = registerMockExecutorService(1);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        verify(executorService).execute(any(CommandExecutorTask.class));
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertExecuteWithProxyBackendExecutorSuitableForInvalidValue() {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("invalid value");
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})
@@ -92,15 +129,6 @@ public final class OKProxyStateTest {
         ExecutorService result = mock(ExecutorService.class);
         executorServices.put(connectionId, result);
         return result;
-    }
-    
-    @Test
-    public void assertExecuteWhenExecutingByNonExclusiveExecutor() {
-        EventExecutor eventExecutor = mock(EventExecutor.class);
-        when(context.executor()).thenReturn(eventExecutor);
-        when(frontendEngine.getFrontendContext().isOccupyThreadForPerConnection()).thenReturn(false);
-        new OKProxyState().execute(context, null, frontendEngine, connection);
-        verify(eventExecutor).execute(any(CommandExecutorTask.class));
     }
     
     @AfterClass

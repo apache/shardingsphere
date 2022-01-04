@@ -28,11 +28,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Create resource group statement assert.
+ * MySQL create resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLCreateResourceGroupStatementAssert {
-
+    
     /**
      * Assert create resource group statement is correct with expected parser result.
      *

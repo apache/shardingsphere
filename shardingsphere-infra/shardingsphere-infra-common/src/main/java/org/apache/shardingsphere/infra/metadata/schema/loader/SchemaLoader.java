@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMate
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
@@ -47,18 +45,21 @@ public final class SchemaLoader {
     
     private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
     
+    private final Map<String, Collection<ShardingSphereRule>> rules;
+    
     private final ConfigurationProperties props;
     
     public SchemaLoader(final Map<String, Map<String, DataSource>> dataSources,
-                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
+                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
         this.dataSources = dataSources;
         this.schemaRuleConfigs = schemaRuleConfigs;
+        this.rules = rules;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
     }
     
     /**
      * Load schema.
-     * 
+     *
      * @return schema
      * @throws SQLException SQL exception
      */
@@ -66,10 +67,8 @@ public final class SchemaLoader {
         Map<String, ShardingSphereSchema> result = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
-            Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
-            Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, props));
-            Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+            Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules.get(each)), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules.get(each), props));
             result.put(each, new ShardingSphereSchema(tableMetaDataMap));
         }
         return result;

@@ -26,7 +26,7 @@
 #
 #dataSources:
 #  ds:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -35,7 +35,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #  shadow_ds:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -46,7 +46,6 @@
 #
 #rules:
 #- !SHADOW
-#  enable: true
 #  dataSources:
 #    shadowDataSource:
 #      sourceDataSourceName: ds
@@ -71,30 +70,29 @@
 #      shadowAlgorithmNames:
 #        - user-id-insert-match-algorithm
 #        - user-id-select-match-algorithm
-#        - simple-note-algorithm
+#        - simple-hint-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
 #    user-id-update-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
 #    user-id-select-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
-#      type: SIMPLE_NOTE
+#    simple-hint-algorithm:
+#      type: SIMPLE_HINT
 #      props:
-#        shadow: true
 #        foo: bar
 
 ######################################################################################################
@@ -127,7 +125,6 @@
 #
 #rules:
 #- !SHADOW
-#  enable: true
 #  dataSources:
 #    shadowDataSource:
 #      sourceDataSourceName: ds
@@ -152,28 +149,27 @@
 #      shadowAlgorithmNames:
 #        - user-id-insert-match-algorithm
 #        - user-id-select-match-algorithm
-#        - simple-note-algorithm
+#        - simple-hint-algorithm
 #  shadowAlgorithms:
 #    user-id-insert-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
 #    user-id-update-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
 #    user-id-select-match-algorithm:
-#      type: COLUMN_REGEX_MATCH
+#      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-note-algorithm:
-#      type: SIMPLE_NOTE
+#    simple-hint-algorithm:
+#      type: SIMPLE_HINT
 #      props:
-#        shadow: true
 #        foo: bar

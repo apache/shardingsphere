@@ -20,15 +20,16 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.optimize.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.junit.Before;
@@ -81,7 +82,7 @@ public final class ShowDatabasesExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -93,10 +94,12 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithPrefixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema%");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -109,10 +112,12 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithSuffixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -125,10 +130,12 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithPreciseLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_9");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -141,10 +148,12 @@ public final class ShowDatabasesExecutorTest {
     @Test
     public void assertExecuteWithLikeMatchNone() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_not_exist");
-        showDatabasesStatement.setLike(showLikeSegment);
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -154,8 +163,8 @@ public final class ShowDatabasesExecutorTest {
         assertThat(count, is(0));
     }
     
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
+    private ConnectionSession mockConnectionSession() {
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
         return result;
     }

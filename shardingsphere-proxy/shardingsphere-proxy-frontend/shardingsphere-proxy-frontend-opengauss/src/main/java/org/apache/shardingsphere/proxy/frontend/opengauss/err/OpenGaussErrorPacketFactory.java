@@ -84,6 +84,7 @@ public final class OpenGaussErrorPacketFactory {
         if (cause instanceof PostgreSQLAuthenticationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode().getErrorCode(), cause.getMessage());
         }
+        // TODO OpenGauss need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);
     }
     

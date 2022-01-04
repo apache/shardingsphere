@@ -49,13 +49,23 @@ public final class TableRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getDataSources(), is(expected.getDataSources()));
+                    actual.getDataSourceNodes(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getTableStrategyColumn(), is(expected.getTableStrategyColumn()));
+                    actual.getTableStrategySegment().getShardingColumn(), is(expected.getTableStrategy().getShardingColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getKeyGenerateStrategyColumn(), is(expected.getKeyGenerateStrategyColumn()));
-            AlgorithmAssert.assertIs(assertContext, actual.getTableStrategy(), expected.getTableStrategy());
-            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateStrategy(), expected.getKeyGenerateStrategy());
+                    actual.getTableStrategySegment().getType(), is(expected.getTableStrategy().getType()));
+            assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
+                    actual.getTableStrategySegment().getShardingAlgorithmName(), is(expected.getTableStrategy().getShardingAlgorithmName()));
+            assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
+                    actual.getDatabaseStrategySegment().getShardingColumn(), is(expected.getDataStrategy().getShardingColumn()));
+            assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
+                    actual.getDatabaseStrategySegment().getType(), is(expected.getDataStrategy().getType()));
+            assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
+                    actual.getDatabaseStrategySegment().getShardingAlgorithmName(), is(expected.getDataStrategy().getShardingAlgorithmName()));
+            if (null != actual.getKeyGenerateSegment()) {
+                assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
+                        actual.getKeyGenerateSegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
+            }
         }
     }
 }

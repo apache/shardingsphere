@@ -48,9 +48,6 @@ shardingsphere-example
   │   │   │   ├── sharding-readwrite-splitting-spring-boot-mybatis-example
   │   │   │   ├── sharding-readwrite-splitting-spring-namespace-jpa-example
   │   │   │   └── sharding-readwrite-splitting-spring-namespace-mybatis-example
-  │   ├── other-feature-example
-  │   │   ├── hint-example
-  │   │   │   └── hint-raw-jdbc-example
   │   └── single-feature-example
   │   │   ├── cluster-mode-example
   │   │   │   ├── cluster-mode-raw-jdbc-example
@@ -64,6 +61,12 @@ shardingsphere-example
   │   │   │   └── custom-sharding-algortihm-example
   │   │   │   │   ├── class-based-sharding-algorithm-example
   │   │   │   │   └── spi-based-sharding-algorithm-example
+  │   │   ├── readwrite-splitting-example
+  │   │   │   ├── readwrite-splitting-raw-jdbc-example
+  │   │   │   ├── readwrite-splitting-spring-boot-jpa-example
+  │   │   │   ├── readwrite-splitting-spring-boot-mybatis-example
+  │   │   │   ├── readwrite-splitting-spring-namespace-jpa-example
+  │   │   │   └── readwrite-splitting-spring-namespace-mybatis-example
   │   │   ├── shadow-example
   │   │   │   ├── shadow-raw-jdbc-example
   │   │   │   ├── shadow-spring-boot-mybatis-example
@@ -84,15 +87,31 @@ shardingsphere-example
   │   │   │   └── transaction-base-seata-spring-boot-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
+  │   ├── shardingsphere-proxy-distsql-example
   │   └── shardingsphere-proxy-hint-example
   ├── shardingsphere-sample
   │   ├── shardingsphere-example-engine
   │   ├── shardingsphere-jdbc-sample
   │   │   └── shardingsphere-jdbc-memory-example
   │   │   │   └── shardingsphere-jdbc-memory-local-example
+  │   │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-example
+  │   │   │   │   │   └── shardingsphere-jdbc-memory-local-encrypt-jdbc-example
+  │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jpa-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-mybatis-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-jpa-example
+  │   │   │   │   │   └── shardingsphere-jdbc-memory-local-readwrite-splitting-springboot-starter-mybatis-example
   │   │   │   │   └── shardingsphere-jdbc-memory-local-sharding-example
   │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-jdbc-example
-  │   │   │   │   │   └── shardingsphere-jdbc-memory-local-sharding-springboot-starter-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-namespace-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-namespace-jpa-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-namespace-mybatis-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-springboot-starter-jdbc-example
+  │   │   │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-springboot-starter-jpa-example
+  │   │   │   │   │   └── shardingsphere-jdbc-memory-local-sharding-springboot-starter-mybatis-example
   │   └── shardingsphere-proxy-sample
   │   │   ├── shardingsphere-proxy-cluster-etcd-example
   │   │   │   ├── shardingsphere-proxy-cluster-etcd-base-seata-example
@@ -234,6 +253,7 @@ shardingsphere-example
 | [事务](shardingsphere-jdbc-example/single-feature-example/transaction-example)                           | 演示在 ShardingSphere-JDBC 中使用事务                  |
 | [hint](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-raw-jdbc-example)   | 演示在 ShardingSphere-JDBC 中使用 hint                |
 | [加密](shardingsphere-jdbc-example/single-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
+| [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example)                            | 演示在 ShardingSphere-Proxy 中使用 DistSQL                  |
 | APM 监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
 | proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
 | [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境         |

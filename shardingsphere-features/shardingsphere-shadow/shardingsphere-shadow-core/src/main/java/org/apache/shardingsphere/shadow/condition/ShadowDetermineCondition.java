@@ -17,101 +17,50 @@
 
 package org.apache.shardingsphere.shadow.condition;
 
+import lombok.Getter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Shadow determine condition.
  */
+@Getter
 public final class ShadowDetermineCondition {
     
-    private boolean sqlNotesInitialized;
-    
-    private boolean shadowColumnConditionsInitialized;
+    private final String tableName;
     
     private final ShadowOperationType shadowOperationType;
     
-    private final Collection<ShadowColumnCondition> shadowColumnConditions = new LinkedList<>();
+    private ShadowColumnCondition shadowColumnCondition;
     
-    private final Collection<String> sqlNotes = new LinkedList<>();
+    private final Collection<String> sqlComments = new LinkedList<>();
     
-    public ShadowDetermineCondition(final ShadowOperationType shadowOperationType) {
+    public ShadowDetermineCondition(final String tableName, final ShadowOperationType shadowOperationType) {
+        this.tableName = tableName;
         this.shadowOperationType = shadowOperationType;
-        sqlNotesInitialized = false;
-        shadowColumnConditionsInitialized = false;
     }
     
     /**
-     * Initialize SQL notes.
+     * Initialize SQL comments.
      *
-     * @param notes notes
+     * @param sqlComments SQL comments
+     * @return shadow determine condition
      */
-    public void initSqlNotes(final Collection<String> notes) {
-        if (sqlNotesInitialized) {
-            return;
-        }
-        sqlNotes.addAll(notes);
-        sqlNotesInitialized = true;
-    }
-    
-    /**
-     * Is SQL notes initialized.
-     *
-     * @return is initialized or not
-     */
-    public boolean isSqlNotesInitialized() {
-        return sqlNotesInitialized;
-    }
-    
-    /**
-     * Get SQL notes.
-     *
-     * @return SQL notes
-     */
-    public Optional<Collection<String>> getSqlNotes() {
-        return sqlNotes.isEmpty() ? Optional.empty() : Optional.of(sqlNotes);
+    public ShadowDetermineCondition initSQLComments(final Collection<String> sqlComments) {
+        this.sqlComments.addAll(sqlComments);
+        return this;
     }
     
     /**
      * Initialize shadow column condition.
      *
-     * @param shadowColumnConditions shadow column conditions
+     * @param shadowColumnCondition shadow column condition
+     * @return shadow determine condition
      */
-    public void initShadowColumnCondition(final Collection<ShadowColumnCondition> shadowColumnConditions) {
-        if (shadowColumnConditionsInitialized) {
-            return;
-        }
-        this.shadowColumnConditions.addAll(shadowColumnConditions);
-        shadowColumnConditionsInitialized = true;
-    }
-    
-    /**
-     * Is shadow column conditions initialized.
-     *
-     * @return is initialized or not
-     */
-    public boolean isShadowColumnConditionsInitialized() {
-        return shadowColumnConditionsInitialized;
-    }
-    
-    /**
-     * Get shadow column conditions.
-     *
-     * @return shadow column conditions
-     */
-    public Optional<Collection<ShadowColumnCondition>> getShadowColumnConditions() {
-        return shadowColumnConditions.isEmpty() ? Optional.empty() : Optional.of(shadowColumnConditions);
-    }
-    
-    /**
-     * Get shadow operation type.
-     *
-     * @return shadow operation type
-     */
-    public ShadowOperationType getShadowOperationType() {
-        return shadowOperationType;
+    public ShadowDetermineCondition initShadowColumnCondition(final ShadowColumnCondition shadowColumnCondition) {
+        this.shadowColumnCondition = shadowColumnCondition;
+        return this;
     }
 }

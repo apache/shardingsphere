@@ -1,7 +1,7 @@
 +++
-pre = "<b>8.1 </b>"
+pre = "<b>7.7. </b>"
 title = "测试"
-weight = 1
+weight = 7
 chapter = true
 +++
 

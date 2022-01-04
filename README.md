@@ -1,4 +1,4 @@
-# [ShardingSphere - Building a Criterion and Ecosystem Above Multi-Model Databases](https://shardingsphere.apache.org/)
+# [Building a Standard Layer & Ecosystem Above Heterogeneous Databases](https://shardingsphere.apache.org/)
 
 **Official Website:** [https://shardingsphere.apache.org/](https://shardingsphere.apache.org/)
 
@@ -10,6 +10,7 @@
 [![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
@@ -21,14 +22,14 @@
 
 # ShardingSphere Overview
 
-Apache ShardingSphere is positioned as a Database Plus, and aims at building a new criterion and ecosystem above multi-model databases. 
-It focuses on how to reuse existing databases and their respective upper layer, rather than creating a new database. 
+Apache ShardingSphere is positioned as a Database Plus, and aims at building a standard layer and ecosystem above heterogeneous databases. 
+It focuses on how to reuse existing databases and their respective upper layer, rather than creating a new database. The goal is to minimize or eliminate the challenges caused by underlying databases fragmentation.  
 
-The concepts at the core of the project are Link, Enhance and Pluggable.
+The concepts at the core of the project are Connect, Enhance and Pluggable.
 
-- `Link:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly link applications and multi-mode heterogeneous databases quickly.
+- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and heterogeneous databases.
 - `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
-- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
+- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibly. Developers can customize their ShardingSphere just like building with LEGO blocks.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
  
@@ -37,15 +38,15 @@ ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) T
 [![EN doc](https://img.shields.io/badge/document-English-blue.svg)](https://shardingsphere.apache.org/document/current/en/overview/)
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
 
-For full documentation & more details, visit: [https://shardingsphere.apache.org/document/current/en/overview/](https://shardingsphere.apache.org/document/current/en/overview/)
+For full documentation & more details, visit: [Docs](https://shardingsphere.apache.org/document/current/en/overview/)
 
 ## Contribution: 
 
-For guides on how to get started and setup your environment, contributor & committer guides, visit: [https://shardingsphere.apache.org/community/en/contribute/](https://shardingsphere.apache.org/community/en/contribute/)
+For guides on how to get started and setup your environment, contributor & committer guides, visit: [Contribution Guidelines](https://shardingsphere.apache.org/community/en/contribute/)
 
 ## Community & Support:
 
-:link: [Mailing List](dev@shardingsphere.apache.org). Best for: Apache community updates, releases, changes.
+:link: [Mailing List](https://shardingsphere.apache.org/community/en/contribute/subscribe/). Best for: Apache community updates, releases, changes.
 
 :link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). Best for: larger systemic questions/bug reports or anything development related.
 
@@ -57,13 +58,25 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ## Status:
 
-:white_check_mark: Version 5.0.0-beta: released, stable enough & anyone can sign up :tada:
+:white_check_mark: Version 5.0.0: released :tada:
 
-:soon: Version 5.0.0-RC1
+🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-We are currently working towards our 5.0.0-RC1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
-## How it Works: 
+:soon: Version 5.0.1
+
+We are currently working towards our 5.0.1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
+
+
+ ## Nightly Builds:
+
+ A nightly build of ShardingSphere from the latest master branch is available. The package is updated daily and is [available here](http://117.48.121.24:8080).
+
+ #### ‼️ Notice: 
+
+ Use this nightly build at your own risk! The branch is not always fully tested. The nightly build may contain bugs, and there may be new features added which may cause problems with your environment. 
+
+## How it Works:
 
 Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Planning). They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
 
@@ -72,9 +85,7 @@ Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Pl
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 A lightweight Java framework providing extra services at the Java JDBC layer. 
-With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence. 
-Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP. 
-Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
+With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
  
@@ -84,8 +95,7 @@ Supports any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQ
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
 
 A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBAs, the MySQL version now provided can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with the MySQL protocol to operate data.
-It can be used directly as MySQL and PostgreSQL servers, and is applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
+Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
 
@@ -100,17 +110,17 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ### Solution
 
-| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*              | *Stress Testing* |
-| -------------------- | ----------------------- | ---------------------| ------------------------------- | ---------------- |
-|                      | Data Sharding           | Data Encrypt         | Multi-model Databases Supported | Shadow Database  |
-|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)    | Observability    |
-|                      | Distributed Transaction | SQL Audit (TODO)     |                                 |                  |
-|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                 |                  |
-|                      | Highly Available        |                      |                                 |                  |
+| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*                | *Stress Testing* |
+| -------------------- | ----------------------- | ---------------------| --------------------------------- | ---------------- |
+|                      | Data Sharding           | Data Encrypt         | Heterogeneous Databases Supported | Shadow Database  |
+|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
+|                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
+|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
+|                      | Highly Available        |                      |                                   |                  |
 
 ### Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
 
 ## How to Build Apache ShardingSphere:
 

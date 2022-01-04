@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.facade;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryDistSQLLexer;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryDistSQLParser;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryDistSQLStatementVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;

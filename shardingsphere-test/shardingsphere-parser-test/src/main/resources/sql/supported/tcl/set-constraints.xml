@@ -18,6 +18,6 @@
 
 <sql-cases>
     <sql-case id="set_constraint_immediate" value="SET CONSTRAINT emp_job_nn IMMEDIATE" db-types="Oracle" />
-    <sql-case id="set_constraints_all_immediate" value="SET CONSTRAINTS ALL IMMEDIATE" db-types="Oracle,PostgreSQL" />
-    <sql-case id="set_constraints_deferred" value="SET CONSTRAINTS emp_job_nn, emp_salary_min DEFERRED" db-types="Oracle,PostgreSQL" />
+    <sql-case id="set_constraints_all_immediate" value="SET CONSTRAINTS ALL IMMEDIATE" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="set_constraints_deferred" value="SET CONSTRAINTS emp_job_nn, emp_salary_min DEFERRED" db-types="Oracle,PostgreSQL,openGauss" />
 </sql-cases>

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.parser;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 /**
  * ShardingSphere SQL parser engine.
@@ -36,8 +36,8 @@ public final class ShardingSphereSQLParserEngine {
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseTypeName, final ConfigurationProperties props) {
-        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName, props.getValue(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED));
+    public ShardingSphereSQLParserEngine(final String databaseTypeName, final SQLParserRule sqlParserRule) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName, sqlParserRule);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
@@ -70,7 +70,8 @@ public final class ShardingSphereSQLParserEngine {
             return sqlStatementParserEngine.parse(sql, useCache);
         } catch (final SQLParsingException | ParseCancellationException | UncheckedExecutionException originalEx) {
             try {
-                return distSQLStatementParserEngine.parse(sql);
+                String trimSQL = SQLUtil.trimComment(sql);
+                return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
                 throw originalEx;
             }

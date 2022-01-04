@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.singletable.route;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -78,12 +79,13 @@ public final class SingleTableRouteEngine {
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
-        if (isDDLTableStatement() || isAllTablesInSameDataSource(routeContext, rule)) {
+        if (isDDLTableStatement() || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             Collection<String> existSingleTables = rule.getSingleTableNames(singleTableNames);
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(rule, routeContext, existSingleTables);
             } else {
-                routeContext.getRouteUnits().add(getRandomRouteUnit(rule));
+                RouteUnit routeUnit = rule.getDefaultDataSource().isPresent() ? getDefaultRouteUnit(rule.getDefaultDataSource().get()) : getRandomRouteUnit(rule);
+                routeContext.getRouteUnits().add(routeUnit);
             }
         } else {
             decorateRouteContextForFederate(routeContext);
@@ -107,19 +109,6 @@ public final class SingleTableRouteEngine {
         return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
     }
     
-    private boolean isAllTablesInSameDataSource(final RouteContext routeContext, final SingleTableRule rule) {
-        if (!rule.isSingleTableInSameDataSource(singleTableNames)) {
-            return false;
-        }
-        SingleTableDataNode dataNode = rule.getSingleTableDataNodes().get(singleTableNames.iterator().next());
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {
         Collection<String> dataSourceNames = singleTableRule.getDataSourceNames();
         String dataSource = new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
@@ -127,13 +116,18 @@ public final class SingleTableRouteEngine {
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
     }
     
+    private RouteUnit getDefaultRouteUnit(final String dataSource) {
+        String table = singleTableNames.iterator().next();
+        return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
+    }
+    
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<String> logicTables) {
-        Map<String, SingleTableDataNode> singleTableDataNodes = singleTableRule.getSingleTableDataNodes();
         for (String each : logicTables) {
-            if (!singleTableDataNodes.containsKey(each)) {
+            Optional<DataNode> dataNode = singleTableRule.findSingleTableDataNode(each);
+            if (!dataNode.isPresent()) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
-            String dataSource = singleTableDataNodes.get(each).getDataSourceName();
+            String dataSource = dataNode.get().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(each, each)));
         }
     }

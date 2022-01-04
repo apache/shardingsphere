@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
@@ -30,8 +30,10 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -45,36 +47,42 @@ import java.util.Map;
 /**
  * COM_STMT_PREPARE command executor for MySQL.
  */
-@RequiredArgsConstructor
 public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
-    
-    private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
     private final MySQLComStmtPreparePacket packet;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
+    
+    private final int characterSet;
     
     private int currentSequenceId;
     
+    public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final ConnectionSession connectionSession) {
+        this.packet = packet;
+        this.connectionSession = connectionSession;
+        characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+    }
+    
     @Override
     public Collection<DatabasePacket<?>> execute() {
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType()),
+                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
         int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
-        int statementId = PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parameterCount);
+        int statementId = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionSession.getConnectionId()).prepareStatement(packet.getSql(), parameterCount);
         return createPackets(statementId, projectionCount, parameterCount);
     }
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-            String schemaName = backendConnection.getSchemaName();
+            String schemaName = connectionSession.getSchemaName();
             SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
             return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
@@ -96,7 +104,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < parameterCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, characterSet, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
@@ -105,7 +113,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < projectionCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

@@ -19,17 +19,17 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
@@ -46,11 +46,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +60,7 @@ public final class DropResourceBackendHandlerTest {
     private DropResourceStatement dropResourceStatement;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
     @Mock
     private ShardingSphereMetaData metaData;
@@ -80,19 +80,21 @@ public final class DropResourceBackendHandlerTest {
     @Mock
     private SingleTableRule singleTableRule;
     
+    private ContextManager contextManager;
+    
     private DropResourceBackendHandler dropResourceBackendHandler;
     
     @Before
     public void setUp() throws Exception {
-        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, backendConnection);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
         when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaData.getResource()).thenReturn(resource);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
+        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     
     @Test
@@ -101,9 +103,10 @@ public final class DropResourceBackendHandlerTest {
         Map<String, DataSource> dataSources = new HashMap<>(1, 1);
         dataSources.put("test0", dataSource);
         when(resource.getDataSources()).thenReturn(dataSources);
-        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", createDropResourceStatement());
+        DropResourceStatement dropResourceStatement = createDropResourceStatement();
+        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-        assertNull(resource.getDataSources().get("test0"));
+        verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
     @Test
@@ -151,9 +154,10 @@ public final class DropResourceBackendHandlerTest {
         when(dataNode.getDataSourceName()).thenReturn("test0");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
         when(resource.getDataSources()).thenReturn(getDataSourceMapForSupportRemove());
-        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", createDropResourceStatementIgnoreSingleTables());
+        DropResourceStatement dropResourceStatement = createDropResourceStatementIgnoreSingleTables();
+        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-        assertNull(resource.getDataSources().get("test0"));
+        verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
     private Map<String, DataSource> getDataSourceMapForSupportRemove() {

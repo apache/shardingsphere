@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -41,24 +43,34 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private final TransactionOperationType operationType;
     
     private final BackendTransactionManager backendTransactionManager;
+
+    private final ConnectionSession connectionSession;
     
-    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
+    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        this.connectionSession = connectionSession;
+        backendTransactionManager = new BackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
+                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
+                    backendTransactionManager.commit();
+                }
                 backendTransactionManager.begin();
                 break;
             case SAVEPOINT:
                 backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
                 break;
             case ROLLBACK_TO_SAVEPOINT:
-                backendTransactionManager.rollbackTo(((RollbackToSavepointStatement) tclStatement).getSavepointName());
+                if (((RollbackStatement) tclStatement).getSavepointName().isPresent()) {
+                    backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+                    break;
+                }
+                backendTransactionManager.rollback();
                 break;
             case RELEASE_SAVEPOINT:
                 backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());

@@ -69,4 +69,28 @@ public final class DataNodeTest {
     public void assertToString() {
         assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
     }
+
+    @Test(expected = ShardingSphereConfigurationException.class)
+    public void assertEmptyDataSourceDataNode() {
+        new DataNode(".tbl_0");
+    }
+
+    @Test(expected = ShardingSphereConfigurationException.class)
+    public void assertEmptyTableDataNode() {
+        new DataNode("ds_0.");
+    }
+    
+    @Test
+    public void assertFormat() {
+        String expected = "ds_0.tbl_0";
+        DataNode dataNode = new DataNode(expected);
+        assertThat(dataNode.format(), is(expected));
+    }
+    
+    @Test
+    public void assertFormattedTextLength() {
+        String text = "ds_0.tbl_0";
+        DataNode dataNode = new DataNode(text);
+        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
+    }
 }

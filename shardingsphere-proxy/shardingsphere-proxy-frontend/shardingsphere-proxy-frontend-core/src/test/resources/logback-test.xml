@@ -26,7 +26,7 @@
         <appender-ref ref="console" />
     </logger>
     <logger name="org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask" level="off" />
-    
+    <logger name="org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler" level="off" />
     <root>
         <level value="info" />
         <appender-ref ref="console" />

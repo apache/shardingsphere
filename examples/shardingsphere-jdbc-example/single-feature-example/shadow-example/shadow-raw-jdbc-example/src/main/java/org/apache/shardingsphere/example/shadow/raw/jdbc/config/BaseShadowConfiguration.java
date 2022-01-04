@@ -21,6 +21,8 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,15 +36,20 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     protected Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds", DataSourceUtil.createDataSource("ds"));
-        result.put("shadow-ds", DataSourceUtil.createDataSource("ds_shadow"));
+        result.put("ds_shadow", DataSourceUtil.createDataSource("ds_shadow"));
         return result;
     }
     
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        result.setProperty(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED.getKey(), "true");
         return result;
+    }
+    
+    protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
+        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, 4);
+        return new SQLParserRuleConfiguration(true, parseTreeCacheOption, sqlStatementCacheOption);
     }
     
     protected Collection<String> createShadowAlgorithmNames() {
@@ -50,7 +57,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         result.add("user-id-insert-match-algorithm");
         result.add("user-id-delete-match-algorithm");
         result.add("user-id-select-match-algorithm");
-        result.add("simple-note-algorithm");
+        result.add("simple-hint-algorithm");
         return result;
     }
     
@@ -59,22 +66,22 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         Properties userIdInsertProps = new Properties();
         userIdInsertProps.setProperty("operation", "insert");
         userIdInsertProps.setProperty("column", "user_type");
-        userIdInsertProps.setProperty("regex", "[1]");
-        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_REGEX_MATCH", userIdInsertProps));
+        userIdInsertProps.setProperty("value", "1");
+        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         Properties userIdDeleteProps = new Properties();
         userIdDeleteProps.setProperty("operation", "delete");
         userIdDeleteProps.setProperty("column", "user_type");
-        userIdDeleteProps.setProperty("regex", "[1]");
-        result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_REGEX_MATCH", userIdDeleteProps));
+        userIdDeleteProps.setProperty("value", "1");
+        result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
         Properties userIdSelectProps = new Properties();
         userIdSelectProps.setProperty("operation", "select");
         userIdSelectProps.setProperty("column", "user_type");
-        userIdSelectProps.setProperty("regex", "[1]");
-        result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("COLUMN_REGEX_MATCH", userIdSelectProps));
+        userIdSelectProps.setProperty("value", "1");
+        result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-note-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_NOTE", noteAlgorithmProps));
+        result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
 }

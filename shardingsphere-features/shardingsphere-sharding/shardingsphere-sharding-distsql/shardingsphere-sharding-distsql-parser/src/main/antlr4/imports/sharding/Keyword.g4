@@ -138,3 +138,51 @@ STATUS
 CLEAR
     : C L E A R
     ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+    
+DATABASE
+    : D A T A B A S E
+    ;
+
+SHARDING_ALGORITHM
+    : S H A R D I N G UL_ A L G O R I T H M
+    ;
+
+STRATEGY
+    : S T R A T E G Y
+    ;
+        
+DATANODES
+    : D A T A N O D E S
+    ;
+    
+DATABASE_STRATEGY
+    : D A T A B A S E UL_ S T R A T E G Y
+    ;
+    
+TABLE_STRATEGY
+    : T A B L E UL_ S T R A T E G Y
+    ;
+
+NODES
+    : N O D E S
+    ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATOR
+    : G E N E R A T O R
+    ;
+
+GENERATORS
+    : G E N E R A T O R S
+    ;
+
+GENERATED_KEY_ALGORITHM
+    : G E N E R A T E D UL_ K E Y UL_ A L G O R I T H M
+    ;

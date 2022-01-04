@@ -24,5 +24,5 @@
         <column name="db" />
         <column name="attribute" />
     </metadata>
-    <row values="encrypt| PostgreSQL| postgresql.encrypt.host| 5432| encrypt| &#123;&quot;maxLifetimeMilliseconds&quot;&#58;1800000&#44;&quot;readOnly&quot;&#58;false&#44;&quot;minPoolSize&quot;&#58;2&#44;&quot;idleTimeoutMilliseconds&quot;&#58;60000&#44;&quot;maxPoolSize&quot;&#58;2&#44;&quot;connectionTimeoutMilliseconds&quot;&#58;30000&#125;" />
+    <row values="encrypt| PostgreSQL| postgresql.encrypt.host| 5432| encrypt| &#123;&quot;connectionTimeoutMilliseconds&quot;&#58;30000&#44;&quot;idleTimeoutMilliseconds&quot;&#58;60000&#44;&quot;maxLifetimeMilliseconds&quot;&#58;1800000&#44;&quot;maxPoolSize&quot;&#58;2&#44;&quot;minPoolSize&quot;&#58;2&#44;&quot;readOnly&quot;&#58;false&#125;" />
 </dataset>

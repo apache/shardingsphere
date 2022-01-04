@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shadow-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>shadow-raw-jdbc-example</artifactId>
     <name>${project.artifactId}</name>
@@ -32,11 +32,15 @@
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
             <artifactId>example-raw-jdbc</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-core</artifactId>
         </dependency>
     </dependencies>
 </project>

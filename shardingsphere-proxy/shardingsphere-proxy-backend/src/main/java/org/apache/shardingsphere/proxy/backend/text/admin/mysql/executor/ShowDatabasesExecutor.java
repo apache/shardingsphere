@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -50,14 +50,14 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
-        mergedResult = new SingleLocalDataMergedResult(getSchemaNames(backendConnection));
+    public void execute(final ConnectionSession connectionSession) {
+        mergedResult = new SingleLocalDataMergedResult(getSchemaNames(connectionSession));
     }
     
-    private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
+    private Collection<Object> getSchemaNames(final ConnectionSession connectionSession) {
         Collection<Object> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), backendConnection.getGrantee())) {
+            if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
                 result.add(each);
             }
         }
@@ -65,8 +65,11 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private boolean checkLikePattern(final String schemaName) {
-        Optional<String> pattern = showDatabasesStatement.getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
-        return !pattern.isPresent() || schemaName.matches(pattern.get());
+        if (showDatabasesStatement.getFilter().isPresent()) {
+            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
+            return !pattern.isPresent() || schemaName.matches(pattern.get());
+        }
+        return true;
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {

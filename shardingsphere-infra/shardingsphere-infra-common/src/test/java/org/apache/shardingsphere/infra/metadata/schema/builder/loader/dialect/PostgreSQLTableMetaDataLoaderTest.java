@@ -37,6 +37,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.startsWith;
 
 public final class PostgreSQLTableMetaDataLoaderTest {
     
@@ -52,6 +53,8 @@ public final class PostgreSQLTableMetaDataLoaderTest {
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
+    private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
+
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
@@ -66,6 +69,8 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
@@ -78,7 +83,16 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
+        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
+        when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+    }
+    
+    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_name")).thenReturn("tbl");
+        return result;
     }
     
     private DataSource mockDataSource() throws SQLException {

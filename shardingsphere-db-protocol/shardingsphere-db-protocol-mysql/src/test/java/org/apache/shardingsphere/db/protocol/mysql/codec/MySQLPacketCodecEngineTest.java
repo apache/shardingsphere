@@ -19,13 +19,18 @@ package org.apache.shardingsphere.db.protocol.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,11 +48,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLPacketCodecEngineTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
     
     @Mock
     private ByteBuf byteBuf;
+    
+    @Before
+    public void setup() {
+        when(context.channel().attr(AttributeKey.<Charset>valueOf(Charset.class.getName())).get()).thenReturn(StandardCharsets.UTF_8);
+    }
     
     @Test
     public void assertIsValidHeader() {
@@ -123,6 +133,6 @@ public final class MySQLPacketCodecEngineTest {
     
     @Test
     public void assertCreatePacketPayload() {
-        assertThat(new MySQLPacketCodecEngine().createPacketPayload(byteBuf).getByteBuf(), is(byteBuf));
+        assertThat(new MySQLPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
     }
 }

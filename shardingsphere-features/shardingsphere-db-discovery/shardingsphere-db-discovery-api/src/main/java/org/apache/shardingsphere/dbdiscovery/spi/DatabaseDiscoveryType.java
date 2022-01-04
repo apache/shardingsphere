@@ -34,7 +34,7 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      *
      * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     void checkDatabaseDiscoveryConfiguration(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
@@ -44,10 +44,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @param schemaName schema name
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
-     * @param primaryDataSourceName primary data source name
      * @param groupName group name
      */
-    void updatePrimaryDataSource(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName, String primaryDataSourceName);
+    void updatePrimaryDataSource(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
     
     /**
      * Update member state.
@@ -57,17 +56,6 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @param disabledDataSourceNames disabled data source names
      */
     void updateMemberState(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames);
-    
-    /**
-     * Start periodical update.
-     *
-     * @param dataSourceMap data source map
-     * @param schemaName schema name
-     * @param disabledDataSourceNames disabled data source names
-     * @param primaryDataSourceName primary data source name
-     * @param groupName group name
-     */
-    void startPeriodicalUpdate(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName, String primaryDataSourceName);
     
     /**
      * Get primary data source.

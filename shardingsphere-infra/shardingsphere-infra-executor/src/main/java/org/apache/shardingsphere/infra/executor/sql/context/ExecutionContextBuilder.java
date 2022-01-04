@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -74,7 +75,11 @@ public final class ExecutionContextBuilder {
         if (null == tableMappers) {
             return Collections.emptyList();
         }
-        return tableMappers.stream().map(routeMapper -> new RouteMapper(routeMapper.getLogicName(), routeMapper.getActualName())).collect(Collectors.toList());
+        List<RouteMapper> result = new ArrayList<>(tableMappers.size());
+        for (RouteMapper each : tableMappers) {
+            result.add(new RouteMapper(each.getLogicName(), each.getActualName()));
+        }
+        return result;
     }
     
     private static List<RouteMapper> getGenericTableRouteMappers(final SQLStatementContext<?> sqlStatementContext) {

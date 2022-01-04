@@ -1,4 +1,4 @@
-## 5.0.0-RC1
+## 5.0.0
 
 ### New feature
 
@@ -9,14 +9,23 @@
 1. New DistSQL syntax: disable readwrite-splitting read data source
 1. New DistSQL syntax: `DROP SHARDING ALGORITHM`
 1. New DistSQL syntax: `ALTER RESOURCE`
+1. New DistSQL syntax: `CREATE SHARDING ALGORITHM`
+1. New DistSQL syntax: `CREATE DEFAULT SHARDING [TABLE | DATABASE] STRATEGY`
+1. New DistSQL syntax: `SHOW ALL VARIABLE`
+1. New DistSQL syntax：`SHOW VARIABLE variableName;`
 1. Support `3` modes, including Memory, Standalone and Cluster mode
 1. Proxy supports for openGauss
+1. Scaling: Add basic support for openGauss
+1. Scaling: Add incremental task completion detect algorithm SPI interface
+1. Scaling: Add data consistency check algorithm SPI interface
+1. Scaling: Basic support of create table on target automatically for MySQL and openGauss
+1. Scaling: Support auto switch cluster configuration when job finished
+1. Scaling: Add more DistSQL support such as data consistency check, etc
 
 ### API Change
 
 1. Add schema name configuration for ShardingSphere-JDBC
 1. Add default sharding column configuration
-1. Add readwrite-splitting configuration item `queryConsistent`, and change the default value of consistent routing to `false`
 1. Change the default authority provider from `NATIVE` to `ALL_PRIVILEGES_PERMITTED`
 1. SCTL syntax adjustment, merged with DistSQL RAL syntax
 1. `SHOW RESOURCES` DistSQL is adjusted to `SHOW SCHEMA RESOURCES`
@@ -39,9 +48,14 @@
 1. Support the use of DistSQL to create sharding table rule based on readwrite-splitting rules
 1. `SHOW DATABASES` statement supports like syntax
 1. `CREATE SHARDING TABLE RULE` supports the use of inline expressions to specify resources
+1. `CREATE SHARDING TABLE RULE` supports configuration using `dataNodes`
+1. `CREATE SHARDING TABLE RULE` supports reuse of existing algorithms
+1. `SET VARIABLE`, support to modify proxy configuration   
 1. PostgreSQL's protocol enhancements (Such as supports Portal, unspecified type)
 1. Using Netty executor to optimize Proxy performance in specified scenarios
 1. Make memory strictly fetch size configurable in Proxy
+1. Scaling: Improve support for PostgreSQL
+1. Scaling: Support concurrent data consistency check of source and target side
 
 ### Refactor
 
@@ -49,6 +63,9 @@
 1. Adjust the persistent data structure of the registry center state node
 1. Remove the SQL rewrite of DML for Shadow
 1. Support the SQL routing of DDL for Shadow
+1. Scaling: Refactor default implementation of incremental task completion detect algorithm
+1. Scaling: Refactor default implementation of data consistency check algorithm
+1. Scaling: Remove HTTP API and binary distribution
 
 ### Bug Fix
 
@@ -66,10 +83,11 @@
 1. Fix Etcd can not send node added event
 1. Fix PostgreSQL rows contains null value may be missing in query result
 1. Fix PostgreSQL metadata columns are out-of-order
+1. Fix client character set may be incorrect in Proxy
 
 ### Change Log
 
-1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/15)
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/16)
 
 ## 5.0.0-beta
 

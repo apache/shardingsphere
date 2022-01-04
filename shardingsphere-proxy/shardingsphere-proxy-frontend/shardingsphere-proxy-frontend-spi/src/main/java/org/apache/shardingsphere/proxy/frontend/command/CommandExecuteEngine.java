@@ -22,7 +22,8 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 
@@ -47,39 +48,47 @@ public interface CommandExecuteEngine {
      *
      * @param payload packet payload
      * @param type command packet type
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return command packet
      * @throws SQLException SQL exception
      */
-    CommandPacket getCommandPacket(PacketPayload payload, CommandPacketType type, BackendConnection backendConnection) throws SQLException;
+    CommandPacket getCommandPacket(PacketPayload payload, CommandPacketType type, ConnectionSession connectionSession) throws SQLException;
     
     /**
      * Get command executor.
      *
      * @param type command packet type
      * @param packet command packet
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return command executor
      * @throws SQLException SQL exception
      */
-    CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, BackendConnection backendConnection) throws SQLException;
+    CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, ConnectionSession connectionSession) throws SQLException;
     
     /**
      * Get error packet.
      *
      * @param cause cause of error
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return error packet
      */
-    DatabasePacket<?> getErrorPacket(Exception cause, BackendConnection backendConnection);
+    DatabasePacket<?> getErrorPacket(Exception cause, ConnectionSession connectionSession);
+    
+    /**
+     * Get error packet.
+     *
+     * @param cause cause of error
+     * @return error packet
+     */
+    DatabasePacket<?> getErrorPacket(Exception cause);
     
     /**
      * Get other packet.
      *
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return other packet
      */
-    Optional<DatabasePacket<?>> getOtherPacket(BackendConnection backendConnection);
+    Optional<DatabasePacket<?>> getOtherPacket(ConnectionSession connectionSession);
     
     /**
      * Write query data.

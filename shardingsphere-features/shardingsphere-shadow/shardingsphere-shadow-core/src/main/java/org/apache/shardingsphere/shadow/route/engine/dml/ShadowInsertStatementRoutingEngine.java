@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -40,52 +39,70 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     private final InsertStatementContext insertStatementContext;
     
     @Override
-    protected Optional<Collection<ShadowColumnCondition>> parseShadowColumnConditions() {
-        Collection<ShadowColumnCondition> result = new LinkedList<>();
-        Collection<String> columnNames = parseColumnNames();
-        Iterator<String> columnNamesIt = columnNames.iterator();
-        List<InsertValueContext> insertValueContexts = insertStatementContext.getInsertValueContexts();
-        int index = 0;
-        while (columnNamesIt.hasNext()) {
-            String columnName = columnNamesIt.next();
-            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
-            columnValues.ifPresent(values -> result.add(new ShadowColumnCondition(getSingleTableName(), columnName, values)));
-            index++;
-        }
+    protected Collection<SimpleTableSegment> getAllTables() {
+        return insertStatementContext.getAllTables();
+    }
+    
+    @Override
+    protected ShadowOperationType getShadowOperationType() {
+        return ShadowOperationType.INSERT;
+    }
+    
+    @Override
+    protected Optional<Collection<String>> parseSQLComments() {
+        Collection<String> result = new LinkedList<>();
+        insertStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
-        Collection<Comparable<?>> result = new LinkedList<>();
-        for (InsertValueContext each : insertValueContexts) {
-            Object valueObject = each.getValue(index);
-            if (valueObject instanceof Comparable<?>) {
-                result.add((Comparable<?>) valueObject);
-            } else {
-                return Optional.empty();
-            }
-        }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    @Override
+    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
+        return new ShadowColumnConditionIterator(parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
     }
     
     private Collection<String> parseColumnNames() {
         return insertStatementContext.getInsertColumnNames();
     }
     
-    @Override
-    protected ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition(ShadowOperationType.INSERT);
+    private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
+        
+        private int index;
+        
+        private final Iterator<String> iterator;
+        
+        private final List<InsertValueContext> insertValueContexts;
+        
+        ShadowColumnConditionIterator(final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
+            this.iterator = iterator;
+            this.insertValueContexts = insertValueContexts;
+            this.index = 0;
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+        
+        @Override
+        public Optional<ShadowColumnCondition> next() {
+            String columnName = iterator.next();
+            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
+            index++;
+            return columnValues.map(values -> new ShadowColumnCondition(getSingleTableName(), columnName, values));
+        }
+    
+        private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
+            Collection<Comparable<?>> result = new LinkedList<>();
+            for (InsertValueContext each : insertValueContexts) {
+                Object valueObject = each.getValue(index);
+                if (valueObject instanceof Comparable<?>) {
+                    result.add((Comparable<?>) valueObject);
+                } else {
+                    return Optional.empty();
+                }
+            }
+            return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        }
     }
     
-    @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return insertStatementContext.getAllTables();
-    }
-    
-    @Override
-    protected Optional<Collection<String>> parseSqlNotes() {
-        Collection<String> result = new LinkedList<>();
-        insertStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
 }

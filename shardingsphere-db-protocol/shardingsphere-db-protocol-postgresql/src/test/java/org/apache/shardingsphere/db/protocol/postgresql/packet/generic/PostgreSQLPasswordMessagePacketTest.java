@@ -24,6 +24,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -34,12 +36,12 @@ public final class PostgreSQLPasswordMessagePacketTest {
         String md5Digest = "ce98bac7fc97f20584ea9536e744dabb";
         int expectedLength = 4 + md5Digest.length() + 1;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         payload.writeInt4(expectedLength);
         payload.writeStringNul(md5Digest);
         PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PASSWORD_MESSAGE));
-        assertThat(packet.getMd5Digest(), is(md5Digest));
+        assertThat(packet.getDigest(), is(md5Digest));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
     }

@@ -19,20 +19,20 @@ package org.apache.shardingsphere.sharding.rewrite.fixture;
 
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm {
+public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
     public void init() {
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
+    public String encrypt(final Object plainValue) {
+        return "encrypt_" + plainValue;
     }
     
     @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
+    public Object decrypt(final String cipherValue) {
+        return cipherValue.replaceAll("encrypt_", "");
     }
     
     @Override

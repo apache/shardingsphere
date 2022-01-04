@@ -47,14 +47,13 @@ public final class ShadowAlgorithmQueryResultSetTest {
         DistSQLResultSet resultSet = new ShadowAlgorithmQueryResultSet();
         resultSet.init(metaData, mock(ShowShadowAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
+        assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadowAlgorithmName"));
         assertThat(actual.get(1), is("simple_note"));
         assertThat(actual.get(2), is("foo=bar"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");

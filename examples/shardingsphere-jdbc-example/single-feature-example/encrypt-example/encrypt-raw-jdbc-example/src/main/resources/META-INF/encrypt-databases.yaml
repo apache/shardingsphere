@@ -28,16 +28,16 @@ rules:
   tables:
     t_user:
       columns:
-        user_name:
-          plainColumn: user_name_plain
-          cipherColumn: user_name
-          encryptorName: name_encryptor
+        username:
+          plainColumn: username_plain
+          cipherColumn: username
+          encryptorName: name-encryptor
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
           encryptorName: pwd_encryptor
   encryptors:
-    name_encryptor:
+    name-encryptor:
       type: AES
       props:
         aes-key-value: 123456abc

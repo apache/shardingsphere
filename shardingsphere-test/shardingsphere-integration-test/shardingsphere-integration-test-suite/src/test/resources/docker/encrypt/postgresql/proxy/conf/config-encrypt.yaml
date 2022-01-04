@@ -19,7 +19,7 @@ schemaName: encrypt
 
 dataSources:
   encrypt:
-    url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt?serverTimezone=UTC&useSSL=false
+    url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt
     username: root
     password: root
     connectionTimeoutMilliseconds: 30000

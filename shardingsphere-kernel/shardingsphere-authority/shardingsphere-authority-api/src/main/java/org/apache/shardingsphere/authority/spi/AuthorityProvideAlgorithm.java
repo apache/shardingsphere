@@ -35,18 +35,18 @@ public interface AuthorityProvideAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Initialize authority.
      * 
-     * @param mataDataMap mata data map
+     * @param metaDataMap meta data map
      * @param users users
      */
-    void init(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    void init(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
     
     /**
      * Refresh authority.
      *
-     * @param mataDataMap mata data map
+     * @param metaDataMap meta data map
      * @param users users
      */
-    void refresh(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    void refresh(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
     
     /**
      * Find Privileges.

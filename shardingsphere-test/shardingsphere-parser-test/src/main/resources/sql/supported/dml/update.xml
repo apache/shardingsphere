@@ -19,8 +19,8 @@
 <sql-cases>
     <sql-case id="update_without_alias" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" />
     <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2" />
-    <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL" />
-    <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL" />
+    <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" />
     <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL" />
@@ -32,7 +32,7 @@
     <sql-case id="update_with_case_when" value="update stock_freeze_detail set row_status=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end,
     update_user=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end, update_time=case WHEN (id=?) THEN ? end where  tenant_id = ?" db-types="MySQL"/>
     <sql-case id="update_with_order_by_row_count" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ? ORDER BY order_id LIMIT ?" db-types="MySQL"/>
-    <sql-case id="update_with_number" value="UPDATE t_order SET order_id = ? WHERE user_id = ?" db-types="PostgreSQL" />
+    <sql-case id="update_with_number" value="UPDATE t_order SET order_id = ? WHERE user_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_with_with_clause" value="WITH cte (order_id, user_id, status) AS (SELECT order_id, user_id, status FROM t_order) UPDATE t_order SET status = ? FROM t_order AS t JOIN cte AS c ON t.order_id = c.order_id WHERE c.order_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top" value="UPDATE TOP(10) t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top_percent" value="UPDATE TOP(10) PERCENT t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />

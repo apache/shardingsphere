@@ -29,4 +29,8 @@ public final class RequiredResourceMissedException extends ResourceDefinitionVio
     public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
         super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
     }
+    
+    public RequiredResourceMissedException(final String schemaName) {
+        super(1102, String.format("There are no resources in the schema %s.", schemaName));
+    }
 }

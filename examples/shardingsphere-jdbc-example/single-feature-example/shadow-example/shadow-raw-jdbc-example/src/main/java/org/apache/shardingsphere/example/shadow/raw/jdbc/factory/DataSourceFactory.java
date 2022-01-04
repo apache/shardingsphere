@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.shadow.raw.jdbc.factory;
 
 
 import org.apache.shardingsphere.example.shadow.raw.jdbc.config.ShadowConfiguration;
+import org.apache.shardingsphere.example.shadow.raw.jdbc.config.ShadowDefaultAlgorithmConfiguration;
 import org.apache.shardingsphere.example.shadow.raw.jdbc.config.ShadowEncryptConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -31,6 +32,8 @@ public final class DataSourceFactory {
         switch (shardingType) {
             case SHADOW:
                 return new ShadowConfiguration().getDataSource();
+            case SHADOW_DEFAULT_ALGORITHM:
+                return new ShadowDefaultAlgorithmConfiguration().getDataSource();
             case ENCRYPT_SHADOW:
                 return new ShadowEncryptConfiguration().getDataSource();
             default:

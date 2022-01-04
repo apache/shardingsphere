@@ -21,6 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -29,17 +30,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementCacheBuilder {
-    
+
     /**
      * Build SQL statement cache.
      *
-     * @param option cache option
+     * @param sqlParserRule sql parser rule
      * @param databaseType database type
-     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType, final boolean sqlCommentParseEnabled) {
-        return CacheBuilder.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize())
-                .concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, sqlCommentParseEnabled));
+    public static LoadingCache<String, SQLStatement> build(final SQLParserRule sqlParserRule, final String databaseType) {
+        CacheOption sqlStatementCache = sqlParserRule.getSqlStatementCache();
+        return CacheBuilder.newBuilder().softValues().initialCapacity(sqlStatementCache.getInitialCapacity()).maximumSize(sqlStatementCache.getMaximumSize())
+                .concurrencyLevel(sqlStatementCache.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, sqlParserRule));
     }
 }

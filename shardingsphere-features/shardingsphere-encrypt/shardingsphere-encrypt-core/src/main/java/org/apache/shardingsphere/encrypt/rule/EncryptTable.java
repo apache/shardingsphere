@@ -36,11 +36,14 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
+    private final Boolean queryWithCipherColumn;
+    
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
         }
+        queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
     
     /**
@@ -154,5 +157,14 @@ public final class EncryptTable {
      */
     public Map<String, String> getLogicAndCipherColumns() {
         return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
+    }
+    
+    /**
+     * Get query with cipher column.
+     * 
+     * @return query with cipher column
+     */
+    public Optional<Boolean> getQueryWithCipherColumn() {
+        return Optional.ofNullable(queryWithCipherColumn);
     }
 }

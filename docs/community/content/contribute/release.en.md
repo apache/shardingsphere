@@ -4,6 +4,47 @@ weight = 8
 chapter = true
 +++
 
+##Prepare
+
+**1. Confirm release notes**
+
+The release note should be provided in Chinese / English， confirm whether the Chinese description is clear and whether the English translation is accurate, 
+and shall be classified according to the following labels:
+
+1. New Feature
+1. API Change
+1. Enhancement
+1. Refactor
+1. Bug Fix
+
+**2. Confirm issue list**
+
+Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${release. Version}` and status is open:
+
+1. Close the completed issue
+1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
+1. Confirm that there is no issue in open status under milestone of release version
+
+**3. Confirm pull request list**
+
+Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${release. Version}` and status is open:
+
+1. Review the open pull request and merge 
+1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
+1. Confirm that there is no open pull request under milestone of release version
+
+**4. Close milestone**
+
+Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
+
+1. Confirm that the milestone completion status of `${release. Version}` is 100%
+1. Click `close` to close milestone
+
+**5. Call for a discussion**
+
+1. Send email to` dev@shardingsphere.apache.org `, describe or link the release note in the message body
+1. Follow the mailing list and confirm that the community developers have no questions about the release note
+
 ## GPG Settings
 
 **1. Install GPG**
@@ -124,17 +165,7 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-**2. Update Release Notes And Example Version**
-
-Update the following file in master branch, and submit a PR to master branch:
-
-```
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
-```
-
-Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
-
-**3. Create Release Branch**
+**2. Create Release Branch**
 
 Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
@@ -147,6 +178,16 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
+
+**3. Update Release Notes And Example Version**
+
+Update the following file in release branch, and submit a PR to release branch:
+
+```
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
+```
+
+Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
 
 **4. Pre-Release Check**
 
@@ -237,7 +278,7 @@ Add source code packages, binary packages and executable binary packages of Shar
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 **4. Commit to Apache SVN**
@@ -286,7 +327,7 @@ Then, check the gpg signature.
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
 ```
 
 **Check Released Files**
@@ -312,8 +353,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **Check binary packages**
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz` and
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz`
+Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
@@ -455,8 +495,6 @@ git branch -d ${RELEASE.VERSION}-release
 
 Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
-
 **5. Docker Release**
 
 5.1 Preparation
@@ -476,16 +514,16 @@ mvn clean package -Prelease,docker
 Check the image ID through `docker images`, for example: e9ea51023687
 
 ```shell
-docker tag e9ea51023687 apache/sharding-proxy:latest
-docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
+docker tag e9ea51023687 apache/shardingsphere-proxy:latest
+docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
 ```
 
 5.4 Publish Docker Image
 
 ```shell
 docker login
-docker push apache/sharding-proxy:latest
-docker push apache/sharding-proxy:${RELEASE_VERSION}
+docker push apache/shardingsphere-proxy:latest
+docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
 ```
 
 5.5 Confirm the successful release
@@ -508,11 +546,34 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-**8. Announce release completed by email**
+**8. Upload xsd files of Spring namespace to official website**
+
+Submit a pull request to upload the xsd files of Spring namespace to https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
+
+The list of files to be uploaded is as follows:
+
+- datasource.xsd
+- datasource-${RELEASE.VERSION}.xsd
+- mode/standalone/repository.xsd
+- mode/standalone/repository-${RELEASE.VERSION}.xsd
+- mode/cluster/repository.xsd
+- mode/cluster/repository-${RELEASE.VERSION}.xsd
+- sharding.xsd
+- sharding-${RELEASE.VERSION}.xsd
+- encrypt.xsd
+- encrypt-${RELEASE.VERSION}.xsd
+- readwrite-splitting.xsd
+- readwrite-splitting-${RELEASE.VERSION}.xsd
+- shadow.xsd
+- shadow-${RELEASE.VERSION}.xsd
+- database-discovery.xsd
+- database-discovery-${RELEASE.VERSION}.xsd
+
+**9. Announce release completed by email**
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
-Announcement e-mail template:
+Announcement e-mail template(Plain text mode):
 
 Title:
 
@@ -527,11 +588,10 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisting of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
-They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share.
-Therefore, we prefer to focus on its increment instead of a total overturn.
+Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
+They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database. 
+As the cornerstone of enterprises, relational database still takes a huge market share. Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 

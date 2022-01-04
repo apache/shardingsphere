@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
@@ -52,11 +53,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTablespaceStatement;
@@ -84,7 +83,7 @@ public enum PostgreSQLCommand {
     CALL(CallStatement.class),
     DO(DoStatement.class),
     ANALYZE(AnalyzeTableStatement.class),
-    VACUUM(PostgreSQLVacuumStatement.class),
+    VACUUM(VacuumStatement.class),
     ALTER_FUNCTION(AlterFunctionStatement.class),
     ALTER_INDEX(AlterIndexStatement.class),
     ALTER_PROCEDURE(AlterProcedureStatement.class),
@@ -114,7 +113,7 @@ public enum PostgreSQLCommand {
     START_TRANSACTION(PostgreSQLStartTransactionStatement.class),
     COMMIT(CommitStatement.class),
     SAVEPOINT(SavepointStatement.class),
-    ROLLBACK(RollbackStatement.class, RollbackToSavepointStatement.class),
+    ROLLBACK(RollbackStatement.class),
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
     RESET(PostgreSQLResetParameterStatement.class);
@@ -138,7 +137,22 @@ public enum PostgreSQLCommand {
      * @return PostgreSQL command
      */
     public static Optional<PostgreSQLCommand> valueOf(final Class<? extends SQLStatement> sqlStatementClass) {
-        return COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
+        return getPostgreSQLCommand(sqlStatementClass);
+    }
+    
+    /**
+     * Refer to https://bugs.openjdk.java.net/browse/JDK-8161372. 
+     * 
+     * @param sqlStatementClass sql statement class
+     * @return optional PostgreSQLCommand
+     */
+    @SuppressWarnings("OptionalAssignedToNull")
+    private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
+        Optional<PostgreSQLCommand> result;
+        if (null == (result = COMPUTED_CLASSES.get(sqlStatementClass))) {
+            result = COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
+        }
+        return result;
     }
     
     private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {

@@ -32,17 +32,17 @@ public final class AlgorithmProvidedShadowRuleConfigurationChecker extends Abstr
     
     @Override
     protected void checkShadowRuleConfiguration(final AlgorithmProvidedShadowRuleConfiguration config) {
-        if (config.isEnable()) {
-            Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
-            Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
-            Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
-            sizeCheck(dataSources, shadowTables);
-            shadowAlgorithmsSizeCheck(shadowAlgorithms);
-            shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
-            shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
-            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet());
-            shadowTableAlgorithmsReferencesCheck(shadowTables);
-        }
+        Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+        Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
+        Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
+        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+        sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
+        shadowAlgorithmsSizeCheck(shadowAlgorithms);
+        shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
+        shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+        defaultShadowAlgorithmCheck(defaultShadowAlgorithmName, shadowAlgorithms);
+        shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet(), defaultShadowAlgorithmName);
+        shadowTableAlgorithmsReferencesCheck(shadowTables);
     }
     
     @Override

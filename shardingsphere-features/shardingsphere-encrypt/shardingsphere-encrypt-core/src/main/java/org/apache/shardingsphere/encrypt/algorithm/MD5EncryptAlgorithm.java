@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
+public final class MD5EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private Properties props = new Properties();
     
@@ -38,16 +38,16 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
-        if (null == plaintext) {
+    public String encrypt(final Object plainValue) {
+        if (null == plainValue) {
             return null;
         }
-        return DigestUtils.md5Hex(String.valueOf(plaintext));
+        return DigestUtils.md5Hex(String.valueOf(plainValue));
     }
     
     @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext;
+    public Object decrypt(final String cipherValue) {
+        return cipherValue;
     }
     
     @Override

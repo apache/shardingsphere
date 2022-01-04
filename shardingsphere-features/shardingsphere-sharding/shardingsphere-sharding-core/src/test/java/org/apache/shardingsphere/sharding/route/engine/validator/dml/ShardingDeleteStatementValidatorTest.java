@@ -53,31 +53,31 @@ public final class ShardingDeleteStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForMySQL() {
-        assertValidateDeleteModifyMultiTables(new MySQLDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForMySQL() {
+        assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForOracle() {
-        assertValidateDeleteModifyMultiTables(new OracleDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForOracle() {
+        assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForPostgreSQL() {
-        assertValidateDeleteModifyMultiTables(new PostgreSQLDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
+        assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForSQL92() {
-        assertValidateDeleteModifyMultiTables(new SQL92DeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForSQL92() {
+        assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForSQLServer() {
-        assertValidateDeleteModifyMultiTables(new SQLServerDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
+        assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement());
     }
     
-    private void assertValidateDeleteModifyMultiTables(final DeleteStatement sqlStatement) {
+    private void assertPreValidateWhenDeleteMultiTables(final DeleteStatement sqlStatement) {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));

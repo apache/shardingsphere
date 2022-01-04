@@ -21,12 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -46,9 +48,13 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment renameTable;
     
+    private ConvertTableDefinitionSegment convertTableDefinition;
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
+    
+    private final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions = new LinkedList<>();
     
     private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
     
@@ -68,4 +74,14 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     public Optional<SimpleTableSegment> getRenameTable() {
         return Optional.ofNullable(renameTable);
     }
+    
+    /**
+     * Get convert table definition.
+     *
+     * @return convert table definition
+     */
+    public Optional<ConvertTableDefinitionSegment> getConvertTableDefinition() {
+        return Optional.ofNullable(convertTableDefinition);
+    }
+    
 }

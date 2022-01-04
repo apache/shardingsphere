@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.parser.sqlserver.statement;
 
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
@@ -53,7 +54,8 @@ public final class SQLServerParserStatementExample {
     
     public static void main(String[] args) {
         SQLSERVER_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", false);
+            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", new Properties());
             SQLServerStatement sqlStatement = visitorEngine.visit(parseContext);

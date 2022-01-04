@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -37,9 +40,6 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -66,8 +66,8 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         initContext(yamlConfig, modeConfig, port);
+        initRuleAlteredJobWorker(modeConfig);
         setDatabaseServerInfo();
-        initScaling(yamlConfig, modeConfig);
     }
     
     private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
@@ -75,7 +75,7 @@ public final class BootstrapInitializer {
         boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
         Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
         ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap,
-                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite, port);
+                proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps(), isOverwrite, port, null);
         ProxyContext.getInstance().init(contextManager);
     }
     
@@ -83,12 +83,27 @@ public final class BootstrapInitializer {
     private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
         for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
+            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
     }
     
+    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+        if (null == modeConfig) {
+            return;
+        }
+        // TODO decouple "Cluster" to pluggable
+        if (!"Cluster".equals(modeConfig.getType())) {
+            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
+            return;
+        }
+        RuleAlteredContext.initModeConfig(modeConfig);
+        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
+        RuleAlteredJobWorker.initWorkerIfNecessary();
+    }
+    
     private void setDatabaseServerInfo() {
+        CommonConstants.PROXY_VERSION.set(getShardingSphereVersion());
         findBackendDataSource().ifPresent(dataSourceSample -> {
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
             log.info(databaseServerInfo.toString());
@@ -104,43 +119,19 @@ public final class BootstrapInitializer {
         });
     }
     
+    private String getShardingSphereVersion() {
+        String result = ShardingSphereVersion.VERSION;
+        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
+            return result;
+        }
+        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
+        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
+        return result;
+    }
+    
     private Optional<DataSource> findBackendDataSource() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<ShardingSphereMetaData> metaData = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
         return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
-    }
-    
-    private void initScaling(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig) {
-        Optional<ServerConfiguration> scalingConfig = findScalingConfiguration(yamlConfig);
-        if (!scalingConfig.isPresent()) {
-            return;
-        }
-        // TODO decouple "Cluster" to pluggable
-        if (null != modeConfig && "Cluster".equals(modeConfig.getType())) {
-            scalingConfig.get().setModeConfiguration(modeConfig);
-            ScalingContext.getInstance().init(scalingConfig.get());
-            ScalingWorker.init(); 
-        } else {
-            ScalingContext.getInstance().init(scalingConfig.get());
-        }
-    }
-    
-    private Optional<ServerConfiguration> findScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
-        if (null == yamlConfig.getServerConfiguration().getScaling()) {
-            return Optional.empty();
-        }
-        
-        ServerConfiguration result = new ServerConfiguration();
-        result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
-        result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
-        YamlShardingSphereAlgorithmConfiguration autoSwitchConfig = yamlConfig.getServerConfiguration().getScaling().getClusterAutoSwitchAlgorithm();
-        if (null != autoSwitchConfig) {
-            result.setClusterAutoSwitchAlgorithm(new ShardingSphereAlgorithmConfiguration(autoSwitchConfig.getType(), autoSwitchConfig.getProps()));
-        }
-        YamlShardingSphereAlgorithmConfiguration dataConsistencyCheckConfig = yamlConfig.getServerConfiguration().getScaling().getDataConsistencyCheckAlgorithm();
-        if (null != dataConsistencyCheckConfig) {
-            result.setDataConsistencyCheckAlgorithm(new ShardingSphereAlgorithmConfiguration(dataConsistencyCheckConfig.getType(), dataConsistencyCheckConfig.getProps()));
-        }
-        return Optional.of(result);
     }
 }

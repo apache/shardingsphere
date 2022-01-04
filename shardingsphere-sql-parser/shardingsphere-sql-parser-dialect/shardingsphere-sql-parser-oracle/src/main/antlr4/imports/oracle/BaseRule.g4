@@ -204,7 +204,7 @@ functionName
     ;
 
 dbLink
-    : identifier
+    : identifier (DOT_ identifier)*
     ;
 
 parameterValue
@@ -303,7 +303,7 @@ roleName
     : identifier
     ;
 
-userName
+username
     : identifier
     ;
 
@@ -415,13 +415,13 @@ simpleExpr
     : functionCall
     | parameterMarker
     | literals
-    | columnName
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
+    | columnName
     | privateExprOfDb
     ;
 
@@ -471,7 +471,7 @@ regularFunctionName
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse?
+    : CASE simpleExpr? caseWhen+ caseElse? END
     ;
 
 caseWhen
@@ -1187,4 +1187,20 @@ inCondition
 
 isOfTypeCondition
     : expr IS NOT? OF TYPE? LP_ ONLY? typeName (COMMA_ ONLY? typeName)* RP_
+    ;
+
+databaseCharset
+    : AL32UTF8
+    ;
+
+nationalCharset
+    : AL16UTF16 | UTF8
+    ;
+
+filenamePattern
+    : STRING_
+    ;
+
+connectString
+    : STRING_
     ;

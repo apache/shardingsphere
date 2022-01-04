@@ -18,12 +18,41 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Shadow route engine.
  */
 public interface ShadowRouteEngine {
+    
+    /**
+     * Shadow route decorate.
+     *
+     * @param routeContext  route context
+     * @param shadowDataSourceMappings shadow data source mappings
+     */
+    default void shadowRouteDecorate(final RouteContext routeContext, final Map<String, String> shadowDataSourceMappings) {
+        Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
+        Collection<RouteUnit> toBeAdded = new LinkedList<>();
+        for (RouteUnit each : routeUnits) {
+            String logicName = each.getDataSourceMapper().getLogicName();
+            String actualName = each.getDataSourceMapper().getActualName();
+            String shadowDataSourceName = shadowDataSourceMappings.get(actualName);
+            if (null != shadowDataSourceName) {
+                toBeRemoved.add(each);
+                toBeAdded.add(new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
+            }
+        }
+        routeUnits.removeAll(toBeRemoved);
+        routeUnits.addAll(toBeAdded);
+    }
     
     /**
      * Route.

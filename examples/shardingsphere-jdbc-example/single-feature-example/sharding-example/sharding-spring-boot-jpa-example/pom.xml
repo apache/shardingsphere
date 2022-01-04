@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>sharding-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>sharding-spring-boot-jpa-example</artifactId>
     <name>${project.artifactId}</name>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
             <artifactId>example-spring-jpa</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

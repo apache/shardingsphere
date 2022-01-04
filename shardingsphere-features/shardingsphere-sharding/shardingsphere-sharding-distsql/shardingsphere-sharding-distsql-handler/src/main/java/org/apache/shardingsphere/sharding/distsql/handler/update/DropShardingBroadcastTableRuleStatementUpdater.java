@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Drop sharding broadcast table rule statement updater.
@@ -30,20 +34,33 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingB
 public final class DropShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBroadcastTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(shardingSphereMetaData.getName(), currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBroadcastTableRulesStatement sqlStatement,
+                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String schemaName = shardingSphereMetaData.getName();
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkBroadCastTableRuleExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
-            throw new RequiredRuleMissedException("Broadcast", schemaName);
+    private void checkBroadCastTableRuleExist(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement,
+                                              final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (!sqlStatement.getRules().isEmpty()) {
+            Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
+            LinkedList<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+            DistSQLException.predictionThrow(notExistRules.isEmpty(), new RequiredRuleMissedException("Broadcast", schemaName, notExistRules));
         }
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException("Broadcast", schemaName));
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getBroadcastTables().clear();
+        if (sqlStatement.getRules().isEmpty()) {
+            currentRuleConfig.getBroadcastTables().clear();
+        } else {
+            currentRuleConfig.getBroadcastTables().removeIf(sqlStatement.getRules()::contains);
+        }
         return false;
     }
     

@@ -24,11 +24,12 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -37,9 +38,11 @@ import java.util.stream.Collectors;
 @Getter
 public final class DatabaseDiscoveryDataSourceRule {
     
-    private final String name;
+    private final String groupName;
     
     private final List<String> dataSourceNames;
+    
+    private final Properties heartbeatProps;
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
@@ -47,15 +50,16 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private String primaryDataSourceName;
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final DatabaseDiscoveryType databaseDiscoveryType) {
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
         checkConfiguration(config);
-        name = config.getName();
+        groupName = config.getGroupName();
         dataSourceNames = config.getDataSourceNames();
+        this.heartbeatProps = props;
         this.databaseDiscoveryType = databaseDiscoveryType;
     }
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required.");
         Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
     }
     
@@ -110,9 +114,10 @@ public final class DatabaseDiscoveryDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>(dataSourceNames);
-        result.put(name, actualDataSourceNames);
+        Map<String, Collection<String>> result = new HashMap<>(dataSourceNames.size(), 1);
+        for (String each : dataSourceNames) {
+            result.put(each, Collections.singletonList(each));
+        }
         return result;
     }
 }

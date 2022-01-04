@@ -32,7 +32,7 @@ chapter = true
 
 | 名字   | GitHub ID   |
 | :---- | :---------- |
-| 王光远 | wgy8283335  |
+| 王小满 | wgy8283335  |
 | 孙海生 | sunbufu     |
 | 王奇   | wqzwh       |
 | 李亚   | betterjava  |
@@ -50,6 +50,7 @@ chapter = true
 | 邱鹿   | Lucas-307   |
 | 钟红胜 | sandynz     |
 | 江龙滔 | RaigorJiang |
+| Thanoshan MV | ThanoshanMV |
 
 ## 贡献者
 

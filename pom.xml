@@ -25,14 +25,14 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.0.0-RC1-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
         <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-distsql-parser</module>
+        <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         <module>shardingsphere-mode</module>
@@ -43,7 +43,6 @@
         
         <module>shardingsphere-features</module>
         <module>shardingsphere-agent</module>
-        <module>shardingsphere-scaling</module>
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
@@ -58,20 +57,21 @@
         <guava.version>29.0-jre</guava.version>
         <gson.version>2.8.6</gson.version>
         <slf4j.version>1.7.7</slf4j.version>
-        
+        <cosid.version>1.6.6</cosid.version>
         <antlr4.version>4.9.2</antlr4.version>
         
         <groovy.version>2.4.19</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
         <netty.version>4.1.69.Final</netty.version>
+        <commons-lang3.version>3.8</commons-lang3.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         <commons-io.version>2.8.0</commons-io.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-        <atomikos.version>4.0.6</atomikos.version>
+        <atomikos.version>5.0.8</atomikos.version>
         <seata.version>1.4.2</seata.version>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -88,7 +88,7 @@
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>2.28.2</mockito.version>
+        <mockito.version>3.4.0</mockito.version>
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
@@ -102,16 +102,16 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.11.18</bytebuddy.version>
         
-        <elasticjob.version>3.0.0-beta</elasticjob.version>
+        <elasticjob.version>3.0.1</elasticjob.version>
         
         <calcite.version>1.27.0</calcite.version>
         <embedded-mysql.version>4.6.1</embedded-mysql.version>
         <embedded-postgresql.version>2.10</embedded-postgresql.version>
-
+        
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
-
+        
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
@@ -142,10 +142,12 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
-
+        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
+        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+        <bcprov-jdk15on.version>1.64</bcprov-jdk15on.version>
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -157,6 +159,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.ahoo.cosid</groupId>
+                <artifactId>cosid-core</artifactId>
+                <version>${cosid.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -199,8 +206,72 @@
             
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
+                <artifactId>netty-buffer</artifactId>
                 <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http2</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-socks</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler-proxy</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${netty.version}</version>
+                <classifier>linux-x86_64</classifier>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${netty.version}</version>
+                <classifier>linux-aarch_64</classifier>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -223,7 +294,7 @@
                 <artifactId>calcite-core</artifactId>
                 <version>${calcite.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
@@ -293,12 +364,6 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-client</artifactId>
                 <version>${curator.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
@@ -712,6 +777,40 @@
                         </fileSets>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>templating-maven-plugin</artifactId>
+                    <version>${templating-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>${git-commit-id-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>get-the-git-infos</id>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                            <phase>initialize</phase>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                        <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
+                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                        <offline>true</offline>
+                        <injectIntoSysProperties>false</injectIntoSysProperties>
+                        <includeOnlyProperties>
+                            <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.commit\.id(\.abbrev)?$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.commit\.message\.short$</includeOnlyProperty>
+                            <includeOnlyProperty>^git\.(dirty|tags)$</includeOnlyProperty>
+                        </includeOnlyProperties>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -906,7 +1005,7 @@
             </plugin>
         </plugins>
     </build>
-
+    
     <profiles>
         <profile>
             <id>jdk11+</id>
@@ -939,10 +1038,15 @@
                     <artifactId>javax.activation-api</artifactId>
                     <version>${activation-api.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <version>${bcprov-jdk15on.version}</version>
+                </dependency>
             </dependencies>
         </profile>
     </profiles>
-
+    
     <reporting>
         <plugins>
             <plugin>

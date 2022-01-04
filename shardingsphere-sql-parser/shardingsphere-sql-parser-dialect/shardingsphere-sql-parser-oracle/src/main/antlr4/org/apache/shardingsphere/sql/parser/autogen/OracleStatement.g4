@@ -61,5 +61,7 @@ execute
     | flashbackTable
     | purge
     | rename
+    | createDatabase
+    | createDatabaseLink
     ) SEMI_?
     ;

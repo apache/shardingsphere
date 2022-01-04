@@ -27,11 +27,12 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rule.ShadowTableRule;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -57,7 +59,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -92,6 +93,8 @@ public class SpringBootStarterTest {
                 assertEncryptRule((EncryptRule) each);
             } else if (each instanceof ShadowRule) {
                 assertShadowRule((ShadowRule) each);
+            } else if (each instanceof SQLParserRule) {
+                assertSQLParserRule((SQLParserRule) each);
             }
         }
     }
@@ -126,7 +129,6 @@ public class SpringBootStarterTest {
         assertThat(dataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
         assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
-        assertFalse(dataSourceRule.isQueryConsistent());
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
@@ -143,7 +145,6 @@ public class SpringBootStarterTest {
     }
     
     private void assertShadowRule(final ShadowRule rule) {
-        assertThat(rule.isEnable(), is(true));
         assertShadowDataSourceMappings(rule.getShadowDataSourceMappings());
         assertShadowAlgorithms(rule.getShadowAlgorithms());
         assertShadowTableRules(rule.getShadowTableRules());
@@ -153,16 +154,31 @@ public class SpringBootStarterTest {
         assertThat(shadowTableRules.size(), is(2));
         assertThat(shadowTableRules.get("t_order").getTableName(), is("t_order"));
         assertThat(shadowTableRules.get("t_order").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_order").getShadowAlgorithmNames().size(), is(2));
+        assertThat(shadowTableRules.get("t_order").getHintShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_order").getColumnShadowAlgorithmNames().size(), is(2));
         assertThat(shadowTableRules.get("t_user").getTableName(), is("t_user"));
         assertThat(shadowTableRules.get("t_user").getShadowDataSources().size(), is(1));
-        assertThat(shadowTableRules.get("t_user").getShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_user").getHintShadowAlgorithmNames().size(), is(1));
+        assertThat(shadowTableRules.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
+    }
+    
+    private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
+        assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
+        assertCacheOption(sqlParserRule.getSqlStatementCache());
+        assertCacheOption(sqlParserRule.getParseTreeCache());
+    }
+
+    private void assertCacheOption(final CacheOption cacheOption) {
+        assertThat(cacheOption.getInitialCapacity(), is(1024));
+        assertThat(cacheOption.getMaximumSize(), is(1024L));
+        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        assertThat(shadowAlgorithms.size(), is(2));
+        assertThat(shadowAlgorithms.size(), is(3));
         assertThat(shadowAlgorithms.get("user-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
-        assertThat(shadowAlgorithms.get("simple-note-algorithm") instanceof NoteShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("order-id-match-algorithm") instanceof ColumnShadowAlgorithm, is(true));
+        assertThat(shadowAlgorithms.get("simple-hint-algorithm") instanceof HintShadowAlgorithm, is(true));
     }
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {

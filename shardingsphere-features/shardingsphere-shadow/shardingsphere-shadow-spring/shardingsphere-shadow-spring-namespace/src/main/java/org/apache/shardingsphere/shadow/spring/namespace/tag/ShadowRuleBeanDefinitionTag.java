@@ -28,11 +28,11 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     
-    public static final String SHADOW_ENABLE_TAG = "enable";
-    
     public static final String DATA_SOURCE_TAG = "data-source";
     
     public static final String DATA_SOURCE_ID_ATTRIBUTE = "id";
+    
+    public static final String SHADOW_NAME_ATTRIBUTE = "name";
     
     public static final String SOURCE_DATA_SOURCE_NAME_ATTRIBUTE = "source-data-source-name";
     
@@ -40,7 +40,7 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String SHADOW_TABLE_TAG = "shadow-table";
     
-    public static final String SHADOW_TABLE_NAME_ATTRIBUTE = "name";
+    public static final String SHADOW_DEFAULT_SHADOW_ALGORITHM_NAME = "default-shadow-algorithm-name";
     
     public static final String SHADOW_TABLE_DATA_SOURCE_REFS_ATTRIBUTE = "data-sources";
     

@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.singletable.route;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.HashSet;
 
 /**
  * Single table SQL router.
@@ -41,36 +43,47 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        route(logicSQL, rule, result);
+        route(logicSQL.getSqlStatementContext(), rule, result, props);
         return result;
     }
     
-    private void route(final LogicSQL logicSQL, final SingleTableRule rule, final RouteContext result) {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule, result);
-        if (!singleTableNames.isEmpty()) {
-            validateSameDataSource(rule, sqlStatementContext, singleTableNames);
-            new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
+    private void route(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, final RouteContext routeContext, final ConfigurationProperties props) {
+        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule, routeContext);
+        if (singleTableNames.isEmpty()) {
+            return;
         }
+        validateSameDataSource(sqlStatementContext, rule, routeContext, props, singleTableNames);
+        new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(routeContext, rule);
     }
     
-    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, final RouteContext result) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : sqlStatementContext.getTablesContext().getTableNames();
-        return result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? tableNames : rule.getSingleTableNames(tableNames); 
+    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, final RouteContext routeContext) {
+        Collection<String> result;
+        if (sqlStatementContext instanceof TableAvailable) {
+            Collection<SimpleTableSegment> allTables = ((TableAvailable) sqlStatementContext).getAllTables();
+            result = new HashSet<>(allTables.size(), 1);
+            for (SimpleTableSegment each : allTables) {
+                String value = each.getTableName().getIdentifier().getValue();
+                result.add(value);
+            }
+        } else {
+            result = sqlStatementContext.getTablesContext().getTableNames();
+        }
+        return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result); 
     }
     
-    private void validateSameDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {
-        if (!(sqlStatementContext instanceof SelectStatementContext || rule.isSingleTableInSameDataSource(singleTableNames))) {
-            throw new ShardingSphereException("Single tables must be in the same datasource.");
-        }
+    private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,  
+                                        final RouteContext routeContext, final ConfigurationProperties props, final Collection<String> singleTableNames) {
+        boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
+        boolean allTablesInSameDataSource = sqlFederationEnabled 
+                ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames) 
+                : rule.isAllTablesInSameDataSource(routeContext, singleTableNames);
+        Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
-        route(logicSQL, rule, routeContext);
+        route(logicSQL.getSqlStatementContext(), rule, routeContext, props);
     }
     
     @Override

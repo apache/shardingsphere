@@ -39,7 +39,9 @@ import java.util.Collection;
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
-    
+
+    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private final int sequenceId;
     
     private final Collection<Object> data;
@@ -67,8 +69,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
                 } else if (each instanceof Boolean) {
                     payload.writeBytesLenenc((Boolean) each ? new byte[]{1} : new byte[]{0});
                 } else if (each instanceof LocalDateTime) {
-                    payload.writeStringLenenc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.parse(each.toString(),
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
+                    payload.writeStringLenenc(DT_FMT.format((LocalDateTime) each));
                 } else {
                     payload.writeStringLenenc(each.toString());
                 }

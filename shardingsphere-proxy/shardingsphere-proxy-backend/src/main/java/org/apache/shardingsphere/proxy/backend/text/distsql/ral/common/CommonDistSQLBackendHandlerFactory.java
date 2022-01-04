@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -39,20 +40,26 @@ public final class CommonDistSQLBackendHandlerFactory {
      * Create new instance of common dist sql backend handler.
      * 
      * @param sqlStatement common dist sql statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return common dist sql backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetDistSQLStatement) {
-            return new SetDistSQLBackendHandler((SetDistSQLStatement) sqlStatement, backendConnection);
+            return new SetDistSQLBackendHandler((SetDistSQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof ShowDistSQLStatement) {
-            return new ShowDistSQLBackendHandler((ShowDistSQLStatement) sqlStatement, backendConnection);
+            return new ShowDistSQLBackendHandler((ShowDistSQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof HintDistSQLStatement) {
-            return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, backendConnection);
+            return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        if (sqlStatement instanceof RefreshTableMetadataStatement) {
+            return new RefreshTableMetadataHandler((RefreshTableMetadataStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof AlterDistSQLStatement) {
+            return new AlterDistSQLBackendHandler((AlterDistSQLStatement) sqlStatement, connectionSession);
+        }
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

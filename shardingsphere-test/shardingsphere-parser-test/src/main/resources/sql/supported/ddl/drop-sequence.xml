@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_sequence" value="DROP SEQUENCE seq_id" db-types="PostgreSQL, SQLServer" />
+    <sql-case id="drop_sequence" value="DROP SEQUENCE seq_id" db-types="PostgreSQL,openGauss,SQLServer" />
 </sql-cases>

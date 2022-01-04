@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -41,7 +43,20 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
-        return DataSourceConverter.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceConfiguration(entry.getValue()))));
+        return DataSourcePoolCreatorUtil.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceConfiguration(entry.getValue()))));
+    }
+    
+    /**
+     * Get data source configurations.
+     *
+     * @param yamlRootConfig yaml root configuration
+     * @return data source name to data source configuration map
+     */
+    public Map<String, DataSourceConfiguration> getDataSourceConfigurations(final YamlRootConfiguration yamlRootConfig) {
+        Map<String, Map<String, Object>> yamlDataSourceConfigs = yamlRootConfig.getDataSources();
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, swapToDataSourceConfiguration(value)));
+        return result;
     }
     
     /**
@@ -50,6 +65,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @param yamlConfig YAML configurations
      * @return data source configuration
      */
+    @SuppressWarnings("rawtypes")
     public DataSourceConfiguration swapToDataSourceConfiguration(final Map<String, Object> yamlConfig) {
         Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);

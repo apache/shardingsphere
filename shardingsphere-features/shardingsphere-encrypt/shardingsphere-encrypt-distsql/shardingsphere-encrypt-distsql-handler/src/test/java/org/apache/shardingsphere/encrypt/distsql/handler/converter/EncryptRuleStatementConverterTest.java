@@ -35,7 +35,7 @@ public final class EncryptRuleStatementConverterTest {
     
     @Test
     public void assertCovert() {
-        EncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
+        EncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
         assertNotNull(encryptRuleConfiguration);
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getName(), is("t_encrypt"));
         assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));

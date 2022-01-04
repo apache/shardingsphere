@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.note.NoteShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.NoteShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.engine.determiner.algorithm.HintShadowAlgorithmDeterminer;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +31,7 @@ public final class ShadowDeterminerFactoryTest {
     
     @Test
     public void assertSuccessNewInstance() {
-        assertThat(ShadowDeterminerFactory.newInstance(mock(NoteShadowAlgorithm.class)) instanceof NoteShadowAlgorithmDeterminer, is(true));
+        assertThat(ShadowDeterminerFactory.newInstance(mock(HintShadowAlgorithm.class)) instanceof HintShadowAlgorithmDeterminer, is(true));
         assertThat(ShadowDeterminerFactory.newInstance(mock(ColumnShadowAlgorithm.class)) instanceof ColumnShadowAlgorithmDeterminer, is(true));
     }
 }

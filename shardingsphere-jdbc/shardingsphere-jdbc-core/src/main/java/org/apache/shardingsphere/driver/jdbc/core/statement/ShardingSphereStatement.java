@@ -66,6 +66,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
@@ -132,7 +133,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         ResultSet result;
         try {
-            executionContext = createExecutionContext(sql);
+            LogicSQL logicSQL = createLogicSQL(sql);
+            executionContext = createExecutionContext(logicSQL);
+            // TODO move federation route logic to binder
+            if (executionContext.getRouteContext().isFederated()) {
+                return executeFederationQuery(logicSQL);
+            }
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(getShardingSphereResultSets(), mergedResult, this, executionContext);
@@ -143,18 +149,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private List<ResultSet> getShardingSphereResultSets() throws SQLException {
-        return executionContext.getRouteContext().isFederated()
-                ? Collections.singletonList(executor.getFederationExecutor().getResultSet()) : statements.stream().map(this::getResultSet).collect(Collectors.toList());
+    private List<ResultSet> getShardingSphereResultSets() {
+        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
         if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(),
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
-        }
-        if (executionContext.getRouteContext().isFederated()) {
-            return executeFederationQuery();
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
         cacheStatements(executionGroupContext.getInputGroups());
@@ -163,13 +165,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return executor.getRegularExecutor().executeQuery(executionGroupContext, executionContext.getLogicSQL(), callback);
     }
     
-    private List<QueryResult> executeFederationQuery() throws SQLException {
-        if (executionContext.getExecutionUnits().isEmpty()) {
-            return Collections.emptyList();
-        }
+    private ResultSet executeFederationQuery(final LogicSQL logicSQL) throws SQLException {
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, executionContext);
+        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, logicSQL, metaDataContexts.getMetaDataMap());
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
@@ -181,7 +180,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public int executeUpdate(final String sql) throws SQLException {
         try {
-            executionContext = createExecutionContext(sql);
+            executionContext = createExecutionContext(createLogicSQL(sql));
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
@@ -200,7 +199,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             returnGeneratedKeys = true;
         }
         try {
-            executionContext = createExecutionContext(sql);
+            executionContext = createExecutionContext(createLogicSQL(sql));
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
@@ -217,7 +216,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public int executeUpdate(final String sql, final int[] columnIndexes) throws SQLException {
         returnGeneratedKeys = true;
         try {
-            executionContext = createExecutionContext(sql);
+            executionContext = createExecutionContext(createLogicSQL(sql));
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
@@ -234,7 +233,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public int executeUpdate(final String sql, final String[] columnNames) throws SQLException {
         returnGeneratedKeys = true;
         try {
-            executionContext = createExecutionContext(sql);
+            executionContext = createExecutionContext(createLogicSQL(sql));
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback()));
             }
@@ -320,15 +319,17 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean execute0(final String sql, final ExecuteCallback callback) throws SQLException {
         try {
-            executionContext = createExecutionContext(sql);
+            LogicSQL logicSQL = createLogicSQL(sql);
+            executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
                 return results.iterator().next() instanceof QueryResult;
             }
+            // TODO move federation route logic to binder
             if (executionContext.getRouteContext().isFederated()) {
-                List<QueryResult> queryResults = executeFederationQuery();
-                return !queryResults.isEmpty();
+                ResultSet resultSet = executeFederationQuery(logicSQL);
+                return null != resultSet;
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
             cacheStatements(executionGroupContext.getInputGroups());
@@ -347,16 +348,20 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private LogicSQL createLogicSQL(final String sql) {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), metaDataContexts.getProps());
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), findSQLParserRule());
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement,
                 connection.getSchema());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
-    private ExecutionContext createExecutionContext(final String sql) throws SQLException {
+    private SQLParserRule findSQLParserRule() {
+        Optional<SQLParserRule> optionalSQLParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        return optionalSQLParserRule.orElse(null);
+    }
+    
+    private ExecutionContext createExecutionContext(final LogicSQL logicSQL) throws SQLException {
         clearStatements();
-        LogicSQL logicSQL = createLogicSQL(sql);
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(), 
                 metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules(), connection.getSchema(), metaDataContexts.getMetaDataMap(), null);
         return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData(connection.getSchema()), metaDataContexts.getProps());
@@ -391,6 +396,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
+        if (executionContext.getRouteContext().isFederated()) {
+            return executor.getFederationExecutor().getResultSet();
+        }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
@@ -411,9 +419,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
             result.add(each.getResultSet());
-        }
-        if (executionContext.getRouteContext().isFederated()) {
-            result.add(executor.getFederationExecutor().getResultSet());
         }
         return result;
     }

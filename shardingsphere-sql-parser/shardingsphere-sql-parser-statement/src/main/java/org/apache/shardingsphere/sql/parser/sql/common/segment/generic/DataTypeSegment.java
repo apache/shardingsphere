@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 @Getter
 @Setter
-public final class DataTypeSegment implements SQLSegment {
+public final class DataTypeSegment implements ExpressionSegment {
     
     private int startIndex;
     

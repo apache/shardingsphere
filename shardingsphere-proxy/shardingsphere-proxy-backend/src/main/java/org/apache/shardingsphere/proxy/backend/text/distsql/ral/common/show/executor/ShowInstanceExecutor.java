@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Show instance executor.
@@ -42,7 +43,9 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "@";
     
-    private static final String IP = "ip";
+    private static final String ID = "instance_id";
+    
+    private static final String HOST = "host";
     
     private static final String PORT = "port";
     
@@ -55,7 +58,8 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
-                new QueryHeader("", "", IP, IP, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", HOST, HOST, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", PORT, PORT, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
         );
@@ -93,8 +97,9 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private List<Object> buildRow(final String instanceId, final String status) {
-        LinkedList<Object> result = Arrays.stream(instanceId.split(DELIMITER)).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
-        result.add(status);
-        return result;
+        String[] splitInstanceId = instanceId.split(DELIMITER);
+        String host = splitInstanceId[0];
+        String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
+        return Stream.of(instanceId, host, port, status).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
     }
 }

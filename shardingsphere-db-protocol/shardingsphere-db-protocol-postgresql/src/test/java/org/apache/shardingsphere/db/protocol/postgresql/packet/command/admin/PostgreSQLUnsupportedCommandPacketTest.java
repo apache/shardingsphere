@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -37,7 +39,7 @@ public final class PostgreSQLUnsupportedCommandPacketTest {
     @Test
     public void assertWrite() {
         PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
-        rowPacket.write(new PostgreSQLPacketPayload(byteBuf));
+        rowPacket.write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
         assertThat(byteBuf.writerIndex(), is(0));
     }
     

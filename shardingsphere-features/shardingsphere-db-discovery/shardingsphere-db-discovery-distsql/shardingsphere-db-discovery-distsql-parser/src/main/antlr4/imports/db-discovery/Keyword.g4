@@ -67,6 +67,18 @@ RULES
     : R U L E S
     ;
 
+TYPES
+    : T Y P E S
+    ;
+
+HEARTBEATS
+    : H E A R T B E A T S
+    ;
+    
 DB_DISCOVERY
     : D B UL_ D I S C O V E R Y
+    ;
+
+HEARTBEAT
+    : H E A R T B E A T
     ;

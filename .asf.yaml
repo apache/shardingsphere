@@ -21,22 +21,23 @@ notifications:
   pullrequests: notifications@shardingsphere.apache.org
 
 github:
-  description: Build criterion and ecosystem above multi-model databases
+  description: Building a Standard Layer & Ecosystem Above Heterogeneous Databases
   labels:
     - database-plus
-    - shardingsphere
     - database
     - distributed-database
     - distributed-sql-database
     - distributed-transactions
-    - sql
     - database-cluster
+    - rdbms
+    - sql
     - mysql
     - postgresql
     - shard
-    - readwrite-splitting
     - encrypt
-    - hacktoberfest
+    - dba
+    - oltp
+    - bigdata
   features:
     issues: true
     projects: true

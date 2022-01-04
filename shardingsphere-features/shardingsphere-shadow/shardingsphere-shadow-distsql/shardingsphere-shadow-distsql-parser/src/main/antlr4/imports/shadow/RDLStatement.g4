@@ -30,6 +30,10 @@ alterShadowRule
 dropShadowRule
     : DROP SHADOW RULE ruleName (COMMA ruleName)*
     ;
+   
+createShadowAlgorithm
+    : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
+    ;
 
 alterShadowAlgorithm
     : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
@@ -37,6 +41,10 @@ alterShadowAlgorithm
 
 dropShadowAlgorithm
     : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
+    ;
+
+createDefaultShadowAlgorithm
+    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
     ;
 
 shadowRuleDefinition
