@@ -28,5 +28,5 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 @Getter
 public final class StartScalingStatement extends UpdatableRALStatement {
     
-    private final long jobId;
+    private final String jobId;
 }
