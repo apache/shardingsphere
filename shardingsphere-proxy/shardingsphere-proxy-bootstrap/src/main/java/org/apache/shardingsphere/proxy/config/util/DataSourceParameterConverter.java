@@ -55,7 +55,7 @@ public final class DataSourceParameterConverter {
         result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
         result.setUsername(yamlDataSourceParameter.getUsername());
         result.setPassword(yamlDataSourceParameter.getPassword());
-        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
+        result.setReadOnly(yamlDataSourceParameter.getReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
         if (null != yamlDataSourceParameter.getCustomPoolProps()) {
             result.setCustomPoolProps(yamlDataSourceParameter.getCustomPoolProps());
@@ -84,7 +84,7 @@ public final class DataSourceParameterConverter {
         result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
         result.getProps().put("maximumPoolSize", dataSourceParameter.getMaxPoolSize());
         result.getProps().put("minimumIdle", dataSourceParameter.getMinPoolSize());
-        result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
+        result.getProps().put("readOnly", dataSourceParameter.getReadOnly());
         if (null != dataSourceParameter.getCustomPoolProps()) {
             result.getCustomPoolProps().putAll(dataSourceParameter.getCustomPoolProps());
         }
