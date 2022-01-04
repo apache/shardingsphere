@@ -82,24 +82,14 @@ public final class RuleAlteredContext {
         } else {
             completionDetectAlgorithm = null;
         }
-        ShardingSphereAlgorithmConfiguration sourceWritingStopper = onRuleAlteredActionConfig.getSourceWritingStopper();
-        if (null != sourceWritingStopper) {
-            sourceWritingStopAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(sourceWritingStopper, RowBasedJobLockAlgorithm.class);
-        } else {
-            sourceWritingStopAlgorithm = null;
-        }
+        sourceWritingStopAlgorithm = null;
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
         if (null != dataConsistencyChecker) {
             dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class);
         } else {
             dataConsistencyCheckAlgorithm = null;
         }
-        ShardingSphereAlgorithmConfiguration checkoutLocker = onRuleAlteredActionConfig.getCheckoutLocker();
-        if (null != checkoutLocker) {
-            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleBasedJobLockAlgorithm.class);
-        } else {
-            checkoutLockAlgorithm = null;
-        }
+        checkoutLockAlgorithm = null;
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
