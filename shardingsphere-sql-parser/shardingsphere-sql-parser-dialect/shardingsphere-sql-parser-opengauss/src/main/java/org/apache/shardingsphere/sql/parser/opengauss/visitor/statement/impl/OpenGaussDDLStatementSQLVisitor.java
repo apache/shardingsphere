@@ -505,6 +505,9 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
+        if (null != ctx.existClause()) {
+            result.setContainsExistClause(true);
+        }
         return result;
     }
     
