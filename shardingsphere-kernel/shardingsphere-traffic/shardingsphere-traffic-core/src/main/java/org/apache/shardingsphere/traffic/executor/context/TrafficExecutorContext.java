@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.executor;
+package org.apache.shardingsphere.traffic.executor.context;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.sql.Statement;
 
 /**
- * Traffic executor factory.
+ * Traffic executor context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TrafficExecutorFactory {
+@RequiredArgsConstructor
+@Getter
+public final class TrafficExecutorContext<T extends Statement> {
     
-    /**
-     * Create new instance of traffic executor factory.
-     * 
-     * @param metaDataContexts meta data context map
-     * @return new instance of traffic executor
-     */
-    public static TrafficExecutor newInstance(final MetaDataContexts metaDataContexts) {
-        return new JDBCTrafficExecutor(metaDataContexts);
-    }
+    private final T statement;
 }

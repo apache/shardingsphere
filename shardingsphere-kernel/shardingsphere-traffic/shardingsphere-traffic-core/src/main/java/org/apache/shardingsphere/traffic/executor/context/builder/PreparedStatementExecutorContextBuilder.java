@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.algorithm.loadbalance;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
- * Random traffic load balance algorithm.
+ * Prepared statement executor context builder.
  */
-public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
+public final class PreparedStatementExecutorContextBuilder implements TrafficExecutorContextBuilder<PreparedStatement> {
     
     @Override
-    public String getDataSourceName(final List<String> dataSourceNames) {
-        return dataSourceNames.get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+    public TrafficExecutorContext<PreparedStatement> build(final LogicSQL logicSQL, final Connection connection) throws SQLException {
+        return new TrafficExecutorContext<>(connection.prepareStatement(logicSQL.getSql()));
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return JDBCDriverType.PREPARED_STATEMENT;
     }
 }

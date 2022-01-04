@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.context;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
 
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Traffic context.
+ * Statement executor context builder.
  */
-@Getter
-@Setter
-public final class TrafficContext {
+public final class StatementExecutorContextBuilder implements TrafficExecutorContextBuilder<Statement> {
     
-    private String dataSourceName;
+    @Override
+    public TrafficExecutorContext<Statement> build(final LogicSQL logicSQL, final Connection connection) throws SQLException {
+        return new TrafficExecutorContext<>(connection.createStatement());
+    }
     
-    /**
-     * Get data source name.
-     * 
-     * @return data source config
-     */
-    public Optional<String> getDataSourceName() {
-        return Optional.ofNullable(dataSourceName);
+    @Override
+    public String getType() {
+        return JDBCDriverType.STATEMENT;
     }
 }

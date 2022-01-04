@@ -19,7 +19,6 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
@@ -50,13 +49,13 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent()) {
             return result;
         }
-        List<DataSourceConfiguration> dataSourceConfigs = getDataSourceConfigsByLabels(strategyRule.get().getLabels());
+        List<String> dataSourceNames = getDataSourceNamesByLabels(strategyRule.get().getLabels());
         TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-        result.setDataSourceConfig(loadBalancer.getDataSourceConfig(dataSourceConfigs));
+        result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
         return result;
     }
     
-    private List<DataSourceConfiguration> getDataSourceConfigsByLabels(final Collection<String> labels) {
+    private List<String> getDataSourceNamesByLabels(final Collection<String> labels) {
         // TODO implements this logic when provide mode api to get dataSource configs by labels
         return Collections.emptyList();
     }
