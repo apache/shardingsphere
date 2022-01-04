@@ -158,7 +158,7 @@ public final class OpenGaussBatchedInsertsExecutor {
     
     private static class BatchedInsertsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
     
-        public BatchedInsertsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        BatchedInsertsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(databaseType, sqlStatement, isExceptionThrown);
         }
     
