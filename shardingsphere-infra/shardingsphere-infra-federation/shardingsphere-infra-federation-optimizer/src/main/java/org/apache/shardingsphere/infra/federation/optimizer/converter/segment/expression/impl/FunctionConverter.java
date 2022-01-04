@@ -58,7 +58,8 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
             return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         if ("CONCAT".equalsIgnoreCase(segment.getFunctionName())) {
-            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO), null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO), 
+                    null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }
@@ -94,7 +95,7 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
                 result.add(new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", "")));
             } else if (operand instanceof SqlDynamicParam) {
                 ConverterContextHolder.get().getParameterCount().getAndIncrement();
-                result.add(new ParameterMarkerExpressionSegment(getStartIndex(operand),getStopIndex(operand),((SqlDynamicParam) operand).getIndex()));
+                result.add(new ParameterMarkerExpressionSegment(getStartIndex(operand), getStopIndex(operand), ((SqlDynamicParam) operand).getIndex()));
             }
         });
         return result;

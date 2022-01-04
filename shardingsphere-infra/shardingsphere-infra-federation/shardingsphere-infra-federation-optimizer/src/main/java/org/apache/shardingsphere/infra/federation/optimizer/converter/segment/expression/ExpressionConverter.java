@@ -98,8 +98,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
     
     @Override
     public Optional<ExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-         if (null == sqlNode) {
-            return Optional.empty(); 
+        if (null == sqlNode) {
+            return Optional.empty();
         }
         if (sqlNode instanceof SqlIdentifier) {
             return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(optional -> optional);
@@ -116,7 +116,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (sqlNode instanceof SqlDynamicParam) {
             return new ParameterMarkerExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
-        if (sqlNode instanceof SqlNodeList){
+        if (sqlNode instanceof SqlNodeList) {
             return new ListExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
         return Optional.empty();
