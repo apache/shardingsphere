@@ -36,11 +36,11 @@ import java.util.List;
 public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     
     private final DataSource dataSource;
-
+    
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -53,10 +53,11 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
-        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         createTableIfNotExistsShadow(createSql);
         createTableIfNotExistsNative(createSql);
         String truncateSql = "TRUNCATE TABLE t_user";
@@ -108,7 +109,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
             User user = new User();
             user.setUserId(i);
             user.setUserType(i % 2);
-            user.setUserName("test_" + i);
+            user.setUsername("test_" + i);
             user.setPwd("pwd" + i);
             insert(user);
             result.add((long) user.getUserId());
@@ -117,12 +118,12 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     }
     
     public void insert(final User entity) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, user_type, username, pwd) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getUserId());
             preparedStatement.setInt(2, entity.getUserType());
-            preparedStatement.setString(3, entity.getUserName());
+            preparedStatement.setString(3, entity.getUsername());
             preparedStatement.setString(4, entity.getPwd());
             preparedStatement.executeUpdate();
         }
@@ -145,7 +146,8 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_user;";
@@ -159,7 +161,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
             statement.executeUpdate(sql);
         }
     }
-
+    
     private void dropTableShadow(final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -182,7 +184,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
         users.addAll(getUsers(sql, 0));
         return users;
     }
-
+    
     private List<User> getUsers(final String sql, final int userType) throws SQLException {
         List<User> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
@@ -193,7 +195,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
                 user.setUserType(resultSet.getInt("user_type"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUsername(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }

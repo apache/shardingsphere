@@ -94,6 +94,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union");
         SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_same_table_name_and_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_concat");
     }
     
@@ -132,8 +133,8 @@ public final class SQLNodeConvertEngineParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
-        SqlNode expected = parseSqlNode(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
+        SqlNode expected = parseSqlNode(databaseType, sql);
         assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     

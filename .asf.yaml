@@ -24,25 +24,20 @@ github:
   description: Building a Standard Layer & Ecosystem Above Heterogeneous Databases
   labels:
     - database-plus
-    - shardingsphere
     - database
     - distributed-database
     - distributed-sql-database
     - distributed-transactions
-    - sql
     - database-cluster
+    - rdbms
+    - sql
     - mysql
     - postgresql
     - shard
-    - readwrite-splitting
     - encrypt
-    - hacktoberfest
     - dba
-    - devops
-    - rdbms
     - oltp
     - bigdata
-    - machine-learning
   features:
     issues: true
     projects: true

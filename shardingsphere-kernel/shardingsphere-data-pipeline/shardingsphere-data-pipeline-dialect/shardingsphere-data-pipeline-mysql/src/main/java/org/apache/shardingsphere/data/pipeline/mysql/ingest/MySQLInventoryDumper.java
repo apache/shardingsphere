@@ -35,7 +35,7 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        inventoryDumperConfig.getDataSourceConfig().appendJDBCParameters(ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
+        inventoryDumperConfig.getDataSourceConfig().appendJDBCQueryProperties(ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
     }
     
     @Override

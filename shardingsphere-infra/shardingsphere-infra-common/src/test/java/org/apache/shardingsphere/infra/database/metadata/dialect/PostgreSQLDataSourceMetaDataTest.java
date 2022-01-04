@@ -29,7 +29,7 @@ public final class PostgreSQLDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithPort() {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999/ds_0");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
@@ -38,7 +38,7 @@ public final class PostgreSQLDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithDefaultPort() {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
@@ -47,7 +47,7 @@ public final class PostgreSQLDataSourceMetaDataTest {
     @Test
     public void assertMultipleDatabases() {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:5432,127.0.0.1:5433,127.0.0.1:5434/ds_0?targetServerType=master");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());

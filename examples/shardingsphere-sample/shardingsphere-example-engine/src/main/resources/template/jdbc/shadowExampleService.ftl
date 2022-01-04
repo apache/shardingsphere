@@ -20,7 +20,7 @@
      * @throws SQLException
      */
     private void initEnvironment() throws SQLException {
-        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+        String createSql = "CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_type INT(11), username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         createTableIfNotExistsShadow(createSql);
         createTableIfNotExistsNative(createSql);
         String truncateSql = "TRUNCATE TABLE t_user";
@@ -81,7 +81,7 @@
     }
     
     public void insert(final User entity) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_type, user_name, pwd) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, user_type, username, pwd) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getUserId());
@@ -157,7 +157,7 @@
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
                 user.setUserType(resultSet.getInt("user_type"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUserName(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
