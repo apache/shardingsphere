@@ -10,11 +10,15 @@ weight = 1
 ```sql
 CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
-CREATE DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
-
 ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
 DROP SHARDING TABLE RULE tableName [, tableName] ...
+
+CREATE DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
+
+ALTER DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
+
+DROP DEFAULT SHARDING shardingScope STRATEGY;
 
 CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [,  shardingAlgorithmDefinition] ...
 
@@ -198,8 +202,14 @@ DROP SHARDING TABLE RULE t_order_item;
 DROP SHARDING ALGORITHM database_inline;
 
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=algorithmsName
+TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline
 );
+
+ALTER DEFAULT SHARDING DATABASE STRATEGY (
+TYPE = standard,SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
+);
+
+DROP DEFAULT SHARDING DATABASE STRATEGY;
 ```
 
 ### Sharding Binding Table Rule

@@ -42,6 +42,10 @@ showShardingTableNodes
 showShardingKeyGenerators
     : SHOW SHARDING KEY GENERATORS (FROM schemaName)?
     ;
+
+showShardingDefaultShardingStrategy
+    : SHOW DEFAULT SHARDING STRATEGY (FROM schemaName)?
+    ;
     
 tableRule
     : RULE tableName

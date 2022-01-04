@@ -48,11 +48,11 @@ public interface PipelineDataSourceConfiguration {
     Object getDataSourceConfiguration();
     
     /**
-     * Append JDBC parameters.
+     * Append JDBC queryProps.
      *
-     * @param parameters JDBC parameters
+     * @param queryProps JDBC query properties
      */
-    void appendJDBCParameters(Map<String, String> parameters);
+    void appendJDBCQueryProperties(Map<String, String> queryProps);
     
     /**
      * Get database type.

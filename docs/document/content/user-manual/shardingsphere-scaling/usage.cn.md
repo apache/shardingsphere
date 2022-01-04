@@ -153,7 +153,7 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. 修改分片规则
+2. 修改所有表的分片规则
 
 目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
 
@@ -199,6 +199,8 @@ GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=12
 ```
 
 `database_inline` 的 `algorithm-expression` 从 `ds_${user_id % 2}` 改为 `ds_${user_id % 3 + 2}`，`t_order` 的 `DATANODES` 从 `ds_${0..1}.t_order_${0..1}` 改为 `ds_${2..4}.t_order_${0..1}`，会触发迁移。
+
+目前 `ALTER SHARDING ALGORITHM` 会即时生效、但是规则还没生效，可能会导致源端 insert 异常，所以建议优先修改为 `AutoTableRule`。
 
 #### 查询所有迁移任务
 

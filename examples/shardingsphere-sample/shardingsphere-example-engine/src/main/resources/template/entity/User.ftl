@@ -41,11 +41,16 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     </#if>
     private int userId;
+
+    <#if framework?contains("jpa")>
+    @Column(name = "user_type")
+    </#if>
+    private int userType;
     
     <#if framework?contains("jpa")>
-    @Column(name = "user_name")
+    @Column(name = "username")
     </#if>
-    private String userName;
+    private String username;
     
     <#if framework?contains("jpa")>
     @Column(name = "pwd")
@@ -59,13 +64,21 @@ public class User implements Serializable {
     public void setUserId(final int userId) {
         this.userId = userId;
     }
-    
-    public String getUserName() {
-        return userName;
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(final int userType) {
+        this.userType = userType;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(final String username) {
+        this.username = username;
     }
     
     public String getPwd() {
@@ -78,6 +91,6 @@ public class User implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
+        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
     }
 }

@@ -29,7 +29,7 @@ public final class MySQLDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithPort() {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
@@ -38,7 +38,7 @@ public final class MySQLDataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithDefaultPort() {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertNull(actual.getSchema());
     }
@@ -46,7 +46,7 @@ public final class MySQLDataSourceMetaDataTest {
     @Test
     public void assertMultipleDatabases() {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999,127.0.0.1:3306,127.0.0.1:3307/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());

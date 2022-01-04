@@ -22,20 +22,17 @@ import org.apache.shardingsphere.example.shadow.spring.boot.starter.mybatis.repo
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
-
+    
     @Resource
     private UserRepository userRepository;
-
+    
     /**
      * Execute test.
-     *
-     * @throws SQLException
      */
     public void run() {
         try {
@@ -48,7 +45,6 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
      */
     private void initEnvironment() {
         userRepository.createTableIfNotExists();
@@ -63,21 +59,22 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_mybatis_" + i);
-            user.setPwd("pwd_mybatis_" + i);
+            user.setUserType(i % 2);
+            user.setUsername("test_" + i);
+            user.setPwd("pwd" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }
         return result;
     }
-
+    
     private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
@@ -87,17 +84,15 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
     
     private void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : userRepository.selectAll()) {
+        for (User each : userRepository.selectAll()) {
             System.out.println(each);
         }
     }
     
     /**
      * Restore the environment.
-     * @throws SQLException
      */
     private void cleanEnvironment() {
         userRepository.dropTable();
     }
-
 }

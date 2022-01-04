@@ -69,6 +69,7 @@ execute
     | createRule
     | createSchema
     | createType
+    | createTextSearch
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -94,6 +95,10 @@ execute
     | alterLanguage
     | dropLanguage
     | createConversion
+    | alterConversion
     | dropConversion
+    | alterTextSearchDictionary
+    | alterTextSearchTemplate
+    | alterTextSearchParser
     ) SEMI_?
     ;
