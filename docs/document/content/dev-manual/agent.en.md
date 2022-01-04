@@ -1,6 +1,6 @@
 +++
 pre = "<b>6.15. </b>"
-title = "agent"
+title = "Observability"
 weight = 15
 chapter = true
 +++
