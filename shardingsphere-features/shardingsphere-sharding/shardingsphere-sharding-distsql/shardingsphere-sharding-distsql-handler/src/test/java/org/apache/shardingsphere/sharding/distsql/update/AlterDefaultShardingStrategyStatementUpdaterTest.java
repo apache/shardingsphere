@@ -73,7 +73,7 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultTableShardingStrategy() throws DistSQLException {
+    public void assertAlterDefaultTableShardingStrategy() throws DistSQLException {
         AlterDefaultShardingStrategyStatement statement = new AlterDefaultShardingStrategyStatement("TABLE", "standard", "order_id", "order_id_algorithm", null);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
@@ -87,7 +87,7 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
     }
 
     @Test
-    public void assertCreateDefaultDatabaseShardingStrategy() throws DistSQLException {
+    public void assertAlterDefaultDatabaseShardingStrategy() throws DistSQLException {
         AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${user_id% 2}"));
         AlterDefaultShardingStrategyStatement statement = new AlterDefaultShardingStrategyStatement("DATABASE", "standard", "user_id", null, databaseAlgorithmSegment);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
