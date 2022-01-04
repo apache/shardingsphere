@@ -113,9 +113,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         String column = columnSegment.getIdentifier().getValue();
         ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
         String valueColumn = valueColumnSegment.getIdentifier().getValue();
-    
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
-        
         boolean cipherColumnPresent = getEncryptRule().findEncryptor(schemaName, tableName, column).isPresent();
         boolean cipherValueColumnPresent = getEncryptRule().findEncryptor(schemaName, tableName, valueColumn).isPresent();
         if (cipherColumnPresent && cipherValueColumnPresent) {
@@ -125,7 +123,6 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         } else if (cipherColumnPresent != cipherValueColumnPresent) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, column);
         Optional<String> valueAssistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, valueColumn);
         if (assistedQueryColumn.isPresent() && valueAssistedQueryColumn.isPresent()) {
@@ -133,7 +130,6 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         } else if (assistedQueryColumn.isPresent() != valueAssistedQueryColumn.isPresent()) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
-    
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column);
         Optional<String> valuePlainColumn = getEncryptRule().findPlainColumn(tableName, valueColumn);
         if (plainColumn.isPresent() && valuePlainColumn.isPresent()) {
@@ -141,7 +137,6 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         } else if (plainColumn.isPresent() != valuePlainColumn.isPresent()) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        
         if (result.getAssignment().isEmpty()) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
