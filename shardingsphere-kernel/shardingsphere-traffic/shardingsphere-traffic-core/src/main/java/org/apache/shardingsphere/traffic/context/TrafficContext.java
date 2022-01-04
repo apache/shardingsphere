@@ -23,7 +23,7 @@ import lombok.Setter;
 import java.util.Optional;
 
 /**
- * Traffic dispatcher context.
+ * Traffic context.
  */
 @Getter
 @Setter

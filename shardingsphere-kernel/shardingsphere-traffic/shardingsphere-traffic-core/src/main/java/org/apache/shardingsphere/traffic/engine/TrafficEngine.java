@@ -24,8 +24,8 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +56,6 @@ public final class TrafficEngine {
     }
     
     private List<String> getDataSourceNamesByLabels(final Collection<String> labels) {
-        return Arrays.asList("127.0.0.1@3307");
+        return Collections.emptyList();
     }
 }
