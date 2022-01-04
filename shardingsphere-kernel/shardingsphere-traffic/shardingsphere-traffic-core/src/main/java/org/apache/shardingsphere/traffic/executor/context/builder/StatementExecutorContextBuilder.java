@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * JDBC statement execution unit builder.
+ * Statement executor context builder.
  */
 public final class StatementExecutorContextBuilder implements TrafficExecutorContextBuilder<Statement> {
     

@@ -26,7 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * JDBC prepared statement execution unit builder.
+ * Prepared statement executor context builder.
  */
 public final class PreparedStatementExecutorContextBuilder implements TrafficExecutorContextBuilder<PreparedStatement> {
     

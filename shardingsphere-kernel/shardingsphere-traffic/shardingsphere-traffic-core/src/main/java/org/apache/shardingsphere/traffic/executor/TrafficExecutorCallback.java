@@ -22,8 +22,6 @@ import java.sql.Statement;
 
 /**
  * Traffic executor callback.
- * 
- * @param <T> type of return value
  */
 public interface TrafficExecutorCallback<T> {
     
@@ -33,7 +31,7 @@ public interface TrafficExecutorCallback<T> {
      * @param statement statement
      * @param sql SQL
      * @return execution result
-     * @throws SQLException throw when execute failure
+     * @throws SQLException SQL exception
      */
     T execute(Statement statement, String sql) throws SQLException;
 }

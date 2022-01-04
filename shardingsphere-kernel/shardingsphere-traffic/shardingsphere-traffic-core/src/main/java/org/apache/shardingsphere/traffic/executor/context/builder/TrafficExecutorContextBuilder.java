@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * JDBC executor unit builder.
+ * Traffic executor context builder.
  */
 public interface TrafficExecutorContextBuilder<T extends Statement> extends TypedSPI {
     
