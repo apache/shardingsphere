@@ -15,17 +15,19 @@
   ~ limitations under the License.
   -->
     
-    <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
+    <encrypt:encrypt-algorithm id="phone_encryptor" type="AES">
         <props>
             <prop key="aes-key-value">123456</prop>
         </props>
     </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+    <encrypt:encrypt-algorithm id="string_encryptor" type="assistedTest" />
     
     <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_user">
-            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+        <encrypt:table name="t_order">
+            <encrypt:column logic-column="status" cipher-column="status" assisted-query-column="assisted_query_status" encrypt-algorithm-ref="string_encryptor" />
+        </encrypt:table>
+        <encrypt:table name="t_order_item">
+            <encrypt:column logic-column="phone" cipher-column="phone" plain-column="phone_plain" encrypt-algorithm-ref="phone_encryptor" />
         </encrypt:table>
     </encrypt:rule>
     

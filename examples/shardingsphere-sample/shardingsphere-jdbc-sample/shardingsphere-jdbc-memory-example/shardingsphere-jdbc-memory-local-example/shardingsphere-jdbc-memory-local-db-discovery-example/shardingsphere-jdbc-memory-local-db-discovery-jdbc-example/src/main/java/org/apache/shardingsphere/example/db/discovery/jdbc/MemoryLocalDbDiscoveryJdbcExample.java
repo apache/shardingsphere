@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.db.discovery.jdbc;
 
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 

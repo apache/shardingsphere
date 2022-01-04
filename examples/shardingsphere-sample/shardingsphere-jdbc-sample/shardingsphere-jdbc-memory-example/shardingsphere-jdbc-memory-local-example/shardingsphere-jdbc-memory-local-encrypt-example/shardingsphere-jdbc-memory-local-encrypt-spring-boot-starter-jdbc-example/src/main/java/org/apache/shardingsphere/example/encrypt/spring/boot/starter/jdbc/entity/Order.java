@@ -15,19 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.jdbc.entity;
+package org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class Order implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = 8306802022239174861L;
+    
+    private long orderId;
+
+    private int orderType;
     
     private int userId;
     
-    private String username;
+    private long addressId;
     
-    private String pwd;
+    private String status;
+    
+    public long getOrderId() {
+        return orderId;
+    }
+    
+    public void setOrderId(final long orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(final int orderType) {
+        this.orderType = orderType;
+    }
     
     public int getUserId() {
         return userId;
@@ -37,24 +57,24 @@ public class User implements Serializable {
         this.userId = userId;
     }
     
-    public String getUsername() {
-        return username;
+    public String getStatus() {
+        return status;
     }
     
-    public void setUsername(final String username) {
-        this.username = username;
+    public void setStatus(final String status) {
+        this.status = status;
     }
     
-    public String getPwd() {
-        return pwd;
+    public long getAddressId() {
+        return addressId;
     }
     
-    public void setPwd(final String pwd) {
-        this.pwd = pwd;
+    public void setAddressId(final long addressId) {
+        this.addressId = addressId;
     }
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
+        return String.format("order_id: %s, order_type: %s, user_id: %s, address_id: %s, status: %s", orderId, orderType, userId, addressId, status);
     }
 }
