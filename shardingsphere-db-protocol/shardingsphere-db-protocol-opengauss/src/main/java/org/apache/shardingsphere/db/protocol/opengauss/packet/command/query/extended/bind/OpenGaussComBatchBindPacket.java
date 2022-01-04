@@ -47,6 +47,8 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     
     private final PostgreSQLPacketPayload payload;
     
+    private final int batchNum;
+    
     private final String statementId;
     
     private final String sql;
@@ -62,7 +64,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         this.payload = payload;
         payload.readInt4();
-        payload.readInt4();
+        batchNum = payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
         int parameterFormatCount = payload.readInt2();
@@ -96,11 +98,20 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     }
     
     /**
-     * Read a group of parameters.
+     * Read parameter sets from payload.
      *
-     * @return a group of parameters
+     * @return parameter sets
      */
-    public List<Object> readOneGroupOfParameters() {
+    public List<List<Object>> readParameterSets() {
+        List<List<Object>> result = new ArrayList<>(batchNum);
+        for (int i = 0; i < batchNum; i++) {
+            result.add(readOneGroupOfParameters());
+        }
+        payload.skipReserved(payload.getByteBuf().readableBytes());
+        return result;
+    }
+    
+    private List<Object> readOneGroupOfParameters() {
         List<PostgreSQLColumnType> columnTypes = preparedStatement.getColumnTypes();
         List<Object> result = new ArrayList<>(eachGroupParametersCount);
         for (int parameterIndex = 0; parameterIndex < eachGroupParametersCount; parameterIndex++) {
