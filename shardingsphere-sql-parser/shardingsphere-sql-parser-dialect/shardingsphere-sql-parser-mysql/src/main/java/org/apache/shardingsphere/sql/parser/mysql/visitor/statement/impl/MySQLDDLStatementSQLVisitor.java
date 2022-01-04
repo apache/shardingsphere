@@ -214,7 +214,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
         if (null != ctx.existClause()) {
-            result.setContainsNotExistClause(true);
+            result.setContainsExistClause(true);
         }
         return result;
     }

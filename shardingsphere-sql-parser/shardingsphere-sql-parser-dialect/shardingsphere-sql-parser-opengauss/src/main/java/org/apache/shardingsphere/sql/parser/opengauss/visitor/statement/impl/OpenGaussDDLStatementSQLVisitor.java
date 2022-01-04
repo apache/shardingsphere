@@ -498,7 +498,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         if (null != ctx.existClause()) {
-            result.setContainsNotExistClause(true);
+            result.setContainsExistClause(true);
         }
         return result;
     }
