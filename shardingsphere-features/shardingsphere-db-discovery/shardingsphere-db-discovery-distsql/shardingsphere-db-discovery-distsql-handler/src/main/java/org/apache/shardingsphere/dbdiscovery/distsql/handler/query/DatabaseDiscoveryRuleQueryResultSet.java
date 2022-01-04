@@ -44,14 +44,6 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private static final String NAME = "group_name";
     
-    private static final String DATA_SOURCE_NAMES = "data_source_names";
-    
-    private static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
-    
-    private static final String DISCOVER_TYPE = "discovery_type";
-    
-    private static final String HEARTBEAT = "discovery_heartbeat";
-    
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
@@ -74,7 +66,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
+        return Arrays.asList(NAME, "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat");
     }
     
     @Override
@@ -97,7 +89,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     }
     
     private Map<String, String> convertToMap(final Object obj) {
-        if (obj == null) {
+        if (null == obj) {
             return Collections.emptyMap();
         }
         return new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
