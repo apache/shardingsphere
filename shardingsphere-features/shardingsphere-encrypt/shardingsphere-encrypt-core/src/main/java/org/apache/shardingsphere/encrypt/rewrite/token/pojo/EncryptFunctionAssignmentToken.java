@@ -28,7 +28,7 @@ import java.util.LinkedList;
  */
 public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken {
     
-    private final Collection<LiteralAssignment> assignments = new LinkedList<>();
+    private final Collection<FunctionAssignment> assignments = new LinkedList<>();
     
     public EncryptFunctionAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex, stopIndex);
@@ -41,14 +41,14 @@ public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken
      * @param value assignment value
      */
     public void addAssignment(final String columnName, final Object value) {
-        assignments.add(new LiteralAssignment(columnName, value));
+        assignments.add(new FunctionAssignment(columnName, value));
     }
     
     /**
      * Get assignments.
-     * @return LiteralAssignment collection
+     * @return FunctionAssignment collection
      */
-    public Collection<LiteralAssignment> getAssignment() {
+    public Collection<FunctionAssignment> getAssignment() {
         return assignments;
     }
     
@@ -58,7 +58,7 @@ public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken
     }
     
     @RequiredArgsConstructor
-    private static final class LiteralAssignment {
+    private static final class FunctionAssignment {
         
         private final String columnName;
         
