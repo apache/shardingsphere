@@ -47,8 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class JDBCTrafficExecutor implements TrafficExecutor {
     
-    @SuppressWarnings("rawtypes")
-    private static final Map<String, TrafficExecutorContextBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
+    private static final Map<String, TrafficExecutorContextBuilder> TYPE_CONTEXT_BUILDERS = new ConcurrentHashMap<>();
     
     private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
     
@@ -81,8 +80,8 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
     @SuppressWarnings("rawtypes")
     private TrafficExecutorContextBuilder getCachedTrafficExecutorContextBuilder(final String type) {
         TrafficExecutorContextBuilder result;
-        if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(TrafficExecutorContextBuilder.class, key, new Properties()));
+        if (null == (result = TYPE_CONTEXT_BUILDERS.get(type))) {
+            result = TYPE_CONTEXT_BUILDERS.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(TrafficExecutorContextBuilder.class, key, new Properties()));
         }
         return result;
     }
