@@ -34,7 +34,7 @@ import java.util.List;
 public final class CheckScalingStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<Long> jobIds = new LinkedList<>();
+    private final List<String> jobIds = new LinkedList<>();
     
     @XmlElement(name = "type-strategy")
     private List<ExpectedAlgorithm> tableStrategies;

@@ -108,6 +108,6 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Pit.env.opentelemetry

@@ -55,7 +55,7 @@ public interface PipelineJobAPI extends RequiredSPI {
      *
      * @param jobId job id
      */
-    void start(long jobId);
+    void start(String jobId);
     
     /**
      * Start scaling job by config.
@@ -63,21 +63,21 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param jobConfig job config
      * @return job id
      */
-    Optional<Long> start(JobConfiguration jobConfig);
+    Optional<String> start(JobConfiguration jobConfig);
     
     /**
      * Stop scaling job.
      *
      * @param jobId job id
      */
-    void stop(long jobId);
+    void stop(String jobId);
     
     /**
      * Remove scaling job.
      *
      * @param jobId job id
      */
-    void remove(long jobId);
+    void remove(String jobId);
     
     /**
      * Get job progress.
@@ -85,14 +85,14 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param jobId job id
      * @return each sharding item progress
      */
-    Map<Integer, JobProgress> getProgress(long jobId);
+    Map<Integer, JobProgress> getProgress(String jobId);
     
     /**
      * Stop cluster write to job source schema's underlying DB.
      *
      * @param jobId job id
      */
-    void stopClusterWriteDB(long jobId);
+    void stopClusterWriteDB(String jobId);
     
     /**
      * List all data consistency check algorithms from SPI.
@@ -107,7 +107,7 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param jobId job id
      * @return data consistency check needed or not
      */
-    boolean isDataConsistencyCheckNeeded(long jobId);
+    boolean isDataConsistencyCheckNeeded(String jobId);
     
     /**
      * Do data consistency check.
@@ -115,7 +115,7 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param jobId job id
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId);
     
     /**
      * Do data consistency check.
@@ -124,7 +124,7 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param algorithmType algorithm type
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId, String algorithmType);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType);
     
     /**
      * Aggregate data consistency check results.
@@ -133,21 +133,21 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param checkResultMap check result map
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(long jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
     
     /**
      * Switch job source schema's configuration to job target configuration.
      *
      * @param jobId job id
      */
-    void switchClusterConfiguration(long jobId);
+    void switchClusterConfiguration(String jobId);
     
     /**
      * Reset scaling job.
      *
      * @param jobId job id
      */
-    void reset(long jobId);
+    void reset(String jobId);
     
     /**
      * Get job configuration.
@@ -155,5 +155,5 @@ public interface PipelineJobAPI extends RequiredSPI {
      * @param jobId job id
      * @return job configuration
      */
-    JobConfiguration getJobConfig(long jobId);
+    JobConfiguration getJobConfig(String jobId);
 }

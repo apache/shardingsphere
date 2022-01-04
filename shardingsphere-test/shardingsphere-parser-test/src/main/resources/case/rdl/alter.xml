@@ -18,16 +18,16 @@
 
 <sql-parser-test-cases>
     <alter-resource sql-case-id="alter-resource-simple-single-without-password">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-simple-single-with-password">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-simple-multiple">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
-        <data-source name="ds_1" host-name="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-single-without-password">
@@ -44,7 +44,7 @@
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-single-with-properties">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30"/>
             </properties>
@@ -287,4 +287,9 @@
     </alter-sharding-key-generator>
 
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
+
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
+        <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        </strategy>
+    </alter-default-sharding-strategy>
 </sql-parser-test-cases>

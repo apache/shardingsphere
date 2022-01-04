@@ -19,15 +19,15 @@ package org.apache.shardingsphere.traffic.executor.jdbc;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
-import org.apache.shardingsphere.traffic.executor.context.builder.TrafficExecutorContextBuilder;
 import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+import org.apache.shardingsphere.traffic.executor.context.builder.TrafficExecutorContextBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,7 +59,7 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
     }
     
     public JDBCTrafficExecutor(final MetaDataContexts metaDataContexts) {
-        dataSources.putAll(DataSourceConverter.getDataSourceMap(createDataSourceConfigs(metaDataContexts)));
+        dataSources.putAll(DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(metaDataContexts)));
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigs(final MetaDataContexts metaDataContexts) {
@@ -88,8 +88,7 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
     }
     
     @Override
-    public ResultSet executeQuery(final LogicSQL logicSQL, final TrafficExecutorContext<Statement> context, 
-                                  final TrafficExecutorCallback<ResultSet> callback) throws SQLException {
+    public ResultSet executeQuery(final LogicSQL logicSQL, final TrafficExecutorContext<Statement> context, final TrafficExecutorCallback<ResultSet> callback) throws SQLException {
         cacheStatement(logicSQL.getParameters(), context.getStatement());
         return callback.execute(statement, logicSQL.getSql());
     }
