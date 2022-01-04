@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.Ba
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintManagerHolder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -238,6 +239,9 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
             } catch (SQLException ex) {
                 throw new BackendConnectionException(ex);
             }
+        }
+        if (connectionSession.isWriteOnly()) {
+            HintManagerHolder.get().setWriteRouteOnly();
         }
     }
     

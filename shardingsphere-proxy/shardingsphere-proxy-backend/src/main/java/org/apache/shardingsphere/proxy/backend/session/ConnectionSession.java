@@ -47,6 +47,9 @@ public final class ConnectionSession {
     private final TransactionStatus transactionStatus;
     
     private final AttributeMap attributeMap;
+
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean writeOnly = new AtomicBoolean(false);
     
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
@@ -107,5 +110,17 @@ public final class ConnectionSession {
      */
     public void setAutoCommit(final boolean autoCommit) {
         this.autoCommit.set(autoCommit);
+    }
+
+    public void setGrantee(Grantee grantee) {
+        this.grantee = grantee;
+    }
+    
+    public void setWriteOnly(boolean writeOnly) {
+        this.writeOnly.set(writeOnly);
+    }
+    
+    public boolean isWriteOnly() {
+        return writeOnly.get();
     }
 }

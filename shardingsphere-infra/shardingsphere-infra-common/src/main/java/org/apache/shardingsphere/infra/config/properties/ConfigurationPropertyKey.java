@@ -76,6 +76,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Whether enable hint for ShardingSphere-Proxy.
      */
     PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+
+    /**
+     * Write only username for ShardingSphere-Proxy.
+     */
+    PROXY_HINT_WRITE_USER("proxy-hint-write-user", "", String.class),
     
     /**
      * Whether enable show process list.
