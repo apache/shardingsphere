@@ -79,8 +79,10 @@ public final class ExampleTemplateFactory {
             result.put("entity/OrderItem", "entity/OrderItem.java");
         }
         if (framework.contains("mybatis")) {
-            if (FeatureType.ENCRYPT.getFeature().equals(feature) || FeatureType.SHADOW.getFeature().equals(feature)) {
+            if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
                 result.put("mybatis/UserRepository", "repository/UserRepository.java");
+            } else if (FeatureType.SHADOW.getFeature().equals(feature)) {
+                result.put("mybatis/shadowUserRepository", "repository/UserRepository.java");
             } else {
                 result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("mybatis/OrderRepository", "repository/OrderRepository.java");
@@ -104,15 +106,17 @@ public final class ExampleTemplateFactory {
         }
         if (framework.contains("spring-boot-starter")) {
             result.put("properties/application", "application.properties");
-        } else if (framework.contains("spring-namespace")){
+        } else if (framework.contains("spring-namespace")) {
             result.put("xml/application", "application.xml");
         }
         if (framework.contains("mybatis")) {
-            if (FeatureType.ENCRYPT.getFeature().equals(feature) || FeatureType.SHADOW.name().equals(feature)) {
-                result.put("mappers/UserMapper", "mappers/UserMapper.xml");
+            if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
+                result.put("mybatis/mappers/UserMapper", "mappers/UserMapper.xml");
+            } else if (FeatureType.SHADOW.getFeature().equals(feature)) {
+                result.put("mybatis/mappers/shadowUserMapper", "mappers/UserMapper.xml");
             } else {
-                result.put("mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-                result.put("mappers/OrderMapper", "mappers/OrderMapper.xml");
+                result.put("mybatis/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+                result.put("mybatis/mappers/OrderMapper", "mappers/OrderMapper.xml");
             }
         }
         return result;

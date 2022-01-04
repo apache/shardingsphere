@@ -70,8 +70,9 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_mybatis_" + i);
-            user.setPwd("pwd_mybatis_" + i);
+            user.setUserType(i % 2);
+            user.setUserName("test_" + i);
+            user.setPwd("pwd" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }
@@ -87,7 +88,7 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
     
     private void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : userRepository.selectAll()) {
+        for (User each : userRepository.selectAll()) {
             System.out.println(each);
         }
     }
@@ -99,5 +100,4 @@ public final class MemoryLocalShadowSpringBootStarterMybatisExampleService {
     private void cleanEnvironment() {
         userRepository.dropTable();
     }
-
 }

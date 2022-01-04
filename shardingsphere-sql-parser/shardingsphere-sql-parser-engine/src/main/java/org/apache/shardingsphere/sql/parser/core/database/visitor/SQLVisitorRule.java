@@ -374,7 +374,15 @@ public enum SQLVisitorRule {
     
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
-    DROP_CONVERSION("DropConversion", SQLStatementType.DDL);
+    DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
+    
+    CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_DICTIONARY("AlterTextSearchDictionary", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL);
 
     private final String name;
     

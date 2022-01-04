@@ -22,6 +22,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Hikari data source pool creator.
@@ -29,13 +30,21 @@ import java.util.Map;
 @Getter
 public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCreator {
     
-    private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
-    
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
+    private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
+    
+    private final Properties defaultDataSourceProperties = new Properties();
+    
     public HikariDataSourcePoolCreator() {
-        buildPropertySynonyms();
         buildInvalidProperties();
+        buildPropertySynonyms();
+        buildDefaultDataSourceProperties();
+    }
+    
+    private void buildInvalidProperties() {
+        invalidProperties.put("minimumIdle", -1);
+        invalidProperties.put("maximumPoolSize", -1);
     }
     
     private void buildPropertySynonyms() {
@@ -43,9 +52,31 @@ public final class HikariDataSourcePoolCreator extends AbstractDataSourcePoolCre
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }
     
-    private void buildInvalidProperties() {
-        invalidProperties.put("minimumIdle", -1);
-        invalidProperties.put("maximumPoolSize", -1);
+    private void buildDefaultDataSourceProperties() {
+        defaultDataSourceProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultDataSourceProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultDataSourceProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("cachedefaultDataSourcePropsSetMetadata", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultDataSourceProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("netTimeoutForStreamingdefaultDataSourcePropss", "0");
+        defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("serverTimezone", "UTC");
+    }
+    
+    @Override
+    protected String getDataSourcePropertiesFieldName() {
+        return "dataSourceProperties";
+    }
+    
+    @Override
+    protected String getJdbcUrlFieldName() {
+        return "jdbcUrl";
     }
     
     @Override

@@ -39,18 +39,9 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
      *
      * @param columnName column name
      * @param value assignment value
-     * @param withQuotes withQuotes value
      */
-    public void addAssignment(final String columnName, final Object value, final boolean withQuotes) {
-        assignments.add(new LiteralAssignment(columnName, value, withQuotes));
-    }
-    
-    /**
-     * Get assignments.
-     * @return LiteralAssignment collection
-     */
-    public Collection<LiteralAssignment> getAssignment() {
-        return assignments;
+    public void addAssignment(final String columnName, final Object value) {
+        assignments.add(new LiteralAssignment(columnName, value));
     }
     
     @Override
@@ -65,15 +56,13 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         
         private final Object value;
         
-        private final boolean withQuotes;
-        
         @Override
         public String toString() {
             return String.format("%s = %s", columnName, toString(value));
         }
     
         private String toString(final Object value) {
-            return (String.class == value.getClass() && withQuotes) ? String.format("'%s'", value) : value.toString();
+            return String.class == value.getClass() ? String.format("'%s'", value) : value.toString();
         }
     }
 }

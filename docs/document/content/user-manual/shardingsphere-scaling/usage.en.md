@@ -155,7 +155,7 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. Alter sharding table rule
+2. Alter all sharding table rule
 
 Currently, scaling job could only be emitted by executing `ALTER SHARDING TABLE RULE` DistSQL.
 
@@ -201,6 +201,8 @@ GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=12
 ```
 
 `algorithm-expression` of `database_inline` is alerted from `ds_${user_id % 2}` to `ds_${user_id % 3 + 2}`, and `DATANODES` of `t_order` is alerted from `ds_${0..1}.t_order_${0..1}` to `ds_${2..4}.t_order_${0..1}`, it will emit scaling job.
+
+Currently, `ALTER SHARDING ALGORITHM` will take effect immediately, but table rule will not, it might cause inserting data into source side failure, so alter sharding table rule to `AutoTableRule` is recommended for now.
 
 #### List scaling jobs
 

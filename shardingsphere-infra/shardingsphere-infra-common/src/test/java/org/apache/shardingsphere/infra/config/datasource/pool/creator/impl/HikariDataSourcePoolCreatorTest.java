@@ -100,5 +100,16 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
         assertThat(props.get("cachePrepStmts"), is(true));
         assertThat(props.get("prepStmtCacheSize"), is(1000));
+        assertThat(props.get("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("cachedefaultDataSourcePropsSetMetadata"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(props.get("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("netTimeoutForStreamingdefaultDataSourcePropss"), is("0"));
+        assertThat(props.get("tinyInt1isBit"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(props.get("serverTimezone"), is("UTC"));
     }
 }
