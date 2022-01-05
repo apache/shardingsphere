@@ -150,6 +150,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             result.add(distinctOwner(generatePredicateSubqueryProjection(tableName, column), shorthand));
         } else if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType)) {
             result.addAll(generateTableSubqueryProjections(tableName, column, shorthand));
+        } else if (SubqueryType.EXISTS_SUBQUERY.equals(subqueryType)) {
+            result.addAll(generateExistsSubqueryProjections(tableName, column, shorthand));
         } else {
             result.add(distinctOwner(generateCommonProjection(tableName, column, shorthand, segment), shorthand));
         }
@@ -186,6 +188,12 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column.getName());
         plainColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
+        return result;
+    }
+    
+    private Collection<ColumnProjection> generateExistsSubqueryProjections(final String tableName, final ColumnProjection column, final boolean shorthand) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        result.add(distinctOwner(new ColumnProjection(column.getOwner(), getEncryptRule().getCipherColumn(tableName, column.getName()), null), shorthand));
         return result;
     }
     
