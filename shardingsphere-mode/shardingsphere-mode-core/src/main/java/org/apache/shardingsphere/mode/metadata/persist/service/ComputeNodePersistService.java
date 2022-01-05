@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -53,7 +54,8 @@ public final class ComputeNodePersistService {
      * @return collection of label
      */
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        return YamlEngine.unmarshal(repository.get(ComputeNode.getInstanceLabelNodePath(instanceId)), Collection.class);
+        String yamlContent = repository.get(ComputeNode.getInstanceLabelNodePath(instanceId));
+        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**
