@@ -124,7 +124,7 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof FrontendTooManyConnectionsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());
+            return new MySQLErrPacket(0, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());
         }
         if (cause instanceof RuntimeException) {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
