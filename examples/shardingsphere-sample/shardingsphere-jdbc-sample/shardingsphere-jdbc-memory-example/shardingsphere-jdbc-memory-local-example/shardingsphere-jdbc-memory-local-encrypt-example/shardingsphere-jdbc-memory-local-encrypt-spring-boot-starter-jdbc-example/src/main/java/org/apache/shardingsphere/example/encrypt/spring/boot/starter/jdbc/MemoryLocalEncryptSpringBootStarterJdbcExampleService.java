@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc;
 
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.Order;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -32,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
     
     private final DataSource dataSource;
@@ -40,7 +41,7 @@ public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException SQL exception
+     * @throws SQLException SQL Exception
      */
     public void run() throws SQLException {
         try {
@@ -53,87 +54,155 @@ public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * 
-     * @throws SQLException SQL exception
+     * @throws SQLException
      */
     private void initEnvironment() throws SQLException {
-        String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user" 
-                + "(user_id INT NOT NULL AUTO_INCREMENT, username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
-        String truncateUserTable = "TRUNCATE TABLE t_user";
+        String createOrderTableSql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        String createOrderItemTableSql = "CREATE TABLE IF NOT EXISTS t_order_item "
+                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
+        String createAddressTableSql = "CREATE TABLE IF NOT EXISTS t_address "
+                + "(address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
+        String truncateOrderTable = "TRUNCATE TABLE t_order";
+        String truncateOrderItemTable = "TRUNCATE TABLE t_order_item";
+        String truncateAddressTableSql = "TRUNCATE TABLE t_address";
         
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(createUserTableSql);
-            statement.executeUpdate(truncateUserTable);
+            statement.executeUpdate(createOrderTableSql);
+            statement.executeUpdate(createOrderItemTableSql);
+            statement.executeUpdate(createAddressTableSql);
+            statement.executeUpdate(createAddressTableSql);
+            statement.executeUpdate(truncateOrderTable);
+            statement.executeUpdate(truncateOrderItemTable);
+            statement.executeUpdate(truncateAddressTableSql);
         }
     }
     
     private void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> ids = insertData();
+        List<Long> orderIds = insertData();
         printData(); 
-        deleteData(ids);
+        deleteData(orderIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            User user = new User();
-            user.setUserId(i);
-            user.setUsername("test_" + i);
-            user.setPwd("pwd" + i);
-            insert(user);
-            result.add((long) user.getUserId());
+            Order order = insertOrder(i);
+            insertOrderItem(i, order);
+            result.add(order.getOrderId());
         }
         return result;
     }
     
-    private long insert(final User user) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, username, pwd) VALUES (?, ?, ?)";
+    private Order insertOrder(final int i) throws SQLException {
+        Order order = new Order();
+        order.setUserId(i);
+        order.setOrderType(i % 2);
+        order.setAddressId(i);
+        order.setStatus("INSERT_TEST");
+        String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getUsername());
-            preparedStatement.setString(3, user.getPwd());
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, order.getUserId());
+            preparedStatement.setInt(2, order.getOrderType());
+            preparedStatement.setLong(3, order.getAddressId());
+            preparedStatement.setString(4, order.getStatus());
             preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    order.setOrderId(resultSet.getLong(1));
+                }
+            }
         }
-        return user.getUserId();
+        return order;
+    }
+    
+    private void insertOrderItem(final int i, final Order order) throws SQLException {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrderId(order.getOrderId());
+        orderItem.setPhone("13800000001");
+        orderItem.setUserId(i);
+        orderItem.setStatus("INSERT_TEST");
+        String sql = "INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (?, ?, ?, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setLong(1, orderItem.getOrderId());
+            preparedStatement.setInt(2, orderItem.getUserId());
+            preparedStatement.setString(3,orderItem.getPhone());
+            preparedStatement.setString(4, orderItem.getStatus());
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    orderItem.setOrderItemId(resultSet.getLong(1));
+                }
+            }
+        }
     }
     
     private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
-        String sql = "DELETE FROM t_user WHERE user_id=?";
         for (Long each : orderIds) {
+            String deleteOrderSql = "DELETE FROM t_order WHERE order_id=?";
+            String deleteOrderItemSql = "DELETE FROM t_order_item WHERE order_id=?";
             try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, each);
-                preparedStatement.executeUpdate();
+                 PreparedStatement orderPreparedStatement = connection.prepareStatement(deleteOrderSql);
+                 PreparedStatement orderItemPreparedStatement = connection.prepareStatement(deleteOrderItemSql)) {
+                orderPreparedStatement.setLong(1, each);
+                orderItemPreparedStatement.setLong(1, each);
+                orderPreparedStatement.executeUpdate();
+                orderItemPreparedStatement.executeUpdate();
             }
         }
     }
     
     private void printData() throws SQLException {
-        System.out.println("---------------------------- Print User Data -----------------------");
-        for (Object each : this.getUsers()) {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Object each : this.getOrders()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : this.getOrderItems()) {
             System.out.println(each);
         }
     }
     
-    protected List<User> getUsers() throws SQLException {
-        List<User> result = new LinkedList<>();
-        String sql = "SELECT * FROM t_user";
+    private List<OrderItem> getOrderItems() throws SQLException {
+        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+        List<OrderItem> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                User user = new User();
-                user.setUserId(resultSet.getInt("user_id"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPwd(resultSet.getString("pwd"));
-                result.add(user);
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderItemId(resultSet.getLong(1));
+                orderItem.setOrderId(resultSet.getLong(2));
+                orderItem.setUserId(resultSet.getInt(3));
+                orderItem.setPhone(resultSet.getString(4));
+                orderItem.setStatus(resultSet.getString(5));
+                result.add(orderItem);
+            }
+        }
+        return result;
+    }
+    
+    private List<Order> getOrders() throws SQLException {
+        String sql = "SELECT * FROM t_order";
+        List<Order> result = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                Order order = new Order();
+                order.setOrderId(resultSet.getLong(1));
+                order.setOrderType(resultSet.getInt(2));
+                order.setUserId(resultSet.getInt(3));
+                order.setAddressId(resultSet.getLong(4));
+                order.setStatus(resultSet.getString(5));
+                result.add(order);
             }
         }
         return result;
@@ -141,14 +210,17 @@ public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
     
     /**
      * Restore the environment.
-     * 
-     * @throws SQLException SQL exception
+     * @throws SQLException
      */
     private void cleanEnvironment() throws SQLException {
-        String sql = "DROP TABLE t_user";
+        String dropOrderSql = "DROP TABLE t_order";
+        String dropOrderItemSql = "DROP TABLE t_order_item";
+        String dropAddressSql = "DROP TABLE t_address";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            statement.executeUpdate(dropOrderSql);
+            statement.executeUpdate(dropOrderItemSql);
+            statement.executeUpdate(dropAddressSql);
         }
     }
 }

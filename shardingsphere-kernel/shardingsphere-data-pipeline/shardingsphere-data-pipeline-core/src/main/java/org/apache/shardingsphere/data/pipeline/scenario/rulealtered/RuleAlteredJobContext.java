@@ -37,7 +37,7 @@ import java.util.LinkedList;
 // TODO extract JobContext
 public final class RuleAlteredJobContext {
     
-    private final long jobId;
+    private final String jobId;
     
     private final int shardingItem;
     

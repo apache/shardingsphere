@@ -63,14 +63,10 @@ rules:
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
           incremental-task-idle-minute-threshold: # If incremental tasks is idle more than so much minutes, then it could be considered as almost completed. Available for types: IDLE
-      sourceWritingStopper: # Lock algorithm for stopping source writing. If it's not configured, then system will skip this step.
-        type: # Algorithm type. Options: DEFAULT
       dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
         type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
         props: # Algorithm properties
           chunk-size: # Maximum records count of a query operation for check
-      checkoutLocker: # Lock algorithm for metadata checkout. If it's not configured, then system will skip this step.
-        type: # Algorithm type. Options: DEFAULT
 ```
 
 Configuration Example:
@@ -93,14 +89,10 @@ rules:
         type: IDLE
         props:
           incremental-task-idle-minute-threshold: 30
-      sourceWritingStopper:
-        type: DEFAULT
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
           chunk-size: 1000
-      checkoutLocker:
-        type: DEFAULT
 ```
 
 You could customize `rateLimiter`, `completionDetector`, `sourceWritingStopper`, `dataConsistencyChecker` and `checkoutLocker` algorithm by implementing SPI. Current implementation could be referenced, please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.

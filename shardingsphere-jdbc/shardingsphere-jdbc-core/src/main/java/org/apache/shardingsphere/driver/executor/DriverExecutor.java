@@ -49,7 +49,7 @@ public final class DriverExecutor implements AutoCloseable {
         regularExecutor = new DriverJDBCExecutor(connection.getSchema(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
         federationExecutor = FederationExecutorFactory.newInstance(connection.getSchema(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
-        trafficExecutor = TrafficExecutorFactory.newInstance();
+        trafficExecutor = TrafficExecutorFactory.newInstance(connection.getContextManager());
     }
     
     /**
@@ -60,5 +60,6 @@ public final class DriverExecutor implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         federationExecutor.close();
+        trafficExecutor.close();
     }
 }

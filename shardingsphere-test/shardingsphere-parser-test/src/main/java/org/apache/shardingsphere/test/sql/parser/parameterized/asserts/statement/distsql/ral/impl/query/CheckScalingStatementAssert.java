@@ -53,12 +53,12 @@ public final class CheckScalingStatementAssert {
         }
     }
     
-    private static void assertJobIds(final SQLCaseAssertContext assertContext, final long actual, final List<Long> expected) {
+    private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
         if (CollectionUtils.isEmpty(expected)) {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
-            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next().longValue()));
+            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next()));
         }
     }
     

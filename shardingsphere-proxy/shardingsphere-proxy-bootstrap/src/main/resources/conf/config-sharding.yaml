@@ -108,14 +108,10 @@
 #        type: IDLE
 #        props:
 #          incremental-task-idle-minute-threshold: 30
-#      sourceWritingStopper:
-#        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
-#      checkoutLocker:
-#        type: DEFAULT
 
 ######################################################################################################
 #
@@ -209,11 +205,7 @@
 #        type: IDLE
 #        props:
 #          incremental-task-idle-minute-threshold: 30
-#      sourceWritingStopper:
-#        type: DEFAULT
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
-#      checkoutLocker:
-#        type: DEFAULT

@@ -64,14 +64,10 @@ rules:
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
           incremental-task-idle-minute-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
-      sourceWritingStopper: # 源端停写算法。如果不配置，那么系统会跳过这个步骤。
-        type: # 算法类型。可选项：DEFAULT
       dataConsistencyChecker: # 数据一致性校验算法。如果不配置，那么系统会跳过这个步骤。
         type: # 算法类型。可选项：DATA_MATCH, CRC32_MATCH
         props: # 算法属性
           chunk-size: # 一次查询操作返回的最大记录数
-      checkoutLocker: # 元数据切换算法。如果不配置，那么系统会跳过这个步骤。
-        type: # 算法类型。可选项：DEFAULT
 ```
 
 配置示例：
@@ -94,14 +90,10 @@ rules:
         type: IDLE
         props:
           incremental-task-idle-minute-threshold: 30
-      sourceWritingStopper:
-        type: DEFAULT
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
           chunk-size: 1000
-      checkoutLocker:
-        type: DEFAULT
 ```
 
 以上的 `rateLimiter`，`completionDetector`，`sourceWritingStopper`，`dataConsistencyChecker` 和 `checkoutLocker` 都可以通过实现SPI自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。

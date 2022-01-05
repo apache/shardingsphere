@@ -39,4 +39,6 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
     private Properties props = new Properties();
+    
+    private Collection<String> labels;
 }

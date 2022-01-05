@@ -15,21 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.jdbc.entity;
+package org.apache.shardingsphere.example.shadow.spring.namespace.jdbc.entity;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class OrderItem implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = 1332162822494069342L;
+    
+    private long orderItemId;
+    
+    private long orderId;
     
     private int userId;
-
-    private int userType;
     
-    private String username;
+    private String phone;
     
-    private String pwd;
+    private String status;
+    
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+    
+    public long getOrderId() {
+        return orderId;
+    }
+    
+    public void setOrderId(final long orderId) {
+        this.orderId = orderId;
+    }
     
     public int getUserId() {
         return userId;
@@ -38,33 +56,25 @@ public class User implements Serializable {
     public void setUserId(final int userId) {
         this.userId = userId;
     }
-
-    public int getUserType() {
-        return userType;
-    }
-
-    public void setUserType(final int userType) {
-        this.userType = userType;
+    
+    public String getPhone() {
+        return phone;
     }
     
-    public String getUsername() {
-        return username;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
     
-    public void setUsername(final String username) {
-        this.username = username;
+    public String getStatus() {
+        return status;
     }
     
-    public String getPwd() {
-        return pwd;
-    }
-    
-    public void setPwd(final String pwd) {
-        this.pwd = pwd;
+    public void setStatus(final String status) {
+        this.status = status;
     }
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, phone: %s, status: %s", orderItemId, orderId, userId, phone, status);
     }
 }

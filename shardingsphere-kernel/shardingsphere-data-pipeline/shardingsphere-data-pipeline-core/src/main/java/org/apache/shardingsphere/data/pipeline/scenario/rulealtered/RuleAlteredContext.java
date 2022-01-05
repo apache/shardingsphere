@@ -22,10 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -82,24 +82,14 @@ public final class RuleAlteredContext {
         } else {
             completionDetectAlgorithm = null;
         }
-        ShardingSphereAlgorithmConfiguration sourceWritingStopper = onRuleAlteredActionConfig.getSourceWritingStopper();
-        if (null != sourceWritingStopper) {
-            sourceWritingStopAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(sourceWritingStopper, RowBasedJobLockAlgorithm.class);
-        } else {
-            sourceWritingStopAlgorithm = null;
-        }
+        sourceWritingStopAlgorithm = null;
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
         if (null != dataConsistencyChecker) {
             dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class);
         } else {
             dataConsistencyCheckAlgorithm = null;
         }
-        ShardingSphereAlgorithmConfiguration checkoutLocker = onRuleAlteredActionConfig.getCheckoutLocker();
-        if (null != checkoutLocker) {
-            checkoutLockAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(checkoutLocker, RuleBasedJobLockAlgorithm.class);
-        } else {
-            checkoutLockAlgorithm = null;
-        }
+        checkoutLockAlgorithm = null;
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(onRuleAlteredActionConfig.getWorkerThread());

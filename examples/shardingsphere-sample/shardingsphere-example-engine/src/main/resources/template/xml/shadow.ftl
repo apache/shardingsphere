@@ -18,7 +18,7 @@
     <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">insert</prop>
-            <prop key="column">user_type</prop>
+            <prop key="column">order_type</prop>
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
@@ -26,7 +26,7 @@
     <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">delete</prop>
-            <prop key="column">user_type</prop>
+            <prop key="column">order_type</prop>
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
@@ -34,7 +34,7 @@
     <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">select</prop>
-            <prop key="column">user_type</prop>
+            <prop key="column">order_type</prop>
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
@@ -48,7 +48,7 @@
 
     <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds_0" shadow-data-source-name="demo_ds_1"/>
-        <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
+        <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />

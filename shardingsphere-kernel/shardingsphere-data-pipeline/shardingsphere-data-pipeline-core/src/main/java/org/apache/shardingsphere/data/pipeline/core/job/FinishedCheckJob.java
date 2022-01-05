@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCo
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -47,7 +47,7 @@ public final class FinishedCheckJob implements SimpleJob {
             if (!jobInfo.isActive()) {
                 continue;
             }
-            long jobId = jobInfo.getJobId();
+            String jobId = jobInfo.getJobId();
             try {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
@@ -92,12 +92,12 @@ public final class FinishedCheckJob implements SimpleJob {
         }
     }
     
-    private boolean dataConsistencyCheck(final long jobId) {
+    private boolean dataConsistencyCheck(final String jobId) {
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId);
         return pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
     
-    private void switchClusterConfiguration(final String schemaName, final long jobId, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String schemaName, final String jobId, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
         try {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.lock(schemaName, jobId + "");
