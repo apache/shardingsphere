@@ -131,7 +131,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     @Test
     public void assertConvertToSQLNode() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), databaseType);
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);
@@ -142,10 +142,10 @@ public final class SQLNodeConvertEngineParameterizedTest {
     public void assertConvertToSQLStatement() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), databaseType);
         SqlNode sqlNode = parseSqlNode(databaseType, sql);
         SQLStatement actual = SQLNodeConverterEngine.convertToSQLStatement(sqlNode);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType, databaseType), actual, expected);
     }
     
     @SneakyThrows(SqlParseException.class)

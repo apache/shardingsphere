@@ -20,8 +20,9 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
-    |  DQ_ ~'"'+ DQ_
+    : [A-Za-z_0-9\u0080-\uFFFF]*?[A-Za-z_\u0080-\uFFFF]+?[A-Za-z_0-9\u0080-\uFFFF]*
+    | DQ_ ~'"'+ DQ_
+    | DOLLAR_ DOLLAR_ // TODO remove it after create function fixed
     ;
 
 STRING_
