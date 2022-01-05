@@ -99,7 +99,7 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * load compute node instances by labels.
+     * Load compute node instances by labels.
      * 
      * @param labels collection of label
      * @return collection of compute node instance
