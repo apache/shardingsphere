@@ -60,7 +60,7 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
                 // TODO process algorithm provided configuration 
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode.getRulePath(schemaName)), Collection.class))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode.getRulePath(schemaName)), Collection.class, true))
                 : new LinkedList<>();
     }
     

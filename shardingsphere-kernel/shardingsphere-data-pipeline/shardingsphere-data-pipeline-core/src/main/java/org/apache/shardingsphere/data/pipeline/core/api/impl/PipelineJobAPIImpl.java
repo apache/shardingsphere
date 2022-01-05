@@ -289,7 +289,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         }
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class, true);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
