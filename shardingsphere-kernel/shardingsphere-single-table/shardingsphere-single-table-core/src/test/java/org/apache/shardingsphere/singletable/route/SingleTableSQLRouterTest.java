@@ -22,11 +22,12 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.singletable.rule.SingleTableDataNode;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -64,8 +65,9 @@ public final class SingleTableSQLRouterTest {
         List<Object> parametersList = new LinkedList<>();
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(createTableStatement);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "create table", parametersList);
-        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("ds_0", "t_order")));
         RouteContext routeContext = singleTableSQLRouter.createRouteContext(logicSQL, mock(ShardingSphereMetaData.class), singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
