@@ -30,7 +30,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 <#elseif framework=="jdbc">
-
 import javax.sql.DataSource;
 </#if>
 import java.sql.SQLException;

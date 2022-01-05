@@ -192,6 +192,52 @@
             </select>
         </create-table>
     </describe>
+    <describe sql-case-id="explain_with_analyze">
+        <select>
+            <projections start-index="23" stop-index="23">
+                <shorthand-projection start-index="23" stop-index="23" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="30" stop-index="36"/>
+            </from>
+            <where start-index="38" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="44" stop-index="55">
+                        <left>
+                            <column name="order_id" start-index="44" stop-index="51" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="55" stop-index="55" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_format">
+        <select>
+            <projections start-index="37" stop-index="37">
+                <shorthand-projection start-index="37" stop-index="37" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="44" stop-index="50"/>
+            </from>
+            <where start-index="52" stop-index="69">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="69">
+                        <left>
+                            <column name="order_id" start-index="58" stop-index="65" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="69" stop-index="69" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
     <describe sql-case-id="desc_table">
         <table name="tableName" start-index="5" stop-index="13" />
     </describe>

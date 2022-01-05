@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.db.discovery.jdbc.entity;
+package org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity;
 
 import java.io.Serializable;
 

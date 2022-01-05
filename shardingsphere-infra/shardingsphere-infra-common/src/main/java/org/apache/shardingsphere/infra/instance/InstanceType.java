@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.jdbc;
+package org.apache.shardingsphere.infra.instance;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-
-public class MemoryLocalShardingJdbcExample {
+/**
+ * Instance type.
+ */
+public enum InstanceType {
     
-    public static void main(final String[] args) throws SQLException {
-        MemoryLocalShardingJdbcConfiguration configuration = new MemoryLocalShardingJdbcConfiguration();
-        DataSource dataSource = configuration.getDataSource();
-        MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
-        exampleService.run();
-    }
+    PROXY, JDBC
 }

@@ -31,7 +31,7 @@ explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
-    | ANALYZE select)
+    | ANALYZE (FORMAT EQ_ TREE)? select)
     ;
 
 showDatabases
@@ -409,6 +409,7 @@ explainType
     : FORMAT EQ_ formatName
     ;
 
+// TODO support table statement
 explainableStatement
     : select | delete | insert | replace | update
     ;
