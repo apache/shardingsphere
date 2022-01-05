@@ -31,6 +31,8 @@ import java.util.Properties;
 @Getter
 public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
     
+    private final Map<String, Object> defaultProperties = new HashMap<>(6, 1);
+    
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
@@ -38,9 +40,19 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     private final Properties defaultDataSourceProperties = new Properties();
     
     public HikariDataSourcePoolCreationMetaData() {
+        buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
         buildDefaultDataSourceProperties();
+    }
+    
+    private void buildDefaultProperties() {
+        defaultProperties.put("connectionTimeout", 30 * 1000L);
+        defaultProperties.put("idleTimeout", 60 * 1000L);
+        defaultProperties.put("maxLifetime", 30 * 70 * 1000L);
+        defaultProperties.put("maximumPoolSize", 50);
+        defaultProperties.put("minimumIdle", 1);
+        defaultProperties.put("readOnly", false);
     }
     
     private void buildInvalidProperties() {

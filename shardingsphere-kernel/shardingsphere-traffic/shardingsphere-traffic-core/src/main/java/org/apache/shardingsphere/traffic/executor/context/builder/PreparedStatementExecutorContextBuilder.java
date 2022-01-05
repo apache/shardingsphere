@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.fixture;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public final class FixtureContextManagerBuilder implements ContextManagerBuilder {
-
+/**
+ * Prepared statement executor context builder.
+ */
+public final class PreparedStatementExecutorContextBuilder implements TrafficExecutorContextBuilder<PreparedStatement> {
+    
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        return null;
+    public TrafficExecutorContext<PreparedStatement> build(final LogicSQL logicSQL, final Connection connection) throws SQLException {
+        return new TrafficExecutorContext<>(connection.prepareStatement(logicSQL.getSql()));
     }
-
+    
     @Override
     public String getType() {
-        return "fixture";
+        return JDBCDriverType.PREPARED_STATEMENT;
     }
 }

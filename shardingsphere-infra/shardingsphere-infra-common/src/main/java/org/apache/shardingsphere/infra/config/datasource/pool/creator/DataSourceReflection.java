@@ -48,6 +48,8 @@ public final class DataSourceReflection {
     
     private static final Collection<String> SKIPPED_PROPERTY_KEYS;
     
+    private static final String IS_PREFIX = "is";
+    
     private static final String GETTER_PREFIX = "get";
     
     private static final String SETTER_PREFIX = "set";
@@ -66,12 +68,21 @@ public final class DataSourceReflection {
      * 
      * @return properties converted from data source
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     public Map<String, Object> convertToProperties() {
-        Collection<Method> getterMethods = findAllGetterMethods();
+        Map<String, Object> getterProps = convertToProperties(GETTER_PREFIX);
+        Map<String, Object> isProps = convertToProperties(IS_PREFIX);
+        Map<String, Object> result = new LinkedHashMap<>(getterProps.size() + isProps.size(), 1);
+        result.putAll(getterProps);
+        result.putAll(isProps);
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Map<String, Object> convertToProperties(final String prefix) {
+        Collection<Method> getterMethods = findAllGetterMethods(prefix);
         Map<String, Object> result = new LinkedHashMap<>(getterMethods.size(), 1);
         for (Method each : getterMethods) {
-            String fieldName = getFieldName(each);
+            String fieldName = getGetterFieldName(each, prefix);
             if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_KEYS.contains(fieldName)) {
                 Object fieldValue = each.invoke(dataSource);
                 if (null != fieldValue) {
@@ -82,18 +93,18 @@ public final class DataSourceReflection {
         return result;
     }
     
-    private Collection<Method> findAllGetterMethods() {
+    private Collection<Method> findAllGetterMethods(final String methodPrefix) {
         Collection<Method> result = new HashSet<>(dataSourceMethods.length);
         for (Method each : dataSourceMethods) {
-            if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
+            if (each.getName().startsWith(methodPrefix) && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
         }
         return result;
     }
     
-    private static String getFieldName(final Method method) {
-        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, method.getName().substring(GETTER_PREFIX.length()));
+    private static String getGetterFieldName(final Method method, final String methodPrefix) {
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, method.getName().substring(methodPrefix.length()));
     }
     
     /**

@@ -1700,4 +1700,34 @@
             </projections>
         </select>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_chinese_word">
+        <table name="测试表" start-index="13" stop-index="15" />
+        <column-definition type="int" primary-key="true" start-index="17" stop-index="34">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="37" stop-index="54">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_chinese_word_with_quote_mysql">
+        <table name="测试表" start-index="13" stop-index="17" start-delimiter="`" end-delimiter="`" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_chinese_word_with_quote">
+        <table name="测试表" start-index="13" stop-index="17" start-delimiter="&quot;" end-delimiter="&quot;" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

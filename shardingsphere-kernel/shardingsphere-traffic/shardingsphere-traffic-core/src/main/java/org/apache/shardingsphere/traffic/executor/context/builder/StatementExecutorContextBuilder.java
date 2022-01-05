@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.Instance;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Compute node status service.
+ * Statement executor context builder.
  */
-@RequiredArgsConstructor
-public final class ComputeNodeStatusService {
+public final class StatementExecutorContextBuilder implements TrafficExecutorContextBuilder<Statement> {
     
-    private final ClusterPersistRepository repository;
+    @Override
+    public TrafficExecutorContext<Statement> build(final LogicSQL logicSQL, final Connection connection) throws SQLException {
+        return new TrafficExecutorContext<>(connection.createStatement());
+    }
     
-    /**
-     * Register online.
-     */
-    public void registerOnline() {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(Instance.getInstance().getId()), "");
+    @Override
+    public String getType() {
+        return JDBCDriverType.STATEMENT;
     }
 }

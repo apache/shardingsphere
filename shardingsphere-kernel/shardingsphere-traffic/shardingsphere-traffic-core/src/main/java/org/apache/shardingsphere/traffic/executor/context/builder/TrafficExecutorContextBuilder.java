@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
+package org.apache.shardingsphere.traffic.executor.context.builder;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.Instance;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Compute node status service.
+ * Traffic executor context builder.
  */
-@RequiredArgsConstructor
-public final class ComputeNodeStatusService {
-    
-    private final ClusterPersistRepository repository;
+public interface TrafficExecutorContextBuilder<T extends Statement> extends TypedSPI {
     
     /**
-     * Register online.
+     * Build traffic executor context.
+     * 
+     * @param logicSQL logic SQL
+     * @param connection connection
+     * @return traffic executor context
+     * @throws SQLException SQL exception
      */
-    public void registerOnline() {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(Instance.getInstance().getId()), "");
-    }
+    TrafficExecutorContext<T> build(LogicSQL logicSQL, Connection connection) throws SQLException;
 }

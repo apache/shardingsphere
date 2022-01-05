@@ -17,22 +17,38 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.Builder;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Context manager builder.
+ * Context manager builder parameter.
  */
-public interface ContextManagerBuilder extends TypedSPI, RequiredSPI {
+@Builder
+@Getter
+public final class ContextManagerBuilderParameter {
     
-    /**
-     * Build context manager.
-     *
-     * @param parameter context manager builder parameter
-     * @return context manager
-     * @throws SQLException SQL exception
-     */
-    ContextManager build(ContextManagerBuilderParameter parameter) throws SQLException;
+    private ModeConfiguration modeConfig; 
+    
+    private Map<String, Map<String, DataSource>> dataSourcesMap;
+    
+    private Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
+    
+    private Collection<RuleConfiguration> globalRuleConfigs;
+    
+    private Properties props;
+    
+    private boolean isOverwrite;
+    
+    private Integer port;
+    
+    private String schemaName;
+    
+    private Collection<String> labels;
 }

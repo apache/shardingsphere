@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
+package org.apache.shardingsphere.traffic.executor.context;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.Instance;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.sql.Statement;
 
 /**
- * Compute node status service.
+ * Traffic executor context.
  */
 @RequiredArgsConstructor
-public final class ComputeNodeStatusService {
+@Getter
+public final class TrafficExecutorContext<T extends Statement> {
     
-    private final ClusterPersistRepository repository;
-    
-    /**
-     * Register online.
-     */
-    public void registerOnline() {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(Instance.getInstance().getId()), "");
-    }
+    private final T statement;
 }
