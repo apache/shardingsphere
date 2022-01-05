@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 public final class SingleTableSQLRouterTest {
 
     @Test
-    public void assertCreateTableSuccessfully () {
+    public void assertCreateTableSuccessfully() {
         SingleTableSQLRouter singleTableSQLRouter = new SingleTableSQLRouter();
         IdentifierValue identifierValue = new IdentifierValue("t_order");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, identifierValue);
