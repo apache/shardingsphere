@@ -20,6 +20,7 @@ package org.apache.shardingsphere.traffic.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -54,15 +55,17 @@ public final class TrafficEngine {
             return result;
         }
         List<String> dataSourceNames = getDataSourceNamesByLabels(strategyRule.get().getLabels());
-        TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-        result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
+        if (!dataSourceNames.isEmpty()) {
+            TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
+            result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
+        }
         return result;
     }
     
     private List<String> getDataSourceNamesByLabels(final Collection<String> labels) {
         List<String> result = new ArrayList<>();
         if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-            for (ComputeNodeInstance each : metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(labels)) {
+            for (ComputeNodeInstance each : metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels)) {
                 result.add(each.getIp() + "@" + each.getPort());
             }
         }

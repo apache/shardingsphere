@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -78,7 +79,7 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
                 throw new ShardingSphereException("Can not get dataSource configs from meta data.");
             }
             DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
-            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(trafficRule.get().getLabels());
+            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
             dataSources.putAll(DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, dataSourceConfigSample, schema)));
         }
     }
