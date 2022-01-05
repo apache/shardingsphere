@@ -26,9 +26,12 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
+    
+    private static final OnRuleAlteredActionConfigurationYamlSwapper CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     @Test
     public void assertSwap() {
@@ -43,16 +46,22 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
-        Properties sourceWritingStopperProps = new Properties();
-        yamlConfig.setSourceWritingStopper(new YamlShardingSphereAlgorithmConfiguration("DEFAULT", sourceWritingStopperProps));
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
         yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
-        Properties checkoutLockerProps = new Properties();
-        yamlConfig.setCheckoutLocker(new YamlShardingSphereAlgorithmConfiguration("DEFAULT", checkoutLockerProps));
         OnRuleAlteredActionConfigurationYamlSwapper yamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
         OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
         YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
+    }
+    
+    @Test
+    public void assertYamlConfigNull() {
+        assertNull(CONFIG_YAML_SWAPPER.swapToYamlConfiguration(null));
+    }
+    
+    @Test
+    public void assertConfigNull() {
+        assertNull(CONFIG_YAML_SWAPPER.swapToObject(null));
     }
 }

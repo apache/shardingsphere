@@ -54,7 +54,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     public ShardingSpherePipelineDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
-        rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class);
+        rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(getJdbcUrl(props));
     }
