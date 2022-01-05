@@ -298,10 +298,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
         String tableName = getIdentifierValue(ctx.tableName());
         Collection<String> dataNodes = getDataNodes(ctx.dataNodes());
-        ShardingStrategySegment tableStrategy = (ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy());
-        ShardingStrategySegment databaseStrategy = (ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy());
         KeyGenerateSegment keyGenerateSegment = null != ctx.keyGenerateDeclaration() ? (KeyGenerateSegment) visit(ctx.keyGenerateDeclaration()) : null;
-        return new TableRuleSegment(tableName, dataNodes, databaseStrategy, tableStrategy, keyGenerateSegment);
+        TableRuleSegment result = new TableRuleSegment(tableName, dataNodes, keyGenerateSegment);
+        Optional.ofNullable(ctx.tableStrategy()).ifPresent(op -> result.setTableStrategySegment((ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy())));
+        Optional.ofNullable(ctx.databaseStrategy()).ifPresent(op -> result.setDatabaseStrategySegment((ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy())));
+        return result;
     }
     
     @Override
