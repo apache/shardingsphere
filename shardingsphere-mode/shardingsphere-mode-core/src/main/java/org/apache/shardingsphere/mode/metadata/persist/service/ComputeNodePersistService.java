@@ -60,7 +60,7 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load all compute node instances by instance type and labels.
+     * Load all compute node instances by instance type.
      * 
      * @param instanceType instance type     
      * @return collection of compute node instance
