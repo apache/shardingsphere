@@ -66,7 +66,6 @@ public final class SingleTableSQLRouterTest {
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "create table", parametersList);
         SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_1"));
         RouteContext routeContext = singleTableSQLRouter.createRouteContext(logicSQL, mock(ShardingSphereMetaData.class), singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
