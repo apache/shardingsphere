@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Distribution channel.
  */
 @Slf4j
-public final class DistributionChannel implements Channel {
+public final class MemoryChannel implements Channel {
     
     private final int channelNumber;
     
@@ -61,7 +61,15 @@ public final class DistributionChannel implements Channel {
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
-    public DistributionChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
+    public MemoryChannel(final AckCallback ackCallback) {
+        this(10000, ackCallback);
+    }
+    
+    public MemoryChannel(final int blockQueueSize, final AckCallback ackCallback) {
+        this(1, blockQueueSize, ackCallback);
+    }
+    
+    public MemoryChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];

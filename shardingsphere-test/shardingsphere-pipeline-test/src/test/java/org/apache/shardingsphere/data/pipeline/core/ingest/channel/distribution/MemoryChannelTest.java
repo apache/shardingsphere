@@ -40,7 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DistributionChannelTest {
+public final class MemoryChannelTest {
     
     @Test
     public void assertAckCallbackResultSortable() {
@@ -64,25 +64,25 @@ public final class DistributionChannelTest {
     private void execute(final AckCallback ackCallback, final int count, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(count);
         AtomicBoolean acknowledged = new AtomicBoolean();
-        DistributionChannel distributionChannel = new DistributionChannel(2, 10000, ackRecords -> {
+        MemoryChannel memoryChannel = new MemoryChannel(2, 10000, ackRecords -> {
             ackCallback.onAck(ackRecords);
             acknowledged.set(true);
         });
-        fetchWithMultiThreading(distributionChannel, countDownLatch);
+        fetchWithMultiThreading(memoryChannel, countDownLatch);
         for (Record record : records) {
-            distributionChannel.pushRecord(record);
+            memoryChannel.pushRecord(record);
         }
         countDownLatch.await();
-        distributionChannel.close();
+        memoryChannel.close();
         assertTrue(acknowledged.get());
     }
     
-    private void fetchWithMultiThreading(final DistributionChannel distributionChannel, final CountDownLatch countDownLatch) {
+    private void fetchWithMultiThreading(final MemoryChannel memoryChannel, final CountDownLatch countDownLatch) {
         for (int i = 0; i < 2; i++) {
             new Thread(() -> {
                 while (true) {
-                    List<Record> records = distributionChannel.fetchRecords(100, 0);
-                    distributionChannel.ack();
+                    List<Record> records = memoryChannel.fetchRecords(100, 0);
+                    memoryChannel.ack();
                     records.forEach(each -> countDownLatch.countDown());
                 }
             }).start();
