@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -54,6 +56,12 @@ public final class TransactionBackendHandlerFactory {
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
             return new TransactionAutoCommitHandler((SetAutoCommitStatement) tclStatement, connectionSession);
+        }
+        if (tclStatement instanceof MySQLSetTransactionStatement) {
+            MySQLSetTransactionStatement statement = (MySQLSetTransactionStatement) tclStatement;
+            if (null == statement.getScope() || statement.getScope().equalsIgnoreCase("session")) {
+                return new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
+            }
         }
         if (tclStatement instanceof SavepointStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);
