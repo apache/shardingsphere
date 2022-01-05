@@ -82,7 +82,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         beforeBuildContextManager(parameter);
         contextManager = new ContextManager();
         contextManager.init(metaDataContexts, transactionContexts, null);
-        afterBuildContextManager();
+        afterBuildContextManager(parameter);
         return contextManager;
     }
     
@@ -106,10 +106,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
     }
     
-    private void afterBuildContextManager() {
+    private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
         disableDataSources();
-        registryCenter.onlineInstance();
+        registryCenter.onlineInstance(parameter.getInstanceType());
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {

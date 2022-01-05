@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -51,4 +52,6 @@ public final class ContextManagerBuilderParameter {
     private String schemaName;
     
     private Collection<String> labels;
+    
+    private InstanceType instanceType;
 }
