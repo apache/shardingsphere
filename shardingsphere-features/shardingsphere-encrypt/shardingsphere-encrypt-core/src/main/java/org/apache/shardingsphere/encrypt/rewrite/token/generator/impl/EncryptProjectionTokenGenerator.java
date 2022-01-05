@@ -143,7 +143,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<ColumnProjection> generateProjections(final ShorthandProjectionSegment segment, final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand) {
+    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand, 
+                                                             final ShorthandProjectionSegment segment) {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
             result.add(distinctOwner(generatePredicateSubqueryProjection(tableName, column), shorthand));
