@@ -53,6 +53,11 @@ public class OrderItem implements Serializable {
     private int userId;
     
     <#if framework?contains("jpa")>
+    @Column(name = "phone")
+    </#if>
+    private String phone;
+    
+    <#if framework?contains("jpa")>
     @Column(name = "status")
     </#if>
     private String status;
@@ -81,6 +86,14 @@ public class OrderItem implements Serializable {
         this.userId = userId;
     }
     
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
     public String getStatus() {
         return status;
     }
@@ -91,6 +104,6 @@ public class OrderItem implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, phone: %s, status: %s", orderItemId, orderId, userId, phone, status);
     }
 }

@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.db.discovery.jdbc.entity;
+package org.apache.shardingsphere.example.shadow.jdbc.entity;
 
 import java.io.Serializable;
 
-public class Order implements Serializable {
+public class OrderItem implements Serializable {
     
-    private static final long serialVersionUID = 8306802022239174861L;
+    private static final long serialVersionUID = 1332162822494069342L;
+    
+    private long orderItemId;
     
     private long orderId;
-
-    private int orderType;
     
     private int userId;
     
-    private long addressId;
+    private String phone;
     
     private String status;
+    
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
     
     public long getOrderId() {
         return orderId;
@@ -39,14 +47,6 @@ public class Order implements Serializable {
     
     public void setOrderId(final long orderId) {
         this.orderId = orderId;
-    }
-
-    public int getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(final int orderType) {
-        this.orderType = orderType;
     }
     
     public int getUserId() {
@@ -57,6 +57,14 @@ public class Order implements Serializable {
         this.userId = userId;
     }
     
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
     public String getStatus() {
         return status;
     }
@@ -65,16 +73,8 @@ public class Order implements Serializable {
         this.status = status;
     }
     
-    public long getAddressId() {
-        return addressId;
-    }
-    
-    public void setAddressId(final long addressId) {
-        this.addressId = addressId;
-    }
-    
     @Override
     public String toString() {
-        return String.format("order_id: %s, order_type: %s, user_id: %s, address_id: %s, status: %s", orderId, orderType, userId, addressId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, phone: %s, status: %s", orderItemId, orderId, userId, phone, status);
     }
 }

@@ -22,17 +22,20 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -88,7 +91,7 @@ public final class MemoryLocalShadowJdbcConfiguration {
     
     private Map<String, ShadowTableConfiguration> createShadowTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
+        result.put("t_order", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
         return result;
     }
     
@@ -117,17 +120,17 @@ public final class MemoryLocalShadowJdbcConfiguration {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
         userIdInsertProps.setProperty("operation", "insert");
-        userIdInsertProps.setProperty("column", "user_type");
+        userIdInsertProps.setProperty("column", "order_type");
         userIdInsertProps.setProperty("value", "1");
         result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         Properties userIdDeleteProps = new Properties();
         userIdDeleteProps.setProperty("operation", "delete");
-        userIdDeleteProps.setProperty("column", "user_type");
+        userIdDeleteProps.setProperty("column", "order_type");
         userIdDeleteProps.setProperty("value", "1");
         result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
         Properties userIdSelectProps = new Properties();
         userIdSelectProps.setProperty("operation", "select");
-        userIdSelectProps.setProperty("column", "user_type");
+        userIdSelectProps.setProperty("column", "order_type");
         userIdSelectProps.setProperty("value", "1");
         result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();

@@ -17,15 +17,39 @@
 
 package org.apache.shardingsphere.example.encrypt.jdbc;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
-public class MemoryLocalEncryptJdbcExample {
+import java.util.Properties;
+
+public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
+
+    @Getter
+    @Setter
+    private Properties props;
+
+    @Override
+    public void init() {
+    }
     
-    public static void main(final String[] args) throws SQLException {
-        MemoryLocalEncryptJdbcConfiguration configuration = new MemoryLocalEncryptJdbcConfiguration();
-        DataSource dataSource = configuration.getDataSource();
-        MemoryLocalEncryptJdbcExampleService exampleService = new MemoryLocalEncryptJdbcExampleService(dataSource);
-        exampleService.run();
+    @Override
+    public String encrypt(final Object plainValue) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue) {
+        return "assistedEncryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "assistedTest";
     }
 }
