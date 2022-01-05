@@ -77,7 +77,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     }
     
     private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()), data.getKey().equals(defaultAlgorithm));
+        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()), Boolean.valueOf(data.getKey().equals(defaultAlgorithm)).toString());
     }
     
     private String convertToString(final Properties props) {
