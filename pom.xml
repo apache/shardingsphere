@@ -102,6 +102,8 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.11.18</bytebuddy.version>
         
+        <vertx.version>4.2.3</vertx.version>
+        
         <elasticjob.version>3.0.1</elasticjob.version>
         
         <calcite.version>1.27.0</calcite.version>
@@ -433,6 +435,12 @@
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-mysql-client</artifactId>
+                <version>${vertx.version}</version>
             </dependency>
             
             <dependency>
