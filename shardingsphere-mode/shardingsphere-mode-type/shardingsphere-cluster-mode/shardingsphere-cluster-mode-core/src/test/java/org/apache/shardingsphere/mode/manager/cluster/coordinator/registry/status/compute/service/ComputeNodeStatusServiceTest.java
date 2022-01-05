@@ -41,6 +41,6 @@ public final class ComputeNodeStatusServiceTest {
     @Test
     public void assertRegisterOnline() {
         new ComputeNodeStatusService(repository).registerOnline();
-        verify(repository).persistEphemeral("/status/compute_nodes/online/" + Instance.getInstance().getId(), "");
+        verify(repository).persistEphemeral("/nodes/compute_nodes/online/" + Instance.getInstance().getId(), "");
     }
 }
