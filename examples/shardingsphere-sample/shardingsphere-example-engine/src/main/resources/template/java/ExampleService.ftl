@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
 
-<#if feature=="encrypt" || feature=="shadow">
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.UserRepository;
-<#else>
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderRepository;
-</#if>
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,20 +37,27 @@ import java.util.List;
 <#list feature?split("-") as feature1>
     <#assign featureName=featureName + feature1?cap_first>
 </#list>
+<#if framework?contains("spring")>
 @Service
-public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
-
-<#if feature=="encrypt" || feature=="shadow">
-    @Resource
-    private UserRepository userRepository;
-<#else>
-    @Resource
-    private OrderRepository orderRepository;
-    
-    @Resource
-    private OrderItemRepository orderItemRepository;
 </#if>
-
+public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
+    
+    private final OrderRepository orderRepository;
+    
+    private final OrderItemRepository orderItemRepository;
+<#if framework?contains("jdbc")>
+    public ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService(final DataSource dataSource) {
+        orderRepository = new OrderRepository(dataSource);
+        orderItemRepository = new OrderItemRepository(dataSource);
+    }
+<#else>
+    public ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService(final OrderRepository orderRepository,
+                                                                                                 final OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
+</#if>
+    
     /**
      * Execute test.
      *
@@ -68,11 +71,89 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
             this.cleanEnvironment();
         }
     }
-<#if feature=="encrypt">
-    <#include "userExampleService.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowUserExampleService.ftl">
-<#else>
-    <#include "orderExampleService.ftl">
-</#if>
+
+    /**
+     * Initialize the database test environment.
+     * @throws SQLException
+     */
+    private void initEnvironment() throws SQLException {
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
+        orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
+    <#if feature=="shadow">
+        orderRepository.createTableIfNotExistsShadow();
+        orderRepository.truncateTableShadow();
+    </#if>
+        }
+    }
+    
+    private void processSuccess() throws SQLException {
+        System.out.println("-------------- Process Success Begin ---------------");
+        List<Long> orderIds = insertData();
+        printData(); 
+        deleteData(orderIds);
+        printData();
+        System.out.println("-------------- Process Success Finish --------------");
+    }
+    
+    private List<Long> insertData() throws SQLException {
+        System.out.println("---------------------------- Insert Data ----------------------------");
+        List<Long> result = new ArrayList<>(10);
+        for (int i = 1; i <= 10; i++) {
+            Order order = new Order();
+            order.setUserId(i);
+            order.setOrderType(i % 2);
+            order.setAddressId(i);
+            order.setStatus("INSERT_TEST");
+            repository.insertOrder(order);
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getOrderId());
+            orderItem.setUserId(i);
+            orderItem.setPhone("13800000001");
+            orderItem.setStatus("INSERT_TEST");
+            repository.insertOrderItem(orderItem);
+            result.add(order.getOrderId());
+        }
+        return result;
+    }
+    
+    private void deleteData(final List<Long> orderIds) throws SQLException {
+        System.out.println("---------------------------- Delete Data ----------------------------");
+        for (Long each : orderIds) {
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
+        }
+    }
+    
+    private void printData() throws SQLException {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Object each : this.selectAll()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : orderItemRepository.selectAll()) {
+            System.out.println(each);
+        }
+    }
+    
+    private List<Order> selectAll() {
+        List<Order> result = orderRepository.selectAll();
+    <#if feature=="shadow">
+        result.addAll(orderRepository.selectShadowOrder());
+    </#if>
+        return result;
+    }
+    
+    /**
+     * Restore the environment.
+     * @throws SQLException
+     */
+    private void cleanEnvironment() throws SQLException {
+    <#if feature=="shadow">
+        orderRepository.dropTableShadow();
+    </#if>
+        orderRepository.dropTable();
+        orderItemRepository.dropTable();
+    }
 }

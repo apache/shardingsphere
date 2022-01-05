@@ -15,14 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
+package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
 
-<#if feature=="encrypt" || feature=="shadow">
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
-<#else>
 import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
-</#if>
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -31,25 +26,34 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
-</#list>
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
 @Repository
 @Transactional
-public class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Repository {
+public class OrderRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
-<#if feature=="encrypt">
-    <#include "userRepository.ftl">
-<#elseif feature=="shadow">
-    <#include "shadowJpaRepository.ftl">
-<#else>
-    <#include "orderRepository.ftl">
-</#if>
+
+    public void createTableIfNotExists() throws SQLException {
+    }
+    
+    public void dropTable() throws SQLException {
+    }
+    
+    public void truncateTable() throws SQLException {
+    }
+
+    public Long insert(final Order order) throws SQLException {
+        entityManager.persist(order);
+        return order.getOrderId();
+    }
+    
+    public void delete(final Long orderId) throws SQLException {
+        Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1");
+        query.setParameter(1, orderId);
+        query.executeUpdate();
+    }
+    
+    public List<Order> selectAll() throws SQLException {
+        return (List<Order>) entityManager.createQuery("SELECT o FROM Order o").getResultList();
+    }
 }

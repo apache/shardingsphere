@@ -20,13 +20,14 @@
 <mapper namespace="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order">
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="order_type" property="orderType" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="address_id" property="addressId" jdbcType="BIGINT"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
     </update>
     
     <update id="truncateTable">
@@ -36,9 +37,23 @@
     <update id="dropTable">
         DROP TABLE IF EXISTS t_order;
     </update>
+ <#if feature=="shadow">
+    
+    <update id="createTableIfNotExistsShadow">
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)); /*shadow:true,foo:bar*/
+    </update>
+    
+    <update id="truncateTableShadow">
+        TRUNCATE TABLE t_order; /*shadow:true,foo:bar*/
+    </update>
+    
+    <update id="dropTableShadow">
+        DROP TABLE IF EXISTS t_order; /*shadow:true,foo:bar*/
+    </update>
+ </#if>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO t_order (user_id, address_id, status) VALUES (${r"#{userId,jdbcType=INTEGER}"}, ${r"#{addressId,jdbcType=BIGINT}"}, ${r"#{status,jdbcType=VARCHAR}"});
+        INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (${r"#{userId,jdbcType=INTEGER}"}, ${r"#{orderType,jdbcType=INTEGER}"}, ${r"#{addressId,jdbcType=BIGINT}"}, ${r"#{status,jdbcType=VARCHAR}"});
     </insert>
     
     <delete id="delete">
