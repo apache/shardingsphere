@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import Symbol, RALStatement, RDLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Create sharding scaling statement test case.
+ */
+@Getter
+@Setter
+public final class CreateShardingScalingStatementTestCase extends SQLParserTestCase {
+
+    @XmlAttribute(name = "scaling-name")
+    private String scalingName;
+}

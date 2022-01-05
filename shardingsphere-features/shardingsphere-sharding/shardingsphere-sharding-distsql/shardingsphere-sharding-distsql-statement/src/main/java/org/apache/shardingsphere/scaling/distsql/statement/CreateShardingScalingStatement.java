@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import Symbol, RALStatement, RDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
-    ) SEMI?
-    ;
+/**
+ * Create sharding scaling statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateShardingScalingStatement extends CreateRuleStatement {
+    
+    private final String scalingName;
+}

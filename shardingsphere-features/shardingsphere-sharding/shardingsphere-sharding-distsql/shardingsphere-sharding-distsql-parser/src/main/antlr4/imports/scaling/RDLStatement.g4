@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+grammar RDLStatement;
 
-import Symbol, RALStatement, RDLStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
-    ) SEMI?
+createShardingScaling
+    : CREATE SHARDING SCALING scalingName
+    ;
+
+dropShardingScaling
+    : DROP SHARDING SCALING scalingName
+    ;
+
+scalingName
+    : IDENTIFIER
     ;
