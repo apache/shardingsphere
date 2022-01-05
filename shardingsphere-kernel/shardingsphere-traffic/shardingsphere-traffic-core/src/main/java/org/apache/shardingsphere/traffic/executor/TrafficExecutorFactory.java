@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.executor.jdbc.JDBCTrafficExecutor;
 
 /**
@@ -31,10 +31,11 @@ public final class TrafficExecutorFactory {
     /**
      * Create new instance of traffic executor factory.
      * 
-     * @param contextManager context manager
+     * @param schema schema
+     * @param metaDataContexts meta data contexts
      * @return new instance of traffic executor
      */
-    public static TrafficExecutor newInstance(final ContextManager contextManager) {
-        return new JDBCTrafficExecutor(contextManager);
+    public static TrafficExecutor newInstance(final String schema, final MetaDataContexts metaDataContexts) {
+        return new JDBCTrafficExecutor(schema, metaDataContexts);
     }
 }

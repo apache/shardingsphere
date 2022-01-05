@@ -208,7 +208,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
         Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional).dispatch(logicSQL)).orElse(new TrafficContext());
+        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL)).orElse(new TrafficContext());
     }
     
     private void resetParameters() throws SQLException {
