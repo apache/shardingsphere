@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.instance.Instance;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
@@ -91,6 +92,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ModeScheduleContextFactory.getInstance().init(parameter.getModeConfig());
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.isOverwrite());
+        persistInstanceConfigurations(parameter.getLabels());
         Collection<String> schemaNames = Strings.isNullOrEmpty(parameter.getSchemaName()) ? metaDataPersistService.getSchemaMetaDataService()
                 .loadAllNames() : Collections.singletonList(parameter.getSchemaName());
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
@@ -122,6 +124,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                        final Properties props, final boolean overwrite) {
         if (!isEmptyLocalConfiguration(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props)) {
             metaDataPersistService.persistConfigurations(getDataSourceConfigurations(dataSourcesMap), schemaRuleConfigs, globalRuleConfigs, props, overwrite);
+        }
+    }
+    
+    private void persistInstanceConfigurations(final Collection<String> labels) {
+        if (null != labels && !labels.isEmpty()) {
+            metaDataPersistService.persistInstanceConfigurations(Instance.getInstance().getId(), labels);
         }
     }
     

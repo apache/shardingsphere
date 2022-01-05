@@ -78,6 +78,7 @@ public final class DataSourcePoolCreator {
         DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
         addPropertySynonym(dataSourceConfig);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
+        setDefaultFields(dataSourceReflection);
         setConfiguredFields(dataSourceConfig, dataSourceReflection);
         dataSourceReflection.addDefaultDataSourceProperties(
                 creationMetaData.getDataSourcePropertiesFieldName(), creationMetaData.getJdbcUrlFieldName(), creationMetaData.getDefaultDataSourceProperties());
@@ -92,6 +93,12 @@ public final class DataSourcePoolCreator {
     private void addPropertySynonym(final DataSourceConfiguration dataSourceConfig) {
         for (Entry<String, String> entry : creationMetaData.getPropertySynonyms().entrySet()) {
             dataSourceConfig.addPropertySynonym(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    private void setDefaultFields(final DataSourceReflection dataSourceReflection) {
+        for (Entry<String, Object> entry : creationMetaData.getDefaultProperties().entrySet()) {
+            dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }
     

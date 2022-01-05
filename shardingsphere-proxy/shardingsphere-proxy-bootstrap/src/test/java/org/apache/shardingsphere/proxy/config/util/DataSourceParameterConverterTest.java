@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceParameterConverterTest {
@@ -52,14 +53,15 @@ public final class DataSourceParameterConverterTest {
     
     private void assertParameter(final DataSourceConfiguration actual) {
         Map<String, Object> props = actual.getProps();
-        assertThat(props.get("maximumPoolSize"), is(50));
-        assertThat(props.get("minimumIdle"), is(1));
-        assertThat(props.get("connectionTimeout"), is(30 * 1000L));
-        assertThat(props.get("idleTimeout"), is(60 * 1000L));
-        assertThat(props.get("maxLifetime"), is(30 * 60 * 1000L));
+        assertThat(props.size(), is(9));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
+        assertNull(props.get("maximumPoolSize"));
+        assertNull(props.get("minimumIdle"));
+        assertNull(props.get("connectionTimeout"));
+        assertNull(props.get("idleTimeout"));
+        assertNull(props.get("maxLifetime"));
     }
     
     @Test
