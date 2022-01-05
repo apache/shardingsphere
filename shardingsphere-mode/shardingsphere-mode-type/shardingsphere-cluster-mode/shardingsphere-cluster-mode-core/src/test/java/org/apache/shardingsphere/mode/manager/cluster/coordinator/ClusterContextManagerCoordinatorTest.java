@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -110,7 +111,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(configuration).dataSourcesMap(new HashMap<>()).schemaRuleConfigs(new HashMap<>())
-                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).isOverwrite(false).build());
+                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).isOverwrite(false).instanceType(InstanceType.PROXY).build());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
                 mock(ExecutorEngine.class),
                 new ConfigurationProperties(new Properties()), createOptimizerContext()));

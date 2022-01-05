@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
 
 import org.apache.shardingsphere.infra.instance.Instance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertRegisterOnline() {
-        new ComputeNodeStatusService(repository).registerOnline();
-        verify(repository).persistEphemeral("/nodes/compute_nodes/online/" + Instance.getInstance().getId(), "");
+        new ComputeNodeStatusService(repository).registerOnline(InstanceType.PROXY);
+        verify(repository).persistEphemeral("/nodes/compute_nodes/online/proxy/" + Instance.getInstance().getId(), "");
     }
 }

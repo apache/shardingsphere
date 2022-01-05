@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
+import org.apache.shardingsphere.infra.instance.InstanceType;
+
 /**
  * Compute node.
  */
@@ -37,20 +39,22 @@ public final class ComputeNode {
     /**
      * Get online compute node path.
      * 
+     * @param instanceType instance type
      * @return path of online compute node
      */
-    public static String getOnlineNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE);
+    public static String getOnlineNodePath(final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase());
     }
     
     /**
      * Get online compute node instance path.
      *
      * @param instanceId instance id
+     * @param instanceType instance type
      * @return path of online compute node instance
      */
-    public static String getOnlineInstanceNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceId);
+    public static String getOnlineInstanceNodePath(final String instanceId, final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase(), instanceId);
     }
     
     /**
