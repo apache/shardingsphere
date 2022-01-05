@@ -22,6 +22,7 @@ import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -57,7 +58,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
         List<Future> futures = new ArrayList<>(schemaNames.size());
         for (String each : schemaNames) {
             connectionSession.setCurrentSchema(each);
-            futures.add(databaseCommunicationEngineFactory.<Future<ResponseHeader>>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute());
+            futures.add(databaseCommunicationEngineFactory.<VertxDatabaseCommunicationEngine>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute());
         }
         return CompositeFuture.all(futures)
                 .compose(unused -> Future.succeededFuture((ResponseHeader) new UpdateResponseHeader(sqlStatementContext.getSqlStatement())))

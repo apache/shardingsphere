@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -104,8 +105,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
+        if (databaseCommunicationEngine instanceof JDBCDatabaseCommunicationEngine) {
+            ((JDBCDatabaseCommunicationEngine) databaseCommunicationEngine).close();
         }
     }
 }

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.executor.ReactiveCommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -68,8 +67,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), sqlParserRule.orElse(null));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, schemaName);
-        databaseCommunicationEngine = (VertxDatabaseCommunicationEngine) DatabaseCommunicationEngineFactory.getInstance()
-                .<Future<ResponseHeader>>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     

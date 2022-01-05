@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Database communication engine factory.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCommunicationEngineFactory {
     
@@ -53,23 +53,23 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param <T> type of execute result
+     * @param <T> type of DatabaseCommunicationEngine
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return text protocol backend handler
      */
-    public <T> DatabaseCommunicationEngine<T> newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection<?> backendConnection) {
+    public <T extends DatabaseCommunicationEngine> T newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection<?> backendConnection) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
-        DatabaseCommunicationEngine<T> result;
+        T result;
         if (backendConnection instanceof JDBCBackendConnection) {
             JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            result = (DatabaseCommunicationEngine<T>) new JDBCDatabaseCommunicationEngine(JDBCDriverType.STATEMENT, metaData, logicSQL, jdbcBackendConnection);
-            jdbcBackendConnection.add(result);
+            result = (T) new JDBCDatabaseCommunicationEngine(JDBCDriverType.STATEMENT, metaData, logicSQL, jdbcBackendConnection);
+            jdbcBackendConnection.add((JDBCDatabaseCommunicationEngine) result);
         } else {
             VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (DatabaseCommunicationEngine<T>) new VertxDatabaseCommunicationEngine(metaData, logicSQL, vertxBackendConnection);
+            result = (T) new VertxDatabaseCommunicationEngine(metaData, logicSQL, vertxBackendConnection);
         }
         return result;
     }
@@ -77,24 +77,25 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of binary protocol backend handler.
      *
+     * @param <T> type of DatabaseCommunicationEngine
      * @param sqlStatementContext SQL statement context
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @return binary protocol backend handler
      */
-    public <T> DatabaseCommunicationEngine<T> newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql,
+    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql,
                                                                         final List<Object> parameters, final BackendConnection<?> backendConnection) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
-        DatabaseCommunicationEngine<T> result;
+        T result;
         if (backendConnection instanceof JDBCBackendConnection) {
             JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            result = (DatabaseCommunicationEngine<T>) new JDBCDatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, jdbcBackendConnection);
-            jdbcBackendConnection.add(result);
+            result = (T) new JDBCDatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, jdbcBackendConnection);
+            jdbcBackendConnection.add((JDBCDatabaseCommunicationEngine) result);
         } else {
             VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (DatabaseCommunicationEngine<T>) new VertxDatabaseCommunicationEngine(metaData, logicSQL, vertxBackendConnection);
+            result = (T) new VertxDatabaseCommunicationEngine(metaData, logicSQL, vertxBackendConnection);
         }
         return result;
     }

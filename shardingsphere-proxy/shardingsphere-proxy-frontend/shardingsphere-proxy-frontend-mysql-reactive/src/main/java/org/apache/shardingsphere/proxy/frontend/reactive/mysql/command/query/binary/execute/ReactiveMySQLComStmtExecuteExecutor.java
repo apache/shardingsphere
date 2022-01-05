@@ -44,7 +44,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -100,8 +99,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
             return;
         }
         textProtocolBackendHandler = null;
-        databaseCommunicationEngine = (VertxDatabaseCommunicationEngine) DatabaseCommunicationEngineFactory.getInstance()
-                .<Future<ResponseHeader>>newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), connectionSession.getBackendConnection());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance()
+                .newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), connectionSession.getBackendConnection());
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {

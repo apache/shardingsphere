@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.Executo
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
 
 /**
- * Execution unit builder for Vert.x
+ * Execution unit builder for Vert.x.
  */
 public interface VertxExecutionUnitBuilder extends SQLExecutionUnitBuilder<VertxExecutionUnit, ExecutorVertxManager, Future<? extends SqlClient>, VertxExecutionContext> {
 }

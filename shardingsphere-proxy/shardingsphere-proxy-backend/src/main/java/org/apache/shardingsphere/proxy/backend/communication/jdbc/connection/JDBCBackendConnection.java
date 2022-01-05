@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Executor
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -71,9 +71,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<JDBCDatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<JDBCDatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
     
@@ -139,7 +139,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     private void replayMethodsInvocation(final Connection target) {
-        for (ConnectionPostProcessor each : connectionPostProcessors) {
+        for (ConnectionPostProcessor<Connection> each : connectionPostProcessors) {
             each.process(target);
         }
     }
@@ -203,7 +203,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void add(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void add(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         databaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
@@ -212,7 +212,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void markResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void markResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         inUseDatabaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
@@ -221,7 +221,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void unmarkResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void unmarkResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
     }
     
@@ -274,7 +274,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      */
     public synchronized Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (DatabaseCommunicationEngine each : databaseCommunicationEngines) {
+        for (JDBCDatabaseCommunicationEngine each : databaseCommunicationEngines) {
             if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
                 continue;
             }

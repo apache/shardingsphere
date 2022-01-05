@@ -65,7 +65,9 @@ public final class ReactiveCommandExecuteTask implements Runnable {
     public void run() {
         PacketPayload payload = reactiveDatabaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
-            ((Future<Void>) connectionSession.getBackendConnection().prepareForTaskExecution()).compose(unused -> executeCommand(payload).eventually(unused0 -> closeResources(payload)));
+            ((Future<Void>) connectionSession.getBackendConnection().prepareForTaskExecution())
+                    .compose(unused -> executeCommand(payload).eventually(unused0 -> closeResources(payload)))
+                    .onFailure(this::processThrowable);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -83,8 +85,7 @@ public final class ReactiveCommandExecuteTask implements Runnable {
         ReactiveCommandExecutor commandExecutor = reactiveCommandExecuteEngine.getReactiveCommandExecutor(type, commandPacket, connectionSession);
         return commandExecutor.executeFuture()
                 .compose(this::handleResponsePackets)
-                .eventually(unused -> commandExecutor.closeFuture())
-                .onFailure(this::processThrowable);
+                .eventually(unused -> commandExecutor.closeFuture());
     }
     
     private Future<Void> handleResponsePackets(final Collection<DatabasePacket<?>> responsePackets) {
