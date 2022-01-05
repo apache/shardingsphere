@@ -159,6 +159,10 @@ operatorName
     : (owner DOT_)? name
     ;
 
+dimensionName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -1002,6 +1006,10 @@ correlationInteger
 
 underPathCondition
     : UNDER_PATH LP_ columnName (COMMA_ levels)? COMMA_ pathString (COMMA_ correlationInteger)? RP_
+    ;
+
+level
+    : identifier
     ;
 
 levels
