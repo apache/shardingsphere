@@ -30,5 +30,4 @@
         <database-discovery:data-source-rule id="defaultDsRule" data-source-names="defaultDs" discovery-heartbeat-name="defaultHeartbeat" discovery-type-name="defaultDiscoveryType"/>
         <database-discovery:discovery-heartbeat id="defaultDiscoveryHeartbeat"/>
     </database-discovery:rule>
-    
 </beans>
