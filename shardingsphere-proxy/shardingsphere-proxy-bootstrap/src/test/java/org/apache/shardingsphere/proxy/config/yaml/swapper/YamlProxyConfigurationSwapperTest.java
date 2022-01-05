@@ -79,7 +79,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(3L));
         assertThat(dataSourceParameter.getMaxPoolSize(), is(4));
         assertThat(dataSourceParameter.getMinPoolSize(), is(5));
-        assertTrue(dataSourceParameter.isReadOnly());
+        assertTrue(dataSourceParameter.getReadOnly());
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
@@ -143,16 +143,16 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void mockDataSources(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
-        YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
-        when(yamlDataSourceParameter.getUrl()).thenReturn("url1");
-        when(yamlDataSourceParameter.getUsername()).thenReturn("username1");
-        when(yamlDataSourceParameter.getPassword()).thenReturn("password1");
-        when(yamlDataSourceParameter.getConnectionTimeoutMilliseconds()).thenReturn(1L);
-        when(yamlDataSourceParameter.getIdleTimeoutMilliseconds()).thenReturn(2L);
-        when(yamlDataSourceParameter.getMaxLifetimeMilliseconds()).thenReturn(3L);
-        when(yamlDataSourceParameter.getMaxPoolSize()).thenReturn(4);
-        when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
-        when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
+        YamlDataSourceParameter yamlDataSourceParameter = new YamlDataSourceParameter();
+        yamlDataSourceParameter.setUrl("url1");
+        yamlDataSourceParameter.setUsername("username1");
+        yamlDataSourceParameter.setPassword("password1");
+        yamlDataSourceParameter.setConnectionTimeoutMilliseconds(1L);
+        yamlDataSourceParameter.setIdleTimeoutMilliseconds(2L);
+        yamlDataSourceParameter.setMaxLifetimeMilliseconds(3L);
+        yamlDataSourceParameter.setMaxPoolSize(4);
+        yamlDataSourceParameter.setMinPoolSize(5);
+        yamlDataSourceParameter.setReadOnly(true);
         Map<String, YamlDataSourceParameter> dataSources = new HashMap<>(1, 1);
         dataSources.put("ds1", yamlDataSourceParameter);
         when(yamlProxyRuleConfig.getDataSources()).thenReturn(dataSources);

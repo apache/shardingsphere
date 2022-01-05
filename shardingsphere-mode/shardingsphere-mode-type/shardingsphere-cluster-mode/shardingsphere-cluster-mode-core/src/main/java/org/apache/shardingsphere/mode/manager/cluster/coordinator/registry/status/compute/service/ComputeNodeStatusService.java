@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.instance.Instance;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
+import org.apache.shardingsphere.infra.instance.Instance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -33,8 +33,10 @@ public final class ComputeNodeStatusService {
     
     /**
      * Register online.
+     * 
+     * @param instanceType instance type
      */
-    public void registerOnline() {
-        repository.persistEphemeral(ComputeStatusNode.getStatusPath(ComputeNodeStatus.ONLINE, Instance.getInstance().getId()), "");
+    public void registerOnline(final InstanceType instanceType) {
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(Instance.getInstance().getId(), instanceType), "");
     }
 }

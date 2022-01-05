@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 public final class YamlDataSourceConfigurationSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
-
+    
     @Test
     public void assertSwapToDataSources() {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
@@ -48,7 +48,7 @@ public final class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
     }
-
+    
     @Test
     public void assertSwapToDataSourceConfiguration() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
@@ -72,14 +72,14 @@ public final class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
     }
-
+    
     private Map<String, Map<String, Object>> createYamlConfig() {
         Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1);
         result.put("ds_0", createPropertyMap("ds_0"));
         result.put("ds_1", createPropertyMap("ds_1"));
         return result;
     }
-
+    
     private Map<String, Object> createPropertyMap(final String name) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1);
         result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");

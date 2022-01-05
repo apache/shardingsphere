@@ -24,9 +24,11 @@ public class User implements Serializable {
     private static final long serialVersionUID = 263434701950670170L;
     
     private int userId;
-
-    private String userName;
-
+    
+    private int userType;
+    
+    private String username;
+    
     private String pwd;
     
     public int getUserId() {
@@ -37,12 +39,20 @@ public class User implements Serializable {
         this.userId = userId;
     }
     
-    public String getUserName() {
-        return userName;
+    public int getUserType() {
+        return userType;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
+    public void setUserType(final int userType) {
+        this.userType = userType;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(final String username) {
+        this.username = username;
     }
     
     public String getPwd() {
@@ -55,6 +65,6 @@ public class User implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
+        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
     }
 }

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -65,7 +65,7 @@ public final class InventoryTaskSplitter {
      * @return split inventory data task
      */
     // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - readBatchSize - rateLimitAlgorithm
-    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager,
+    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager,
                                                   final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
@@ -75,10 +75,10 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitDumperConfig(
-            final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+            final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig, final PipelineDataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
+        PipelineMetaDataManager metaDataManager = new PipelineMetaDataManager(dataSource);
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             result.addAll(splitByPrimaryKey(jobContext, dataSource, metaDataManager, each));
         }
@@ -97,7 +97,7 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
-            final RuleAlteredJobContext jobContext, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
+            final RuleAlteredJobContext jobContext, final DataSource dataSource, final PipelineMetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         int readBatchSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getReadBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
@@ -117,7 +117,7 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<IngestPosition<?>> getInventoryPositions(
-            final RuleAlteredJobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
+            final RuleAlteredJobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final PipelineMetaDataManager metaDataManager) {
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         JobProgress initProgress = jobContext.getInitProgress();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {

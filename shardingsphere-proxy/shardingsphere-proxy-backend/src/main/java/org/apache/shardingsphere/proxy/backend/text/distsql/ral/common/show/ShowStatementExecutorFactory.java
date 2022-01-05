@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
@@ -67,6 +66,6 @@ public final class ShowStatementExecutorFactory {
         if (sqlStatement instanceof ShowAuthorityRuleStatement) {
             return new ShowAuthorityRuleExecutor(connectionSession);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <create-trigger sql-case-id="create_language" />
-    <create-trigger sql-case-id="create_or_replace_language" />
-    <create-trigger sql-case-id="create_language_inline_validator" />
+    <create-language sql-case-id="create_language" />
+    <create-language sql-case-id="create_or_replace_language" />
+    <create-language sql-case-id="create_language_inline_validator" />
 </sql-parser-test-cases>

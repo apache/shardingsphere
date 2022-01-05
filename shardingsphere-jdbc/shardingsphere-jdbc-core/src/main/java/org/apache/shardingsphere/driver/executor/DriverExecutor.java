@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
+import org.apache.shardingsphere.traffic.executor.TrafficExecutorFactory;
 
 import java.sql.SQLException;
 
@@ -39,12 +41,15 @@ public final class DriverExecutor implements AutoCloseable {
     
     private final FederationExecutor federationExecutor;
     
+    private final TrafficExecutor trafficExecutor;
+    
     public DriverExecutor(final ShardingSphereConnection connection) {
         MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         regularExecutor = new DriverJDBCExecutor(connection.getSchema(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
         federationExecutor = FederationExecutorFactory.newInstance(connection.getSchema(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
+        trafficExecutor = TrafficExecutorFactory.newInstance(connection.getSchema(), metaDataContexts);
     }
     
     /**
@@ -55,5 +60,6 @@ public final class DriverExecutor implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         federationExecutor.close();
+        trafficExecutor.close();
     }
 }

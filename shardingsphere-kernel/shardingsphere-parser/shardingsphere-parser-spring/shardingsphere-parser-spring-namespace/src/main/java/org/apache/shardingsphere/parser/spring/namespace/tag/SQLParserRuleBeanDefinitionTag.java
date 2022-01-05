@@ -32,7 +32,7 @@ public final class SQLParserRuleBeanDefinitionTag {
     
     public static final String SQL_STATEMENT_CACHE_REF = "sql-statement-cache-ref";
     
-    public static final String PARSER_TREE_CACHE_REF = "parser-tree-cache-ref";
+    public static final String PARSE_TREE_CACHE_REF = "parse-tree-cache-ref";
     
     public static final String INITIAL_CAPACITY = "initial-capacity";
     

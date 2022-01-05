@@ -8,30 +8,42 @@ chapter = true
 ## ScalingEntry
 
 | *SPI 名称*             | *详细说明*                    |
-| ---------------------- | ---------------------------- |
+| ---------------------- | --------------------------- |
 | ScalingEntry           | 弹性伸缩入口                  |
 
 | *已知实现类*            | *详细说明*                    |
-| ---------------------- | ---------------------------- |
+| ---------------------- | --------------------------- |
 | MySQLScalingEntry      | 基于 MySQL 的弹性伸缩入口      |
 | PostgreSQLScalingEntry | 基于 PostgreSQL 的弹性伸缩入口 |
+| OpenGaussScalingEntry  | 基于 openGauss 的弹性伸缩入口  |
 
-## ScalingClusterAutoSwitchAlgorithm
-
-| *SPI 名称*                                   | *详细说明*                                   |
-| ------------------------------------------- | ------------------------------------------- |
-| ScalingClusterAutoSwitchAlgorithm           | 迁移任务完成度自动检测算法                      |
-
-| *已知实现类*                                  | *详细说明*                                   |
-| ------------------------------------------- | ------------------------------------------- |
-| ScalingIdleClusterAutoSwitchAlgorithm       | 基于增量迁移任务空闲时长的检测算法                |
-
-## ScalingDataConsistencyCheckAlgorithm
+## JobRateLimitAlgorithm
 
 | *SPI 名称*                                   | *详细说明*                                   |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDataConsistencyCheckAlgorithm        | 数据一致性校验算法                             |
+| JobRateLimitAlgorithm                       | 任务限流算法                                  |
 
 | *已知实现类*                                  | *详细说明*                                   |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDefaultDataConsistencyCheckAlgorithm | 默认数据一致性校验算法。对全量数据做CRC32计算。    |
+| SourceJobRateLimitAlgorithm                 | 源端限流算法                                  |
+
+## JobCompletionDetectAlgorithm
+
+| *SPI 名称*                                   | *详细说明*                                   |
+| ------------------------------------------- | ------------------------------------------- |
+| JobCompletionDetectAlgorithm                | 作业是否接近完成检测算法                        |
+
+| *已知实现类*                                  | *详细说明*                                   |
+| ------------------------------------------- | ------------------------------------------- |
+| IdleRuleAlteredJobCompletionDetectAlgorithm | 基于增量迁移任务空闲时长的检测算法                |
+
+## DataConsistencyCheckAlgorithm
+
+| *SPI 名称*                                   | *详细说明*                                   |
+| ------------------------------------------- | ------------------------------------------- |
+| DataConsistencyCheckAlgorithm               | 数据一致性校验算法                             |
+
+| *已知实现类*                                  | *详细说明*                                   |
+| ------------------------------------------- | ------------------------------------------- |
+| DataMatchDataConsistencyCheckAlgorithm      | 基于数据匹配的一致性校验算法                    |
+| CRC32MatchDataConsistencyCheckAlgorithm     | 基于数据CRC32匹配的一致性校验算法               |

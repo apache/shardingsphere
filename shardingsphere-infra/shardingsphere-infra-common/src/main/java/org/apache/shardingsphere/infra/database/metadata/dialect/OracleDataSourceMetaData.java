@@ -38,7 +38,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private static final int THIN_MATCH_GROUP_COUNT = 5;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -60,12 +60,12 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
         Matcher matcher = matcherOptional.get();
         int groupCount = matcher.groupCount();
         if (THIN_MATCH_GROUP_COUNT == groupCount) {
-            hostName = matcher.group(3);
+            hostname = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
             catalog = matcher.group(5);
             schema = username;
         } else {
-            hostName = matcher.group(2);
+            hostname = matcher.group(2);
             port = Integer.parseInt(matcher.group(7));
             catalog = matcher.group(8);
             schema = username;

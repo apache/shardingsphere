@@ -27,7 +27,7 @@ public interface DataSourceMetaData {
      * 
      * @return host name
      */
-    String getHostName();
+    String getHostname();
     
     /**
      * Get port.
@@ -57,6 +57,6 @@ public interface DataSourceMetaData {
      * @return data sources are in the same database instance or not
      */
     default boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return getHostName().equals(dataSourceMetaData.getHostName()) && getPort() == dataSourceMetaData.getPort();
+        return getHostname().equals(dataSourceMetaData.getHostname()) && getPort() == dataSourceMetaData.getPort();
     }
 }

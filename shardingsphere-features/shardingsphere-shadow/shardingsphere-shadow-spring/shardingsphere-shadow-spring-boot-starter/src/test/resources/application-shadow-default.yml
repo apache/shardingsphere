@@ -19,7 +19,6 @@ spring:
   shardingsphere:
     rules:
       shadow:
-        enable: true
         data-sources:
           shadow-data-source:
             source-data-source-name: ds

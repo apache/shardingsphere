@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.instance.Instance;
+import org.apache.shardingsphere.infra.instance.Instance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
@@ -71,9 +72,11 @@ public final class RegistryCenter {
     
     /**
      * Online instance.
+     * 
+     * @param instanceType instance type
      */
-    public void onlineInstance() {
-        computeNodeStatusService.registerOnline();
+    public void onlineInstance(final InstanceType instanceType) {
+        computeNodeStatusService.registerOnline(instanceType);
         listenerFactory.watchListeners();
     }
 }

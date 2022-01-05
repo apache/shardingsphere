@@ -41,6 +41,11 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     </#if>
     private long orderId;
+
+    <#if framework?contains("jpa")>
+    @Column(name = "order_type")
+    </#if>
+    private int orderType;
     
     <#if framework?contains("jpa")>
     @Column(name = "user_id")
@@ -63,6 +68,14 @@ public class Order implements Serializable {
     
     public void setOrderId(final long orderId) {
         this.orderId = orderId;
+    }
+
+    public int getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(final int orderType) {
+        this.orderType = orderType;
     }
     
     public int getUserId() {
@@ -91,6 +104,6 @@ public class Order implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, address_id: %s, status: %s", orderId, userId, addressId, status);
+        return String.format("order_id: %s, order_type: %s, user_id: %s, address_id: %s, status: %s", orderId, orderType, userId, addressId, status);
     }
 }

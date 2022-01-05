@@ -303,7 +303,7 @@ roleName
     : identifier
     ;
 
-userName
+username
     : identifier
     ;
 
