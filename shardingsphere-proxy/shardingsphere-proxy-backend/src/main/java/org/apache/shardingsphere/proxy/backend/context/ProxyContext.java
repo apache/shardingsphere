@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 
 import java.util.Collection;
@@ -41,6 +42,8 @@ public final class ProxyContext {
     private static final ProxyContext INSTANCE = new ProxyContext();
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
+    
+    private final VertxBackendDataSource vertxBackendDataSource = VertxBackendDataSource.getInstance();
     
     private volatile ContextManager contextManager = new ContextManager();
     

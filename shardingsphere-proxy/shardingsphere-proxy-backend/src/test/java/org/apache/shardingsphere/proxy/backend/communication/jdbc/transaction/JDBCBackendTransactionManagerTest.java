@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class BackendTransactionManagerTest {
+public final class JDBCBackendTransactionManagerTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -61,7 +61,7 @@ public final class BackendTransactionManagerTest {
     @Mock
     private ShardingSphereTransactionManager shardingSphereTransactionManager;
     
-    private BackendTransactionManager backendTransactionManager;
+    private JDBCBackendTransactionManager backendTransactionManager;
     
     @Before
     public void setUp() {
@@ -209,13 +209,13 @@ public final class BackendTransactionManagerTest {
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        backendTransactionManager = new JDBCBackendTransactionManager(backendConnection);
         setLocalTransactionManager();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
-        Field field = BackendTransactionManager.class.getDeclaredField("localTransactionManager");
+        Field field = JDBCBackendTransactionManager.class.getDeclaredField("localTransactionManager");
         field.setAccessible(true);
         field.set(backendTransactionManager, localTransactionManager);
     }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -50,14 +50,30 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     @Override
     public ResponseHeader execute() throws SQLException {
+        prepareDatabaseCommunicationEngine();
+        return databaseCommunicationEngine.execute();
+    }
+    
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        try {
+            prepareDatabaseCommunicationEngine();
+            return databaseCommunicationEngine.executeFuture();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return Future.failedFuture(ex);
+        }
+    }
+    
+    private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
         if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).hasDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getSchemaName());
         }
         if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).isComplete()) {
             throw new RuleNotExistedException();
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, (JDBCBackendConnection) connectionSession.getBackendConnection());
-        return databaseCommunicationEngine.execute();
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
     }
     
     @Override

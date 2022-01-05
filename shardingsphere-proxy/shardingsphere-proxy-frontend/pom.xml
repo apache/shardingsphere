@@ -33,5 +33,8 @@
         <module>shardingsphere-proxy-frontend-mysql</module>
         <module>shardingsphere-proxy-frontend-postgresql</module>
         <module>shardingsphere-proxy-frontend-opengauss</module>
+        <module>shardingsphere-proxy-frontend-core-reactive</module>
+        <module>shardingsphere-proxy-frontend-spi-reactive</module>
+        <module>shardingsphere-proxy-frontend-mysql-reactive</module>
     </modules>
 </project>

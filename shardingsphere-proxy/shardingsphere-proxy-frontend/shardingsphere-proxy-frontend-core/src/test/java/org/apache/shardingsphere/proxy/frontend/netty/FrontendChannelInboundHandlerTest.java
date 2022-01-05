@@ -75,7 +75,6 @@ public final class FrontendChannelInboundHandlerTest {
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         channel.pipeline().addLast(frontendChannelInboundHandler);
         connectionSession = getConnectionSession();
-        connectionSession.setBackendConnection(backendConnection);
     }
     
     @SneakyThrows
