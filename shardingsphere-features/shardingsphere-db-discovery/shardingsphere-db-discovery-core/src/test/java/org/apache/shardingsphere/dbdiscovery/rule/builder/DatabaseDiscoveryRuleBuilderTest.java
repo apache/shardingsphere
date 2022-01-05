@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
                 Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));
+        dataSourceMap.put("name", mock(DataSource.class));
         assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), mock(DatabaseType.class),
                 dataSourceMap, new ConfigurationProperties(new Properties())), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
