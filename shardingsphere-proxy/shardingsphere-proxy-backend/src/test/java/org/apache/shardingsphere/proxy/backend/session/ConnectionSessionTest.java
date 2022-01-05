@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -38,13 +43,24 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ConnectionSessionTest {
     
+    private static ContextManager contextManagerBackup;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager contextManager;
+    
     @Mock
     private JDBCBackendConnection backendConnection;
     
     private ConnectionSession connectionSession;
     
+    @BeforeClass
+    public static void setupProxyContext() {
+        contextManagerBackup = ProxyContext.getInstance().getContextManager();
+    }
+    
     @Before
     public void setup() {
+        ProxyContext.getInstance().init(contextManager);
         connectionSession = new ConnectionSession(TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -80,5 +96,10 @@ public final class ConnectionSessionTest {
     public void assertSetAutocommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
+    }
+    
+    @AfterClass
+    public static void restoreContextManager() {
+        ProxyContext.getInstance().init(contextManagerBackup);
     }
 }
