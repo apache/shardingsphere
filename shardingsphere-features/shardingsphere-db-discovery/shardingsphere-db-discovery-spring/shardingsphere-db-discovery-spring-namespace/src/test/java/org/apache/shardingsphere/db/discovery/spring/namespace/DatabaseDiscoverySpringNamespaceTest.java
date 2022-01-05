@@ -38,14 +38,14 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
-    private DatabaseDiscoveryType mGRDatabaseDiscoveryType;
+    private DatabaseDiscoveryType mgrDatabaseDiscoveryType;
     
     @Resource
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration defaultRule;
     
     @Test
     public void assertMGRDatabaseDiscoveryType() {
-        assertThat(mGRDatabaseDiscoveryType.getType(), is("MGR"));
+        assertThat(mgrDatabaseDiscoveryType.getType(), is("MGR"));
     }
     
     @Test
