@@ -61,7 +61,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<Long> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
         jobInfos.forEach(each -> each.setActive(false));
@@ -71,7 +71,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<Long> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
         jobInfos.forEach(each -> each.setActive(true));

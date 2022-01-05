@@ -32,20 +32,29 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     public static final String TYPE = CosId.COSID.toUpperCase();
 
+    public static final String AS_STRING_KEY = "as-string";
+
     @Getter
     @Setter
     private Properties props = new Properties();
 
     private volatile LazyIdGenerator cosIdProvider;
 
+    private volatile boolean asString;
+
     @Override
     public void init() {
         cosIdProvider = new LazyIdGenerator(getProps().getOrDefault(CosIdAlgorithm.ID_NAME_KEY, IdGeneratorProvider.SHARE).toString());
+        String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
+        this.asString = Boolean.parseBoolean(asStringStr);
         cosIdProvider.tryGet(false);
     }
 
     @Override
     public Comparable<?> generateKey() {
+        if (this.asString) {
+            return cosIdProvider.generateAsString();
+        }
         return cosIdProvider.generate();
     }
 

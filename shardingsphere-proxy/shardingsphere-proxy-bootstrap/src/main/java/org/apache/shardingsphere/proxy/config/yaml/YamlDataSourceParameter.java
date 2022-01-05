@@ -38,17 +38,17 @@ public final class YamlDataSourceParameter implements YamlConfiguration {
     
     private String password;
     
-    private long connectionTimeoutMilliseconds;
+    private Long connectionTimeoutMilliseconds;
     
-    private long idleTimeoutMilliseconds;
+    private Long idleTimeoutMilliseconds;
     
-    private long maxLifetimeMilliseconds;
+    private Long maxLifetimeMilliseconds;
     
-    private int maxPoolSize;
+    private Integer maxPoolSize;
     
-    private int minPoolSize;
+    private Integer minPoolSize;
     
-    private boolean readOnly;
+    private Boolean readOnly;
     
     private Properties customPoolProps;
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
-import org.apache.shardingsphere.data.pipeline.core.exception.UnexpectedDataRecordOrderException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.junit.Test;
 
@@ -44,14 +44,14 @@ public final class DataRecordMergerTest {
     
     private Collection<DataRecord> actual;
     
-    @Test(expected = UnexpectedDataRecordOrderException.class)
+    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
     public void assertInsertBeforeInsert() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
-    @Test(expected = UnexpectedDataRecordOrderException.class)
+    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
     public void assertUpdateBeforeInsert() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
@@ -197,7 +197,7 @@ public final class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(1));
     }
     
-    @Test(expected = UnexpectedDataRecordOrderException.class)
+    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
     public void assertDeleteBeforeDelete() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);

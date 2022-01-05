@@ -23,18 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
-import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfigurationWrapper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.JDBCDataSourceYamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.yaml.YamlJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -152,12 +151,14 @@ public final class RuleAlteredJobWorker {
      * @return YAML root configuration
      */
     private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
-        JDBCDataSourceConfiguration targetDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getTarget()).unwrap();
-        if (targetDataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
-            return ((ShardingSphereJDBCDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
+        if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
+            return ((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
-        JDBCDataSourceConfiguration sourceDataSourceConfig = new JDBCDataSourceYamlConfigurationSwapper().swapToObject(jobConfig.getRuleConfig().getSource()).unwrap();
-        return ((ShardingSphereJDBCDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
+        return ((ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
     /**
@@ -169,7 +170,7 @@ public final class RuleAlteredJobWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        Optional<Long> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
+        Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
@@ -203,8 +204,8 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getRuleCacheId());
-        RuleConfiguration ruleConfig = getRuleConfiguration(sourceRootConfig, targetRootConfig);
-        return Optional.of(new JobConfiguration(workflowConfig, ruleConfig));
+        PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
+        return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(
@@ -224,16 +225,19 @@ public final class RuleAlteredJobWorker {
         return result;
     }
     
-    private RuleConfiguration getRuleConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
-        RuleConfiguration result = new RuleConfiguration();
-        result.setSource(createYamlJDBCDataSourceConfiguration(sourceRootConfig));
-        result.setTarget(createYamlJDBCDataSourceConfiguration(targetRootConfig));
+    private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
+        PipelineConfiguration result = new PipelineConfiguration();
+        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         return result;
     }
     
-    private YamlJDBCDataSourceConfiguration createYamlJDBCDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
-        ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(yamlConfig);
-        return new JDBCDataSourceYamlConfigurationSwapper().swapToYamlConfiguration(new JDBCDataSourceConfigurationWrapper(config.getType(), config.getParameter()));
+    private YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final YamlRootConfiguration yamlConfig) {
+        PipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(yamlConfig);
+        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
+        result.setType(config.getType());
+        result.setParameter(config.getParameter());
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -243,7 +247,7 @@ public final class RuleAlteredJobWorker {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
         disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class);
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class, true);
         result.setRules(yamlRuleConfigs);
         return result;
     }
@@ -254,10 +258,9 @@ public final class RuleAlteredJobWorker {
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
-        Map<String, String> parameters = ImmutableMap.of("useSSL", "false");
+        Map<String, String> queryProps = ImmutableMap.of("useSSL", "false");
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
-            jdbcUrl = (String) entry.getValue().get("jdbcUrl");
-            entry.getValue().put("jdbcUrl", new JdbcUri(jdbcUrl).appendParameters(parameters));
+            entry.getValue().put("jdbcUrl", new JdbcUrlParser().appendQueryProperties((String) entry.getValue().get("jdbcUrl"), queryProps));
         }
     }
 }

@@ -25,12 +25,17 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -66,21 +71,27 @@ public final class MemoryLocalShadowJdbcConfiguration {
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;
+    } 
+            
+    private RuleConfiguration createSQLParserRuleConfiguration() {
+        SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
+        result.setSqlCommentParseEnabled(true);
+        return result;
     }
-
+    
     private Map<String, ShadowTableConfiguration> createShadowTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
+        result.put("t_order", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
         return result;
     }
     
@@ -101,7 +112,7 @@ public final class MemoryLocalShadowJdbcConfiguration {
 
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "shadow-ds"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("demo_ds_0", "ds_shadow"));
         return result;
     }
 
@@ -109,17 +120,17 @@ public final class MemoryLocalShadowJdbcConfiguration {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
         userIdInsertProps.setProperty("operation", "insert");
-        userIdInsertProps.setProperty("column", "user_type");
+        userIdInsertProps.setProperty("column", "order_type");
         userIdInsertProps.setProperty("value", "1");
         result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         Properties userIdDeleteProps = new Properties();
         userIdDeleteProps.setProperty("operation", "delete");
-        userIdDeleteProps.setProperty("column", "user_type");
+        userIdDeleteProps.setProperty("column", "order_type");
         userIdDeleteProps.setProperty("value", "1");
         result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
         Properties userIdSelectProps = new Properties();
         userIdSelectProps.setProperty("operation", "select");
-        userIdSelectProps.setProperty("column", "user_type");
+        userIdSelectProps.setProperty("column", "order_type");
         userIdSelectProps.setProperty("value", "1");
         result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
@@ -128,7 +139,6 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
-    
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

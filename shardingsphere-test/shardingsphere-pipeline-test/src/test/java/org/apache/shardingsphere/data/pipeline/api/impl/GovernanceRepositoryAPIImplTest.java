@@ -84,8 +84,8 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertDeleteJob() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
-        governanceRepositoryAPI.deleteJob(1L);
-        JobProgress actual = governanceRepositoryAPI.getJobProgress(0L, 0);
+        governanceRepositoryAPI.deleteJob("1");
+        JobProgress actual = governanceRepositoryAPI.getJobProgress("0", 0);
         assertNull(actual);
     }
     

@@ -1,6 +1,6 @@
 +++
 title = "Mixed Rules"
-weight = 6
+weight = 7
 +++
 
 ## Configuration Item Explanation
@@ -102,7 +102,7 @@ weight = 6
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_user">
-            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
             <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
         </encrypt:table>
     </encrypt:rule>

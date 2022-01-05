@@ -20,13 +20,12 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -39,8 +38,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Deco
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.creator.JDBCDataSourceCreatorFactory;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -70,8 +67,8 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     
     public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
-        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
+        if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
+            throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         walEventConverter = new WalEventConverter(dumperConfig);
@@ -85,17 +82,16 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
 
     private PgConnection getReplicationConn() throws SQLException {
         return logicalReplication
-                .createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig())
+                .createPgConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig())
                 .unwrap(PgConnection.class);
     }
     
     private MppdbDecodingPlugin initReplication() {
         MppdbDecodingPlugin plugin = null;
         try {
-            
-            DataSource dataSource = JDBCDataSourceCreatorFactory.getInstance(
-                    dumperConfig.getDataSourceConfig().getType()).createDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
-            try (Connection conn = dataSource.getConnection()) {
+            DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(
+                    dumperConfig.getDataSourceConfig().getType()).createPipelineDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
+            try (Connection conn = pipelineDataSource.getConnection()) {
                 slotName = OpenGaussLogicalReplication.getUniqueSlotName(conn);
                 OpenGaussLogicalReplication.createIfNotExists(conn);
                 OpenGaussTimestampUtils utils = new OpenGaussTimestampUtils(conn.unwrap(PgConnection.class).getTimestampUtils());
@@ -123,7 +119,6 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
                     log.debug("dump, event={}, record={}", event, record);
                 }
-                updateRecordOldValue(record);
                 pushRecord(record);
             }
         } catch (final SQLException ex) {
@@ -131,21 +126,6 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
                 return;
             }
             throw new IngestException(ex);
-        }
-    }
-    
-    private void updateRecordOldValue(final Record record) {
-        if (!(record instanceof DataRecord)) {
-            return;
-        }
-        DataRecord dataRecord = (DataRecord) record;
-        if (!IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
-            return;
-        }
-        for (Column each: dataRecord.getColumns()) {
-            if (each.isPrimaryKey() && each.isUpdated()) {
-                each.setOldValue(each.getValue());
-            }
         }
     }
     

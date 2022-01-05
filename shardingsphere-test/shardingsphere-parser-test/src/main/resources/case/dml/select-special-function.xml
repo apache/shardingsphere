@@ -135,7 +135,11 @@
         <projections start-index="7" stop-index="22">
             <expression-projection text="VALUES(order_id)" start-index="7" stop-index="22">
                 <expr>
-                    <function function-name="VALUES" start-index="7" stop-index="22" text="VALUES(order_id)" />
+                    <function function-name="VALUES" start-index="7" stop-index="22" text="VALUES(order_id)">
+                        <parameter>
+                            <column name="order_id" start-index="14" stop-index="21" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

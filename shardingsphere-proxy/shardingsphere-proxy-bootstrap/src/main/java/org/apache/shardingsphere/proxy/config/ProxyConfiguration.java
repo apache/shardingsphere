@@ -40,4 +40,6 @@ public final class ProxyConfiguration {
     private final Collection<RuleConfiguration> globalRules;
     
     private final Properties props;
+    
+    private final Collection<String> labels;
 }

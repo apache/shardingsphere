@@ -36,8 +36,8 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
     
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "username")
+    private String username;
     
     @Column(name = "pwd")
     private String pwd;
@@ -50,12 +50,12 @@ public class User implements Serializable {
         this.userId = userId;
     }
     
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
+    public void setUsername(final String username) {
+        this.username = username;
     }
     
     public String getPwd() {
@@ -68,6 +68,6 @@ public class User implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
+        return String.format("user_id: %d, username: %s, pwd: %s", userId, username, pwd);
     }
 }

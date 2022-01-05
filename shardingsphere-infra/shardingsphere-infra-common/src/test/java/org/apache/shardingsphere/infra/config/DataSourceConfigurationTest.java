@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,8 +36,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DataSourceConfigurationTest {
     
@@ -51,7 +53,7 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
@@ -130,7 +132,7 @@ public final class DataSourceConfigurationTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceConfiguration actual = DataSourceConverter.getDataSourceConfiguration(actualDataSource);
+        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
         assertThat(actual.getProps().get("url").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
@@ -158,7 +160,7 @@ public final class DataSourceConfigurationTest {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
         dataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
-        HikariDataSource actual = (HikariDataSource) DataSourceConverter.getDataSource(dataSourceConfig);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
@@ -166,4 +168,38 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getMaximumPoolSize(), is(30));
         assertThat(actual.getIdleTimeout(), is(30000L));
     }
+    
+    @Test
+    public void assertGetAllProperties() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", "root");
+        props.put("loginTimeout", "5000");
+        Properties customPoolProps = new Properties();
+        customPoolProps.setProperty("maximumPoolSize", "30");
+        customPoolProps.setProperty("idleTimeout", "30000");
+        DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration("FooDataSourceClass");
+        originalDataSourceConfig.getProps().putAll(props);
+        originalDataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
+        Map<String, Object> actualAllProperties = originalDataSourceConfig.getAllProperties();
+        assertNotNull(actualAllProperties);
+        assertThat(actualAllProperties.size(), is(7));
+        assertTrue(actualAllProperties.containsKey("driverClassName"));
+        assertTrue(actualAllProperties.containsValue("org.h2.Driver"));
+        assertTrue(actualAllProperties.containsKey("jdbcUrl"));
+        assertTrue(actualAllProperties.containsValue("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertTrue(actualAllProperties.containsKey("username"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("password"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("loginTimeout"));
+        assertTrue(actualAllProperties.containsValue("5000"));
+        assertTrue(actualAllProperties.containsKey("maximumPoolSize"));
+        assertTrue(actualAllProperties.containsValue("30"));
+        assertTrue(actualAllProperties.containsKey("idleTimeout"));
+        assertTrue(actualAllProperties.containsValue("30000"));
+    }
+    
 }

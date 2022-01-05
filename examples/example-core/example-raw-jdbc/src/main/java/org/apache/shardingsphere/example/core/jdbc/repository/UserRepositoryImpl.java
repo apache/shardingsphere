@@ -40,7 +40,7 @@ public final class UserRepositoryImpl implements UserRepository {
     @Override
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_user "
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
+                + "(user_id INT NOT NULL AUTO_INCREMENT, username VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -67,11 +67,11 @@ public final class UserRepositoryImpl implements UserRepository {
     
     @Override
     public Long insert(final User entity) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_user (user_id, username, pwd) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getUserId());
-            preparedStatement.setString(2, entity.getUserName());
+            preparedStatement.setString(2, entity.getUsername());
             preparedStatement.setString(3, entity.getPwd());
             preparedStatement.executeUpdate();
         }
@@ -102,7 +102,7 @@ public final class UserRepositoryImpl implements UserRepository {
             while (resultSet.next()) {
                 User user = new User();
                 user.setUserId(resultSet.getInt("user_id"));
-                user.setUserName(resultSet.getString("user_name"));
+                user.setUsername(resultSet.getString("username"));
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }

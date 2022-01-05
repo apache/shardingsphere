@@ -68,6 +68,8 @@ execute
     | createDomain
     | createRule
     | createSchema
+    | createType
+    | createTextSearch
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -91,5 +93,12 @@ execute
     | copy
     | createLanguage
     | alterLanguage
+    | dropLanguage
+    | createConversion
+    | alterConversion
+    | dropConversion
+    | alterTextSearchDictionary
+    | alterTextSearchTemplate
+    | alterTextSearchParser
     ) SEMI_?
     ;

@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
@@ -27,9 +31,11 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -50,6 +56,8 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
+    private final ComputeNodePersistService computeNodePersistService;
+    
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
@@ -57,6 +65,7 @@ public final class MetaDataPersistService {
         schemaRuleService = new SchemaRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
+        computeNodePersistService = new ComputeNodePersistService(repository);
     }
     
     /**
@@ -77,5 +86,35 @@ public final class MetaDataPersistService {
             dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
             schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
         }
+    }
+    
+    /**
+     * Persist instance configurations.
+     * 
+     * @param instanceId instance id
+     * @param labels collection of label
+     */
+    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
+        computeNodePersistService.persistInstanceLabels(instanceId, labels);
+    }
+    
+    /**
+     * Load compute node instances by labels.
+     * 
+     * @param labels collection of label
+     * @return collection of compute node instance
+     */
+    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final Collection<String> labels) {
+        Collection<ComputeNodeInstance> result = computeNodePersistService.loadAllComputeNodeInstances();
+        if (!result.isEmpty()) {
+            final Collection<ShardingSphereUser> users = new ArrayList<>();
+            Optional<AuthorityRuleConfiguration> optional = globalRuleService.load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                    .map(each -> (AuthorityRuleConfiguration) each).findFirst();
+            if (optional.isPresent()) {
+                users.addAll(optional.get().getUsers());
+            }
+            result.forEach(each -> each.setUsers(users));
+        }
+        return result;
     }
 }

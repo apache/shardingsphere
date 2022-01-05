@@ -56,7 +56,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 与连接 PostgreSQL 的方式相同。
 
 ```bash
-psql -U ${your_user_name} -h ${your_host} -p 13308
+psql -U ${your_username} -h ${your_host} -p 13308
 ```
 
 ## FAQ

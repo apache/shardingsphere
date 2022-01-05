@@ -52,14 +52,14 @@ dataSourceName
     ;
 
 simpleSource
-    : HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName
+    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
     ;
 
 urlSource
     : URL EQ url
     ;
 
-hostName
+hostname
     : IDENTIFIER | ip
     ;
 

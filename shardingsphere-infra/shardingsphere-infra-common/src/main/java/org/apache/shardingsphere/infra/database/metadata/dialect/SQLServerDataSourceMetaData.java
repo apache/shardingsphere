@@ -33,7 +33,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 1433;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -48,7 +48,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = matcher.group(2);
+        hostname = matcher.group(2);
         port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3));
         catalog = matcher.group(5);
         schema = null;
