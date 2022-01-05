@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <create-trigger sql-case-id="alter_language" />
-    <create-trigger sql-case-id="alter_language_owner" />
-    <create-trigger sql-case-id="alter_language_owner_user" />
+    <alter-language sql-case-id="alter_language" />
+    <alter-language sql-case-id="alter_language_owner" />
+    <alter-language sql-case-id="alter_language_owner_user" />
 </sql-parser-test-cases>
