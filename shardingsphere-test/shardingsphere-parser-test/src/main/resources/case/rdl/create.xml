@@ -423,4 +423,6 @@
             </algorithm>
         </shardingKeyGenerator>
     </create-sharding-key-generator>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling" scaling-name="default_scaling"/>
 </sql-parser-test-cases>
