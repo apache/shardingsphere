@@ -359,7 +359,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getDataNodes(final DataNodesContext ctx) {
-        return ctx.dataNode().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.dataNode().stream().map(each -> getIdentifierValueWithBracketReserved(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -372,6 +372,13 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
             return null;
         }
         return new IdentifierValue(context.getText()).getValue();
+    }
+
+    private String getIdentifierValueWithBracketReserved(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText(), "[]").getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
