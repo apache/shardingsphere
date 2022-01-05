@@ -44,7 +44,7 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration defaultRule;
     
     @Test
-    public void assertMgrDatabaseDiscoveryType() {
+    public void assertMGRDatabaseDiscoveryType() {
         assertThat(mGRDatabaseDiscoveryType.getType(), is("MGR"));
     }
     
