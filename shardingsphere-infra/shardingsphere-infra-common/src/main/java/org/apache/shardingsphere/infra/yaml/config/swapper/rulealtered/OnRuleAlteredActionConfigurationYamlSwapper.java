@@ -31,6 +31,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
     
     @Override
     public YamlOnRuleAlteredActionConfiguration swapToYamlConfiguration(final OnRuleAlteredActionConfiguration data) {
+        if (null == data) {
+            return null;
+        }
         YamlOnRuleAlteredActionConfiguration result = new YamlOnRuleAlteredActionConfiguration();
         result.setBlockQueueSize(data.getBlockQueueSize());
         result.setWorkerThread(data.getWorkerThread());
@@ -43,6 +46,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
     
     @Override
     public OnRuleAlteredActionConfiguration swapToObject(final YamlOnRuleAlteredActionConfiguration yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
         return new OnRuleAlteredActionConfiguration(yamlConfig.getBlockQueueSize(), yamlConfig.getWorkerThread(), yamlConfig.getReadBatchSize(),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getCompletionDetector()),
