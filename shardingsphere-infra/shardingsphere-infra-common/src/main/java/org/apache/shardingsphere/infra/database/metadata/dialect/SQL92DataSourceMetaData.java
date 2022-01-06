@@ -32,7 +32,7 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = -1;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -47,7 +47,7 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = "";
+        hostname = "";
         port = DEFAULT_PORT;
         catalog = "";
         schema = null;

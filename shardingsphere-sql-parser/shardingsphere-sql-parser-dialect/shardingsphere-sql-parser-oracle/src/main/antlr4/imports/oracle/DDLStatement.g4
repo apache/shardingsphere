@@ -1862,11 +1862,11 @@ noAudit
     ;
 
 auditPolicyClause
-    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 noAuditPolicyClause
-    : POLICY policyName (byUsersWithRoles | BY userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | BY username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 byUsersWithRoles
@@ -1874,7 +1874,7 @@ byUsersWithRoles
     ;
 
 contextClause
-    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY userName (COMMA_ userName)*)?
+    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY username (COMMA_ username)*)?
     ;
 
 contextNamespaceAttributesClause
@@ -1921,8 +1921,8 @@ renameToTable
 purge
     : PURGE (TABLE tableName
     | INDEX indexName
-    | TABLESPACE tablespaceName (USER userName)?
-    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | TABLESPACE tablespaceName (USER username)?
+    | TABLESPACE SET tablespaceSetName (USER username)?
     | RECYCLEBIN
     | DBA_RECYCLEBIN)
     ;
@@ -2016,9 +2016,51 @@ createDatabaseLink
     ;
 
 connectToClause
-    : CONNECT TO (CURRENT_USER | userName IDENTIFIED BY password dbLinkAuthentication?)
+    : CONNECT TO (CURRENT_USER | username IDENTIFIED BY password dbLinkAuthentication?)
     ;
 
 dbLinkAuthentication
-    : AUTHENTICATED BY userName IDENTIFIED BY password
+    : AUTHENTICATED BY username IDENTIFIED BY password
+    ;
+
+createDimension
+    : CREATE DIMENSION dimensionName levelClause+ (hierarchyClause | attributeClause+ | extendedAttrbuteClause)+
+    ;
+
+levelClause
+    : LEVEL level IS (columnName | LP_ columnName (COMMA_ columnName)* RP_) (SKIP_SYMBOL WHEN NULL)?
+    ;
+
+hierarchyClause
+    : HIERARCHY hierarchyName LP_ level (CHILD OF level)+ dimensionJoinClause* RP_
+    ;
+
+dimensionJoinClause
+    : JOIN KEY (columnName | LP_ columnName (COMMA_ columnName)* RP_) REFERENCES level
+    ;
+
+attributeClause
+    : ATTRIBUTE level DETERMINES (columnName | LP_ columnName (COMMA_ columnName)* RP_)
+    ;
+
+extendedAttrbuteClause
+    : ATTRIBUTE attributeName (LEVEL level DETERMINES (columnName | LP_ columnName (COMMA_ columnName)* RP_))+
+    ;
+
+alterDimension
+    : ALTER DIMENSION dimensionName (alterDimensionAddClause* | alterDimensionDropClause* | COMPILE)
+    ;
+
+alterDimensionAddClause
+    : ADD (levelClause | hierarchyClause | attributeClause | extendedAttrbuteClause)
+    ;
+
+alterDimensionDropClause
+    : DROP (LEVEL level (RESTRICT | CASCADE)? 
+    | HIERARCHY hierarchyName 
+    | ATTRIBUTE attributeName (LEVEL level (COLUMN columnName (COMMA_ COLUMN columnName)*)?)?)
+    ;
+
+dropDimension
+    : DROP DIMENSION dimensionName
     ;

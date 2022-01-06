@@ -40,7 +40,7 @@ public final class ExampleTemplateFactory {
         result.put("Example", "Example.ftl");
         if (FrameworkType.JDBC.getFramework().equals(framework)) {
             result.put("ExampleService", "jdbc/ExampleService.ftl");
-            result.put("Configuration", "jdbc/Configuration.ftl");
+            result.put("Configuration", "jdbc/configuration.ftl");
         } else if (FrameworkType.SPRING_BOOT_STARTER_JDBC.getFramework().equals(framework)) {
             result.put("ExampleService", "jdbc/ExampleService.ftl");
         } else if (FrameworkType.SPRING_BOOT_STARTER_JPA.getFramework().equals(framework)) {
@@ -69,24 +69,13 @@ public final class ExampleTemplateFactory {
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>();
         if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
-            result.put("entity/User", "entity/User.java");
             result.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
-            result.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
-        } else if (FeatureType.SHADOW.getFeature().equals(feature)) {
-            result.put("entity/User", "entity/User.java");
-        } else {
-            result.put("entity/Order", "entity/Order.java");
-            result.put("entity/OrderItem", "entity/OrderItem.java");
         }
+        result.put("entity/Order", "entity/Order.java");
+        result.put("entity/OrderItem", "entity/OrderItem.java");
         if (framework.contains("mybatis")) {
-            if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
-                result.put("mybatis/UserRepository", "repository/UserRepository.java");
-            } else if (FeatureType.SHADOW.getFeature().equals(feature)) {
-                result.put("mybatis/shadowUserRepository", "repository/UserRepository.java");
-            } else {
-                result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-                result.put("mybatis/OrderRepository", "repository/OrderRepository.java");
-            }
+            result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.ftl");
+            result.put("mybatis/OrderRepository", "repository/OrderRepository.java");
         }
         return result;
     }
@@ -110,14 +99,8 @@ public final class ExampleTemplateFactory {
             result.put("xml/application", "application.xml");
         }
         if (framework.contains("mybatis")) {
-            if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
-                result.put("mybatis/mappers/UserMapper", "mappers/UserMapper.xml");
-            } else if (FeatureType.SHADOW.getFeature().equals(feature)) {
-                result.put("mybatis/mappers/shadowUserMapper", "mappers/UserMapper.xml");
-            } else {
-                result.put("mybatis/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-                result.put("mybatis/mappers/OrderMapper", "mappers/OrderMapper.xml");
-            }
+            result.put("mybatis/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+            result.put("mybatis/mappers/OrderMapper", "mappers/OrderMapper.xml");
         }
         return result;
     }

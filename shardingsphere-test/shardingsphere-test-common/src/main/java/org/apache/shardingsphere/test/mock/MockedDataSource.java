@@ -47,6 +47,10 @@ public final class MockedDataSource implements DataSource {
     
     private String password;
     
+    private Integer maxPoolSize;
+    
+    private Integer minPoolSize;
+    
     private List<String> connectionInitSqls;
     
     @SuppressWarnings("MagicConstant")

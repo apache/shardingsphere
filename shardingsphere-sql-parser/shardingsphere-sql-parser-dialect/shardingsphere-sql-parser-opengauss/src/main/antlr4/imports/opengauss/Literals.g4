@@ -20,8 +20,8 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    |  DQ_ ~'"'+ DQ_
+    : IdentifierStartChar IdentifierChar*
+    | DQ_ ~'"'+ DQ_
     ;
 
 STRING_
@@ -47,3 +47,20 @@ fragment INT_
 fragment HEX_
     : [0-9a-fA-F]
     ;
+
+fragment IdentifierStartChar
+   : [a-zA-Z_]
+   | [\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]
+   | [\u0100-\uD7FF\uE000-\uFFFF]
+   | [\uD800-\uDBFF] [\uDC00-\uDFFF]
+   ;
+
+fragment IdentifierChar
+   : StrictIdentifierChar
+   | DOLLAR_
+   ;
+   
+fragment StrictIdentifierChar
+   : IdentifierStartChar
+   | [0-9]
+   ;

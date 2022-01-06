@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -52,21 +51,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
-                Statement statement = connection.createStatement()) {
-            checkRolePrimary(statement);
-        }
-    }
-    
-    private void checkRolePrimary(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
-            while (resultSet.next()) {
-                if (!"Primary".equals(resultSet.getString("local_role"))) {
-                    throw new ShardingSphereConfigurationException("Instance is not Primary.");
-                }
-            }
-        }
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
     }
     
     @Override

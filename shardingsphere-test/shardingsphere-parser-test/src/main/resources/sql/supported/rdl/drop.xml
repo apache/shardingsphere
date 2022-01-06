@@ -33,4 +33,6 @@
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
     <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE" />
     <distsql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" />
+    <distsql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" />
+    <distsql-case id="drop-sharding-scaling" value="DROP SHARDING SCALING default_scaling" />
 </sql-cases>
