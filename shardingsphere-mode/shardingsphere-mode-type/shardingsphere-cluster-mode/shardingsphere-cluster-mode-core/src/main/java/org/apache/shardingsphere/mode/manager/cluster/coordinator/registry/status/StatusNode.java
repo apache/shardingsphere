@@ -26,5 +26,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatusNode {
     
-    public static final String ROOT_NODE = "status";
+    public static final String ROOT_NODE = "nodes";
 }
