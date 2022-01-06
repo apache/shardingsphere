@@ -35,27 +35,9 @@ public final class ExampleTemplateFactory {
      * @return rename template map
      */
     public static Map<String, String> getRenameTemplate(Map<String, String> dataModel) {
-        String framework = dataModel.get(FRAMEWORK_KEY);
-        Map<String, String> result = new HashMap<>();
-        result.put("Example", "Example.ftl");
-        if (FrameworkType.JDBC.getFramework().equals(framework)) {
-            result.put("ExampleService", "jdbc/ExampleService.ftl");
-            result.put("Configuration", "jdbc/configuration.ftl");
-        } else if (FrameworkType.SPRING_BOOT_STARTER_JDBC.getFramework().equals(framework)) {
-            result.put("ExampleService", "jdbc/ExampleService.ftl");
-        } else if (FrameworkType.SPRING_BOOT_STARTER_JPA.getFramework().equals(framework)) {
-            result.put("ExampleService", "jpa/ExampleService.ftl");
-            result.put("Repository", "jpa/Repository.ftl");
-        } else if (FrameworkType.SPRING_BOOT_STARTER_MYBATIS.getFramework().equals(framework)) {
-            result.put("ExampleService", "ExampleService.ftl");
-        } else if (FrameworkType.SPRING_BOOT_NAMESPACE_JDBC.getFramework().equals(framework)) {
-            result.put("ExampleService", "jdbc/ExampleService.ftl");
-        } else if (FrameworkType.SPRING_BOOT_NAMESPACE_JPA.getFramework().equals(framework)) {
-            result.put("ExampleService", "jpa/ExampleService.ftl");
-            result.put("Repository", "jpa/Repository.ftl");
-        } else if (FrameworkType.SPRING_BOOT_NAMESPACE_MYBATIS.getFramework().equals(framework)) {
-            result.put("ExampleService", "ExampleService.ftl");
-        }
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("Example", "java/Example.ftl");
+        result.put("ExampleService", "java/ExampleService.ftl");
         return result;
     }
     
@@ -66,17 +48,14 @@ public final class ExampleTemplateFactory {
      */
     public static Map<String, String> getUnReNameTemplate(Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
-        String framework = dataModel.get(FRAMEWORK_KEY);
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(8, 1);
         if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
             result.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
         }
-        result.put("entity/Order", "entity/Order.java");
-        result.put("entity/OrderItem", "entity/OrderItem.java");
-        if (framework.contains("mybatis")) {
-            result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.ftl");
-            result.put("mybatis/OrderRepository", "repository/OrderRepository.java");
-        }
+        result.put("java/entity/Order", "entity/Order.java");
+        result.put("java/entity/OrderItem", "entity/OrderItem.java");
+        result.put("java/repository/OrderItemRepository", "repository/OrderItemRepository.ftl");
+        result.put("java/repository/OrderRepository", "repository/OrderRepository.java");
         return result;
     }
     
@@ -88,7 +67,7 @@ public final class ExampleTemplateFactory {
     public static Map<String, String> getResourceTemplate(Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(8, 1);
         result.put("log/logback", "logback.xml");
         if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
             result.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
