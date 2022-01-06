@@ -117,4 +117,13 @@ public final class MetaDataPersistService {
         }
         return result;
     }
+    
+    /**
+     * Load all compute node instances.
+     *
+     * @return collection of compute node instance
+     */
+    public Collection<ComputeNodeInstance> loadComputeNodeInstances() {
+        return computeNodePersistService.loadAllComputeNodeInstances();
+    }
 }

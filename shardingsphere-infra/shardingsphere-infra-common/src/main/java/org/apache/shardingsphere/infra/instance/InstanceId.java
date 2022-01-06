@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 /**
  * Instance id.
@@ -46,6 +48,13 @@ public final class InstanceId {
         this.port = port;
         ip = IpUtils.getIp();
         id = String.join(DELIMITER, ip, String.valueOf(port));
+    }
+    
+    public InstanceId(final String id) {
+        this.id = id;
+        List<String> ids = Splitter.on("@").splitToList(id);
+        ip = ids.get(0);
+        port = Integer.valueOf(ids.get(1));
     }
     
     public InstanceId() {
