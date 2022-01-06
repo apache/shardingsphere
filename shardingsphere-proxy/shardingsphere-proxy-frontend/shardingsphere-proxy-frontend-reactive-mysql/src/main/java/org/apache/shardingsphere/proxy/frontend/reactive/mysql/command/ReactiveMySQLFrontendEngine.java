@@ -35,7 +35,7 @@ public final class ReactiveMySQLFrontendEngine implements ReactiveDatabaseProtoc
     private final MySQLFrontendEngine delegated = new MySQLFrontendEngine();
     
     private final ReactiveCommandExecuteEngine reactiveCommandExecuteEngine =
-            (type, packet, connectionSession) -> ReactiveMySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, connectionSession);
+        (type, packet, connectionSession) -> ReactiveMySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, connectionSession);
     
     @Override
     public String getDatabaseType() {

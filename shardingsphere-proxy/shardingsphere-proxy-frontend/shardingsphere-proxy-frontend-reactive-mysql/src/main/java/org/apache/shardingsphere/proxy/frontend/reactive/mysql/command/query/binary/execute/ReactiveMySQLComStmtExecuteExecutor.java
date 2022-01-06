@@ -113,7 +113,9 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
         return (null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
-            List<DatabasePacket<?>> result = new LinkedList<>(responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader));
+            Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader)
+                    : processUpdate((UpdateResponseHeader) responseHeader);
+            List<DatabasePacket<?>> result = new LinkedList<>(headerPackets);
             if (ResponseType.UPDATE == responseType) {
                 return Future.succeededFuture(result);
             }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import java.util.Collection;
 
 /**
- * Reactive command executor
+ * Reactive command executor.
  */
 public interface ReactiveCommandExecutor {
     
