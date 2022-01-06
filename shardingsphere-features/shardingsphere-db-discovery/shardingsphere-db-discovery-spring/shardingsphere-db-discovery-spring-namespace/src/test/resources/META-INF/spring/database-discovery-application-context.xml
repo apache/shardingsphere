@@ -24,10 +24,18 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
                            ">
-    <database-discovery:discovery-type id="mGRDatabaseDiscoveryType" type="MGR" />
+    <database-discovery:discovery-type id="mgrDatabaseDiscoveryType" type="MGR" >
+        <props>
+            <prop key="group-name">92504d5b-6dec-11e8-91ea-246e9612aaf1</prop>
+        </props>
+    </database-discovery:discovery-type>
     
-    <database-discovery:rule id="defaultRule">
-        <database-discovery:data-source-rule id="defaultDsRule" data-source-names="defaultDs" discovery-heartbeat-name="defaultHeartbeat" discovery-type-name="defaultDiscoveryType"/>
-        <database-discovery:discovery-heartbeat id="defaultDiscoveryHeartbeat"/>
+    <database-discovery:rule id="mgrDatabaseDiscoveryRule">
+        <database-discovery:data-source-rule id="pr_ds" data-source-names="ds_0,ds_1,ds_2" discovery-heartbeat-name="mgr-heartbeat" discovery-type-name="mgr"/>
+        <database-discovery:discovery-heartbeat id="mgr-heartbeat">
+            <props>
+                <prop key="keep-alive-cron" > 0/5 * * * * ? </prop>
+            </props>
+        </database-discovery:discovery-heartbeat>
     </database-discovery:rule>
 </beans>
