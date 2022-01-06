@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <create-trigger sql-case-id="create_conversion" />
-    <create-trigger sql-case-id="create_conversion_default" />
+    <create-conversion sql-case-id="create_conversion" />
+    <create-conversion sql-case-id="create_conversion_default" />
 </sql-parser-test-cases>

@@ -45,6 +45,7 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -111,14 +112,15 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryType databaseDiscoveryType = dataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
-            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
-            dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
+            DataSource dataSource = new ArrayList<>(originalDataSourceMap.values()).stream().findFirst().get();
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSourceMap);
+                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, dataSource);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
+            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
+            dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
         }
     }
     

@@ -16,9 +16,9 @@
  */
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.jdbc;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import java.sql.SQLException;
 
 public class MemoryLocalShardingSpringNamespaceJdbcExample {

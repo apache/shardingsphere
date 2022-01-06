@@ -31,7 +31,7 @@ explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
-    | ANALYZE select)
+    | ANALYZE (FORMAT EQ_ TREE)? select)
     ;
 
 showDatabases
@@ -139,7 +139,7 @@ showCreateTrigger
     ;
 
 showCreateUser
-    : SHOW CREATE USER userName
+    : SHOW CREATE USER username
     ;
 
 showCreateView
@@ -175,7 +175,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
     ;
 
 showMasterStatus
@@ -409,6 +409,7 @@ explainType
     : FORMAT EQ_ formatName
     ;
 
+// TODO support table statement
 explainableStatement
     : select | delete | insert | replace | update
     ;

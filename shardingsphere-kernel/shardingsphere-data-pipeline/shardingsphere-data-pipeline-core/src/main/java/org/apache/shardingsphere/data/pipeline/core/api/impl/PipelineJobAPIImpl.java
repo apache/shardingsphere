@@ -93,7 +93,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     private JobInfo getJobInfo(final String jobName) {
-        JobInfo result = new JobInfo(Long.parseLong(jobName));
+        JobInfo result = new JobInfo(jobName);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
@@ -108,12 +108,12 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public List<Long> getUncompletedJobIds(final String schemaName) {
         return getJobBriefInfos().filter(each -> {
-            long jobId = Long.parseLong(each.getJobName());
+            String jobId = each.getJobName();
             return isUncompletedJobOfSchema(schemaName, jobId);
         }).map(each -> Long.parseLong(each.getJobName())).collect(Collectors.toList());
     }
     
-    private boolean isUncompletedJobOfSchema(final String schemaName, final long jobId) {
+    private boolean isUncompletedJobOfSchema(final String schemaName, final String jobId) {
         JobConfigurationPOJO jobConfigPOJO;
         try {
             jobConfigPOJO = getElasticJobConfigPOJO(jobId);
@@ -135,7 +135,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void start(final long jobId) {
+    public void start(final String jobId) {
         log.info("Start scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
@@ -144,23 +144,23 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public Optional<Long> start(final JobConfiguration jobConfig) {
+    public Optional<String> start(final JobConfiguration jobConfig) {
         jobConfig.buildHandleConfig();
         if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
             log.warn("Invalid scaling job config!");
             throw new PipelineJobCreationException("handleConfig shardingTotalCount is 0");
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d",
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s",
                 DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getCanonicalName());
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config",
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s/config",
                 DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
     private String createJobConfig(final JobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
-        jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
+        jobConfigPOJO.setJobName(jobConfig.getHandleConfig().getJobId());
         jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
@@ -168,7 +168,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void stop(final long jobId) {
+    public void stop(final String jobId) {
         log.info("Stop scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
@@ -177,14 +177,14 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void remove(final long jobId) {
+    public void remove(final String jobId) {
         log.info("Remove scaling job {}", jobId);
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final long jobId) {
+    public Map<Integer, JobProgress> getProgress(final String jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
             JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
@@ -196,7 +196,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void stopClusterWriteDB(final long jobId) {
+    public void stopClusterWriteDB(final String jobId) {
         //TODO stopClusterWriteDB
     }
     
@@ -214,7 +214,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final long jobId) {
+    public boolean isDataConsistencyCheckNeeded(final String jobId) {
         JobConfiguration jobConfig = getJobConfig(jobId);
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         return isDataConsistencyCheckNeeded(ruleAlteredContext);
@@ -225,7 +225,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         log.info("Data consistency check for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
@@ -237,7 +237,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId, final String algorithmType) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         JobConfiguration jobConfig = getJobConfig(jobId);
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
@@ -247,7 +247,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final RuleAlteredJobContext jobContext, final DataConsistencyCheckAlgorithm checkAlgorithm) {
-        long jobId = jobContext.getJobId();
+        String jobId = jobContext.getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isRecordsCountMatched)) {
@@ -260,7 +260,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public boolean aggregateDataConsistencyCheckResults(final long jobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
         if (checkResultMap.isEmpty()) {
             return false;
         }
@@ -277,7 +277,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void switchClusterConfiguration(final long jobId) {
+    public void switchClusterConfiguration(final String jobId) {
         log.info("Switch cluster configuration for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
@@ -289,7 +289,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         }
         Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
         optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class, true);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
@@ -303,7 +303,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void reset(final long jobId) {
+    public void reset(final String jobId) {
         log.info("Scaling job {} reset target table", jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
         try {
@@ -314,7 +314,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public JobConfiguration getJobConfig(final long jobId) {
+    public JobConfiguration getJobConfig(final String jobId) {
         return getJobConfig(getElasticJobConfigPOJO(jobId));
     }
     
@@ -322,9 +322,9 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
     }
     
-    private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {
+    private JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         try {
-            return PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(String.valueOf(jobId));
+            return PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         } catch (final NullPointerException ex) {
             throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }

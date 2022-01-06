@@ -75,7 +75,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     @Override
     public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-countCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
@@ -93,6 +93,13 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             executor.shutdown();
             executor.shutdownNow();
         }
+    }
+    
+    private String getJobIdPrefix(final String jobId) {
+        if (jobId.length() <= 6) {
+            return jobId;
+        }
+        return jobId.substring(0, 6);
     }
     
     private DataConsistencyCheckResult countCheck(
@@ -134,7 +141,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
         SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
         Map<String, Boolean> result = new HashMap<>();
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + jobContext.getJobId() % 10_000 + "-dataCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);

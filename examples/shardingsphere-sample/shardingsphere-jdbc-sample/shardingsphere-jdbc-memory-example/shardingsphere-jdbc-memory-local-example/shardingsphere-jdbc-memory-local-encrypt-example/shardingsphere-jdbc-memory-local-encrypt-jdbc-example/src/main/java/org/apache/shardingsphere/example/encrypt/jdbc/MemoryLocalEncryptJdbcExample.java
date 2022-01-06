@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.example.encrypt.jdbc;
 
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class MemoryLocalEncryptJdbcExample {
     
     public static void main(final String[] args) throws SQLException {
-        MemoryLocalEncryptJdbcConfiguration shardingConfiguration = new MemoryLocalEncryptJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
+        MemoryLocalEncryptJdbcConfiguration configuration = new MemoryLocalEncryptJdbcConfiguration();
+        DataSource dataSource = configuration.getDataSource();
         MemoryLocalEncryptJdbcExampleService exampleService = new MemoryLocalEncryptJdbcExampleService(dataSource);
         exampleService.run();
     }

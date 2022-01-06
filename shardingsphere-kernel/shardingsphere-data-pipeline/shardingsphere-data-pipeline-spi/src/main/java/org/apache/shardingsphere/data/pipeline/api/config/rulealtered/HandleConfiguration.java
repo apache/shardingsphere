@@ -34,7 +34,7 @@ import java.util.List;
 // TODO rename
 public final class HandleConfiguration {
     
-    private Long jobId;
+    private String jobId;
     
     private int concurrency = 3;
     

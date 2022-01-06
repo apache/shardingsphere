@@ -27,6 +27,7 @@
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xmlns:database-discovery="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
+       xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -45,6 +46,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.db.discovery.spring.namespace.jdbc"/>

@@ -122,4 +122,17 @@ public final class TrafficRule implements GlobalRule {
         Preconditions.checkState(null != loadBalanceAlgorithm, "Traffic load balance algorithm can not be null.");
         return loadBalanceAlgorithm;
     }
+    
+    /**
+     * Get label collection.
+     * 
+     * @return label collection
+     */
+    public Collection<String> getLabels() {
+        Collection<String> result = new LinkedList<>();
+        for (TrafficStrategyRule each : trafficStrategyRules) {
+            result.addAll(each.getLabels());
+        }
+        return result;
+    }
 }

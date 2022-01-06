@@ -31,6 +31,8 @@ import java.util.Properties;
 @Getter
 public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
     
+    private final Map<String, Object> defaultProperties = new HashMap<>(6, 1);
+    
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
@@ -38,9 +40,19 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     private final Properties defaultDataSourceProperties = new Properties();
     
     public HikariDataSourcePoolCreationMetaData() {
+        buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
         buildDefaultDataSourceProperties();
+    }
+    
+    private void buildDefaultProperties() {
+        defaultProperties.put("connectionTimeout", 30 * 1000L);
+        defaultProperties.put("idleTimeout", 60 * 1000L);
+        defaultProperties.put("maxLifetime", 30 * 70 * 1000L);
+        defaultProperties.put("maximumPoolSize", 50);
+        defaultProperties.put("minimumIdle", 1);
+        defaultProperties.put("readOnly", false);
     }
     
     private void buildInvalidProperties() {
@@ -60,11 +72,11 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
         defaultDataSourceProperties.setProperty("prepStmtCacheSqlLimit", "2048");
         defaultDataSourceProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("cachedefaultDataSourcePropsSetMetadata", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("netTimeoutForStreamingdefaultDataSourcePropss", "0");
+        defaultDataSourceProperties.setProperty("netTimeoutForStreamingResults", "0");
         defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("serverTimezone", "UTC");

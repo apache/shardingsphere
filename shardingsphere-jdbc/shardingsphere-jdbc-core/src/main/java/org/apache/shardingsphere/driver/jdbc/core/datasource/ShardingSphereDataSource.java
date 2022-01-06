@@ -25,8 +25,10 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFa
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -72,7 +74,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(modeConfig, dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite, null, schemaName);
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(schemaRuleConfigs)
+                .globalRuleConfigs(globalRuleConfigs).props(props).isOverwrite(isOverwrite).schemaName(schemaName).instanceType(InstanceType.JDBC).build();
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
     @Override

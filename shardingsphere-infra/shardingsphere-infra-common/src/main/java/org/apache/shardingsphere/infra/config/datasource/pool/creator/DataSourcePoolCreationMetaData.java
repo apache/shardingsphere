@@ -29,6 +29,13 @@ import java.util.Properties;
 public interface DataSourcePoolCreationMetaData extends TypedSPI, RequiredSPI {
     
     /**
+     * Get default properties.
+     *
+     * @return default properties
+     */
+    Map<String, Object> getDefaultProperties();
+    
+    /**
      * Get invalid properties.
      * 
      * @return invalid properties

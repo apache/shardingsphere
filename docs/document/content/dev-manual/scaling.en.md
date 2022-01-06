@@ -37,16 +37,6 @@ chapter = true
 | ------------------------------------------- | ------------------------------------------- |
 | IdleRuleAlteredJobCompletionDetectAlgorithm | Incremental task idle time based algorithm  |
 
-## RowBasedJobLockAlgorithm
-
-| *SPI Name*                                  | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| RowBasedJobLockAlgorithm                    | Job lock algorithm for protecting row       |
-
-| *Implementation Class*                      | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| DefaultSourceWritingStopAlgorithm           | Default lock implementation for stopping source writing |
-
 ## DataConsistencyCheckAlgorithm
 
 | *SPI Name*                                  | *Description*                               |
@@ -57,13 +47,3 @@ chapter = true
 | ------------------------------------------- | ------------------------------------------- |
 | DataMatchDataConsistencyCheckAlgorithm      | Records content match implementation        |
 | CRC32MatchDataConsistencyCheckAlgorithm     | Records CRC32 match implementation          |
-
-## RuleBasedJobLockAlgorithm
-
-| *SPI Name*                                  | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| RuleBasedJobLockAlgorithm                   | Job lock algorithm for protecting rule      |
-
-| *Implementation Class*                      | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| DefaultMetadataCheckoutLockAlgorithm        | Default lock implementation for metadata checkout |

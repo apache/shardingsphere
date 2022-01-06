@@ -61,13 +61,13 @@
         <column name="user_id" type="numeric" />
         <column name="plain_pwd" type="varchar" />
         <column name="cipher_pwd" type="varchar" />
-        <column name="user_name" type="varchar" />
+        <column name="username" type="varchar" />
     </metadata>
     <metadata data-nodes="encrypt_write_ds_1.t_user_encrypt_federate,encrypt_read_ds_1.t_user_encrypt_federate">
         <column name="user_id" type="numeric" />
         <column name="plain_pwd" type="varchar" />
         <column name="cipher_pwd" type="varchar" />
-        <column name="user_name" type="varchar" />
+        <column name="username" type="varchar" />
     </metadata>
     <metadata data-nodes="encrypt_write_ds_1.t_user_info,encrypt_read_ds_1.t_user_info">
         <column name="user_id" type="numeric" />

@@ -29,6 +29,11 @@ import java.util.Properties;
 public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
     
     @Override
+    public Map<String, Object> getDefaultProperties() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
     public Map<String, Object> getInvalidProperties() {
         return Collections.emptyMap();
     }

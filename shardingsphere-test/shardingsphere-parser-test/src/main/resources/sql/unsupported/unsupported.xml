@@ -38,7 +38,6 @@
     <sql-case id="create_aggregate" value="create aggregate my_avg(int4) (stype = avg_state, sfunc = avg_transfn, finalfunc = avg_finalfn)" db-types="PostgreSQL"/>
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="alter_aggregate" value="ALTER AGGREGATE alt_agg3(int) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_conversion" value="ALTER CONVERSION alt_conv1 RENAME TO alt_conv2;" db-types="PostgreSQL" />
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
@@ -162,9 +161,6 @@
     <sql-case id="create_by_mysql_source_test_case99" value="CREATE FUNCTION test_func1 (s char(20) RETURNS CHAR(50) RETURN CONCAT(&apos;Hello&apos;, ,s,&apos;!&apos;)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case100" value="CREATE FUNCTION test_function(var CHAR(50)) RETURNS CHAR(50) BEGIN DECLARE char_val CHAR(50); SELECT c1 INTO char_val FROM test_table WHERE c1=var; RETURN char_val; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case101" value="CREATE FUNCTION test_function(var CHAR(50)) RETURNS CHAR(50) BEGIN DECLARE char_val CHAR(50); SELECT c1 INTO char_val FROM test_table WHERE c1=var; RETURN char_val; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case102" value="CREATE FUNCTION очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_E() RETURNS INT return 15081947" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case103" value="CREATE FUNCTION очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_e() RETURNS INT return 15081947" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case104" value="CREATE FUNCTION очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_é() RETURNS INT return 15081947" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case105" value="CREATE IF NOT EXISTS PROCEDURE bug14702() BEGIN END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case106" value="CREATE PROCEDURE BUG_12490() HELP CONTENTS" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case107" value="CREATE PROCEDURE IF NOT EXISTS bug14702() BEGIN END" db-types="MySQL"/>
@@ -378,9 +374,6 @@
     <sql-case id="create_by_mysql_source_test_case315" value="CREATE PROCEDURE test_round_fn() BEGIN DECLARE num_digits int; SET num_digits := 3; CREATE TEMPORARY TABLE tmp_test ( number double ); INSERT INTO tmp_test VALUES (1),(0); SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test; SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test WHERE Round(number, 3) &gt;= 0; SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test WHERE Round(number, num_digits) &gt;= 0; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case316" value="CREATE PROCEDURE test_round_unsigned(in arg bigint unsigned) BEGIN DECLARE i int; SET i = 0; WHILE (i &gt;= -20) DO BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;22003&apos; SHOW ERRORS; SELECT arg, i, round(arg, i); END; SET i = i - 1; END WHILE; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case317" value="CREATE PROCEDURE vctest() BEGIN DECLARE i VARCHAR(16); DECLARE j INT; SET i= &apos;string&apos;; SET j= 1 + i; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case318" value="CREATE PROCEDURE очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_E() BEGIN END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case319" value="CREATE PROCEDURE очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_e() BEGIN END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case320" value="CREATE PROCEDURE очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_é() BEGIN END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case321" value="CREATE ROLE of" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case322" value="CREATE ROLE r1 IDENTIFIED BY &apos;test&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case323" value="CREATE ROLE skip" db-types="MySQL"/>
@@ -456,7 +449,6 @@
     <sql-case id="create_by_mysql_source_test_case393" value="CREATE TABLE t1 ( f1 CHAR(20) COLLATE utf8mb4_0900_ai_ci  # A NO PAD collation. )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case394" value="CREATE TABLE t1 ( json_col JSON , KEY json_col ((CAST(json_col -&gt; &apos;$&apos; AS UNSIGNED ARRAY))) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case395" value="CREATE TABLE t1 ( pk INT PRIMARY KEY, val INT, UNIQUE KEY USING HASH(val) ) ENGINE=MEMORY" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case396" value="CREATE TABLE t1 ( Ñ INTEGER, N INTEGER, a INTEGER, b INTEGER, c INTEGER, d INTEGER, e INTEGER, f INTEGER, g INTEGER, h INTEGER, i INTEGER, j INTEGER, k INTEGER, l INTEGER, m INTEGER, na INTEGER, o INTEGER, p INTEGER, q INTEGER, r INTEGER, s INTEGER, t INTEGER, u INTEGER, v INTEGER, w INTEGER, x INTEGER, y INTEGER, z INTEGER, aa INTEGER, ab INTEGER, ac INTEGER, ad INTEGER )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case397" value="CREATE TABLE t1 (a DATE) PARTITION BY HASH (EXTRACT(DAY_HOUR FROM a))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case398" value="CREATE TABLE t1 (a DATE) PARTITION BY HASH (EXTRACT(DAY_MICROSECOND FROM a))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case399" value="CREATE TABLE t1 (a DATE) PARTITION BY HASH (EXTRACT(DAY_MINUTE FROM a))" db-types="MySQL"/>
@@ -622,8 +614,6 @@
     <sql-case id="create_by_mysql_source_test_case559" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case560" value="CREATE TABLE t1(val INT, KEY USING BTREE(val)) ENGINE=memory" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case561" value="CREATE TABLE t1(x INT, KEY `` ((x + 1)))" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case562" value="CREATE TABLE t1(🐬 INT)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case563" value="CREATE TABLE t1(🐬 INT)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case564" value="CREATE TABLE t2 (a INT NOT NULL,b INT NOT NULL, PRIMARY KEY USING BTREE (a)) ENGINE=MYISAM COMMENT=&quot;TESTING&quot; PACK_KEYS=0 DELAY_KEY_WRITE=1 STATS_PERSISTENT=1 CHECKSUM=1 MIN_ROWS=1 MAX_ROWS=100" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case565" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select * from t1))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case566" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select 1))" db-types="MySQL"/>
@@ -652,8 +642,6 @@
     <sql-case id="create_by_mysql_source_test_case589" value="CREATE TABLE t_illegal (col_1 INT CHECK something)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case590" value="CREATE TABLE tp (a VARCHAR(24), b DATETIME, PRIMARY KEY (a,b)) PARTITION BY RANGE COLUMNS (a, b) (PARTITION p0 VALUES LESS THAN (&quot;Middle&quot;, &apos;0000-00-00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE, &apos;9999-12-31 23:59:59&apos;))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case591" value="CREATE TABLE v0(v1 DEC, v2 INT)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case592" value="CREATE TABLE 🐬(a INT)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case593" value="CREATE TABLE 🐬(a INT)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case594" value="CREATE TABLESPACE `` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case595" value="CREATE TABLESPACE `a𐍈` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case596" value="CREATE TABLESPACE `innodb_file_per_table.2` ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
@@ -829,9 +817,6 @@
     <sql-case id="create_by_mysql_source_test_case766" value="CREATE TRIGGER trigger_for_normal_insert BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case767" value="CREATE TRIGGER trigger_for_normal_replace BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case768" value="CREATE TRIGGER trigger_for_replace_select BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case769" value="CREATE TRIGGER очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_E BEFORE INSERT ON t1 FOR EACH ROW SET @sum= @sum + NEW.f1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case770" value="CREATE TRIGGER очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_e BEFORE INSERT ON t1 FOR EACH ROW SET @sum= @sum + NEW.f1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case771" value="CREATE TRIGGER очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_é BEFORE INSERT ON t1 FOR EACH ROW SET @sum= @sum + NEW.f1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case772" value="CREATE UNDO TABLESPACE undo_003 ADD DATAFILE &apos;undo_003.ibu&apos; ENGINE InnoDB" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case773" value="CREATE UNDO TABLESPACE undo_003 ADD DATAFILE &apos;undo_003.ibu&apos; ENGINE MyISAM" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case774" value="CREATE USER ACCOUNT LOCK user6@localhost" db-types="MySQL"/>
@@ -859,11 +844,6 @@
     <sql-case id="create_by_mysql_source_test_case796" value="CREATE USER plug IDENTIFIED WITH test_plugin_server AS @auth_string" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case797" value="CREATE USER plug IDENTIFIED WITH test_plugin_server AS plug_dest" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case798" value="CREATE USER plug_dest IDENTIFIED BY &apos;plug_dest_passwd&apos; IDENTIFIED WITH &apos;test_plugin_server&apos; AS &apos;plug_dest&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case799" value="CREATE USER plüg IDENTIFIED WITH &apos;test_pluggggin_server&apos; AS &apos;plüg_dest&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case800" value="CREATE USER plüg IDENTIFIED WITH &apos;test_plugin_server&apos; AS &apos;plüg_dest&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case801" value="CREATE USER plüg IDENTIFIED WITH test_plugin_server AS &apos;plüg_dest&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case802" value="CREATE USER plüg_dest IDENTIFIED BY &apos;plug_dest_passwd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case803" value="CREATE USER plüg_dest IDENTIFIED BY &apos;plug_dest_passwd&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case804" value="CREATE USER u1 COMMENT &apos;Hello &quot;Smith&quot;&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case805" value="CREATE USER u1 COMMENT &apos;Hello &quot;Smith&quot;&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case806" value="CREATE USER u1@120.0.0.1" db-types="MySQL"/>
@@ -880,15 +860,6 @@
     <sql-case id="create_by_mysql_source_test_case817" value="CREATE USER user3@%" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case818" value="CREATE USER user3@localhost BY &apos;auth_string&apos; WITH &apos;sha_256_password&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case819" value="CREATE USER user5@localhost IDENTIFIED  AS &apos;auth_string&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case820" value="CREATE USER очень_очень_очень_длинный_дест__ IDENTIFIED BY &apos;plug_dest_passwd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case821" value="CREATE USER очень_очень_очень_длинный_юзер__ IDENTIFIED WITH &apos;test_plugin_server&apos; AS &apos;очень_очень_очень_длинный_дест__&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case822" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case823" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;cleartext_plugin_server&apos; AS &apos;auth_string&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case824" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;cleartext_plugin_server&apos; AS &apos;auth_string&apos; REQUIRE SSL" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case825" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;mysql_native_password&apos; BY &apos;auth_string&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case826" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;mysql_native_password&apos; BY &apos;auth_string&apos; REQUIRE SSL" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case827" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;sha256_password&apos; BY &apos;auth_string&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case828" value="CREATE USER очень_очень_очень_длинный_юзер__@localhost IDENTIFIED WITH &apos;sha256_password&apos; BY &apos;auth_string&apos; REQUIRE SSL" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case829" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case830" value="CREATE VIEW v AS SELECT * FROM (VALUES ROW(1)) AS t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case831" value="CREATE VIEW v AS SELECT * FROM (VALUES ROW(1)) AS t1(x)" db-types="MySQL"/>
@@ -917,14 +888,7 @@
     <sql-case id="create_by_mysql_source_test_case854" value="CREATE VIEW v2 AS SELECT GROUPING(a2345678901234567890123456789012345678901234xxxxxxxxxxxxxxxx.a), GROUPING(a2345678901234567890123456789012345678901234xxxxxxxxxxxxxxxx.a), GROUPING(a2345678901234567890123456789012345678901234xxxxxxxxxxxxxxxx.a) FROM t1 AS a2345678901234567890123456789012345678901234xxxxxxxxxxxxxxxx GROUP BY a WITH ROLLUP" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case855" value="CREATE VIEW v_mysqluser1_f1 AS SELECT mysqltest1.f1() AS a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case856" value="create aggregate function bug16896() returns int return 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case857" value="create database имя_базы_в_кодировке_утф8_длиной_больше_чем_45" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case858" value="create definer=some_user@`` sql security invoker view v1 as select 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case859" value="create event задачка on schedule every 123 minute starts now() ends now() + interval 1 month do select 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case860" value="create event закачка on schedule every 10 hour do select get_lock(&quot;test_lock1&quot;, 20)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case861" value="create event закачка on schedule every 10 hour do select get_lock(&quot;test_lock2&quot;, 20)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case862" value="create event закачка21 on schedule every 10 hour do select get_lock(&quot;test_lock2_1&quot;, 20)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case863" value="create event имя_события_в_кодировке_утф8_длиной_больше_чем_48 on schedule every 2 year do select 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case864" value="create event очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_66 on schedule every 2 year do select 1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case865" value="create function `f``1` () returns int return 5" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case866" value="create function bug10015_2() returns int begin declare i, s int; set i:= (select min(id) from t1); set s:= (select max(id) from t1); return (s - i); end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case867" value="create function bug10015_4(i int) returns int begin declare m int; set m:= (select max(id) from t2); insert into t2 values (i, m); return m; end" db-types="MySQL"/>
@@ -1019,8 +983,6 @@
     <sql-case id="create_by_mysql_source_test_case956" value="create function p(x int, x char(10)) begin end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case957" value="create function t1max() returns int begin declare x int; select max(data) into x from t1; return x; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case958" value="create function test_signal_func() returns integer begin DECLARE v INT; DECLARE warn CONDITION FOR SQLSTATE &quot;01XXX&quot;; SIGNAL warn SET MESSAGE_TEXT = &quot;This function SIGNAL a warning&quot;, MYSQL_ERRNO = 1012; SELECT @@warning_count INTO v; return v; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case959" value="create function имя_функции_в_кодировке_утф8_длиной_больше_чем_49() returns int return 0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case960" value="create function очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_66() returns int return 0" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case961" value="create or replace view v1 (c,d,e,f) as select a,b, a in (select a+2 from t1), a = all (select a from t1) from t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case962" value="create procedure ``() select 1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case963" value="create procedure ``.bug15658() select 1" db-types="MySQL"/>
@@ -1110,13 +1072,11 @@
     <sql-case id="create_by_mysql_source_test_case1047" value="create procedure bug5258_aux() begin declare c, m char(19); select created,last_altered into c,m from information_schema.routines where routine_name = &apos;bug5258&apos;; if c = m then select &apos;Ok&apos;; else select c, m; end if; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1048" value="create procedure bug5963_1 () begin declare v int; set v = (select s1 from t3); select v; end;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1049" value="create procedure bug5967(a varchar(255)) begin declare i varchar(255); declare c cursor for select a from t3; select a; select a from t3 into i; select i as &apos;Parameter takes precedence over table column&apos;;                     open c; fetch c into i; close c; select i as &apos;Parameter takes precedence over table column in cursors&apos;; begin declare a varchar(255) default &apos;a - local variable&apos;; declare c1 cursor for select a from t3; select a as &apos;A local variable takes precedence over parameter&apos;; open c1; fetch c1 into i; close c1; select i as &apos;A local variable takes precedence over parameter in cursors&apos;; begin declare a varchar(255) default &apos;a - local variable in a nested compound statement&apos;; declare c2 cursor for select a from t3; select a as &apos;A local variable in a nested compound statement takes precedence over a local variable in the outer statement&apos;; select a from t3 into i; select i as  &apos;A local variable in a nested compound statement takes precedence over table column&apos;; open c2; fetch c2 into i; close c2; select i as  &apos;A local variable in a nested compound statement takes precedence over table column in cursors&apos;; end; end; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1050" value="create procedure bug6063() begin lâbel: begin end; label: begin end; label1: begin end; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1051" value="create procedure bug6600() check table t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1052" value="create procedure bug6600() lock table t1 read" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1053" value="create procedure bug6600() unlock table t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1054" value="create procedure bug6857() begin declare t0, t1 int; declare plus bool default 0; set t0 = unix_timestamp(); select sleep(1.1); set t1 = unix_timestamp(); if t1 &gt; t0 then set plus = 1; end if; select plus; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1055" value="create procedure bug7047() alter procedure bug7047" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1056" value="create procedure bug7088_2() läbel1: begin end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1057" value="create procedure bug7299() begin declare v int; declare c cursor for select val from t1; declare exit handler for sqlexception select &apos;Error!&apos;; open c; fetch c into v; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1058" value="create procedure bug7743 ( searchstring char(28) ) begin declare var mediumint(8) unsigned; select a into var from t4 where b = 2 and c = binary searchstring limit 1; show warnings; select var; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1059" value="create procedure bug7992() begin declare i int; select max(id)+1 into i from t3; end" db-types="MySQL"/>
@@ -1288,8 +1248,6 @@
     <sql-case id="create_by_mysql_source_test_case1225" value="create procedure wg2() begin declare v int default 1; declare tdec decimal(5) default 0; while v &lt;= 9 do set tdec =tdec * 10; select v, tdec; set v = v + 1; end while; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1226" value="create procedure zap(x int, out y int) begin declare z int; set z = x+1, y = z; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1227" value="create procedure zip(x char(16), y int) begin declare z int; call zap(y, z); call bar(x, z); end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1228" value="create procedure имя_процедуры_в_кодировке_утф8_длиной_больше_чем_50() begin end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1229" value="create procedure очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_66() begin end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1230" value="create table BIT_XOR (a int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1231" value="create table BIT_XOR (a int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1232" value="create table BIT_XOR(a int)" db-types="MySQL"/>
@@ -1357,7 +1315,6 @@
     <sql-case id="create_by_mysql_source_test_case1294" value="create table t1 (k int, index using btree (k), index using hash (k)) engine=heap" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1295" value="create table t1 (k int, index using btree (k), index using hash (k)) engine=innodb" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1296" value="create table t1 (k int, index using hash (k)) charset utf8mb4 engine=heap" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1297" value="create table t1 (s1 int) partition by list (s1) (partition c values in (1), partition Ç values in (3))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1298" value="create table t1 (t1 timestamp not null default &apos;2003-01-01 00:00:00&apos; on update now(), t2 datetime)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1299" value="create table t1 (t1 timestamp not null default now() on update now(), t2 datetime)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1300" value="create table t1 (t1 timestamp not null default now(), t2 datetime, t3 timestamp NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;)" db-types="MySQL"/>
@@ -1399,9 +1356,6 @@
     <sql-case id="create_by_mysql_source_test_case1336" value="create table ti (k int, index using btree (k)) charset utf8mb4 engine=innodb" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1337" value="create table ti (k int, index using hash (k)) charset utf8mb4 engine=innodb" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1338" value="create table tm (k int, index using btree (k)) charset utf8mb4 engine=myisam" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1339" value="create table İ (s1 int)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1340" value="create table İİ (s1 int)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1341" value="create table имя_таблицы_в_кодировке_утф8_длиной_больше_чем_48 ( имя_поля_в_кодировке_утф8_длиной_больше_чем_45 int, index имя_индекса_в_кодировке_утф8_длиной_больше_чем_48 (имя_поля_в_кодировке_утф8_длиной_больше_чем_45) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1342" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1343" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1344" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam initial_size=32M" db-types="MySQL"/>
@@ -1529,7 +1483,6 @@
     <sql-case id="create_by_mysql_source_test_case1466" value="create view v1 as select t1.a as f1, dt.a as f2 from t1, lateral (select t1.a+t2.a as a from t2) dt" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1467" value="create view v1 as select test.`f``1` ()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1468" value="create view v3 as select bug23491_original.f1()" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1469" value="create view имя_вью_кодировке_утф8_длиной_больше_чем_42 as select имя_поля_в_кодировке_утф8_длиной_больше_чем_45 from имя_таблицы_в_кодировке_утф8_длиной_больше_чем_48" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1" value="SELECT  COUNTRY  FROM t1 WHERE  trim(trailing &apos;a&apos; FROM COUNTRY)= &apos;Australi&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case2" value="SELECT  MAX(a) FROM t1 WHERE (b) IN (SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case3" value="SELECT  MAX(a) FROM t1 WHERE (b) IN (SELECT MIN(t2.b) FROM t1 AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)" db-types="MySQL"/>
@@ -2394,7 +2347,6 @@
     <sql-case id="select_by_mysql_source_test_case862" value="select * from t2, t1, lateral (select t1.a) as dt, lateral (select t2.a) as dt2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case863" value="select * from t2, t1, lateral (select t1.a+t2.a) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case864" value="select * from t3, lateral (select t3.a+1) as dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case865" value="select * from имя_таблицы_в_кодировке_утф8_длиной_больше_чем_48" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case866" value="select *, mysqltest1.bug17199() from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case867" value="select /*+ no_merge() */ * from t1 as t0, lateral (select dt3.* from t1, lateral (select * from (select * from (select t0.a from t2) as dt limit 1) dt2) dt3) dt4" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case868" value="select 0.1 in (1.0, 1.2, 1.1, a, 1.4, 0.5) from t1" db-types="MySQL"/>
@@ -2707,7 +2659,6 @@
     <sql-case id="insert_by_mysql_source_test_case30" value="INSERT INTO t0 SET a=1, b=20 AS n ON DUPLICATE KEY UPDATE b= n.b" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case31" value="INSERT INTO t1 (data) VALUES (repeat(&apos;a&apos;,1*1024*1024))" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case32" value="INSERT INTO t1 (data) VALUES (repeat(&apos;b&apos;,16*1024*1024-1024))" db-types="MySQL"/>
-    <sql-case id="insert_by_mysql_source_test_case33" value="INSERT INTO t1 (Ñ, N) VALUES (1, 2)" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case34" value="INSERT INTO t1 SELECT 101, REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case35" value="INSERT INTO t1 SELECT 102, REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case36" value="INSERT INTO t1 SELECT CONCAT(REPEAT(&apos;1&apos;, 1024*1024 - 27), &quot;\&apos;\r dummydb dummyhost&quot;)" db-types="MySQL"/>
