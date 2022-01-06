@@ -181,7 +181,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             for (Entry<String, DataSourceConfiguration> entry : loadDataSourceConfigurationMap.entrySet()) {
                 Map<String, DataSource> localDataSources = localDataSourcesMap.get(each.getKey());
                 if (null != localDataSources && null != localDataSources.get(entry.getKey())
-                        && entry.getValue().equals(DataSourcePoolCreatorUtil.getDataSourceConfiguration(localDataSources.get(entry.getKey())))) {
+                        && DataSourcePoolCreatorUtil.getDataSourceConfiguration(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
                     dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));
