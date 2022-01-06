@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.example.db.discovery.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import com.google.common.collect.Lists;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import javax.sql.DataSource;
@@ -37,7 +37,7 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
     
     private static final String USER_NAME = "root";
     
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "root";
     
     /**
      * Create a DataSource object, which is an object rewritten by ShardingSphere itself 

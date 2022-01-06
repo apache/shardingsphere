@@ -19,7 +19,6 @@ package org.apache.shardingsphere.traffic.context;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Optional;
 
@@ -30,14 +29,14 @@ import java.util.Optional;
 @Setter
 public final class TrafficContext {
     
-    private DataSourceConfiguration dataSourceConfig;
+    private String dataSourceName;
     
     /**
-     * Get data source config.
+     * Get data source name.
      * 
      * @return data source config
      */
-    public Optional<DataSourceConfiguration> getDataSourceConfig() {
-        return Optional.ofNullable(dataSourceConfig); 
+    public Optional<String> getDataSourceName() {
+        return Optional.ofNullable(dataSourceName);
     }
 }

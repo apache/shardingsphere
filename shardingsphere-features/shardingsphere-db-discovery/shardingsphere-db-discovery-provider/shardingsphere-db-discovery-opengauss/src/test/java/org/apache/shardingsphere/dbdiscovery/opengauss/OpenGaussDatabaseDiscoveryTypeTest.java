@@ -58,9 +58,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         when(resultSet.getString("local_role")).thenReturn("Primary");
         when(resultSet.getString("db_state")).thenReturn("Normal");
         when(resultSet.getString("db_state")).thenReturn("Sync");
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        when(dataSourceMap.get(null)).thenReturn(dataSource);
-        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSource);
     }
     
     @Test

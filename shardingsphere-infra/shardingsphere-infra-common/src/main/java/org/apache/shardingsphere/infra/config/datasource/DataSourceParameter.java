@@ -31,35 +31,23 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class DataSourceParameter {
     
-    public static final long DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 30 * 1000L;
-    
-    public static final long DEFAULT_IDLE_TIMEOUT_MILLISECONDS = 60 * 1000L;
-    
-    public static final long DEFAULT_MAX_LIFETIME_MILLISECONDS = 30 * 60 * 1000L;
-    
-    public static final int DEFAULT_MAX_POOL_SIZE = 50;
-    
-    public static final int DEFAULT_MIN_POOL_SIZE = 1;
-    
-    public static final boolean DEFAULT_READ_ONLY = false;
-    
     private String url;
     
     private String username;
     
     private String password;
     
-    private long connectionTimeoutMilliseconds = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
+    private Long connectionTimeoutMilliseconds;
     
-    private long idleTimeoutMilliseconds = DEFAULT_IDLE_TIMEOUT_MILLISECONDS;
+    private Long idleTimeoutMilliseconds;
     
-    private long maxLifetimeMilliseconds = DEFAULT_MAX_LIFETIME_MILLISECONDS;
+    private Long maxLifetimeMilliseconds;
     
-    private int maxPoolSize = DEFAULT_MAX_POOL_SIZE;
+    private Integer maxPoolSize;
     
-    private int minPoolSize = DEFAULT_MIN_POOL_SIZE;
+    private Integer minPoolSize;
     
-    private boolean readOnly = DEFAULT_READ_ONLY;
+    private Boolean readOnly;
     
     private Properties customPoolProps;
 }

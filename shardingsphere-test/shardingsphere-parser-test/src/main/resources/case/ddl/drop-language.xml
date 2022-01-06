@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <create-trigger sql-case-id="drop_language" />
-    <create-trigger sql-case-id="drop_language_with_exist" />
+    <drop-language sql-case-id="drop_language" />
+    <drop-language sql-case-id="drop_language_with_exist" />
 </sql-parser-test-cases>

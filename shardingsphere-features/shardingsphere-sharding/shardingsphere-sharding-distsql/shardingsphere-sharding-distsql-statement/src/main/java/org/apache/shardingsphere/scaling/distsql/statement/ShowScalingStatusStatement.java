@@ -28,5 +28,5 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 @Getter
 public final class ShowScalingStatusStatement extends QueryableRALStatement {
     
-    private final long jobId;
+    private final String jobId;
 }

@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;
@@ -55,12 +54,6 @@ public final class ResourceSegmentsConverter {
         result.getProps().put("jdbcUrl", getURL(databaseType, segment));
         result.getProps().put("username", segment.getUser());
         result.getProps().put("password", segment.getPassword());
-        result.getProps().put("connectionTimeout", DataSourceParameter.DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS);
-        result.getProps().put("idleTimeout", DataSourceParameter.DEFAULT_IDLE_TIMEOUT_MILLISECONDS);
-        result.getProps().put("maxLifetime", DataSourceParameter.DEFAULT_MAX_LIFETIME_MILLISECONDS);
-        result.getProps().put("maximumPoolSize", DataSourceParameter.DEFAULT_MAX_POOL_SIZE);
-        result.getProps().put("minimumIdle", DataSourceParameter.DEFAULT_MIN_POOL_SIZE);
-        result.getProps().put("readOnly", DataSourceParameter.DEFAULT_READ_ONLY);
         if (null != segment.getProperties()) {
             result.getCustomPoolProps().putAll(segment.getProperties());
         }

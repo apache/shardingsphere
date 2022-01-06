@@ -24,8 +24,8 @@ import java.sql.SQLException;
 public class MemoryLocalReadwriteSplittingJdbcExample {
     
     public static void main(final String[] args) throws SQLException {
-        MemoryLocalReadwriteSplittingJdbcConfiguration shardingConfiguration = new MemoryLocalReadwriteSplittingJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
+        MemoryLocalReadwriteSplittingJdbcConfiguration configuration = new MemoryLocalReadwriteSplittingJdbcConfiguration();
+        DataSource dataSource = configuration.getDataSource();
         MemoryLocalReadwriteSplittingJdbcExampleService exampleService = new MemoryLocalReadwriteSplittingJdbcExampleService(dataSource);
         exampleService.run();
     }

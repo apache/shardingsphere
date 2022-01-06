@@ -170,7 +170,7 @@ public final class RuleAlteredJobWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        Optional<Long> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
+        Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
@@ -247,7 +247,7 @@ public final class RuleAlteredJobWorker {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
         disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class);
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class, true);
         result.setRules(yamlRuleConfigs);
         return result;
     }
