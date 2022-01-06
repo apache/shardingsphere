@@ -168,5 +168,10 @@
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -57,7 +59,9 @@ public final class TrafficEngine {
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-            result.setInstanceId(loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds));
+            String instanceId = loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
+            result.setMatchTraffic(true);
+            result.getExecutionUnits().add(new ExecutionUnit(instanceId, new SQLUnit(logicSQL.getSql(), logicSQL.getParameters())));
         }
         return result;
     }

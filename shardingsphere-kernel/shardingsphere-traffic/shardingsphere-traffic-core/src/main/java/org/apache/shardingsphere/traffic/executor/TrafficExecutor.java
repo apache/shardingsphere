@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Traffic executor.
@@ -30,48 +28,15 @@ import java.sql.Statement;
 public interface TrafficExecutor extends AutoCloseable {
     
     /**
-     * Prepare for traffic executor.
-     * 
-     * @param logicSQL logic SQL
-     * @param instanceId instance id
-     * @param type type
-     * @return traffic executor context
-     * @throws SQLException SQL exception
-     */
-    TrafficExecutorContext<Statement> prepare(LogicSQL logicSQL, String instanceId, String type) throws SQLException;
-    
-    /**
-     * Execute query.
-     * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
-     * @param callback traffic executor callback
-     * @return result set
-     * @throws SQLException SQL exception
-     */
-    ResultSet executeQuery(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<ResultSet> callback) throws SQLException;
-    
-    /**
-     * Execute update.
-     * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
-     * @param callback traffic executor callback
-     * @return update count
-     * @throws SQLException SQL exception
-     */
-    int executeUpdate(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<Integer> callback) throws SQLException;
-    
-    /**
      * Execute.
      * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
+     * @param executionUnit execution unit
      * @param callback traffic executor callback
-     * @return whether execute success or not
+     * @param <T> return type
+     * @return execute result
      * @throws SQLException SQL exception
      */
-    boolean execute(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<Boolean> callback) throws SQLException;
+    <T> T execute(JDBCExecutionUnit executionUnit, TrafficExecutorCallback<T> callback) throws SQLException;
     
     /**
      * Get result set.
