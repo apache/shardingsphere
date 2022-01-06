@@ -27,12 +27,14 @@ import org.junit.Test;
 
 public final class HikariDataSourcePoolDestroyerTest {
 
-    @Test
+    @Test(timeout = 60000)
     public void assertDestroy() throws InterruptedException {
         HikariDataSource dataSource = new HikariDataSource();
         new HikariDataSourcePoolDestroyer().destroy(dataSource);
-        Thread.sleep(10L);
-        assertThat(dataSource.isClosed(), is(true));
+        while (!dataSource.isClosed()) {
+            // Test will fail by timeout if dataSource is not closed.
+            Thread.sleep(10L);
+        }
     }
 
     @Test

@@ -30,13 +30,15 @@ import org.junit.Test;
 
 public final class DataSourcePoolDestroyerFactoryTest {
     
-    @Test
+    @Test(timeout = 60000)
     public void assertDestroyForHikari() throws InterruptedException {
         try {
             HikariDataSource dataSource = new HikariDataSource();
             DataSourcePoolDestroyerFactory.destroy(dataSource);
-            Thread.sleep(10L);
-            assertThat(dataSource.isClosed(), is(true));
+            while (!dataSource.isClosed()) {
+                // Test will fail by timeout if dataSource is not closed.
+                Thread.sleep(10L);
+            }
         } catch (SQLException ex) {
             fail();
         }
