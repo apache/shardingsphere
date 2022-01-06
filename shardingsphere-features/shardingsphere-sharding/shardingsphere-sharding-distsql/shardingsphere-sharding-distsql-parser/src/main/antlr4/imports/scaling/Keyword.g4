@@ -23,12 +23,20 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+CREATE
+    : C R E A T E
+    ;
+
 ALGORITHMS
     : A L G O R I T H M S
     ;
 
 DROP
     : D R O P
+    ;
+
+SHARDING
+    : S H A R D I N G
     ;
 
 SHOW

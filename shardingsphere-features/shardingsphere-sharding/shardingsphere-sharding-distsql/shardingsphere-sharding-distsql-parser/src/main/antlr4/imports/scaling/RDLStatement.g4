@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+grammar RDLStatement;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import Keyword, Literals, Symbol;
 
-import java.util.List;
+createShardingScaling
+    : CREATE SHARDING SCALING scalingName
+    ;
 
-@Mapper
-public interface OrderRepository {
+dropShardingScaling
+    : DROP SHARDING SCALING scalingName
+    ;
 
-    void createTableIfNotExists();
-
-    void truncateTable();
-
-    void dropTable();
-
-    void insert(Order order);
-
-    void delete(long orderId);
-
-    List<Order> selectAll();
-}
+scalingName
+    : IDENTIFIER
+    ;

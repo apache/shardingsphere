@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
-import java.util.List;
-
-@Mapper
-public interface UserRepository {
+/**
+ * Drop sharding scaling statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropShardingScalingStatement extends DropRuleStatement {
     
-    void createTableIfNotExists();
-    
-    void truncateTable();
-    
-    void dropTable();
-    
-    void insert(User user);
-    
-    void delete(long userId);
-    
-    List<User> selectAll();
+    private final String scalingName;
 }

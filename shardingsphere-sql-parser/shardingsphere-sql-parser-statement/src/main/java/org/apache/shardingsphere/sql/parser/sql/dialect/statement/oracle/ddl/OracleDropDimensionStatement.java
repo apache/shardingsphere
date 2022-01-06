@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.List;
-
-@Mapper
-public interface OrderItemRepository {
-    
-    void createTableIfNotExists();
-    
-    void truncateTable();
-    
-    void dropTable();
-    
-    void insert(OrderItem orderItem);
-    
-    void delete(long orderId);
-    
-    List<OrderItem> selectAll();
+/**
+ * Oracle drop dimension statement.
+ */
+@ToString
+public final class OracleDropDimensionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

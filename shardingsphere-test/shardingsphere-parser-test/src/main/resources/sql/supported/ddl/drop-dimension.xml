@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -14,21 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
-    public int insertUser(final User user) {
-        entityManager.persist(user);
-        return user.getUserId();
-    }
-    
-    public List<User> selectUsers(final int userType) {
-        Query query = entityManager.createQuery("SELECT o FROM User o WHERE o.userType = ?1");
-        query.setParameter(1, userType);
-        return (List<User>) query.getResultList();
-    }
 
-    public void deleteUser(final int userId, final int userType) {
-        Query query = entityManager.createQuery("DELETE FROM User o WHERE o.userId = ?1 AND o.userType = ?2");
-        query.setParameter(1, userId);
-        query.setParameter(2, userType);
-        query.executeUpdate();
-    }
+<sql-cases>
+    <sql-case id="drop_dimension" value="DROP DIMENSION customers_dim" db-types="Oracle" />
+</sql-cases>

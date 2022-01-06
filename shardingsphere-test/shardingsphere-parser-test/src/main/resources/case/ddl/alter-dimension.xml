@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -14,19 +15,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
-    public int insertUser(final User user) {
-        entityManager.persist(user);
-        return user.getUserId();
-    }
-    
-    public List<User> selectAllUsers() {
-        return (List<User>) entityManager.createQuery("SELECT o FROM User o").getResultList();
-    }
 
-    public void deleteUser(final int userId) {
-        Query query = entityManager.createQuery("DELETE FROM User o WHERE o.userId = ?1");
-        query.setParameter(1, userId);
-        query.executeUpdate();
-    }
-}
+<sql-parser-test-cases>
+    <alter-dimension sql-case-id="alter_dimension_add" />
+    <alter-dimension sql-case-id="alter_dimension_drop" />
+    <alter-dimension sql-case-id="alter_dimension_compile" />
+</sql-parser-test-cases>

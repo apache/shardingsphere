@@ -153,7 +153,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         } else if (SubqueryType.EXISTS_SUBQUERY.equals(subqueryType)) {
             result.addAll(generateExistsSubqueryProjections(tableName, column, shorthand));
         } else {
-            result.add(distinctOwner(generateCommonProjection(tableName, column, shorthand, segment), shorthand));
+            result.add(distinctOwner(generateCommonProjection(tableName, column, segment), shorthand));
         }
         return result;
     }

@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
 
-import Symbol, RALStatement, RDLStatement;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
-    ) SEMI?
-    ;
+import java.util.List;
+
+@Mapper
+public interface OrderItemRepository {
+    
+    void createTableIfNotExists();
+    
+    void truncateTable();
+    
+    void dropTable();
+
+<#if feature=="shadow">
+    void createTableIfNotExistsShadow();
+    
+    void truncateTableShadow();
+    
+    void dropTableShadow();
+</#if>
+    
+    void insert(OrderItem orderItem);
+    
+    void delete(long orderId);
+    
+    List<OrderItem> selectAll();
+}
