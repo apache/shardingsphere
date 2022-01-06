@@ -29,17 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +112,7 @@ public final class TablesContext {
         }
         Map<String, String> result = new HashMap<>(columns.size(), 1);
         result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
-        Collection<String> columnNames = new LinkedHashSet<>();
+        Collection<String> columnNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
             if (null == each.getOwner()) {
                 columnNames.add(each.getName());
