@@ -17,23 +17,41 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Random traffic load balance algorithm.
+ * Round-robin traffic load balance algorithm.
  */
-public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
+@Getter
+@Setter
+public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
+    
+    private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
+    
+    private Properties props = new Properties();
     
     @Override
     public String getInstanceId(final String name, final List<String> instanceIds) {
-        return instanceIds.get(ThreadLocalRandom.current().nextInt(instanceIds.size()));
+        AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
+        COUNTS.putIfAbsent(name, count);
+        count.compareAndSet(instanceIds.size(), 0);
+        return instanceIds.get(Math.abs(count.getAndIncrement()) % instanceIds.size());
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return "ROUND_ROBIN";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

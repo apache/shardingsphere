@@ -28,10 +28,11 @@ import java.util.List;
 public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
     
     /**
-     * Get dataSource name.
+     * Get instance id.
      * 
-     * @param dataSourceNames dataSource name collection
-     * @return dataSource name
+     * @param name traffic strategy name
+     * @param instanceIds instance id collection
+     * @return instance id
      */
-    String getDataSourceName(List<String> dataSourceNames);
+    String getInstanceId(String name, List<String> instanceIds);
 }
