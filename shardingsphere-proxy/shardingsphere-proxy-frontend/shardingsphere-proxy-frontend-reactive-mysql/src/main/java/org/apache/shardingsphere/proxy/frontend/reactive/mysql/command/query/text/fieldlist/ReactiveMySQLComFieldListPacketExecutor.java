@@ -43,6 +43,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
+/**
+ * Reactive COM_FIELD_LIST packet executor for MySQL.
+ */
 public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCommandExecutor {
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";

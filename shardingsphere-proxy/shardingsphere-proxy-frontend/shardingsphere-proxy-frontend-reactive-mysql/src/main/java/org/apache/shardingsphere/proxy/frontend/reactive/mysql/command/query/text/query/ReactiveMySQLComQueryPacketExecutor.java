@@ -39,6 +39,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Reactive COM_QUERY command packet executor for MySQL.
+ */
 public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;

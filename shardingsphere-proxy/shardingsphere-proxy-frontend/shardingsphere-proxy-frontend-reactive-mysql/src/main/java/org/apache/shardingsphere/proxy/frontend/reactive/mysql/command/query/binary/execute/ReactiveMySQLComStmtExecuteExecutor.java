@@ -63,6 +63,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Reactive COM_STMT_EXECUTE command executor for MySQL.
+ */
 public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveCommandExecutor {
     
     private final VertxDatabaseCommunicationEngine databaseCommunicationEngine;
