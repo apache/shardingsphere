@@ -286,6 +286,13 @@ props:
   proxy-hint-enabled: false
   sql-show: false
   check-table-metadata-enabled: false
+  show-process-list-enabled: false
+  proxy-backend-query-fetch-size: -1
+  check-duplicate-table-enabled: false
+  proxy-frontend-executor-size: 0
+  proxy-backend-executor-suitable: OLAP
+  proxy-frontend-max-connections: 0
+  sql-federation-enabled: false
 ```
 
 config-sharding.yaml
@@ -740,6 +747,59 @@ rules:
         pad:
           cipherColumn: pad
           encryptorName: md5_encryptor
+```
+
+config-database-discovery.yaml
+
+```yaml
+schemaName: sbtest
+dataSources:
+  ds_0:
+    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds
+    username: postgres
+    password: postgres
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0
+    username: postgres
+    password: postgres
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_2:
+    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1
+    username: postgres
+    password: postgres
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+rules:
+- !DB_DISCOVERY
+  dataSources:
+    pr_ds:
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
+      discoveryHeartbeatName: mgr-heartbeat
+      discoveryTypeName: mgr
+  discoveryHeartbeats:
+    mgr-heartbeat:
+      props:
+        keep-alive-cron: '0/5 * * * * ?'
+  discoveryTypes:
+    mgr:
+      type: MGR
+      props:
+        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
 ```
 
 #### 4.1.1 version
