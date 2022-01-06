@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.schedule.core.api;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.Instance;
 
 import java.util.Map;
 import java.util.Optional;
@@ -42,10 +40,11 @@ public final class ModeScheduleContextFactory {
     /**
      * Init mode schedule context.
      * 
+     * @param instanceId instance id
      * @param modeConfig mode configuration
      */
-    public void init(final ModeConfiguration modeConfig) {
-        modeScheduleContexts.put(Instance.getInstance().getId(), new ModeScheduleContext(modeConfig));
+    public void init(final String instanceId, final ModeConfiguration modeConfig) {
+        modeScheduleContexts.put(instanceId, new ModeScheduleContext(modeConfig));
     }
     
     /**
@@ -54,10 +53,11 @@ public final class ModeScheduleContextFactory {
      * @return mode schedule context
      */
     public Optional<ModeScheduleContext> get() {
-        if (Strings.isNullOrEmpty(Instance.getInstance().getId())) {
+        // TODO get by instance id
+        if (modeScheduleContexts.values().isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(modeScheduleContexts.get(Instance.getInstance().getId()));
+        return Optional.ofNullable(modeScheduleContexts.values().iterator().next());
     }
     
     /**

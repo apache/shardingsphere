@@ -17,52 +17,40 @@
 
 package org.apache.shardingsphere.infra.instance;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
 
 /**
- * Instance.
+ * Instance id.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class Instance {
+public final class InstanceId {
     
     private static final String DELIMITER = "@";
     
-    private static final Instance INSTANCE = new Instance();
+    private final String id;
     
-    private volatile String id;
+    private final String ip;
     
-    /**
-     * Init instance.
-     * 
-     * @param port port
-     */
-    public synchronized void init(final Integer port) {
-        id = String.join(DELIMITER, IpUtils.getIp(), null == port ? ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0] : String.valueOf(port));
+    private final Integer port;
+    
+    public InstanceId(final String ip, final Integer port) {
+        this.ip = ip;
+        this.port = port;
+        id = String.join(DELIMITER, ip, String.valueOf(port));
     }
     
-    /**
-     * Get instance id.
-     * 
-     * @param ip ip
-     * @param port port
-     * @return instance id
-     */
-    public String getInstanceId(final String ip, final String port) {
-        return String.join(DELIMITER, ip, port);
+    public InstanceId(final Integer port) {
+        this.port = port;
+        ip = IpUtils.getIp();
+        id = String.join(DELIMITER, ip, String.valueOf(port));
     }
     
-    /**
-     * Get instance.
-     *
-     * @return singleton instance
-     */
-    public static Instance getInstance() {
-        return INSTANCE;
+    public InstanceId() {
+        port = 0;
+        ip = IpUtils.getIp();
+        id = String.join(DELIMITER, ip, ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0]);
     }
 }
