@@ -24,7 +24,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
                            ">
-    <database-discovery:discovery-type id="mgrDatabaseDiscoveryType" type="MGR" >
+    <database-discovery:discovery-type id="mgr" type="MGR" >
         <props>
             <prop key="group-name">92504d5b-6dec-11e8-91ea-246e9612aaf1</prop>
         </props>
