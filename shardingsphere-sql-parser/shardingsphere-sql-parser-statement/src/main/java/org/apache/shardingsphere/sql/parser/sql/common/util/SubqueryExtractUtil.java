@@ -105,12 +105,6 @@ public final class SubqueryExtractUtil {
             result.add(subquery);
             result.addAll(getSubquerySegments(subquery.getSelect()));
         }
-        if (expressionSegment instanceof ExistsSubqueryExpression) {
-            SubquerySegment subquery = ((ExistsSubqueryExpression) expressionSegment).getSubquery();
-            subquery.setSubqueryType(SubqueryType.PREDICATE_SUBQUERY);
-            result.add(subquery);
-            result.addAll(getSubquerySegments(subquery.getSelect()));
-        }
         if (expressionSegment instanceof ListExpression) {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
                 result.addAll(getSubquerySegmentsFromExpression(each));
