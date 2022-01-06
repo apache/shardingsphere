@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.proxy.config;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +24,7 @@ import lombok.Setter;
 import java.util.Properties;
 
 /**
- * Data source parameters.
+ * Data source parameter.
  */
 @Getter
 @Setter
