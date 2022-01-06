@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +28,16 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
@@ -49,7 +52,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -65,8 +67,6 @@ import java.util.stream.Collectors;
 @Getter
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
-    
-    private static final Map<PipelineDataSourceConfiguration, PipelineTableMetaDataLoader> TABLE_META_DATA_LOADER_MAP = new ConcurrentHashMap<>();
     
     private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
@@ -146,17 +146,17 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            PipelineTableMetaDataLoader tableMetaDataLoader = getTableMetaDataLoader(sourceDataSourceConfig, sourceDataSource);
+            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
             logicTableNames.forEach(each -> {
                 //TODO put to preparer
-                if (null == tableMetaDataLoader.getTableMetaData(each)) {
+                if (!tableMetaDataMap.containsKey(each)) {
                     throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
                 }
             });
             for (String each : logicTableNames) {
-                PipelineTableMetaData tableMetaData = tableMetaDataLoader.getTableMetaData(each);
-                Collection<String> columnNames = tableMetaData.getColumnNames();
-                String uniqueKey = tableMetaData.getPrimaryKeys().get(0);
+                TableMetaData tableMetaData = tableMetaDataMap.get(each);
+                Collection<String> columnNames = tableMetaData.getColumns().keySet();
+                String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
                 DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
                     .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
                 DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
@@ -194,21 +194,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private PipelineTableMetaDataLoader getTableMetaDataLoader(final PipelineDataSourceConfiguration sourceDataSourceConfig, final PipelineDataSourceWrapper sourceDataSource) throws SQLException {
-        PipelineTableMetaDataLoader result = TABLE_META_DATA_LOADER_MAP.get(sourceDataSourceConfig);
-        if (null != result) {
-            return result;
-        }
-        synchronized (TABLE_META_DATA_LOADER_MAP) {
-            result = TABLE_META_DATA_LOADER_MAP.get(sourceDataSourceConfig);
-            if (null != result) {
-                return result;
-            }
-            try (Connection connection = sourceDataSource.getConnection()) {
-                result = new PipelineTableMetaDataLoader(connection, "%");
-                TABLE_META_DATA_LOADER_MAP.put(sourceDataSourceConfig, result);
-            }
-            return result;
-        }
+    private Map<String, TableMetaData> getTableMetaDataMap(final String schemaName) {
+        ContextManager contextManager = RuleAlteredContext.getContextManager();
+        Preconditions.checkNotNull(contextManager, "contextManager null");
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
+        return metaData.getSchema().getTables();
     }
 }
