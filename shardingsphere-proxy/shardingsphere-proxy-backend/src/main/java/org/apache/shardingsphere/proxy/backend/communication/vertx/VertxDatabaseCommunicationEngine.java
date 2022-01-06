@@ -53,7 +53,8 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     @Override
     public Future<ResponseHeader> execute() {
         try {
-            ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(getLogicSQL(), getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+            ExecutionContext executionContext = getKernelProcessor()
+                    .generateExecutionContext(getLogicSQL(), getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
             // TODO move federation route logic to binder
             if (executionContext.getRouteContext().isFederated()) {
                 return Future.failedFuture(new UnsupportedOperationException("Execute federated by Vert.x"));

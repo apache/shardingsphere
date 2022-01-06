@@ -112,12 +112,4 @@ public final class FrontendChannelInboundHandlerTest {
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(channel.readOutbound(), is(expectedPacket));
     }
-    
-    @Test
-    public void assertChannelInactive() throws Exception {
-        channel.register();
-        channel.close().sync();
-        verify(backendConnection).closeAllResources();
-        verify(frontendEngine).release(connectionSession);
-    }
 }
