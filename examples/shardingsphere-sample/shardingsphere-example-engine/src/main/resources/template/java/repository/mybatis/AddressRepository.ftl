@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Address;
 
 import java.util.List;
 
 @Mapper
-public interface OrderRepository {
+public interface AddressRepository {
     
     void createTableIfNotExists();
     
@@ -31,21 +31,9 @@ public interface OrderRepository {
     
     void dropTable();
     
-<#if feature=="shadow">
-    void createTableIfNotExistsShadow();
+    void insert(Address address);
     
-    void truncateTableShadow();
+    void delete(long id);
     
-    void dropTableShadow();
-    
-    List<Order> selectShadowOrder();
-
-    void deleteShadow(long orderId);
-</#if>
-    
-    void insert(Order order);
-    
-    void delete(long orderId);
-    
-    List<Order> selectAll();
+    List<Address> selectAll();
 }

@@ -48,14 +48,27 @@ public final class ExampleTemplateFactory {
      */
     public static Map<String, String> getUnReNameTemplate(Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
+        String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
         if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
-            result.put("TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
+            result.put("java/TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
         }
         result.put("java/entity/Order", "entity/Order.java");
         result.put("java/entity/OrderItem", "entity/OrderItem.java");
-        result.put("java/repository/OrderItemRepository", "repository/OrderItemRepository.ftl");
-        result.put("java/repository/OrderRepository", "repository/OrderRepository.java");
+        result.put("java/entity/Address", "entity/Address.java");
+        if (framework.contains("jdbc")) {
+            result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
+            result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
+            result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
+        } else if (framework.contains("jpa")) {
+            result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
+            result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
+            result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
+        } else if (framework.contains("mybatis")) {
+            result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+            result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
+            result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
+        }
         return result;
     }
     
@@ -68,18 +81,19 @@ public final class ExampleTemplateFactory {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
-        result.put("log/logback", "logback.xml");
+        result.put("resources/logback", "logback.xml");
         if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
-            result.put("spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+            result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         if (framework.contains("spring-boot-starter")) {
-            result.put("properties/application", "application.properties");
+            result.put("resources/properties/application", "application.properties");
         } else if (framework.contains("spring-namespace")) {
-            result.put("xml/application", "application.xml");
+            result.put("resources/xml/application", "application.xml");
         }
         if (framework.contains("mybatis")) {
-            result.put("mybatis/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-            result.put("mybatis/mappers/OrderMapper", "mappers/OrderMapper.xml");
+            result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+            result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
+            result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
         }
         return result;
     }

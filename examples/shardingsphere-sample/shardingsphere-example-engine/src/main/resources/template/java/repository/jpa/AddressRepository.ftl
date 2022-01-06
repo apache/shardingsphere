@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
+import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Address;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -28,7 +28,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class OrderItemRepository {
+public class AddressRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,18 +42,19 @@ public class OrderItemRepository {
     public void truncateTable() {
     }
     
-    public Long insert(final OrderItem orderItem) {
-        entityManager.persist(orderItem);
-        return orderItem.getOrderItemId();
+    public Long insert(final Address entity) {
+        entityManager.persist(entity);
+        return entity.getAddressId();
     }
     
-    public void delete(final Long id) {
-        Query query = entityManager.createQuery("DELETE FROM OrderItem i WHERE i.orderId = ?1");
-        query.setParameter(1, id);
+    public void delete(final Long addressCode) {
+        Query query = entityManager.createQuery("DELETE FROM Address i WHERE i.addressId = ?1");
+        query.setParameter(1, addressCode);
         query.executeUpdate();
     }
     
-    public List<OrderItem> selectAll() {
-        return (List<OrderItem>) entityManager.createQuery("SELECT o from OrderItem o").getResultList();
+    @SuppressWarnings("unchecked")
+    public List<Address> selectAll() {
+        return (List<Address>) entityManager.createQuery("SELECT i FROM Address i").getResultList();
     }
 }
