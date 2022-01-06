@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.readwrite.splitting.jdbc;
 
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 

@@ -17,24 +17,39 @@
 
 package org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis;
 
-import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.User;
-import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.UserRepository;
-import org.springframework.stereotype.Service;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.Address;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.Order;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.entity.OrderItem;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.AddressRepository;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.OrderItemRepository;
+import org.apache.shardingsphere.example.encrypt.spring.namespace.mybatis.repository.OrderRepository;
 
-import javax.annotation.Resource;
+import org.springframework.stereotype.Service;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public final class MemoryLocalEncryptSpringNamespaceMybatisExampleService {
     
-    @Resource
-    private UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    
+    private final OrderItemRepository orderItemRepository;
+    
+    private final AddressRepository addressRepository;
+    
+    public MemoryLocalEncryptSpringNamespaceMybatisExampleService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final AddressRepository addressRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.addressRepository = addressRepository;
+    }
     
     /**
      * Execute test.
+     *
+     * @throws SQLException
      */
-    public void run() {
+    public void run() throws SQLException {
         try {
             this.initEnvironment();
             this.processSuccess();
@@ -45,13 +60,18 @@ public final class MemoryLocalEncryptSpringNamespaceMybatisExampleService {
     
     /**
      * Initialize the database test environment.
+     * @throws SQLException
      */
-    private void initEnvironment() {
-        userRepository.createTableIfNotExists();
-        userRepository.truncateTable();
+    private void initEnvironment() throws SQLException {
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
+        addressRepository.createTableIfNotExists();
+        orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
+        addressRepository.truncateTable();
     }
     
-    private void processSuccess() {
+    private void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
@@ -60,38 +80,71 @@ public final class MemoryLocalEncryptSpringNamespaceMybatisExampleService {
         System.out.println("-------------- Process Success Finish --------------");
     }
     
-    private List<Long> insertData() {
+    private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            User user = new User();
-            user.setUserId(i);
-            user.setUsername("test_mybatis_" + i);
-            user.setPwd("pwd_mybatis_" + i);
-            userRepository.insert(user);
-            result.add((long) user.getUserId());
+            Order order = new Order();
+            order.setUserId(i);
+            order.setOrderType(i % 2);
+            order.setAddressId(i);
+            order.setStatus("INSERT_TEST");
+            orderRepository.insert(order);
+            
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getOrderId());
+            orderItem.setUserId(i);
+            orderItem.setPhone("13800000001");
+            orderItem.setStatus("INSERT_TEST");
+            orderItemRepository.insert(orderItem);
+
+            Address address = new Address();
+            address.setAddressId((long) i);
+            address.setAddressName("address_test_" + i);
+            addressRepository.insert(address);
+            
+            result.add(order.getOrderId());
         }
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) {
+    private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
+        long count = 1;
         for (Long each : orderIds) {
-            userRepository.delete(each);
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
+            addressRepository.delete(count++);
         }
     }
     
-    private void printData() {
+    private void printData() throws SQLException {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : userRepository.selectAll()) {
+        for (Object each : this.selectAll()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : orderItemRepository.selectAll()) {
+            System.out.println(each);
+        } 
+        System.out.println("---------------------------- Print Address Data -------------------");
+        for (Object each : addressRepository.selectAll()) {
             System.out.println(each);
         }
     }
     
+    private List<Order> selectAll() throws SQLException {
+        List<Order> result = orderRepository.selectAll();
+        return result;
+    }
+    
     /**
      * Restore the environment.
+     * @throws SQLException
      */
-    private void cleanEnvironment() {
-        userRepository.dropTable();
+    private void cleanEnvironment() throws SQLException {
+        orderRepository.dropTable();
+        orderItemRepository.dropTable();
+        addressRepository.dropTable();
     }
 }
