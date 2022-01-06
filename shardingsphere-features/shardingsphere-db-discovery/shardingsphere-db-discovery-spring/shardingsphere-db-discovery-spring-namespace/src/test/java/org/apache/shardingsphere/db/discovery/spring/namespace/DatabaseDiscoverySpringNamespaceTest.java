@@ -59,9 +59,9 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     
     private void assertDiscoveryTypes(final Map<String, DatabaseDiscoveryType> discoveryTypes) {
         assertThat(discoveryTypes.size(), is(1));
-        assertThat(discoveryTypes.get("mgrDatabaseDiscoveryType"), instanceOf(MGRDatabaseDiscoveryType.class));
-        assertNotNull(discoveryTypes.get("mgrDatabaseDiscoveryType").getProps());
-        assertThat(discoveryTypes.get("mgrDatabaseDiscoveryType").getProps().get("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
+        assertThat(discoveryTypes.get("mgr"), instanceOf(MGRDatabaseDiscoveryType.class));
+        assertNotNull(discoveryTypes.get("mgr").getProps());
+        assertThat(discoveryTypes.get("mgr").getProps().get("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     private void assertHeartbeats(final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeats) {
