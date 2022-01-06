@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OKProxyStateTest {
+public final class JDBCOKProxyStateTest {
     
     private static ContextManager originContextManager;
     
@@ -77,7 +77,7 @@ public final class OKProxyStateTest {
     public void assertExecuteWithProxyHintEnabled() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
@@ -87,7 +87,7 @@ public final class OKProxyStateTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
@@ -98,7 +98,7 @@ public final class OKProxyStateTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
         EventExecutor eventExecutor = mock(EventExecutor.class);
         when(context.executor()).thenReturn(eventExecutor);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(eventExecutor).execute(any(CommandExecutorTask.class));
     }
     
@@ -108,7 +108,7 @@ public final class OKProxyStateTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLAP");
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection()).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
@@ -117,7 +117,7 @@ public final class OKProxyStateTest {
     public void assertExecuteWithProxyBackendExecutorSuitableForInvalidValue() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("invalid value");
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})

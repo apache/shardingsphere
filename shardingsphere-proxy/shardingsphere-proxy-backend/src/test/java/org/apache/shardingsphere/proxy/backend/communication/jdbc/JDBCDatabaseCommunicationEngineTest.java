@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -37,6 +37,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
@@ -74,7 +76,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseCommunicationEngineTest {
+public final class JDBCDatabaseCommunicationEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private JDBCBackendConnection backendConnection;
@@ -105,13 +107,13 @@ public final class DatabaseCommunicationEngineTest {
     
     @Test
     public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException {
-        DatabaseCommunicationEngine engine =
+        JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
-        Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
+        Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
         FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
-        Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
+        Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
             private MemoryQueryResultRow memoryQueryResultRow;
@@ -161,7 +163,7 @@ public final class DatabaseCommunicationEngineTest {
     
     @Test
     public void assertAddStatementCorrectly() {
-        DatabaseCommunicationEngine engine =
+        JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
@@ -171,7 +173,7 @@ public final class DatabaseCommunicationEngineTest {
     
     @Test
     public void assertAddResultSetCorrectly() {
-        DatabaseCommunicationEngine engine =
+        JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
@@ -181,7 +183,7 @@ public final class DatabaseCommunicationEngineTest {
     
     @Test
     public void assertCloseCorrectly() throws SQLException {
-        DatabaseCommunicationEngine engine =
+        JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
@@ -196,7 +198,7 @@ public final class DatabaseCommunicationEngineTest {
     
     @Test
     public void assertCloseResultSetsWithExceptionThrown() throws SQLException {
-        DatabaseCommunicationEngine engine =
+        JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
@@ -223,8 +225,8 @@ public final class DatabaseCommunicationEngineTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private <T> T getField(final DatabaseCommunicationEngine target, final String fieldName) {
-        Field field = DatabaseCommunicationEngine.class.getDeclaredField(fieldName);
+    private <T> T getField(final JDBCDatabaseCommunicationEngine target, final String fieldName) {
+        Field field = JDBCDatabaseCommunicationEngine.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         return (T) field.get(target);
     }

@@ -117,7 +117,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable sql federation.
      */
-    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Proxy backend driver type. Default driver is JDBC.
+     */
+    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class);
     
     private final String key;
     
