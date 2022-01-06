@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.instance.Instance;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -159,7 +160,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                                     final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceConfiguration>> loadDataSourceConfigs = loadDataSourceConfigurations(metaDataPersistService, schemaNames);
         Map<String, Map<String, DataSource>> result = getLoadDataSources(loadDataSourceConfigs, dataSourcesMap);
-        closeLocalDataSources(dataSourcesMap);
+        closeLocalDataSources(dataSourcesMap, result);
         return result;
     }
     
@@ -171,15 +172,41 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void closeLocalDataSources(final Map<String, Map<String, DataSource>> dataSourceMap) {
-        for (Entry<String, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
-            entry.getValue().values().forEach(this::closeDataSource);
+    private Map<String, Map<String, DataSource>> getLoadDataSources(final Map<String, Map<String, DataSourceConfiguration>> loadDataSourceConfigurations,
+                                                                    final Map<String, Map<String, DataSource>> localDataSourcesMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(loadDataSourceConfigurations.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> each : loadDataSourceConfigurations.entrySet()) {
+            Map<String, DataSource> dataSources = new LinkedHashMap<>();
+            Map<String, DataSourceConfiguration> loadDataSourceConfigurationMap = loadDataSourceConfigurations.get(each.getKey());
+            for (Entry<String, DataSourceConfiguration> entry : loadDataSourceConfigurationMap.entrySet()) {
+                Map<String, DataSource> localDataSources = localDataSourcesMap.get(each.getKey());
+                if (null != localDataSources && null != localDataSources.get(entry.getKey())
+                        && entry.getValue().equals(DataSourcePoolCreatorUtil.getDataSourceConfiguration(localDataSources.get(entry.getKey())))) {
+                    dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
+                } else {
+                    dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));
+                }
+            }
+            result.put(each.getKey(), dataSources);
+        }
+        return result;
+    }
+    
+    private void closeLocalDataSources(final Map<String, Map<String, DataSource>> localDataSourceMap, final Map<String, Map<String, DataSource>> loadDataSourceMap) {
+        for (Entry<String, Map<String, DataSource>> entry : localDataSourceMap.entrySet()) {
+            if (loadDataSourceMap.containsKey(entry.getKey())) {
+                entry.getValue().forEach((key, value) -> {
+                    if (null == loadDataSourceMap.get(entry.getKey()).get(key)) {
+                        closeDataSource(value);
+                    }
+                });
+            }
         }
     }
     
     private void closeDataSource(final DataSource dataSource) {
         try {
-            dataSource.getConnection().close();
+            DataSourcePoolDestroyerFactory.destroy(dataSource);
             // CHECKSTYLE:OFF
         } catch (SQLException ex) {
             // CHECKSTYLE:ON
@@ -190,29 +217,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final MetaDataPersistService metaDataPersistService, final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(
             each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, Map<String, DataSource>> getLoadDataSources(final Map<String, Map<String, DataSourceConfiguration>> loadedDataSourceConfigurations,
-                                                                      final Map<String, Map<String, DataSource>> dataSourcesMap) {
-        if (loadedDataSourceConfigurations.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(loadedDataSourceConfigurations.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> each : loadedDataSourceConfigurations.entrySet()) {
-            Map<String, DataSource> dataSources = new LinkedHashMap<>();
-            Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadedDataSourceConfigurations.get(each.getKey());
-            for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
-                Map<String, DataSource> dataSourceMap = dataSourcesMap.get(each.getKey());
-                if (null != dataSourceMap && null != dataSourceMap.get(entry.getKey())
-                        && entry.getValue().equals(DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSourceMap.get(entry.getKey())))) {
-                    dataSources.put(entry.getKey(), dataSourceMap.get(entry.getKey()));
-                } else {
-                    dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));
-                }
-            }
-            result.put(each.getKey(), dataSources);
-        }
-        return result;
     }
     
     private void disableDataSources() {
