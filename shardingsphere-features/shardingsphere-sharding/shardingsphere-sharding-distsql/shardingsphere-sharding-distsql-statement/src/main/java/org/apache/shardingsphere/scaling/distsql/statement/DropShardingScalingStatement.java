@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop sharding scaling statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShardingScalingStatement extends DropRuleStatement {
     
     private final String scalingName;
+    
+    public DropShardingScalingStatement(final String scalingName) {
+        super(false);
+        this.scalingName = scalingName;
+    }
 }
