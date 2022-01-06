@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data;
 
+import io.vertx.core.Future;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
  * Database backend handler.
  */
 public interface DatabaseBackendHandler extends TextProtocolBackendHandler {
+    
+    /**
+     * Handlers which communicate with database must implement async execution.
+     *
+     * @return future of response header
+     */
+    @Override
+    Future<ResponseHeader> executeFuture();
 }

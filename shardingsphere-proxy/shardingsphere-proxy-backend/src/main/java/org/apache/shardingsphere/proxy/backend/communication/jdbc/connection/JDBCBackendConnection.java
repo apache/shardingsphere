@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Executor
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class JDBCBackendConnection implements BackendConnection, ExecutorJDBCManager {
+public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
@@ -71,11 +71,11 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<JDBCDatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<JDBCDatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
+    private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
     
     private final ResourceLock resourceLock = new ResourceLock();
     
@@ -139,7 +139,7 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
     }
     
     private void replayMethodsInvocation(final Connection target) {
-        for (ConnectionPostProcessor each : connectionPostProcessors) {
+        for (ConnectionPostProcessor<Connection> each : connectionPostProcessors) {
             each.process(target);
         }
     }
@@ -203,7 +203,7 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void add(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void add(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         databaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
@@ -212,7 +212,7 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void markResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void markResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         inUseDatabaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
@@ -221,28 +221,29 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
      *
      * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void unmarkResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public void unmarkResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
     }
     
     @Override
-    public void prepareForTaskExecution() throws BackendConnectionException {
+    public Void prepareForTaskExecution() throws BackendConnectionException {
         if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
             connectionStatus.waitUntilConnectionRelease();
             connectionStatus.switchToUsing();
         }
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(this);
+            JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
             try {
                 transactionManager.begin();
             } catch (SQLException ex) {
                 throw new BackendConnectionException(ex);
             }
         }
+        return null;
     }
     
     @Override
-    public void closeExecutionResources() throws BackendConnectionException {
+    public Void closeExecutionResources() throws BackendConnectionException {
         Collection<Exception> result = new LinkedList<>();
         result.addAll(closeDatabaseCommunicationEngines(false));
         result.addAll(closeFederationExecutor());
@@ -252,16 +253,17 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
             connectionStatus.switchToReleased();
         }
         if (result.isEmpty()) {
-            return;
+            return null;
         }
         throw new BackendConnectionException(result);
     }
     
     @Override
-    public void closeAllResources() {
+    public Void closeAllResources() {
         closeDatabaseCommunicationEngines(true);
         closeConnections(true);
         closeFederationExecutor();
+        return null;
     }
     
     /**
@@ -272,7 +274,7 @@ public final class JDBCBackendConnection implements BackendConnection, ExecutorJ
      */
     public synchronized Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (DatabaseCommunicationEngine each : databaseCommunicationEngines) {
+        for (JDBCDatabaseCommunicationEngine each : databaseCommunicationEngines) {
             if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
                 continue;
             }

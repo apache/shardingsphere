@@ -75,7 +75,6 @@ public final class FrontendChannelInboundHandlerTest {
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         channel.pipeline().addLast(frontendChannelInboundHandler);
         connectionSession = getConnectionSession();
-        connectionSession.setBackendConnection(backendConnection);
     }
     
     @SneakyThrows
@@ -112,13 +111,5 @@ public final class FrontendChannelInboundHandlerTest {
         when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession)).thenReturn(expectedPacket);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(channel.readOutbound(), is(expectedPacket));
-    }
-    
-    @Test
-    public void assertChannelInactive() throws Exception {
-        channel.register();
-        channel.close().sync();
-        verify(backendConnection).closeAllResources();
-        verify(frontendEngine).release(connectionSession);
     }
 }

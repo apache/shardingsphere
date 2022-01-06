@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -360,27 +360,27 @@ public final class JDBCBackendConnectionTest {
     
     @Test
     public void assertAddDatabaseCommunicationEngine() {
-        DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
+        JDBCDatabaseCommunicationEngine expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
-        Collection<DatabaseCommunicationEngine> actual = getDatabaseCommunicationEngines();
+        Collection<JDBCDatabaseCommunicationEngine> actual = getDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
     public void assertMarkDatabaseCommunicationEngineInUse() {
-        DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
+        JDBCDatabaseCommunicationEngine expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
-        Collection<DatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
+        Collection<JDBCDatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
     public void assertUnmarkInUseDatabaseCommunicationEngine() {
-        DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
-        Collection<DatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
+        JDBCDatabaseCommunicationEngine engine = mock(JDBCDatabaseCommunicationEngine.class);
+        Collection<JDBCDatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
         actual.add(engine);
         backendConnection.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -388,12 +388,12 @@ public final class JDBCBackendConnectionTest {
     
     @Test
     public void assertCloseDatabaseCommunicationEngines() throws SQLException {
-        DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
-        DatabaseCommunicationEngine inUseEngine = mock(DatabaseCommunicationEngine.class);
+        JDBCDatabaseCommunicationEngine engine = mock(JDBCDatabaseCommunicationEngine.class);
+        JDBCDatabaseCommunicationEngine inUseEngine = mock(JDBCDatabaseCommunicationEngine.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = getDatabaseCommunicationEngines();
-        Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
+        Collection<JDBCDatabaseCommunicationEngine> databaseCommunicationEngines = getDatabaseCommunicationEngines();
+        Collection<JDBCDatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
         databaseCommunicationEngines.add(engine);
         databaseCommunicationEngines.add(inUseEngine);
         inUseDatabaseCommunicationEngines.add(inUseEngine);
@@ -411,18 +411,18 @@ public final class JDBCBackendConnectionTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private Collection<DatabaseCommunicationEngine> getDatabaseCommunicationEngines() {
+    private Collection<JDBCDatabaseCommunicationEngine> getDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("databaseCommunicationEngines");
         field.setAccessible(true);
-        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
+        return (Collection<JDBCDatabaseCommunicationEngine>) field.get(backendConnection);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private Collection<DatabaseCommunicationEngine> getInUseDatabaseCommunicationEngines() {
+    private Collection<JDBCDatabaseCommunicationEngine> getInUseDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseDatabaseCommunicationEngines");
         field.setAccessible(true);
-        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
+        return (Collection<JDBCDatabaseCommunicationEngine>) field.get(backendConnection);
     }
     
     @Test
