@@ -43,17 +43,14 @@ public final class JDBCOKProxyState implements OKProxyState {
     
     private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine,
                                                              final ConnectionSession connectionSession) {
-        ExecutorService result;
         if (requireOccupyThreadForConnection(connectionSession)) {
-            result = ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
+            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         } else if (isPreferNettyEventLoop()) {
-            result = context.executor();
+            return context.executor();
         } else if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection()) {
-            result = ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
-        } else {
-            result = UserExecutorGroup.getInstance().getExecutorService();
+            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
-        return result;
+        return UserExecutorGroup.getInstance().getExecutorService();
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {

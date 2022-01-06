@@ -30,7 +30,7 @@ import java.sql.SQLException;
 /**
  * Execution unit builder using Vert.x prepared query.
  */
-public final class QueryExecutionUnitBuilder implements VertxExecutionUnitBuilder {
+public final class PreparedQueryExecutionUnitBuilder implements VertxExecutionUnitBuilder {
     
     @Override
     public VertxExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorVertxManager executorManager, final Future<? extends SqlClient> connection, final ConnectionMode connectionMode,

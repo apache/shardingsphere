@@ -64,34 +64,30 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     @Override
     public Future<ResponseHeader> executeFuture() {
         VertxLocalTransactionManager transactionManager = (VertxLocalTransactionManager) backendTransactionManager;
-        Future<Void> future;
+        Future<Void> future = determineFuture(transactionManager);
+        return future.compose(unused -> Future.succeededFuture(new UpdateResponseHeader(tclStatement)));
+    }
+    
+    private Future<Void> determineFuture(final VertxLocalTransactionManager transactionManager) {
         switch (operationType) {
             case BEGIN:
                 if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
-                    future = transactionManager.commit().compose(unused -> transactionManager.begin());
-                } else {
-                    future = transactionManager.begin();
+                    return transactionManager.commit().compose(unused -> transactionManager.begin());
                 }
-                break;
+                return transactionManager.begin();
             case SAVEPOINT:
-                future = transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
-                break;
+                return transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
             case ROLLBACK_TO_SAVEPOINT:
-                future = transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
-                break;
+                return transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
             case RELEASE_SAVEPOINT:
-                future = transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
-                break;
+                return transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
             case COMMIT:
-                future = transactionManager.commit();
-                break;
+                return transactionManager.commit();
             case ROLLBACK:
-                future = transactionManager.rollback();
-                break;
+                return transactionManager.rollback();
             default:
                 return Future.failedFuture(new UnsupportedOperationException());
         }
-        return future.compose(unused -> Future.succeededFuture(new UpdateResponseHeader(tclStatement)));
     }
     
     @Override

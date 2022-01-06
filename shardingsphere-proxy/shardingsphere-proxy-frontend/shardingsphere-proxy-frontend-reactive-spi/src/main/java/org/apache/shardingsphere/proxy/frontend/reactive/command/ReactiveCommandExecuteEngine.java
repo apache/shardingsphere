@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.executor.ReactiveCommandExecutor;
 
 /**
- * Command execute engine.
+ * Command execute engine for reactive.
  */
 public interface ReactiveCommandExecuteEngine {
     

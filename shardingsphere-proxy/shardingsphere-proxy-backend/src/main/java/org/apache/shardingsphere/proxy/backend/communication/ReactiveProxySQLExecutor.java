@@ -48,6 +48,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Reactive proxy SQL executor.
+ */
 public final class ReactiveProxySQLExecutor {
     
     private static final String TYPE = "Vert.x";

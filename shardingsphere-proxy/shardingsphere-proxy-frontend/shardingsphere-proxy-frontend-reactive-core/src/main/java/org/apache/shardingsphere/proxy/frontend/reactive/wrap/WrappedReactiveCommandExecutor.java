@@ -37,8 +37,7 @@ public final class WrappedReactiveCommandExecutor implements ReactiveCommandExec
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
         try {
-            Collection<DatabasePacket<?>> result = delegated.execute();
-            return Future.succeededFuture(result);
+            return Future.succeededFuture(delegated.execute());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

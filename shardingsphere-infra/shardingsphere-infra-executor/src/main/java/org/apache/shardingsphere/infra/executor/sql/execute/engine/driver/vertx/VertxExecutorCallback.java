@@ -54,6 +54,7 @@ public final class VertxExecutorCallback implements ExecutorCallback<VertxExecut
         if (null == rowSet.columnDescriptors()) {
             return Future.succeededFuture(new UpdateResult(rowSet.rowCount(), getGeneratedKey(rowSet)));
         }
+        // TODO Decoupling MySQL implementations
         List<ColumnDefinition> columnDefinitions = new ArrayList<>(rowSet.columnDescriptors().size());
         rowSet.columnDescriptors().forEach(each -> columnDefinitions.add((ColumnDefinition) each));
         return Future.succeededFuture(new VertxQueryResult(new VertxMySQLQueryResultMetaData(columnDefinitions), rowSet.iterator()));
