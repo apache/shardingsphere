@@ -99,11 +99,11 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                     importerListener.recordsImported(records);
                 }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                    channel.ack();
+                    channel.ack(records);
                     break;
                 }
             }
-            channel.ack();
+            channel.ack(records);
         }
         log.info("importer write, rowCount={}", rowCount);
     }

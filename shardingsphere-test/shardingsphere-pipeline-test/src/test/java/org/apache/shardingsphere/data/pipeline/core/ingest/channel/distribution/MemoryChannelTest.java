@@ -82,7 +82,7 @@ public final class MemoryChannelTest {
             new Thread(() -> {
                 while (true) {
                     List<Record> records = memoryChannel.fetchRecords(100, 0);
-                    memoryChannel.ack();
+                    memoryChannel.ack(records);
                     records.forEach(each -> countDownLatch.countDown());
                 }
             }).start();

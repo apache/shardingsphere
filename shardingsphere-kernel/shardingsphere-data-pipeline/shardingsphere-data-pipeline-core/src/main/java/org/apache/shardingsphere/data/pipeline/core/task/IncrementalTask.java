@@ -108,6 +108,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             }
         });
         dumper.setChannel(channel);
+        // TODO merge logic into AckCallback after Channel.ack refactoring, and then remove ImporterListener
         ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);

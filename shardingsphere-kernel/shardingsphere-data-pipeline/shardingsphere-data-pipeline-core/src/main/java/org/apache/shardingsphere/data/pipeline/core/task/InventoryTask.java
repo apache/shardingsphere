@@ -61,7 +61,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private Dumper dumper;
     
-    private IngestPosition<?> position;
+    private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final ExecuteEngine importerExecuteEngine) {
         this.inventoryDumperConfig = inventoryDumperConfig;
@@ -86,6 +86,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
             
             @Override
             public void onSuccess() {
+                log.info("importer onSuccess");
             }
             
             @Override
@@ -96,6 +97,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         });
         dumper.start();
         waitForResult(future);
+        log.info("importer future done");
         dataSourceManager.close();
     }
     
