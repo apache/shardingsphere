@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic.segment;
+package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
+import org.junit.Test;
 
-/**
- * Segment traffic value.
- */
-@RequiredArgsConstructor
-@Getter
-public final class SegmentTrafficValue implements TrafficValue {
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+
+public final class RandomTrafficLoadBalanceAlgorithmTest {
     
-    private final SQLStatement statement;
+    private final RandomTrafficLoadBalanceAlgorithm randomAlgorithm = new RandomTrafficLoadBalanceAlgorithm();
     
-    private final String sql;
+    @Test
+    public void assertGetInstanceId() {
+        List<String> instanceIds = Arrays.asList("127.0.0.1@3307", "127.0.0.1@3308");
+        assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
+        assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
+        assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
+    }
 }

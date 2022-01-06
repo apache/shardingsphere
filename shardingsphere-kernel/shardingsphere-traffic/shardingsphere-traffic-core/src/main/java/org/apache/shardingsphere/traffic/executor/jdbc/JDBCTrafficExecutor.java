@@ -115,21 +115,21 @@ public final class JDBCTrafficExecutor implements TrafficExecutor {
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, username);
         InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
         return jdbcUrl.replace(dataSourceMetaData.getHostname(), instanceId.getIp())
-                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getPort()).replace(dataSourceMetaData.getCatalog(), schema));
+                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getPort())).replace(dataSourceMetaData.getCatalog(), schema);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public TrafficExecutorContext<Statement> prepare(final LogicSQL logicSQL, final String dataSourceName, final String type) throws SQLException {
-        if (!dataSources.containsKey(dataSourceName)) {
-            throw new ShardingSphereException("Can not get dataSource of %.", dataSourceName);
+    public TrafficExecutorContext<Statement> prepare(final LogicSQL logicSQL, final String instanceId, final String type) throws SQLException {
+        if (!dataSources.containsKey(instanceId)) {
+            throw new ShardingSphereException("Can not get dataSource of %.", instanceId);
         }
-        DataSource dataSource = dataSources.get(dataSourceName);
-        TrafficExecutorContextBuilder builder = getCachedTrafficExecutorContextBuilder(type);
+        DataSource dataSource = dataSources.get(instanceId);
+        TrafficExecutorContextBuilder builder = getCachedContextBuilder(type);
         return builder.build(logicSQL, dataSource.getConnection());
     }
     
-    private TrafficExecutorContextBuilder<?> getCachedTrafficExecutorContextBuilder(final String type) {
+    private TrafficExecutorContextBuilder<?> getCachedContextBuilder(final String type) {
         TrafficExecutorContextBuilder<?> result;
         if (null == (result = TYPE_CONTEXT_BUILDERS.get(type))) {
             result = TYPE_CONTEXT_BUILDERS.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(TrafficExecutorContextBuilder.class, key, new Properties()));
