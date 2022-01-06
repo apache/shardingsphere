@@ -159,7 +159,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropDefaultSingleTableRule(final DropDefaultSingleTableRuleContext ctx) {
-        return new DropDefaultSingleTableRuleStatement(ctx.ifExists() != null);
+        return new DropDefaultSingleTableRuleStatement(ctx.existClause() != null);
     }
     
     private Properties getPoolProperties(final PoolPropertiesContext ctx) {
@@ -173,7 +173,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
         boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
-        return new DropResourceStatement(null != ctx.ifExists(), 
+        return new DropResourceStatement(ctx.existClause() != null, 
                 ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     

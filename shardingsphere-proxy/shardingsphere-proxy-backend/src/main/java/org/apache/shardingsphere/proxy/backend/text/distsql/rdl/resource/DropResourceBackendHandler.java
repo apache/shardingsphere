@@ -53,7 +53,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     @Override
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws ResourceDefinitionViolationException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isAllowNotExist());
+        check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isContainsExistClause());
         ProxyContext.getInstance().getContextManager().dropResource(schemaName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }
