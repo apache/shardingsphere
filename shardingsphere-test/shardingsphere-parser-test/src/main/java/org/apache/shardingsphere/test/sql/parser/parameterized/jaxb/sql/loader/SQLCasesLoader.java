@@ -64,13 +64,14 @@ public final class SQLCasesLoader extends CasesLoader {
      * @param sqlCaseId SQL case ID
      * @param sqlCaseType SQL case type
      * @param parameters SQL parameters
+     * @param databaseType databaseType
      * @return SQL
      */
     @Override
-    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters, final String databaseType) {
         switch (sqlCaseType) {
             case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getCases()), parameters);
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getCases()), parameters, databaseType);
             case Placeholder:
                 return getPlaceholderSQL(getSQLFromMap(sqlCaseId, super.getCases()));
             default:
@@ -103,11 +104,11 @@ public final class SQLCasesLoader extends CasesLoader {
         return sql;
     }
 
-    private String getLiteralSQL(final String sql, final List<?> parameters) {
+    private String getLiteralSQL(final String sql, final List<?> parameters, final String databaseType) {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
-        return replace(sql, "?", parameters.toArray());
+        return "PostgreSQL".equals(databaseType) || "openGauss".equals(databaseType) ? replace(sql, "\\?|\\$[0-9]+", parameters.toArray()) : replace(sql, "\\?", parameters.toArray());
     }
     
     private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
@@ -154,7 +155,7 @@ public final class SQLCasesLoader extends CasesLoader {
         if (null == source || null == replacements) {
             return source;
         }
-        Matcher matcher = Pattern.compile(target.toString(), Pattern.LITERAL).matcher(source);
+        Matcher matcher = Pattern.compile(target.toString()).matcher(source);
         int found = 0;
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {

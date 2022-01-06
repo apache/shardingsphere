@@ -208,8 +208,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null != shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm()) {
             algorithmSegment = (AlgorithmSegment) visitAlgorithmDefinition(shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm().algorithmDefinition());
         }
-        String defaultType = new IdentifierValue(ctx.type.getText()).getValue().toLowerCase();
-        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase();
+        String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
+        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());        
         String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         return new CreateDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, shardingAlgorithmName, algorithmSegment);
     }
@@ -299,10 +299,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
         String tableName = getIdentifierValue(ctx.tableName());
         Collection<String> dataNodes = getDataNodes(ctx.dataNodes());
-        ShardingStrategySegment tableStrategy = (ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy());
-        ShardingStrategySegment databaseStrategy = (ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy());
         KeyGenerateSegment keyGenerateSegment = null != ctx.keyGenerateDeclaration() ? (KeyGenerateSegment) visit(ctx.keyGenerateDeclaration()) : null;
-        return new TableRuleSegment(tableName, dataNodes, databaseStrategy, tableStrategy, keyGenerateSegment);
+        TableRuleSegment result = new TableRuleSegment(tableName, dataNodes, keyGenerateSegment);
+        Optional.ofNullable(ctx.tableStrategy()).ifPresent(op -> result.setTableStrategySegment((ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy())));
+        Optional.ofNullable(ctx.databaseStrategy()).ifPresent(op -> result.setDatabaseStrategySegment((ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy())));
+        return result;
     }
     
     @Override
@@ -359,7 +360,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getDataNodes(final DataNodesContext ctx) {
-        return ctx.dataNode().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.dataNode().stream().map(each -> getIdentifierValueWithBracketReserved(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -372,6 +373,13 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
             return null;
         }
         return new IdentifierValue(context.getText()).getValue();
+    }
+
+    private String getIdentifierValueWithBracketReserved(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText(), "[]").getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

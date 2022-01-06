@@ -49,7 +49,7 @@ public final class DriverExecutor implements AutoCloseable {
         regularExecutor = new DriverJDBCExecutor(connection.getSchema(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
         federationExecutor = FederationExecutorFactory.newInstance(connection.getSchema(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
-        trafficExecutor = TrafficExecutorFactory.newInstance(connection.getContextManager());
+        trafficExecutor = TrafficExecutorFactory.newInstance(connection.getSchema(), metaDataContexts);
     }
     
     /**

@@ -72,11 +72,11 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
         defaultDataSourceProperties.setProperty("prepStmtCacheSqlLimit", "2048");
         defaultDataSourceProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("cachedefaultDataSourcePropsSetMetadata", Boolean.FALSE.toString());
+        defaultDataSourceProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         defaultDataSourceProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("netTimeoutForStreamingdefaultDataSourcePropss", "0");
+        defaultDataSourceProperties.setProperty("netTimeoutForStreamingResults", "0");
         defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
         defaultDataSourceProperties.setProperty("serverTimezone", "UTC");

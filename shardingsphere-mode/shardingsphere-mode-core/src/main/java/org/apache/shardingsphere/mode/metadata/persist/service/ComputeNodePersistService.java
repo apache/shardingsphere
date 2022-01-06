@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,19 +61,51 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load all compute node instances.
+     * Load instance status.
      * 
+     * @param instanceId instance id
+     * @return collection of status
+     */
+    public Collection<String> loadInstanceStatus(final String instanceId) {
+        String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
+        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+    }
+    
+    /**
+     * Load all compute node instances by instance type.
+     * 
+     * @param instanceType instance type     
      * @return collection of compute node instance
      */
-    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath());
+    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
         List<ComputeNodeInstance> result = new ArrayList<>(onlineComputeNodes.size());
         onlineComputeNodes.forEach(each -> {
             ComputeNodeInstance instance = new ComputeNodeInstance();
-            instance.setIp(Splitter.on("@").splitToList(each).get(0));
-            instance.setPort(Splitter.on("@").splitToList(each).get(1));
+            instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
             instance.setLabels(loadInstanceLabels(each));
+            instance.setStatus(loadInstanceStatus(each));
             result.add(instance);
+        });
+        return result;
+    }
+    
+    /**
+     * Load all compute node instances.
+     *
+     * @return collection of compute node instance
+     */
+    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
+        Collection<ComputeNodeInstance> result = new ArrayList<>();
+        Arrays.stream(InstanceType.values()).forEach(instanceType -> {
+            Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+            onlineComputeNodes.forEach(each -> {
+                ComputeNodeInstance instance = new ComputeNodeInstance();
+                instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
+                instance.setLabels(loadInstanceLabels(each));
+                instance.setStatus(loadInstanceStatus(each));
+                result.add(instance);
+            });
         });
         return result;
     }

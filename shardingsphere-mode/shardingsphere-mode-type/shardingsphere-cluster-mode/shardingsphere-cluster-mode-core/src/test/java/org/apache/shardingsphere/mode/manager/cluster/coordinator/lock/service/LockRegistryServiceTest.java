@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
-import org.apache.shardingsphere.infra.instance.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +40,6 @@ public final class LockRegistryServiceTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        Instance.getInstance().init(3307);
         lockRegistryService = new LockRegistryService(clusterPersistRepository);
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
