@@ -28,7 +28,6 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.SqlConnection;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Con
 import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
 import org.apache.shardingsphere.proxy.backend.reactive.context.ReactiveProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,6 @@ import java.util.List;
 /**
  * Vert.x backend connection.
  */
-@RequiredArgsConstructor
 @Getter
 public final class VertxBackendConnection implements BackendConnection<Future<Void>>, ExecutorVertxManager {
     
@@ -56,6 +55,13 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     private final List<ConnectionPostProcessor<Future<SqlConnection>>> connectionPostProcessors = new LinkedList<>();
     
     private final Multimap<String, Future<SqlConnection>> cachedConnections = LinkedHashMultimap.create();
+    
+    public VertxBackendConnection(final ConnectionSession connectionSession) {
+        if (TransactionType.LOCAL != connectionSession.getTransactionStatus().getTransactionType()) {
+            throw new UnsupportedOperationException("Vert.x backend supports LOCAL transaction only for now.");
+        }
+        this.connectionSession = connectionSession;
+    }
     
     @Override
     public List<Future<? extends SqlClient>> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {

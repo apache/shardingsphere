@@ -64,9 +64,6 @@ public final class ConnectionSession {
     }
     
     private BackendConnection determineBackendConnection() {
-        if (TransactionType.LOCAL != transactionStatus.getTransactionType()) {
-            throw new UnsupportedOperationException("Vert.x backend supports LOCAL transaction only for now.");
-        }
         String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
     }
