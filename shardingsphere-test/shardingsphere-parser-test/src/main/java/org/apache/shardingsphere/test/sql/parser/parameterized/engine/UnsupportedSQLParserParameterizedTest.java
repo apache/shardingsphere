@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.UnsupportedSQLCasesRegistry;
@@ -52,6 +53,6 @@ public abstract class UnsupportedSQLParserParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
         ParseContext parseContext = new SQLParserEngine(databaseType, cacheOption, true).parse(sql, false);
-        new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(parseContext);
+        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(parseContext);
     }
 }
