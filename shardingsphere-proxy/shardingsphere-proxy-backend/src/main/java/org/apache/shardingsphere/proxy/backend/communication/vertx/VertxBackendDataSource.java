@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.vertx;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -138,7 +139,10 @@ public final class VertxBackendDataSource implements BackendDataSource {
     
     private MySQLPool createMySQLPool(final HikariDataSource value, final URI uri) {
         MySQLConnectOptions options = new MySQLConnectOptions().setHost(uri.getHost()).setPort(uri.getPort()).setDatabase(uri.getPath().replace("/", ""))
-                .setUser(value.getUsername()).setPassword(value.getPassword()).setCachePreparedStatements(true).setPreparedStatementCacheMaxSize(16384);
+                .setUser(value.getUsername()).setCachePreparedStatements(true).setPreparedStatementCacheMaxSize(16384);
+        if (!Strings.isNullOrEmpty(value.getPassword())) {
+            options = options.setPassword(value.getPassword());
+        }
         PoolOptions poolOptions = new PoolOptions().setMaxSize(value.getMaximumPoolSize()).setIdleTimeout((int) value.getIdleTimeout()).setIdleTimeoutUnit(TimeUnit.MILLISECONDS)
                 .setConnectionTimeout((int) value.getConnectionTimeout()).setConnectionTimeoutUnit(TimeUnit.MILLISECONDS);
         return MySQLPool.pool(vertx, options, poolOptions);
