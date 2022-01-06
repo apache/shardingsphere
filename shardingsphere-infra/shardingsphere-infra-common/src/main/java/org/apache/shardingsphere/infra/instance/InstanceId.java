@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 /**
  * Instance id.
@@ -51,8 +52,9 @@ public final class InstanceId {
     
     public InstanceId(final String id) {
         this.id = id;
-        ip = Splitter.on("@").splitToList(id).get(0);
-        port = Integer.valueOf(Splitter.on("@").splitToList(id).get(1));
+        List<String> ids = Splitter.on("@").splitToList(id);
+        ip = ids.get(0);
+        port = Integer.valueOf(ids.get(1));
     }
     
     public InstanceId() {
