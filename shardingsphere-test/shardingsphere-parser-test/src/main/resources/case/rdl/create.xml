@@ -396,8 +396,13 @@
 
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
     
-    <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy">
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        </strategy>
+    </create-default-sharding-strategy>
+
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
+        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
 
@@ -423,4 +428,6 @@
             </algorithm>
         </shardingKeyGenerator>
     </create-sharding-key-generator>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling" scaling-name="default_scaling"/>
 </sql-parser-test-cases>

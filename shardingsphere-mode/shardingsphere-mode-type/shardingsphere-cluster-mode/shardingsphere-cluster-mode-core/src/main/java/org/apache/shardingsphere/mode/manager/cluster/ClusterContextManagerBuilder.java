@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
-import org.apache.shardingsphere.infra.instance.Instance;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
@@ -90,11 +90,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void beforeBuildContextManager(final ContextManagerBuilderParameter parameter) throws SQLException {
         ClusterPersistRepository repository = createClusterPersistRepository((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
-        registryCenter = new RegistryCenter(repository, parameter.getPort());
-        ModeScheduleContextFactory.getInstance().init(parameter.getModeConfig());
+        registryCenter = new RegistryCenter(repository);
+        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.isOverwrite());
-        persistInstanceConfigurations(parameter.getLabels());
+        persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition());
         Collection<String> schemaNames = Strings.isNullOrEmpty(parameter.getSchemaName()) ? metaDataPersistService.getSchemaMetaDataService()
                 .loadAllNames() : Collections.singletonList(parameter.getSchemaName());
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
@@ -111,7 +111,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
         disableDataSources();
-        registryCenter.onlineInstance(parameter.getInstanceType());
+        registryCenter.onlineInstance(parameter.getInstanceDefinition());
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
@@ -129,9 +129,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private void persistInstanceConfigurations(final Collection<String> labels) {
+    private void persistInstanceConfigurations(final Collection<String> labels, final InstanceDefinition instanceDefinition) {
         if (null != labels && !labels.isEmpty()) {
-            metaDataPersistService.persistInstanceConfigurations(Instance.getInstance().getId(), labels);
+            metaDataPersistService.persistInstanceConfigurations(instanceDefinition.getInstanceId().getId(), labels);
         }
     }
     

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -67,19 +68,23 @@ public final class BootstrapInitializer {
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
                 ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        initContext(yamlConfig, modeConfig, port);
-        initRuleAlteredJobWorker(modeConfig);
+        ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
+        initContext(contextManager);
+        initRuleAlteredJobWorker(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
-    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
+    private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
         Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).isOverwrite(isOverwrite).port(port).labels(proxyConfig.getLabels())
-                .instanceType(InstanceType.PROXY).build();
-        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
+                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).isOverwrite(isOverwrite).labels(proxyConfig.getLabels())
+                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
+    }
+    
+    private void initContext(final ContextManager contextManager) {
         ProxyContext.getInstance().init(contextManager);
     }
     
@@ -92,7 +97,7 @@ public final class BootstrapInitializer {
         return result;
     }
     
-    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {
         if (null == modeConfig) {
             return;
         }
@@ -102,6 +107,7 @@ public final class BootstrapInitializer {
             return;
         }
         RuleAlteredContext.initModeConfig(modeConfig);
+        RuleAlteredContext.initContextManager(contextManager);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
         RuleAlteredJobWorker.initWorkerIfNecessary();
     }

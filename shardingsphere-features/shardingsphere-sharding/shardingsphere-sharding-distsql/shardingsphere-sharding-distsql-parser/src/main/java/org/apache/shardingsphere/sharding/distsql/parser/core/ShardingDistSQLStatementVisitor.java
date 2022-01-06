@@ -207,9 +207,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null != shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm()) {
             algorithmSegment = (AlgorithmSegment) visitAlgorithmDefinition(shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm().algorithmDefinition());
         }
-        String defaultType = new IdentifierValue(ctx.type.getText()).getValue().toLowerCase();
-        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase();
-        String shardingColumn = getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase();
+        String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
+        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());
+        String shardingColumn = getIdentifierValue(shardingStrategyContext.shardingColumn().columnName());
         return new CreateDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, shardingAlgorithmName, algorithmSegment);
     }
     
@@ -359,7 +359,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getDataNodes(final DataNodesContext ctx) {
-        return ctx.dataNode().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.dataNode().stream().map(each -> getIdentifierValueWithBracketReserved(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -372,6 +372,13 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
             return null;
         }
         return new IdentifierValue(context.getText()).getValue();
+    }
+
+    private String getIdentifierValueWithBracketReserved(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText(), "[]").getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

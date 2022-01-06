@@ -82,7 +82,7 @@ dropShardingBindingTableRules
 dropShardingBroadcastTableRules
     : DROP SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
     ;
-    
+
 dropShardingAlgorithm
     : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;

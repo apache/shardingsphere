@@ -74,7 +74,7 @@ public final class ExampleTemplateFactory {
         result.put("entity/Order", "entity/Order.java");
         result.put("entity/OrderItem", "entity/OrderItem.java");
         if (framework.contains("mybatis")) {
-            result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+            result.put("mybatis/OrderItemRepository", "repository/OrderItemRepository.ftl");
             result.put("mybatis/OrderRepository", "repository/OrderRepository.java");
         }
         return result;

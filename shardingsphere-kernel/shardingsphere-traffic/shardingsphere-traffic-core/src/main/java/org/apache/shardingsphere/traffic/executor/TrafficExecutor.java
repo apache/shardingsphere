@@ -33,12 +33,12 @@ public interface TrafficExecutor extends AutoCloseable {
      * Prepare for traffic executor.
      * 
      * @param logicSQL logic SQL
-     * @param dataSourceName dataSource name
+     * @param instanceId instance id
      * @param type type
      * @return traffic executor context
      * @throws SQLException SQL exception
      */
-    TrafficExecutorContext<Statement> prepare(LogicSQL logicSQL, String dataSourceName, String type) throws SQLException;
+    TrafficExecutorContext<Statement> prepare(LogicSQL logicSQL, String instanceId, String type) throws SQLException;
     
     /**
      * Execute query.
