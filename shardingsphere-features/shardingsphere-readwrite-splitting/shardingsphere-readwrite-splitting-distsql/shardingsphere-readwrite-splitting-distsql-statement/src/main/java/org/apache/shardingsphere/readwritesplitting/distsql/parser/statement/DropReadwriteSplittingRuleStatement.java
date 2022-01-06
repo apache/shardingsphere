@@ -30,8 +30,8 @@ public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement
     
     private final Collection<String> ruleNames;
     
-    public DropReadwriteSplittingRuleStatement(final boolean allowNotExist, final Collection<String> ruleNames) {
-        super(allowNotExist);
+    public DropReadwriteSplittingRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
+        super(containsExistClause);
         this.ruleNames = ruleNames;
     }
     

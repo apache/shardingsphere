@@ -30,8 +30,8 @@ public final class DropDatabaseDiscoveryRuleStatement extends DropRuleStatement 
     
     private final Collection<String> ruleNames;
     
-    public DropDatabaseDiscoveryRuleStatement(final boolean allowNotExist, final Collection<String> ruleNames) {
-        super(allowNotExist);
+    public DropDatabaseDiscoveryRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
+        super(containsExistClause);
         this.ruleNames = ruleNames;
     }
     

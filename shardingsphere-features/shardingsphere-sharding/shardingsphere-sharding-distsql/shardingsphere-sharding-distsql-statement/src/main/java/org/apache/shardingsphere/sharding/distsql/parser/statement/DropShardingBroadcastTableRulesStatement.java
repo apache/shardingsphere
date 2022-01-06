@@ -30,8 +30,8 @@ public final class DropShardingBroadcastTableRulesStatement extends DropRuleStat
     
     private final Collection<String> rules;
     
-    public DropShardingBroadcastTableRulesStatement(final boolean allowNotExist, final Collection<String> rules) {
-        super(allowNotExist);
+    public DropShardingBroadcastTableRulesStatement(final boolean containsExistClause, final Collection<String> rules) {
+        super(containsExistClause);
         this.rules = rules;
     }
     

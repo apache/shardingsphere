@@ -32,8 +32,8 @@ public final class DropShardingBindingTableRulesStatement extends DropRuleStatem
     
     private final Collection<BindingTableRuleSegment> rules;
     
-    public DropShardingBindingTableRulesStatement(final boolean allowNotExist, final Collection<BindingTableRuleSegment> rules) {
-        super(allowNotExist);
+    public DropShardingBindingTableRulesStatement(final boolean containsExistClause, final Collection<BindingTableRuleSegment> rules) {
+        super(containsExistClause);
         this.rules = rules;
     }
     

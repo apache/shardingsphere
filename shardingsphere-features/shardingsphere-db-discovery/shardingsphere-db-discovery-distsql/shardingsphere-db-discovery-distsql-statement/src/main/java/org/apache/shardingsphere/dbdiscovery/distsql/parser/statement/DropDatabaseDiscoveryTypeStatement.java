@@ -30,8 +30,8 @@ public final class DropDatabaseDiscoveryTypeStatement extends DropRuleStatement 
     
     private final Collection<String> types;
     
-    public DropDatabaseDiscoveryTypeStatement(final boolean allowNotExist, final Collection<String> types) {
-        super(allowNotExist);
+    public DropDatabaseDiscoveryTypeStatement(final boolean containsExistClause, final Collection<String> types) {
+        super(containsExistClause);
         this.types = types;
     }
     

@@ -31,8 +31,8 @@ public final class DropShardingTableRuleStatement extends DropRuleStatement {
     
     private final Collection<TableNameSegment> tableNames;
     
-    public DropShardingTableRuleStatement(final boolean allowNotExist, final Collection<TableNameSegment> tableNames) {
-        super(allowNotExist);
+    public DropShardingTableRuleStatement(final boolean containsExistClause, final Collection<TableNameSegment> tableNames) {
+        super(containsExistClause);
         this.tableNames = tableNames;
     }
     

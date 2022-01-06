@@ -25,8 +25,8 @@ import lombok.Getter;
 @Getter
 public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
     
-    public DropDefaultSingleTableRuleStatement(final boolean allowNotExist) {
-        super(allowNotExist);
+    public DropDefaultSingleTableRuleStatement(final boolean containsExistClause) {
+        super(containsExistClause);
     }
     
     public DropDefaultSingleTableRuleStatement() {
