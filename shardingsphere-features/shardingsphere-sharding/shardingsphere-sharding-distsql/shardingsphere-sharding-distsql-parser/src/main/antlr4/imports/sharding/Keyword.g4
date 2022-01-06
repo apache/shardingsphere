@@ -71,6 +71,10 @@ SHARDING_COLUMN
     : S H A R D I N G UL_ C O L U M N
     ;
 
+SHARDING_COLUMNS
+    : S H A R D I N G UL_ C O L U M N S
+    ;
+
 TYPE
     : T Y P E
     ;

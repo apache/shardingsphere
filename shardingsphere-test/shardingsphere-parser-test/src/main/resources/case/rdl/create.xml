@@ -135,6 +135,24 @@
         </rule>
     </create-sharding-table-rule>
 
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-complex">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
+        </rule>
+        <rule name="t_order_item" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+        </rule>
+    </create-sharding-table-rule>
+    
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
@@ -401,6 +419,11 @@
         </strategy>
     </create-default-sharding-strategy>
 
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy-complex">
+        <strategy default-type="table" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        </strategy>
+    </create-default-sharding-strategy>
+    
     <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
         <shadow-algorithm algorithm-id="simple_note_algorithm">
             <algorithm algorithm-name="HINT">

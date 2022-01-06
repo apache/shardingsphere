@@ -72,6 +72,15 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertExecuteWithUnmatchedStrategy() throws DistSQLException {
+        AlterDefaultShardingStrategyStatement statement = new AlterDefaultShardingStrategyStatement("TABLE", "standard", "order_id,user_id", "order_id_algorithm", null);
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
+        currentRuleConfig.getShardingAlgorithms().put("order_id_algorithm", null);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+    }
+    
     @Test
     public void assertAlterDefaultTableShardingStrategy() throws DistSQLException {
         AlterDefaultShardingStrategyStatement statement = new AlterDefaultShardingStrategyStatement("TABLE", "standard", "order_id", "order_id_algorithm", null);

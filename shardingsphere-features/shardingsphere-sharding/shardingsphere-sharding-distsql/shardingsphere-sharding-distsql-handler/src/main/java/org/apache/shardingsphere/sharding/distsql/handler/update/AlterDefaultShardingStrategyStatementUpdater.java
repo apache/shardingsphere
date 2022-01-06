@@ -55,6 +55,8 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     private void checkAlgorithm(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
         DistSQLException.predictionThrow(ShardingStrategyTypeEnum.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        DistSQLException.predictionThrow(ShardingStrategyTypeEnum.getValueOf(sqlStatement.getStrategyType()).isValid(sqlStatement.getShardingColumn()),
+                new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         DistSQLException.predictionThrow(isAlgorithmDefinitionExists(sqlStatement), new RequiredAlgorithmMissedException());
         if (null == sqlStatement.getShardingAlgorithmName() && null != sqlStatement.getAlgorithmSegment()) {
             return;

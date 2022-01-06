@@ -53,6 +53,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SetShardingHintDatabaseValueContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAutoTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleDefinitionContext;
@@ -209,7 +210,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         }
         String defaultType = new IdentifierValue(ctx.type.getText()).getValue().toLowerCase();
         String strategyType = getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase();
-        String shardingColumn = getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase();
+        String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         return new CreateDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, shardingAlgorithmName, algorithmSegment);
     }
     
@@ -246,7 +247,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         }
         String defaultType = new IdentifierValue(ctx.type.getText()).getValue().toLowerCase();
         String strategyType = getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase();
-        String shardingColumn = getIdentifierValue(shardingStrategyContext.shardingColumn().columnName()).toLowerCase();
+        String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         return new AlterDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, shardingAlgorithmName, algorithmSegment);
     }
     
@@ -316,7 +317,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         Collection<String> dataSources = getResources(ctx.resources());
         AutoTableRuleSegment result = new AutoTableRuleSegment(tableName, dataSources);
         Optional.ofNullable(ctx.keyGenerateDeclaration()).ifPresent(op -> result.setKeyGenerateSegment((KeyGenerateSegment) visit(ctx.keyGenerateDeclaration())));
-        Optional.ofNullable(ctx.shardingColumn()).ifPresent(op -> result.setShardingColumn(getIdentifierValue(ctx.shardingColumn().columnName())));
+        Optional.ofNullable(ctx.shardingColumnDefinition()).ifPresent(op -> result.setShardingColumn(buildShardingColumn(ctx.shardingColumnDefinition())));
         Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(op -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
         return result;
     }
@@ -350,7 +351,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null != ctx.shardingAlgorithm().autoCreativeAlgorithm()) {
             algorithmSegment = (AlgorithmSegment) visitAlgorithmDefinition(ctx.shardingAlgorithm().autoCreativeAlgorithm().algorithmDefinition());
         }
-        return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), getIdentifierValue(ctx.shardingColumn().columnName()), shardingAlgorithmName, algorithmSegment);
+        return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), buildShardingColumn(ctx.shardingColumnDefinition()), shardingAlgorithmName, algorithmSegment);
     }
     
     private Collection<String> getResources(final ResourcesContext ctx) {
@@ -435,5 +436,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShowShardingDefaultShardingStrategy(final ShowShardingDefaultShardingStrategyContext ctx) {
         return new ShowDefaultShardingStrategyStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+    }
+    
+    private String buildShardingColumn(final ShardingColumnDefinitionContext ctx) {
+        String result = Optional.ofNullable(ctx.shardingColumn()).map(op -> getIdentifierValue(op.columnName()))
+                .orElseGet(() -> ctx.shardingColumns().columnName().stream().map(this::getIdentifierValue).collect(Collectors.joining(",")));
+        return result.isEmpty() ? null : result;
     }
 }

@@ -47,6 +47,11 @@ public enum ShardingStrategyTypeEnum {
         public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
             return Arrays.asList(((StandardShardingStrategyConfiguration) strategyConfiguration).getShardingColumn(), strategyConfiguration.getShardingAlgorithmName());
         }
+        
+        @Override
+        public boolean isValid(final String shardingColumn) {
+            return null != shardingColumn && !shardingColumn.contains(",");
+        }
     }, NONE {
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
@@ -61,6 +66,11 @@ public enum ShardingStrategyTypeEnum {
         @Override
         public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
             return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
+        }
+        
+        @Override
+        public boolean isValid(final String shardingColumn) {
+            return true;
         }
     }, HINT {
         @Override
@@ -77,6 +87,11 @@ public enum ShardingStrategyTypeEnum {
         public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
             return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
         }
+        
+        @Override
+        public boolean isValid(final String shardingColumn) {
+            return true;
+        }
     }, COMPLEX {
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
@@ -91,6 +106,11 @@ public enum ShardingStrategyTypeEnum {
         @Override
         public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
             return Arrays.asList(((ComplexShardingStrategyConfiguration) strategyConfiguration).getShardingColumns(), strategyConfiguration.getShardingAlgorithmName());
+        }
+        
+        @Override
+        public boolean isValid(final String shardingColumn) {
+            return null != shardingColumn && shardingColumn.split(",").length > 1;
         }
     };
     
@@ -112,11 +132,19 @@ public enum ShardingStrategyTypeEnum {
     
     /**
      * Get the content in the configuration.
+     *
      * @param strategyConfiguration sharding strategy configuration.
-     * 
      * @return Content list
      */
     public abstract Collection<String> getConfigurationContents(ShardingStrategyConfiguration strategyConfiguration);
+    
+    /**
+     * Check whether the configuration is valid.
+     *
+     * @param shardingColumn sharding column
+     * @return valid or invalid
+     */
+    public abstract boolean isValid(String shardingColumn);
     
     /**
      * Returns the sharding strategy type.
