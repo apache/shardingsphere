@@ -47,7 +47,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     }
     
     private void checkRuleNames(final String schemaName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isAllowNotExist()) {
+        if (sqlStatement.isContainsExistClause()) {
             return;
         }
         Set<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();

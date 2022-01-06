@@ -53,7 +53,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     private void checkToBeDroppedShardingAlgorithms(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
-        if (sqlStatement.isAllowNotExist()) {
+        if (sqlStatement.isContainsExistClause()) {
             return;
         }
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);

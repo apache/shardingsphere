@@ -53,7 +53,7 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
     
     private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryTypeStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isAllowNotExist()) {
+        if (sqlStatement.isContainsExistClause()) {
             return;
         }
         Collection<String> currentRuleNames = currentRuleConfig.getDiscoveryTypes().keySet();

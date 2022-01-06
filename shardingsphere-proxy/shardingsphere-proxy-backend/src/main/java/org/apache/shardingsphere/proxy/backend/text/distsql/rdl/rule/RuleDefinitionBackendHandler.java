@@ -159,7 +159,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private boolean isSkipDropConfiguration(final SQLStatement sqlStatement, final RuleConfiguration ruleConfiguration) {
         if (sqlStatement instanceof DropRuleStatement) {
-            return ((DropRuleStatement) sqlStatement).isAllowNotExist() && null == ruleConfiguration;
+            return ((DropRuleStatement) sqlStatement).isContainsExistClause() && null == ruleConfiguration;
         }
         return false;
     }

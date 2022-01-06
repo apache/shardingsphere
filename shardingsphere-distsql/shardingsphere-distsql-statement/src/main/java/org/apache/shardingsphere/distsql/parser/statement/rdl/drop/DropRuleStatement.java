@@ -28,5 +28,5 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 public abstract class DropRuleStatement extends RuleDefinitionStatement {
     
     @Getter
-    private final boolean allowNotExist;
+    private final boolean containsExistClause;
 }
