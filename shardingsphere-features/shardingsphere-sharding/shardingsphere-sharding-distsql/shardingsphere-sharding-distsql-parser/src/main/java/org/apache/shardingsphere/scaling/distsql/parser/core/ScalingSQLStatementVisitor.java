@@ -22,7 +22,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckoutScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
@@ -33,7 +35,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.S
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
@@ -109,6 +113,16 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+    }
+    
+    @Override
+    public ASTNode visitCreateShardingScaling(final CreateShardingScalingContext ctx) {
+        return new CreateShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    }
+    
+    @Override
+    public ASTNode visitDropShardingScaling(final DropShardingScalingContext ctx) {
+        return new DropShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {

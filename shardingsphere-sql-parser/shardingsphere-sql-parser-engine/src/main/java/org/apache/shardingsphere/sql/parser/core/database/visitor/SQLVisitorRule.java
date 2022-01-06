@@ -78,6 +78,12 @@ public enum SQLVisitorRule {
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
+    CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
+
+    ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
+
+    DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
+    
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
     
     ALTER_EVENT("AlterEvent", SQLStatementType.DDL),

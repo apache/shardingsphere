@@ -30,11 +30,11 @@ import java.util.Collection;
 @Setter
 public final class ComputeNodeInstance {
     
-    private String ip;
-    
-    private String port;
+    private InstanceDefinition instanceDefinition;
     
     private Collection<ShardingSphereUser> users;
     
     private Collection<String> labels;
+    
+    private Collection<String> status;
 }

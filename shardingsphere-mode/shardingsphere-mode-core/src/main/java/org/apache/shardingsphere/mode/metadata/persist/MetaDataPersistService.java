@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Meta data persist service.
@@ -99,22 +100,30 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * load compute node instances by labels.
+     * Load compute node instances by instance type and labels.
      * 
+     * @param instanceType instance type
      * @param labels collection of label
      * @return collection of compute node instance
      */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final Collection<String> labels) {
-        Collection<ComputeNodeInstance> result = computeNodePersistService.loadAllComputeNodeInstances();
+    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        Collection<ComputeNodeInstance> computeNodeInstances = computeNodePersistService.loadAllComputeNodeInstances(instanceType);
+        Collection<ComputeNodeInstance> result = new ArrayList<>(computeNodeInstances.size());
+        result.addAll(computeNodeInstances.stream().filter(each -> each.getLabels().stream().anyMatch(labels::contains)).collect(Collectors.toList()));
         if (!result.isEmpty()) {
-            final Collection<ShardingSphereUser> users = new ArrayList<>();
-            Optional<AuthorityRuleConfiguration> optional = globalRuleService.load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+            Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleService.load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                     .map(each -> (AuthorityRuleConfiguration) each).findFirst();
-            if (optional.isPresent()) {
-                users.addAll(optional.get().getUsers());
-            }
-            result.forEach(each -> each.setUsers(users));
+            authorityRuleConfig.ifPresent(optional -> result.forEach(each -> each.setUsers(optional.getUsers())));
         }
         return result;
+    }
+    
+    /**
+     * Load all compute node instances.
+     *
+     * @return collection of compute node instance
+     */
+    public Collection<ComputeNodeInstance> loadComputeNodeInstances() {
+        return computeNodePersistService.loadAllComputeNodeInstances();
     }
 }
