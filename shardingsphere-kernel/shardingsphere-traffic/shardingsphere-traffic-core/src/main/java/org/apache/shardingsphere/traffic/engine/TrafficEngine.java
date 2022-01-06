@@ -66,7 +66,7 @@ public final class TrafficEngine {
         List<String> result = new ArrayList<>();
         if (metaDataContexts.getMetaDataPersistService().isPresent()) {
             for (ComputeNodeInstance each : metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels)) {
-                result.add(each.getIp() + "@" + each.getPort());
+                result.add(each.getInstanceDefinition().getInstanceId().getId());
             }
         }
         return result;
