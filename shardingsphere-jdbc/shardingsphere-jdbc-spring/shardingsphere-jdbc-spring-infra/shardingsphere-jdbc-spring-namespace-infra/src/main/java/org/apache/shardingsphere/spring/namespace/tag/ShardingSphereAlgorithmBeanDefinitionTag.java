@@ -26,6 +26,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereAlgorithmBeanDefinitionTag {
     
+    public static final String ID_ATTRIBUTE = "id";
+    
     public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "props";

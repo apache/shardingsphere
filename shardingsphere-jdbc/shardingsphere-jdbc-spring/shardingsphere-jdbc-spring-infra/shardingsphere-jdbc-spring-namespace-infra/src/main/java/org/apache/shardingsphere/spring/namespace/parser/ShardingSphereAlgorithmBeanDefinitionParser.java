@@ -18,10 +18,16 @@
 package org.apache.shardingsphere.spring.namespace.parser;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 import org.apache.shardingsphere.spring.namespace.tag.ShardingSphereAlgorithmBeanDefinitionTag;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -42,7 +48,21 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         factory.addConstructorArgValue(element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parsePropsElement(element, parserContext));
+        filledDiscoveryTypePropToRuleConfig(parserContext, element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
         return factory.getBeanDefinition();
+    }
+    
+    private void filledDiscoveryTypePropToRuleConfig(final ParserContext parserContext, final String elementId) {
+        String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
+        for (String each : beanDefinitionNames) {
+            BeanDefinition beanDefinition = parserContext.getRegistry().getBeanDefinition(each);
+            if (null != beanDefinition.getBeanClassName() && beanDefinition.getBeanClassName().equals(AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class.getName())) {
+                MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
+                ManagedMap<String, RuntimeBeanReference> managedMap = new ManagedMap<>();
+                managedMap.put(elementId, new RuntimeBeanReference(elementId));
+                propertyValues.setPropertyValueAt(new PropertyValue("discoveryTypes", managedMap), 2);
+            }
+        }
     }
     
     private Properties parsePropsElement(final Element element, final ParserContext parserContext) {
