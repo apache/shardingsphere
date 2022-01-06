@@ -28,7 +28,7 @@ alterResource
     ;
 
 dropResource
-    : DROP ifExists? RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
+    : DROP existClause? RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 createDefaultSingleTableRule
@@ -40,7 +40,7 @@ alterDefaultSingleTableRule
     ;
 
 dropDefaultSingleTableRule
-    : DROP ifExists? DEFAULT SINGLE TABLE RULE
+    : DROP existClause? DEFAULT SINGLE TABLE RULE
     ;
 
 dataSource
@@ -103,6 +103,6 @@ ignoreSingleTables
     : IGNORE SINGLE TABLES
     ;
 
-ifExists
+existClause
     : IF EXISTS
     ;

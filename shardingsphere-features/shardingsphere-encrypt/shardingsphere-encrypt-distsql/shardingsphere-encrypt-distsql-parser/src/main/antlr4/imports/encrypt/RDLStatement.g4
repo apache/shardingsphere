@@ -28,7 +28,7 @@ alterEncryptRule
     ;
 
 dropEncryptRule
-    : DROP ifExists? ENCRYPT RULE tableName (COMMA tableName)*
+    : DROP existClause? ENCRYPT RULE tableName (COMMA tableName)*
     ;
 
 encryptRuleDefinition
@@ -83,6 +83,6 @@ queryWithCipherColumn
     : TRUE | FALSE
     ;
 
-ifExists
+existClause
     : IF EXISTS
     ;

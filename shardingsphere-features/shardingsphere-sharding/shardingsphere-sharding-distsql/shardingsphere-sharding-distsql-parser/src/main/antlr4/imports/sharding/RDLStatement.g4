@@ -72,19 +72,19 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP ifExists? SHARDING TABLE RULE tableName (COMMA tableName)*
+    : DROP existClause? SHARDING TABLE RULE tableName (COMMA tableName)*
     ;
 
 dropShardingBindingTableRules
-    : DROP ifExists? SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+    : DROP existClause? SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP ifExists? SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
+    : DROP existClause? SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
     ;
 
 dropShardingAlgorithm
-    : DROP ifExists? SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP existClause? SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
     ;
 
 dropShardingKeyGenerator
@@ -211,6 +211,6 @@ algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
 
-ifExists
+existClause
     : IF EXISTS
     ;

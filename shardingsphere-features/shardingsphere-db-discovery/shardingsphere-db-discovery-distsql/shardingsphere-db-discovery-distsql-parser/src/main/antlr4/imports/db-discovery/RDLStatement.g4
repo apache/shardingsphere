@@ -28,7 +28,7 @@ alterDatabaseDiscoveryRule
     ;
 
 dropDatabaseDiscoveryRule
-    : DROP ifExists? DB_DISCOVERY RULE ruleName (COMMA ruleName)*
+    : DROP existClause? DB_DISCOVERY RULE ruleName (COMMA ruleName)*
     ;
 
 createDatabaseDiscoveryType
@@ -44,11 +44,11 @@ alterDatabaseDiscoveryHeartbeat
     ;
 
 dropDatabaseDiscoveryType
-    : DROP ifExists? DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
+    : DROP existClause? DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
     ;
 
 dropDatabaseDiscoveryHeartbeat
-    : DROP ifExists? DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    : DROP existClause? DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
     ;
     
 alterDatabaseDiscoveryType
@@ -111,6 +111,6 @@ discoveryHeartbeatName
     : IDENTIFIER
     ;
 
-ifExists
+existClause
     : IF EXISTS
     ;
