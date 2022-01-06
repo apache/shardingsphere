@@ -25,13 +25,12 @@
         <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    
-    <artifactId>shardingsphere-proxy-frontend-core-reactive</artifactId>
+    <artifactId>shardingsphere-proxy-frontend-reactive-core</artifactId>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-spi-reactive</artifactId>
+            <artifactId>shardingsphere-proxy-frontend-reactive-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

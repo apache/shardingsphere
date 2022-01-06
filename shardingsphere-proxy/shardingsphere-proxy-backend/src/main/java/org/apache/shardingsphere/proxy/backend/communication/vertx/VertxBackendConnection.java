@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxEx
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.reactive.context.ReactiveProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     @Override
     public List<Future<? extends SqlClient>> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {
         return connectionSession.getTransactionStatus().isInTransaction()
-                ? getConnectionsWithTransaction(dataSourceName, connectionSize) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize) : getConnectionsWithoutTransaction(dataSourceName);
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {
@@ -90,7 +90,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     private List<Future<SqlConnection>> createNewConnections(final String dataSourceName, final int connectionSize) {
         Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        List<Future<SqlConnection>> result = ProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize);
+        List<Future<SqlConnection>> result = ReactiveProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize);
         for (Future<SqlConnection> each : result) {
             replayMethodsInvocation(each);
         }
@@ -103,9 +103,10 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
         }
     }
     
-    private List<Future<? extends SqlClient>> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {
+    private List<Future<? extends SqlClient>> getConnectionsWithoutTransaction(final String dataSourceName) {
         Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        Future<SqlClient> poolFuture = Future.succeededFuture(ProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getSchemaName(), dataSourceName));
+        // TODO At present, amount of connections without transaction is controlled by Vert.x pool.
+        Future<SqlClient> poolFuture = Future.succeededFuture(ReactiveProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getSchemaName(), dataSourceName));
         return Collections.singletonList(poolFuture);
     }
     

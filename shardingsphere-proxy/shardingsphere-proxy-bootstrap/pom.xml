@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-mysql-reactive</artifactId>
+            <artifactId>shardingsphere-proxy-frontend-reactive-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

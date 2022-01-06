@@ -87,12 +87,6 @@ public final class ShardingSphereProxy {
         String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         boolean reactiveBackendEnabled = "ExperimentalVertx".equalsIgnoreCase(driverType);
         if (reactiveBackendEnabled) {
-            log.warn("\n██     ██  █████  ██████  ███    ██ ██ ███    ██  ██████  \n"
-                    + "██     ██ ██   ██ ██   ██ ████   ██ ██ ████   ██ ██       \n"
-                    + "██  █  ██ ███████ ██████  ██ ██  ██ ██ ██ ██  ██ ██   ███ \n"
-                    + "██ ███ ██ ██   ██ ██   ██ ██  ██ ██ ██ ██  ██ ██ ██    ██ \n"
-                    + " ███ ███  ██   ██ ██   ██ ██   ████ ██ ██   ████  ██████  \n"
-                    + "\n       Experimental reactive backend enabled!\n");
             return VertxBackendDataSource.getInstance().getVertx().nettyEventLoopGroup();
         }
         int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);

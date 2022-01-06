@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.reactive.state.impl;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.ReactiveCommandExecuteTask;
 import org.apache.shardingsphere.proxy.frontend.reactive.protocol.ReactiveDatabaseProtocolFrontendEngineFactory;
@@ -32,8 +35,18 @@ public final class ReactiveOKProxyState implements OKProxyState {
     
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        ReactiveDatabaseProtocolFrontendEngine reactiveDatabaseProtocolFrontendEngine = ReactiveDatabaseProtocolFrontendEngineFactory.newInstance(databaseProtocolFrontendEngine.getDatabaseType());
+        ReactiveDatabaseProtocolFrontendEngine reactiveDatabaseProtocolFrontendEngine = getOrCreateReactiveEngine(context.channel(), databaseProtocolFrontendEngine);
         context.executor().execute(new ReactiveCommandExecuteTask(reactiveDatabaseProtocolFrontendEngine, connectionSession, context, message));
+    }
+    
+    private ReactiveDatabaseProtocolFrontendEngine getOrCreateReactiveEngine(final Channel channel, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
+        Attribute<ReactiveDatabaseProtocolFrontendEngine> attr = channel.attr(AttributeKey.valueOf(ReactiveDatabaseProtocolFrontendEngine.class.getName()));
+        ReactiveDatabaseProtocolFrontendEngine result = attr.get();
+        if (null == result) {
+            result = ReactiveDatabaseProtocolFrontendEngineFactory.newInstance(databaseProtocolFrontendEngine.getDatabaseType());
+            attr.setIfAbsent(result);
+        }
+        return result;
     }
     
     @Override

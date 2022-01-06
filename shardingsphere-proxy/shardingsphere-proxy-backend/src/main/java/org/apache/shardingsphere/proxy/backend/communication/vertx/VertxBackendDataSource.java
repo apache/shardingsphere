@@ -28,6 +28,7 @@ import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.SqlConnection;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -42,9 +43,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Vert.x backend data source.
  */
+@Slf4j
 public final class VertxBackendDataSource implements BackendDataSource {
     
-    private static final VertxBackendDataSource INSTANCE = new VertxBackendDataSource();
+    private static volatile VertxBackendDataSource instance;
     
     private final Map<String, Map<String, Pool>> schemaVertxPools = new ConcurrentHashMap<>();
     
@@ -61,7 +63,24 @@ public final class VertxBackendDataSource implements BackendDataSource {
      * @return instance of VertxBackendDataSource
      */
     public static VertxBackendDataSource getInstance() {
-        return INSTANCE;
+        if (null == instance) {
+            synchronized (VertxBackendDataSource.class) {
+                if (null == instance) {
+                    logWarningBanner();
+                    instance = new VertxBackendDataSource();
+                }
+            }
+        }
+        return instance;
+    }
+    
+    private static void logWarningBanner() {
+        log.warn("\n██     ██  █████  ██████  ███    ██ ██ ███    ██  ██████  \n"
+                + "██     ██ ██   ██ ██   ██ ████   ██ ██ ████   ██ ██       \n"
+                + "██  █  ██ ███████ ██████  ██ ██  ██ ██ ██ ██  ██ ██   ███ \n"
+                + "██ ███ ██ ██   ██ ██   ██ ██  ██ ██ ██ ██  ██ ██ ██    ██ \n"
+                + " ███ ███  ██   ██ ██   ██ ██   ████ ██ ██   ████  ██████  \n"
+                + "\n       Experimental reactive backend enabled!\n");
     }
     
     /**
