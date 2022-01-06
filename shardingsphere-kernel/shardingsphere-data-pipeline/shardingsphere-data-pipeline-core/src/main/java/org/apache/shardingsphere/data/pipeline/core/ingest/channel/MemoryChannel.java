@@ -32,14 +32,18 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class MemoryChannel implements Channel {
     
-    // TODO persist blockQueueSize into registry center and transfer it here by construction
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
+    private final BlockingQueue<Record> queue;
     
     private final AckCallback ackCallback;
     
     private final List<Record> toBeAcknowledgeRecords = new LinkedList<>();
     
     public MemoryChannel(final AckCallback ackCallback) {
+        this(10000, ackCallback);
+    }
+    
+    public MemoryChannel(final int blockQueueSize, final AckCallback ackCallback) {
+        this.queue = new ArrayBlockingQueue<>(blockQueueSize);
         this.ackCallback = ackCallback;
     }
     

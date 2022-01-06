@@ -18,6 +18,7 @@ weight = 2
 * 通过 XA START 可以手动开启 XA 事务，注意该事务完全由用户管理，ShardingSphere 只负责将语句转发至后端数据库；
 * 服务宕机后，需要通过 XA RECOVER 获取未提交或回滚的事务，也可以在 COMMIT 时使用 ONE PHASE 跳过 PERPARE。
 
+```sql
 MySQL [(none)]> use test1                                                                               │MySQL [(none)]> use test2
 Reading table information for completion of table and column names                                      │Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A                                          │You can turn off this feature to get a quicker startup with -A
@@ -110,3 +111,4 @@ Query OK, 0 rows affected (0.029 sec)
 
 MySQL [test1]> XA RECOVER;
 Empty set (0.011 sec)
+```

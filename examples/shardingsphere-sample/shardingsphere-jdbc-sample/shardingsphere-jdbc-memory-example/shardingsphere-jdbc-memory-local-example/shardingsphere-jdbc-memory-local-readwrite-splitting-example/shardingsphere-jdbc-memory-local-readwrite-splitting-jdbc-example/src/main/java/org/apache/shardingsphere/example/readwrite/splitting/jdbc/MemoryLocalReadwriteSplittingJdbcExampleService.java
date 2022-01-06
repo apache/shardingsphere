@@ -35,11 +35,11 @@ import java.util.List;
 public final class MemoryLocalReadwriteSplittingJdbcExampleService {
     
     private final DataSource dataSource;
-
+    
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL Exception
      */
     public void run() throws SQLException {
         try {
@@ -55,9 +55,9 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
      * @throws SQLException
      */
     private void initEnvironment() throws SQLException {
-        String createOrderTableSql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        String createOrderTableSql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         String createOrderItemTableSql = "CREATE TABLE IF NOT EXISTS t_order_item "
-                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id))";
+                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
         String createAddressTableSql = "CREATE TABLE IF NOT EXISTS t_address "
                 + "(address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         String truncateOrderTable = "TRUNCATE TABLE t_order";
@@ -91,7 +91,7 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-
+    
     private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
@@ -106,14 +106,16 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
     private Order insertOrder(final int i) throws SQLException {
         Order order = new Order();
         order.setUserId(i);
+        order.setOrderType(i % 2);
         order.setAddressId(i);
         order.setStatus("INSERT_TEST");
-        String sql = "INSERT INTO t_order (user_id, address_id, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setLong(2, order.getAddressId());
-            preparedStatement.setString(3, order.getStatus());
+            preparedStatement.setInt(2, order.getOrderType());
+            preparedStatement.setLong(3, order.getAddressId());
+            preparedStatement.setString(4, order.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -123,18 +125,20 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
         }
         return order;
     }
-
+    
     private void insertOrderItem(final int i, final Order order) throws SQLException {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrderId(order.getOrderId());
+        orderItem.setPhone("13800000001");
         orderItem.setUserId(i);
         orderItem.setStatus("INSERT_TEST");
-        String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, orderItem.getOrderId());
             preparedStatement.setInt(2, orderItem.getUserId());
-            preparedStatement.setString(3, orderItem.getStatus());
+            preparedStatement.setString(3,orderItem.getPhone());
+            preparedStatement.setString(4, orderItem.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -143,7 +147,7 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
             }
         }
     }
-
+    
     private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
@@ -182,7 +186,8 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
                 orderItem.setOrderItemId(resultSet.getLong(1));
                 orderItem.setOrderId(resultSet.getLong(2));
                 orderItem.setUserId(resultSet.getInt(3));
-                orderItem.setStatus(resultSet.getString(4));
+                orderItem.setPhone(resultSet.getString(4));
+                orderItem.setStatus(resultSet.getString(5));
                 result.add(orderItem);
             }
         }
@@ -198,9 +203,10 @@ public final class MemoryLocalReadwriteSplittingJdbcExampleService {
             while (resultSet.next()) {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
-                order.setUserId(resultSet.getInt(2));
-                order.setAddressId(resultSet.getLong(3));
-                order.setStatus(resultSet.getString(4));
+                order.setOrderType(resultSet.getInt(2));
+                order.setUserId(resultSet.getInt(3));
+                order.setAddressId(resultSet.getLong(4));
+                order.setStatus(resultSet.getString(5));
                 result.add(order);
             }
         }

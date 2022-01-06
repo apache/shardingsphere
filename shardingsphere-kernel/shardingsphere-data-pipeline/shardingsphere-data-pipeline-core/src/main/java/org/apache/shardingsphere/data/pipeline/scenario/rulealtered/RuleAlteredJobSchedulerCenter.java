@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 // TODO extract JobSchedulerCenter
 public final class RuleAlteredJobSchedulerCenter {
     
-    private static final Map<Long, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
+    private static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -58,7 +58,7 @@ public final class RuleAlteredJobSchedulerCenter {
      * @param jobContext job context
      */
     public static void start(final RuleAlteredJobContext jobContext) {
-        long jobId = jobContext.getJobId();
+        String jobId = jobContext.getJobId();
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
         int shardingItem = jobContext.getShardingItem();
         if (schedulerMap.containsKey(shardingItem)) {
@@ -76,7 +76,7 @@ public final class RuleAlteredJobSchedulerCenter {
      *
      * @param jobId job id
      */
-    public static void stop(final long jobId) {
+    public static void stop(final String jobId) {
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
         if (null == schedulerMap) {
             return;
@@ -92,7 +92,7 @@ public final class RuleAlteredJobSchedulerCenter {
      * @param jobId job id
      * @return job context
      */
-    public static Optional<Collection<RuleAlteredJobContext>> getJobContexts(final long jobId) {
+    public static Optional<Collection<RuleAlteredJobContext>> getJobContexts(final String jobId) {
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
         if (null == schedulerMap) {
             return Optional.empty();
@@ -113,7 +113,7 @@ public final class RuleAlteredJobSchedulerCenter {
         
         @Override
         public void run() {
-            for (Entry<Long, Map<Integer, RuleAlteredJobScheduler>> entry : JOB_SCHEDULER_MAP.entrySet()) {
+            for (Entry<String, Map<Integer, RuleAlteredJobScheduler>> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
                     entry.getValue().forEach((shardingItem, jobScheduler) -> REGISTRY_REPOSITORY_API.persistJobProgress(jobScheduler.getJobContext()));
                     // CHECKSTYLE:OFF

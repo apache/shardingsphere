@@ -37,5 +37,9 @@ execute
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule
     | refreshTableMetadata
+    | showSQLParserRule
+    | alterSQLParserRule
+    | showAuthorityRule
+    | showTransactionRule
     ) SEMI?
     ;

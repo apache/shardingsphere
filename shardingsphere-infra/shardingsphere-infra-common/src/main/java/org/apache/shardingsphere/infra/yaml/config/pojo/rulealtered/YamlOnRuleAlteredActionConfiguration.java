@@ -33,6 +33,10 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     
     private int workerThread = 40;
     
+    private int readBatchSize = 1000;
+    
+    private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    
     private YamlShardingSphereAlgorithmConfiguration completionDetector;
     
     private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;

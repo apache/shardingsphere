@@ -26,12 +26,13 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
@@ -63,8 +64,8 @@ public final class InventoryTaskSplitter {
      * @param importerExecuteEngine execute engine
      * @return split inventory data task
      */
-    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - batchSize
-    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager,
+    // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - readBatchSize - rateLimitAlgorithm
+    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager,
                                                   final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
@@ -74,10 +75,10 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitDumperConfig(
-            final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+            final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig, final PipelineDataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
+        PipelineMetaDataManager metaDataManager = new PipelineMetaDataManager(dataSource);
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             result.addAll(splitByPrimaryKey(jobContext, dataSource, metaDataManager, each));
         }
@@ -96,8 +97,10 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
-            final RuleAlteredJobContext jobContext, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
+            final RuleAlteredJobContext jobContext, final DataSource dataSource, final PipelineMetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
+        int readBatchSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getReadBatchSize();
+        JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataManager);
         int i = 0;
         for (IngestPosition<?> inventoryPosition : inventoryPositions) {
@@ -106,13 +109,15 @@ public final class InventoryTaskSplitter {
             splitDumperConfig.setShardingItem(i++);
             splitDumperConfig.setTableName(dumperConfig.getTableName());
             splitDumperConfig.setPrimaryKey(dumperConfig.getPrimaryKey());
+            splitDumperConfig.setReadBatchSize(readBatchSize);
+            splitDumperConfig.setRateLimitAlgorithm(rateLimitAlgorithm);
             result.add(splitDumperConfig);
         }
         return result;
     }
     
     private Collection<IngestPosition<?>> getInventoryPositions(
-            final RuleAlteredJobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
+            final RuleAlteredJobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final PipelineMetaDataManager metaDataManager) {
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         JobProgress initProgress = jobContext.getInitProgress();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
@@ -171,9 +176,13 @@ public final class InventoryTaskSplitter {
                 ps.setLong(1, beginId);
                 ps.setLong(2, jobContext.getJobConfig().getHandleConfig().getShardingSize());
                 try (ResultSet rs = ps.executeQuery()) {
-                    rs.next();
+                    if (!rs.next()) {
+                        log.info("getPositionByPrimaryKeyRange, rs.next false, break");
+                        break;
+                    }
                     long endId = rs.getLong(1);
                     if (endId == 0) {
+                        log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getTableName(), dumperConfig.getPrimaryKey(), beginId);
                         break;
                     }
                     result.add(new PrimaryKeyPosition(beginId, endId));

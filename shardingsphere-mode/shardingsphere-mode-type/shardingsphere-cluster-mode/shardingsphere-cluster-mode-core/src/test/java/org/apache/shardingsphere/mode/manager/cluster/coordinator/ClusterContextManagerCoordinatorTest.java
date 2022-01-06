@@ -23,12 +23,16 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -36,9 +40,9 @@ import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -107,10 +111,11 @@ public final class ClusterContextManagerCoordinatorTest {
         PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
-        contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false, null, null);
+        contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(configuration).dataSourcesMap(new HashMap<>()).schemaRuleConfigs(new HashMap<>())
+                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).isOverwrite(false).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
                 mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mock(OptimizerContext.class, RETURNS_DEEP_STUBS)));
+                new ConfigurationProperties(new Properties()), createOptimizerContext()));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
     }
@@ -128,9 +133,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_0", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourceConverter.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_0", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
         return result;
     }
     
@@ -152,11 +157,11 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaChanged() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", "t_order", mock(TableMetaData.class));
-        TableMetaData tableMetaData = contextManager.getMetaDataContexts().getMetaData("schema").getSchema().get("t_order");
+        TableMetaData changedTableMetaData = new TableMetaData("t_order");
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getTableMetaData()));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -183,9 +188,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_2", DataSourceConverter.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_2", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
         return result;
     }
     
@@ -234,16 +239,17 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("t_order")).thenReturn(mock(TableMetaData.class));
         when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
     
-    private Map<String, TableMetaData> createTableMetaData() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
-        result.put("t_order", mock(TableMetaData.class));
+    private OptimizerContext createOptimizerContext() {
+        OptimizerContext result = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
+        Map<String, FederationSchemaMetaData> schemas = new HashMap<>(1, 1);
+        schemas.put("schema", new FederationSchemaMetaData("schema", Collections.emptyMap()));
+        when(result.getFederationMetaData().getSchemas()).thenReturn(schemas);
         return result;
     }
 } 

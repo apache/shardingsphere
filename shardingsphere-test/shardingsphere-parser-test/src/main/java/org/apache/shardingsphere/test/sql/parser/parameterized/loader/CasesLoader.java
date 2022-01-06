@@ -89,9 +89,10 @@ public abstract class CasesLoader {
      * @param sqlCaseId case ID
      * @param sqlCaseType SQL case type
      * @param parameters SQL parameters
+     * @param databaseType databaseType
      * @return SQL
      */
-    public abstract String getCaseValue(String sqlCaseId, SQLCaseType sqlCaseType, List<?> parameters);
+    public abstract String getCaseValue(String sqlCaseId, SQLCaseType sqlCaseType, List<?> parameters, String databaseType);
     
     /**
      * Get all SQL case IDs.

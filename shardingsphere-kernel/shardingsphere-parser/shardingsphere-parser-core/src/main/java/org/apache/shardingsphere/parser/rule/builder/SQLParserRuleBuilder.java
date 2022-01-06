@@ -29,9 +29,9 @@ import java.util.Map;
  * SQL parser rule builder.
  */
 public final class SQLParserRuleBuilder implements GlobalRuleBuilder<SQLParserRuleConfiguration> {
-
+    
     @Override
-    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {
+    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> metaDataMap) {
         return new SQLParserRule(ruleConfig);
     }
     
@@ -44,6 +44,4 @@ public final class SQLParserRuleBuilder implements GlobalRuleBuilder<SQLParserRu
     public Class<SQLParserRuleConfiguration> getTypeClass() {
         return SQLParserRuleConfiguration.class;
     }
-    
 }
-

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
@@ -49,9 +50,8 @@ public final class RegistryCenter {
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository, final Integer port) {
+    public RegistryCenter(final ClusterPersistRepository repository) {
         this.repository = repository;
-        ClusterInstance.getInstance().init(port);
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         lockService = new LockRegistryService(repository);
@@ -70,9 +70,11 @@ public final class RegistryCenter {
     
     /**
      * Online instance.
+     * 
+     * @param instanceDefinition instance definition
      */
-    public void onlineInstance() {
-        computeNodeStatusService.registerOnline();
+    public void onlineInstance(final InstanceDefinition instanceDefinition) {
+        computeNodeStatusService.registerOnline(instanceDefinition);
         listenerFactory.watchListeners();
     }
 }

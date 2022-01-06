@@ -71,7 +71,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         if (null == currentRuleConfig) {
             return;
         }
-        Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
         duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
         DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), new DuplicateRuleException(RULE_TYPE, schemaName, duplicateRuleNames));

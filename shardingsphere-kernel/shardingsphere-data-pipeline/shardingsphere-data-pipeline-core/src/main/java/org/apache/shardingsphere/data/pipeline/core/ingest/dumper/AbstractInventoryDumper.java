@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
@@ -32,13 +34,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.MetaDataManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.Connection;
@@ -46,6 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Abstract JDBC dumper implement.
@@ -56,25 +58,32 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
-    private final DataSourceManager dataSourceManager;
+    private final int readBatchSize;
+    
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
+    
+    private final PipelineDataSourceManager dataSourceManager;
     
     private final TableMetaData tableMetaData;
     
     @Setter
     private Channel channel;
     
-    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        if (!StandardJDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardJDBCDataSourceConfiguration");
+    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+        if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
+            throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
+        this.readBatchSize = inventoryDumperConfig.getReadBatchSize();
+        this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
     }
     
     private TableMetaData createTableMetaData() {
-        JDBCDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
-        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
+        PipelineDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
+        // TODO share PipelineMetaDataManager
+        PipelineMetaDataManager metaDataManager = new PipelineMetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
         return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
     }
     
@@ -85,25 +94,15 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void dump() {
+        String sql = getDumpSQL();
+        IngestPosition<?> position = inventoryDumperConfig.getPosition();
+        log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
-            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfig.getTableName(), getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPosition()));
-            log.info("inventory dump, sql={}", sql);
-            PreparedStatement ps = createPreparedStatement(conn, sql);
-            ResultSet rs = ps.executeQuery();
-            ResultSetMetaData metaData = rs.getMetaData();
-            int rowCount = 0;
-            while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
-                record.setType(IngestDataChangeType.INSERT);
-                record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
-                }
-                pushRecord(record);
-                rowCount++;
+            Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
+            Optional<Number> maxUniqueKeyValue;
+            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue)).isPresent()) {
+                startUniqueKeyValue = maxUniqueKeyValue.get();
             }
-            log.info("dump, rowCount={}", rowCount);
-            pushRecord(new FinishedRecord(new FinishedPosition()));
         } catch (final SQLException ex) {
             stop();
             channel.close();
@@ -113,12 +112,64 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private String getWhereCondition(final String primaryKey, final IngestPosition<?> position) {
-        if (null == primaryKey || null == position) {
-            return "";
+    private String getDumpSQL() {
+        String tableName = inventoryDumperConfig.getTableName();
+        String primaryKey = inventoryDumperConfig.getPrimaryKey();
+        return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
+    }
+    
+    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue) throws SQLException {
+        if (null != rateLimitAlgorithm) {
+            rateLimitAlgorithm.onQuery();
         }
-        PrimaryKeyPosition primaryKeyPosition = (PrimaryKeyPosition) position;
-        return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, primaryKeyPosition.getBeginValue(), primaryKeyPosition.getEndValue());
+        try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
+            preparedStatement.setObject(1, startUniqueKeyValue);
+            preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
+            preparedStatement.setInt(3, readBatchSize);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int rowCount = 0;
+                Number maxUniqueKeyValue = null;
+                while (isRunning() && resultSet.next()) {
+                    DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
+                    record.setType(IngestDataChangeType.INSERT);
+                    record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
+                        Object value = readValue(resultSet, i);
+                        if (isPrimaryKey) {
+                            maxUniqueKeyValue = (Number) value;
+                        }
+                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isPrimaryKey));
+                    }
+                    pushRecord(record);
+                    rowCount++;
+                }
+                log.info("dump, rowCount={}, maxUniqueKeyValue={}", rowCount, maxUniqueKeyValue);
+                pushRecord(new FinishedRecord(new FinishedPosition()));
+                return Optional.ofNullable(maxUniqueKeyValue);
+            }
+        }
+    }
+    
+    private long getPositionBeginValue(final IngestPosition<?> position) {
+        if (null == position) {
+            return 0;
+        }
+        if (!(position instanceof PrimaryKeyPosition)) {
+            return 0;
+        }
+        return ((PrimaryKeyPosition) position).getBeginValue();
+    }
+    
+    private long getPositionEndValue(final IngestPosition<?> position) {
+        if (null == position) {
+            return Integer.MAX_VALUE;
+        }
+        if (!(position instanceof PrimaryKeyPosition)) {
+            return Integer.MAX_VALUE;
+        }
+        return ((PrimaryKeyPosition) position).getEndValue();
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {

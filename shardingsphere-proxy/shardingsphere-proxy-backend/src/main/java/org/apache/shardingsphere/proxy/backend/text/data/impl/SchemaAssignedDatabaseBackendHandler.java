@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -49,6 +50,9 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     @Override
     public ResponseHeader execute() throws SQLException {
+        if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).hasDataSource()) {
+            throw new RequiredResourceMissedException(connectionSession.getSchemaName());
+        }
         if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).isComplete()) {
             throw new RuleNotExistedException();
         }

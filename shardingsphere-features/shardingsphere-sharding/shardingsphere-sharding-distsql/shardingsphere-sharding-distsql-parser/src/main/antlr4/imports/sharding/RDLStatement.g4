@@ -39,6 +39,14 @@ createDefaultShardingStrategy
     : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
     ;
 
+alterDefaultShardingStrategy
+    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    ;
+
+dropDefaultShardingStrategy
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY 
+    ;
+
 createShardingKeyGenerator
     : CREATE SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
     ;
@@ -74,9 +82,13 @@ dropShardingBindingTableRules
 dropShardingBroadcastTableRules
     : DROP ifExists? SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
     ;
-    
+
 dropShardingAlgorithm
     : DROP ifExists? SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    ;
+
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
 shardingTableRuleDefinition
@@ -84,11 +96,11 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
     ;
 
 keyGeneratorDefination
@@ -120,7 +132,19 @@ shardingColumn
     ;
 
 shardingAlgorithm
+    : existingAlgorithm | autoCreativeAlgorithm
+    ;
+
+existingAlgorithm
     : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+autoCreativeAlgorithm
+    : SHARDING_ALGORITHM LP algorithmDefinition RP
+    ;
+
+keyGenerator
+    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -135,8 +159,16 @@ tableStrategy
     : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
-keyGenerateStrategy
+keyGenerateDeclaration
+    : keyGenerateDefinition | keyGenerateStrategy
+    ;
+
+keyGenerateDefinition
     : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+keyGenerateStrategy
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition

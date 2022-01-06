@@ -59,7 +59,7 @@ public final class ShardingSphereSchema {
      * Get table meta data via table name.
      * 
      * @param tableName tableName table name
-     * @return table mata data
+     * @return table meta data
      */
     public TableMetaData get(final String tableName) {
         return tables.get(tableName.toLowerCase());

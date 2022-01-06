@@ -87,10 +87,10 @@ public final class MetaDataContexts implements AutoCloseable {
     }
     
     /**
-     * Get mata data.
+     * Get meta data.
      *
      * @param schemaName schema name
-     * @return mata data
+     * @return meta data
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
         return metaDataMap.get(schemaName);

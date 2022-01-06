@@ -21,6 +21,8 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -33,12 +35,16 @@ public final class DataSourcePoolDestroyerFactory {
     }
     
     /**
-     * Get data source pool destroyer instance.
-     * 
-     * @param dataSourceClassName data source class name
-     * @return instance of data source pool destroyer
+     * Destroy data source pool.
+     *
+     * @param dataSource data source pool to be destroyed
+     * @throws SQLException SQL exception
      */
-    public static DataSourcePoolDestroyer getInstance(final String dataSourceClassName) {
+    public static void destroy(final DataSource dataSource) throws SQLException {
+        newInstance(dataSource.getClass().getCanonicalName()).destroy(dataSource);
+    }
+    
+    private static DataSourcePoolDestroyer newInstance(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties())
                 .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
     }

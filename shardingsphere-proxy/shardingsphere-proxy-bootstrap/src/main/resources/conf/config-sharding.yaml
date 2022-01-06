@@ -99,12 +99,19 @@
 #    default_scaling:
 #      blockQueueSize: 10000
 #      workerThread: 40
+#      readBatchSize: 1000
+#      rateLimiter:
+#        type: SOURCE
+#        props:
+#          qps: 50
 #      completionDetector:
 #        type: IDLE
 #        props:
 #          incremental-task-idle-minute-threshold: 30
 #      dataConsistencyChecker:
-#        type: DEFAULT
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
 
 ######################################################################################################
 #
@@ -189,9 +196,16 @@
 #    default_scaling:
 #      blockQueueSize: 10000
 #      workerThread: 40
+#      readBatchSize: 1000
+#      rateLimiter:
+#        type: SOURCE
+#        props:
+#          qps: 50
 #      completionDetector:
 #        type: IDLE
 #        props:
 #          incremental-task-idle-minute-threshold: 30
 #      dataConsistencyChecker:
-#        type: DEFAULT
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000

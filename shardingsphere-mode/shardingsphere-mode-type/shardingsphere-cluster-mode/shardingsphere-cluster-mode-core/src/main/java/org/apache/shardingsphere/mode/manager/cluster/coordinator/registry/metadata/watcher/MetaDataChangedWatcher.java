@@ -71,8 +71,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildGovernanceEvent(schemaName, event);
         }
+        schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
+        String tableName = SchemaMetaDataNode.getTableName(schemaName, event.getKey());
+        if (!Strings.isNullOrEmpty(tableName) && !Strings.isNullOrEmpty(event.getValue())) {
+            return createTableMetaDataChangedEvent(schemaName, tableName, event);
+        }
         if (Type.ADDED == event.getType() && !Strings.isNullOrEmpty(event.getValue())) {
-            schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
             Optional<String> ruleCacheId = getRuleCacheId(schemaName, event.getKey());
             return ruleCacheId.isPresent() ? Optional.of(new RuleConfigurationCachedEvent(ruleCacheId.get(), schemaName)) : Optional.empty();
         }
@@ -102,10 +106,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
-        }
-        String table = SchemaMetaDataNode.getTableName(schemaName, event.getKey());
-        if (!Strings.isNullOrEmpty(table)) {
-            return Optional.of(createSchemaChangedEvent(schemaName, table, event));
         }
         return Optional.empty();
     }
@@ -142,7 +142,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     
-    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final String table, final DataChangedEvent event) {
-        return new SchemaChangedEvent(schemaName, table, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)));
+    private Optional<GovernanceEvent> createTableMetaDataChangedEvent(final String schemaName, final String table, final DataChangedEvent event) {
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
+            return Optional.of(new SchemaChangedEvent(schemaName, null, table));
+        }
+        return Optional.of(new SchemaChangedEvent(schemaName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null));
     }
 }

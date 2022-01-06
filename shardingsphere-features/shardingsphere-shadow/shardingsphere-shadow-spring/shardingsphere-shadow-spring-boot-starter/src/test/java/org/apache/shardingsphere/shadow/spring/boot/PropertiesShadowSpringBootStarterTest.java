@@ -49,7 +49,6 @@ public class PropertiesShadowSpringBootStarterTest {
     
     @Test
     public void assertShadowRuleConfiguration() {
-        assertThat(shadowRuleConfiguration.isEnable(), is(false));
         assertShadowDataSources(shadowRuleConfiguration.getDataSources());
         assertShadowTables(shadowRuleConfiguration.getTables());
         assertShadowAlgorithms(shadowRuleConfiguration.getShadowAlgorithms());

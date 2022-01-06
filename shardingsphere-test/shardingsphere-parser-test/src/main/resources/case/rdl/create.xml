@@ -18,20 +18,20 @@
 
 <sql-parser-test-cases>
     <add-resource sql-case-id="add-resource-simple-single-without-password">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
     </add-resource>
     
     <add-resource sql-case-id="add-resource-simple-single-with-password">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
     </add-resource>
     
     <add-resource sql-case-id="add-resource-simple-multiple">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
-        <data-source name="ds_1" host-name="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
     </add-resource>
 
     <add-resource sql-case-id="add-resource-with-quota">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
     </add-resource>
     
     <add-resource sql-case-id="add-resource-url-single-without-password">
@@ -48,7 +48,7 @@
     </add-resource>
 
     <add-resource sql-case-id="add-resource-single-with-properties">
-        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30"/>
             </properties>
@@ -132,6 +132,25 @@
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
             <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+        </rule>
+    </create-sharding-table-rule>
+
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="inline">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id% 2}"/>
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake">
+                <properties>
+                    <property key="worker-id" value="123"/>
+                </properties>
+            </key-generate-strategy>
         </rule>
     </create-sharding-table-rule>
     
@@ -377,8 +396,13 @@
 
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
     
-    <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy">
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        </strategy>
+    </create-default-sharding-strategy>
+
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
+        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
 
@@ -404,4 +428,6 @@
             </algorithm>
         </shardingKeyGenerator>
     </create-sharding-key-generator>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling" scaling-name="default_scaling"/>
 </sql-parser-test-cases>

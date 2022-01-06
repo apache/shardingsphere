@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -45,7 +45,7 @@ import java.util.concurrent.Future;
  * Inventory task.
  */
 @Slf4j
-@ToString(exclude = {"dataSourceManager", "dumper"})
+@ToString(exclude = {"importerExecuteEngine", "dataSourceManager", "dumper"})
 public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
@@ -57,7 +57,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private final ExecuteEngine importerExecuteEngine;
     
-    private final DataSourceManager dataSourceManager;
+    private final PipelineDataSourceManager dataSourceManager;
     
     private Dumper dumper;
     
@@ -67,7 +67,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
         this.importerExecuteEngine = importerExecuteEngine;
-        this.dataSourceManager = new DataSourceManager();
+        this.dataSourceManager = new PipelineDataSourceManager();
         taskId = generateTaskId(inventoryDumperConfig);
         position = inventoryDumperConfig.getPosition();
     }
@@ -104,7 +104,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private void instanceChannel(final Importer importer) {
-        MemoryChannel channel = new MemoryChannel(records -> {
+        MemoryChannel channel = new MemoryChannel(inventoryDumperConfig.getReadBatchSize(), records -> {
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> position = value.getPosition());
         });

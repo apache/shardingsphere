@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -31,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexSt
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,8 +43,8 @@ import java.util.Optional;
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, 
-                        final ConfigurationProperties props) throws SQLException {
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+                        final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
@@ -53,6 +57,9 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
+            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
+            event.getAlteredTables().add(tableMetaData);
+            ShardingSphereEventBus.getInstance().post(event);
         }
     }
     

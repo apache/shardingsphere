@@ -19,7 +19,10 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
@@ -56,8 +59,9 @@ public final class StandaloneContextManagerBuilderTextTest {
         Properties props = new Properties();
         ModeConfiguration modeConfiguration = new ModeConfiguration("testType", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
-        ContextManager actual = standaloneContextManagerBuilder.build(modeConfiguration, dataSourceMap, schemaRuleConfigs, 
-                globalRuleConfigurationCollection, props, false, 1000, null);
+        ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfiguration)
+            .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigurationCollection).props(props)
+            .isOverwrite(false).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
         assertNotNull(metaDataContexts.getExecutorEngine());

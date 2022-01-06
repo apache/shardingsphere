@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 
 import java.sql.Connection;
@@ -47,17 +48,17 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
-    protected DataSourceWrapper getSourceDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getSource().unwrap());
+    protected final PipelineDataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
+        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
     }
     
-    protected DataSourceWrapper getTargetDataSource(final RuleConfiguration ruleConfig) {
-        return dataSourceFactory.newInstance(ruleConfig.getTarget().unwrap());
+    protected final PipelineDataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
+        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
     }
     
-    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+    protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
@@ -71,12 +72,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    protected Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
+    protected final Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
         return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
     }
     
     //TODO simple lexer
-    protected TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
+    protected final TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
         if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
             return TableDefinitionSQLType.CREATE_TABLE;
         }
@@ -86,7 +87,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return TableDefinitionSQLType.UNKNOWN;
     }
     
-    protected String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }

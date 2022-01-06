@@ -48,12 +48,17 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order
+  scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 1000
+      blockQueueSize: 10000
+      workerThread: 40
+      readBatchSize: 1000
+      rateLimiter:
+        type: SOURCE
+        props:
+          qps: 50
       completionDetector:
         type: FIXTURE
       dataConsistencyChecker:
         type: FIXTURE
-      workerThread: 5
-  scalingName: default_scaling

@@ -41,6 +41,8 @@ public final class EncryptInCondition implements EncryptCondition {
     
     private final String columnName;
     
+    private final boolean isSortable;
+    
     private final String tableName;
 
     private final int startIndex;
@@ -51,8 +53,10 @@ public final class EncryptInCondition implements EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptInCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
+    public EncryptInCondition(final String columnName, final boolean isSortable, final String tableName, final int startIndex, final int stopIndex, 
+                              final List<ExpressionSegment> expressionSegments) {
         this.columnName = columnName;
+        this.isSortable = isSortable;
         this.tableName = tableName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;

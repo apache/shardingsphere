@@ -37,7 +37,7 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
     
     private static final String USER_NAME = "root";
     
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "root";
     
     /**
      * Create a DataSource object, which is an object rewritten by ShardingSphere itself 

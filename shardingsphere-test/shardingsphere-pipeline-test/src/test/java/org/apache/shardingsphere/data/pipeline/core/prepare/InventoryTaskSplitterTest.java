@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.prepare;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
@@ -45,14 +45,14 @@ public final class InventoryTaskSplitterTest {
     
     private TaskConfiguration taskConfig;
     
-    private DataSourceManager dataSourceManager;
+    private PipelineDataSourceManager dataSourceManager;
     
     private InventoryTaskSplitter inventoryTaskSplitter;
     
     @Before
     public void setUp() {
         initJobContext();
-        dataSourceManager = new DataSourceManager();
+        dataSourceManager = new PipelineDataSourceManager();
         inventoryTaskSplitter = new InventoryTaskSplitter();
     }
     

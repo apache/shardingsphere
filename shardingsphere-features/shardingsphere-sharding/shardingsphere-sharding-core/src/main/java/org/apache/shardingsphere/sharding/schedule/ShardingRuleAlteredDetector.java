@@ -21,6 +21,8 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetect
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -33,6 +35,8 @@ import java.util.Optional;
  * Sharding rule altered detector.
  */
 public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
+    
+    private static final OnRuleAlteredActionConfigurationYamlSwapper CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     @Override
     public String getYamlRuleConfigClassName() {
@@ -79,6 +83,10 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
             return Optional.empty();
         }
         OnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
-        return Optional.ofNullable(result);
+        if (null == result) {
+            YamlOnRuleAlteredActionConfiguration yamlConfig = new YamlOnRuleAlteredActionConfiguration();
+            result = CONFIG_YAML_SWAPPER.swapToObject(yamlConfig);
+        }
+        return Optional.of(result);
     }
 }

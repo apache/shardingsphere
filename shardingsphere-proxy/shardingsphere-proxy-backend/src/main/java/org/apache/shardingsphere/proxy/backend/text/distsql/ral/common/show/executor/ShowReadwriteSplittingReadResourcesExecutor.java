@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingRuleConstants;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -75,7 +75,6 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
-                new QueryHeader("", "", SCHEMA_NAME, SCHEMA_NAME, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", RESOURCE, RESOURCE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false));
     }
@@ -92,16 +91,16 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
         Collection<Object> notShownResourceRows = new LinkedHashSet<>();
-        Collection<List<Object>> enableResourceRows = buildEnableResourceRows(schemaName, metaData, notShownResourceRows);
+        Collection<List<Object>> enableResourceRows = buildEnableResourceRows(metaData, notShownResourceRows);
         Collection<List<Object>> disabledResourceRows = buildDisableResourceRows(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null), notShownResourceRows);
         return new MultipleLocalDataMergedResult(mergeRows(enableResourceRows, disabledResourceRows, notShownResourceRows));
     }
     
-    private Collection<List<Object>> buildEnableResourceRows(final String schemaName, final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
+    private Collection<List<Object>> buildEnableResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
         LinkedList<String> configuredResourceRows = getConfiguredResourceRows(metaData);
         Collection<String> autoAwareResourceRows = getAutoAwareResourceRows(metaData, notShownResourceRows);
         return Stream.of(configuredResourceRows, autoAwareResourceRows).flatMap(Collection::stream).distinct()
-                .map(each -> buildRow(schemaName, each, ENABLE)).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> buildRow(each, ENABLE)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private LinkedList<String> getConfiguredResourceRows(final ShardingSphereMetaData metaData) {
@@ -113,14 +112,14 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
         Map<String, Map<String, String>> autoAwareResourceData = getAutoAwareResourceData(metaData);
-        return autoAwareResourceData.entrySet().stream().peek(entry -> notShownResourceRows.add(entry.getValue().get(ReadwriteSplittingRuleConstants.PRIMARY_DATA_SOURCE_NAME)))
-                .map(entry -> entry.getValue().get(ReadwriteSplittingRuleConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
+        return autoAwareResourceData.entrySet().stream().peek(entry -> notShownResourceRows.add(entry.getValue().get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME)))
+                .map(entry -> entry.getValue().get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
                 .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private Map<String, Map<String, String>> getAutoAwareResourceData(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
-                .map(each -> ((ExportableRule) each).export().get(ReadwriteSplittingRuleConstants.AUTO_AWARE_DATA_SOURCE_KEY))
+                .map(each -> ((ExportableRule) each).export().get(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY))
                 .filter(Objects::nonNull).map(each -> (Map<String, Map<String, String>>) each)
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
@@ -133,7 +132,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         List<String> instanceIds = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
         if (!instanceIds.isEmpty()) {
             return instanceIds.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
-                    .map(each -> buildRow(schemaName, each, DISABLE)).collect(Collectors.toCollection(LinkedList::new));
+                    .map(each -> buildRow(each, DISABLE)).collect(Collectors.toCollection(LinkedList::new));
         }
         return result;
     }
@@ -154,11 +153,11 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     
-    private List<Object> buildRow(final String schemaName, final String resource, final String status) {
-        return Arrays.asList(schemaName, resource, status);
+    private List<Object> buildRow(final String resource, final String status) {
+        return Arrays.asList(resource, status);
     }
     
     private Object getResourceName(final List<Object> row) {
-        return row.get(1);
+        return row.get(0);
     }
 }

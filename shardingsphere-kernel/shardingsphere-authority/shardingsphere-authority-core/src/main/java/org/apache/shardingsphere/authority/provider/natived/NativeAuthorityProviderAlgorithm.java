@@ -41,13 +41,13 @@ public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideA
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users));
+    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
     }
     
     @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users));
+    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
     }
     
     @Override

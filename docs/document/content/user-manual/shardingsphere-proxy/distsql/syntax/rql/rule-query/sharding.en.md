@@ -12,6 +12,10 @@ SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
 
 SHOW SHARDING ALGORITHMS [FROM schemaName]
 
+SHOW DEFAULT SHARDING STRATEGY 
+
+SHOW SHARDING TABLE NODES;
+
 tableRule:
     RULE tableName
 ```
@@ -45,8 +49,8 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | database_sharding_algorithm_props | Database sharding algorithm parameter                     |
 | table_strategy_type               | Table sharding strategy type                              |
 | table_sharding_column             | Table sharding column                                     |
-| table_sharding_algorithm_type     | Database sharding algorithm type                          |
-| table_sharding_algorithm_props    | Database sharding algorithm parameter                     |
+| table_sharding_algorithm_type     | Table sharding algorithm type                             |
+| table_sharding_algorithm_props    | Table sharding algorithm parameter                         |
 | key_generate_column               | Distributed primary key generation column                 |
 | key_generator_type                | Distributed primary key generation type                   |
 | key_generator_props               | Distributed primary key generation parameter              |
@@ -58,6 +62,25 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | name   | Sharding algorithm name       |
 | type   | Sharding algorithm type       |
 | props  | Sharding algorithm parameters |
+
+
+### Default Sharding Strategy
+
+| Column                    | Description                    |
+| --------------------------| -------------------------------|
+| name                      | Strategy name                  |
+| type                      | Sharding strategy type         |
+| sharding_column           | Sharding column                |
+| sharding_algorithm_name   | Sharding algorithm name        |
+| sharding_algorithm_type   | Sharding algorithm type        |
+| sharding_algorithm_props  | Sharding algorithm properties  |
+
+### Sharding Table Nodes
+
+| Column | Description          |
+| -------| ---------------------|
+| name   | Sharding rule name   |
+| nodes  | Sharding nodes        |
 
 ### Sharding Binding Table Rule
 
@@ -109,6 +132,31 @@ mysql> show sharding algorithms;
 | t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
 +-------------------------+--------+-----------------------------------------------------+
 2 row in set (0.01 sec)
+```
+
+*SHOW DEFAULT SHARDING STRATEGY*
+```sql
+mysql> SHOW DEFAULT SHARDING STRATEGY ;
+
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+| name     | type    | sharding_column    | sharding_algorithm_name | sharding_algorithm_type | sharding_algorithm_props                 |
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+| TABLE    | NONE    |                    |                         |                         |                                          |
+| DATABASE | STANDARD| order_id           | database_inline         | INLINE                  | {algorithm-expression=ds_${user_id % 2}} |
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+2 rows in set (0.07 sec)
+```
+
+*SHOW SHARDING TABLE NODES*
+
+```sql
+mysql> show sharding table nodes;
++---------+----------------------------------------------------------------+
+| name    | nodes                                                          |
++---------+----------------------------------------------------------------+
+| t_order | ds_0.t_order_0, ds_1.t_order_1, ds_0.t_order_2, ds_1.t_order_3 |
++---------+----------------------------------------------------------------+
+1 row in set (0.02 sec)
 ```
 
 ### Sharding Binding Table Rule

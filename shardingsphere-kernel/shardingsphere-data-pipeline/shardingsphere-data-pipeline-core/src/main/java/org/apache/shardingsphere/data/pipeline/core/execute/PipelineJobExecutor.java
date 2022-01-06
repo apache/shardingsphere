@@ -60,7 +60,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
                 log.info("remove and stop {}", jobConfigPOJO.getJobName());
                 EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
-                RuleAlteredJobSchedulerCenter.stop(Long.parseLong(jobConfigPOJO.getJobName()));
+                RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
                 return;
             }
             switch (event.getType()) {

@@ -118,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -411,8 +412,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitPartitionName(final PartitionNameContext ctx) {
-        PartitionSegment result = new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-        return result;
+        return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override
@@ -490,8 +490,8 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.cloneInstance()) {
             CloneInstanceContext cloneInstance = ctx.cloneInstance();
             CloneInstanceSegment cloneInstanceSegment = new CloneInstanceSegment(cloneInstance.start.getStartIndex(), cloneInstance.stop.getStopIndex());
-            cloneInstanceSegment.setUserName(((StringLiteralValue) visitUserName(cloneInstance.userName())).getValue());
-            cloneInstanceSegment.setHostName(((StringLiteralValue) visit(cloneInstance.hostName())).getValue());
+            cloneInstanceSegment.setUsername(((StringLiteralValue) visitUsername(cloneInstance.username())).getValue());
+            cloneInstanceSegment.setHostname(((StringLiteralValue) visit(cloneInstance.hostname())).getValue());
             cloneInstanceSegment.setPort(new NumberLiteralValue(cloneInstance.port().NUMBER_().getText()).getValue().intValue());
             cloneInstanceSegment.setPassword(((StringLiteralValue) visit(ctx.string_())).getValue());
             if (null != ctx.SSL() && null == ctx.NO()) {
@@ -525,6 +525,11 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         MySQLExplainStatement result = new MySQLExplainStatement();
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            if (null != ctx.columnRef()) {
+                result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
+            } else if (null != ctx.textString()) {
+                result.setColumnWild((ColumnSegment) visit(ctx.textString()));
+            }
         } else if (null != ctx.explainableStatement()) {
             result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
         } else if (null != ctx.select()) {
@@ -804,7 +809,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
         MySQLShowCreateUserStatement result = new MySQLShowCreateUserStatement();
-        result.setName(((IdentifierValue) visit(ctx.userName())).getValue());
+        result.setName(((IdentifierValue) visit(ctx.username())).getValue());
         return result;
     }
     

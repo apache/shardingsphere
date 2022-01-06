@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
@@ -39,7 +39,7 @@ public final class ImporterFactory {
      * @param dataSourceManager data source factory
      * @return importer
      */
-    public static Importer newInstance(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public static Importer newInstance(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         return newInstance(importerConfig.getDataSourceConfig().getDatabaseType().getName(), importerConfig, dataSourceManager);
     }
     
@@ -52,8 +52,8 @@ public final class ImporterFactory {
      * @return importer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, DataSourceManager.class).newInstance(importerConfig, dataSourceManager);
+        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class).newInstance(importerConfig, dataSourceManager);
     }
 }

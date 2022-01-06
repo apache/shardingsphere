@@ -19,17 +19,18 @@ package org.apache.shardingsphere.infra.context.refresher;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -45,11 +46,15 @@ public final class MetaDataRefreshEngine {
     
     private final FederationSchemaMetaData federationMetaData;
     
+    private final Map<String, OptimizerPlannerContext> optimizerPlanners;
+    
     private final ConfigurationProperties props;
     
-    public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData, final ConfigurationProperties props) {
+    public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData,
+                                 final Map<String, OptimizerPlannerContext> optimizerPlanners, final ConfigurationProperties props) {
         this.schemaMetaData = schemaMetaData;
         this.federationMetaData = federationMetaData;
+        this.optimizerPlanners = optimizerPlanners;
         this.props = props;
     }
     
@@ -63,8 +68,7 @@ public final class MetaDataRefreshEngine {
     public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatement.getClass().getSuperclass().getCanonicalName(), null);
         if (schemaRefresher.isPresent()) {
-            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, logicDataSourceNames, sqlStatement, props);
-            ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getSchema()));
+            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
         }
         Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
         if (sqlStatementEventMapper.isPresent()) {

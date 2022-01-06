@@ -190,3 +190,7 @@ EXISTS
 GENERATORS
     : G E N E R A T O R S
     ;
+
+GENERATED_KEY_ALGORITHM
+    : G E N E R A T E D UL_ K E Y UL_ A L G O R I T H M
+    ;

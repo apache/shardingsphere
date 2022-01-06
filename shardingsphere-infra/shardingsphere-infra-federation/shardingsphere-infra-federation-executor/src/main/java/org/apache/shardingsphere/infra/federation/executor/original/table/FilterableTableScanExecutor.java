@@ -105,24 +105,18 @@ public final class FilterableTableScanExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    private final ConfigurationProperties props;
-    
     private final OptimizerContext optimizerContext;
     
-    private final String schemaName;
+    private final FilterableTableScanExecutorContext executorContext;
     
-    private final List<Object> parameters;
-    
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutor jdbcExecutor, 
-                                       final JDBCExecutorCallback<? extends ExecuteResult> callback, final ConfigurationProperties props, 
-                                       final OptimizerContext optimizerContext, final String schemaName, final List<Object> parameters) {
+    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                       final OptimizerContext optimizerContext, final FilterableTableScanExecutorContext executorContext) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
         this.prepareEngine = prepareEngine;
-        this.props = props;
         this.optimizerContext = optimizerContext;
-        this.schemaName = schemaName;
-        this.parameters = parameters;
+        this.executorContext = executorContext;
     }
     
     /**
@@ -133,12 +127,14 @@ public final class FilterableTableScanExecutor {
      * @return query results
      */
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sqlString.getSql(), false);
-        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
-        ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
+        LogicSQL logicSQL = createLogicSQL(executorContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
+        ShardingSphereMetaData metaData = executorContext.getMetaDataMap().get(schemaName);
+        ConfigurationProperties props = executorContext.getProps();
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
@@ -187,12 +183,13 @@ public final class FilterableTableScanExecutor {
         }
         List<Object> result = new ArrayList<>();
         for (Integer each : parameterIndices) {
-            result.add(parameters.get(each));
+            result.add(executorContext.getParameters().get(each));
         }
         return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        String schemaName = executorContext.getSchemaName();
         RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getConverter().getCluster();
         RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(schemaName).getValidator().getCatalogReader();
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());

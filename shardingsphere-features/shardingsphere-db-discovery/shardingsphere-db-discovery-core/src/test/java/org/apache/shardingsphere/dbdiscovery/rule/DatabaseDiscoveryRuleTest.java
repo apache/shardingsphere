@@ -42,7 +42,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", mock(DataSource.class));
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertNewWithEmptyDataSourceRule() {
         new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
@@ -60,7 +60,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
-        assertThat(actual.getName(), is("test_pr"));
+        assertThat(actual.getGroupName(), is("test_pr"));
         assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
@@ -102,7 +102,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private DatabaseDiscoveryRule createRule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "TEST");
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "TEST");
         return new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));

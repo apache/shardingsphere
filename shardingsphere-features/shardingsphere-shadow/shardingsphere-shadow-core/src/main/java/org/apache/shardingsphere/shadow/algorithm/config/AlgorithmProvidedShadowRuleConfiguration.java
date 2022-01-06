@@ -35,8 +35,6 @@ import java.util.Map;
 @Setter
 public final class AlgorithmProvidedShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
     
-    private boolean enable;
-    
     private String defaultShadowAlgorithmName;
     
     private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
