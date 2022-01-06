@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
@@ -46,6 +47,12 @@ public final class InstanceId {
         this.port = port;
         ip = IpUtils.getIp();
         id = String.join(DELIMITER, ip, String.valueOf(port));
+    }
+    
+    public InstanceId(final String id) {
+        this.id = id;
+        ip = Splitter.on("@").splitToList(id).get(0);
+        port = Integer.valueOf(Splitter.on("@").splitToList(id).get(1));
     }
     
     public InstanceId() {

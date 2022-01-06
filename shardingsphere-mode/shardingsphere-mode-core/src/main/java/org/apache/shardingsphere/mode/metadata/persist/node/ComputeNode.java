@@ -61,7 +61,7 @@ public final class ComputeNode {
     }
     
     /**
-     * Get online compute node instance label path.
+     * Get compute node instance label path.
      *
      * @param instanceId instance id
      * @return path of compute node instance label

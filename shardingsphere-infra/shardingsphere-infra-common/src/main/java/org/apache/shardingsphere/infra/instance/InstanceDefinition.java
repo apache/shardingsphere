@@ -40,4 +40,9 @@ public final class InstanceDefinition {
         this.instanceType = instanceType;
         instanceId = new InstanceId(port);
     }
+    
+    public InstanceDefinition(final InstanceType instanceType, final String id) {
+        this.instanceType = instanceType;
+        instanceId = new InstanceId(id);
+    }
 }
