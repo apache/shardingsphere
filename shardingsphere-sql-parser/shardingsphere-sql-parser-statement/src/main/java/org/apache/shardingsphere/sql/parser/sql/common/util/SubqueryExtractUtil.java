@@ -130,7 +130,7 @@ public final class SubqueryExtractUtil {
         }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
             SubquerySegment subquery = ((ExistsSubqueryExpression) expressionSegment).getSubquery();
-            subquery.setSubqueryType(SubqueryType.PROJECTION_SUBQUERY);
+            subquery.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
             result.add(subquery);
             result.addAll(getSubquerySegments(subquery.getSelect()));
         }

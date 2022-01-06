@@ -48,7 +48,7 @@ public abstract class UnsupportedSQLParserParameterizedTest {
     
     @Test(expected = Exception.class)
     public final void assertUnsupportedSQL() {
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList());
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList(), databaseType);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
         ParseContext parseContext = new SQLParserEngine(databaseType, cacheOption, true).parse(sql, false);

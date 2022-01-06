@@ -19,13 +19,16 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +39,8 @@ import java.util.Optional;
 public final class TrafficEngine {
     
     private final TrafficRule trafficRule;
+    
+    private final MetaDataContexts metaDataContexts;
     
     /**
      * Dispatch.
@@ -50,13 +55,20 @@ public final class TrafficEngine {
             return result;
         }
         List<String> dataSourceNames = getDataSourceNamesByLabels(strategyRule.get().getLabels());
-        TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-        result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
+        if (!dataSourceNames.isEmpty()) {
+            TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
+            result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
+        }
         return result;
     }
     
     private List<String> getDataSourceNamesByLabels(final Collection<String> labels) {
-        // TODO implements this logic when provide mode api to get dataSource configs by labels
-        return Collections.emptyList();
+        List<String> result = new ArrayList<>();
+        if (metaDataContexts.getMetaDataPersistService().isPresent()) {
+            for (ComputeNodeInstance each : metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels)) {
+                result.add(each.getIp() + "@" + each.getPort());
+            }
+        }
+        return result;
     }
 }

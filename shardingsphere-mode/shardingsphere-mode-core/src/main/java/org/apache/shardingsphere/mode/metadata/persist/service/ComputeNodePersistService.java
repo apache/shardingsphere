@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -59,12 +60,13 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load all compute node instances.
+     * Load all compute node instances by instance type.
      * 
+     * @param instanceType instance type     
      * @return collection of compute node instance
      */
-    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath());
+    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
         List<ComputeNodeInstance> result = new ArrayList<>(onlineComputeNodes.size());
         onlineComputeNodes.forEach(each -> {
             ComputeNodeInstance instance = new ComputeNodeInstance();

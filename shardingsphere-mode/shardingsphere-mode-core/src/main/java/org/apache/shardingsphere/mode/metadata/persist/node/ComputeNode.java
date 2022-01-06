@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
+import org.apache.shardingsphere.infra.instance.InstanceType;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Compute node.
  */
@@ -37,20 +42,22 @@ public final class ComputeNode {
     /**
      * Get online compute node path.
      * 
+     * @param instanceType instance type
      * @return path of online compute node
      */
-    public static String getOnlineNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE);
+    public static String getOnlineNodePath(final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase());
     }
     
     /**
      * Get online compute node instance path.
      *
      * @param instanceId instance id
+     * @param instanceType instance type
      * @return path of online compute node instance
      */
-    public static String getOnlineInstanceNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceId);
+    public static String getOnlineInstanceNodePath(final String instanceId, final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase(), instanceId);
     }
     
     /**
@@ -61,5 +68,36 @@ public final class ComputeNode {
      */
     public static String getInstanceLabelNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABEL_NODE);
+    }
+    
+    /**
+     * Get attributes node path.
+     * 
+     * @return attributes node path
+     */
+    public static String getAttributesNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE);
+    }
+    
+    /**
+     * Get instance id by status path.
+     * 
+     * @param statusPath status path
+     * @return instance id
+     */
+    public static String getInstanceIdByStatus(final String statusPath) {
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)/status$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(statusPath);
+        return matcher.find() ? matcher.group(1) : "";
+    }
+    
+    /**
+     * Get instance status node path.
+     * 
+     * @param instanceId instance id
+     * @return instance status node path
+     */
+    public static String getInstanceStatusNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, STATUS_NODE);
     }
 }
