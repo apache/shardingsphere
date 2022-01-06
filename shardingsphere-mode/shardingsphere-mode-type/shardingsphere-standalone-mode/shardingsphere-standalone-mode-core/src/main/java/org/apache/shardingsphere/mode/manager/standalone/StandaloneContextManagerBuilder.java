@@ -134,8 +134,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             return Collections.emptyMap();
         }
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(loadedDataSourceConfigurations.size(), 1);
-        Map<String, DataSource> dataSources = new LinkedHashMap<>();
         for (Entry<String, Map<String, DataSourceConfiguration>> each : loadedDataSourceConfigurations.entrySet()) {
+            Map<String, DataSource> dataSources = new LinkedHashMap<>();
             Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadedDataSourceConfigurations.get(each.getKey());
             for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
                 Map<String, DataSource> dataSourceMap = dataSourcesMap.get(each.getKey());
@@ -152,10 +152,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private void closeLocalDataSources(final Map<String, Map<String, DataSource>> dataSourceMap) {
-        dataSourceMap.forEach((key, value) -> dataSourceMap.get(key).forEach((key1, value1) -> closeDataSources(value1)));
+        for (Entry<String, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
+            entry.getValue().values().forEach(this::closeDataSource);
+        }
     }
     
-    private void closeDataSources(final DataSource dataSource) {
+    private void closeDataSource(final DataSource dataSource) {
         try {
             dataSource.getConnection().close();
             // CHECKSTYLE:OFF
