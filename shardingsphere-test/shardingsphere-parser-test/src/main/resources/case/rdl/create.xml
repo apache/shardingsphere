@@ -425,7 +425,7 @@
     </create-default-sharding-strategy>
 
     <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy-complex">
-        <strategy default-type="table" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
     

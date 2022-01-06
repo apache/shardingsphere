@@ -302,12 +302,12 @@
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
-        <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </alter-default-sharding-strategy>
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy-complex">
-        <strategy default-type="table" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </alter-default-sharding-strategy>
 </sql-parser-test-cases>

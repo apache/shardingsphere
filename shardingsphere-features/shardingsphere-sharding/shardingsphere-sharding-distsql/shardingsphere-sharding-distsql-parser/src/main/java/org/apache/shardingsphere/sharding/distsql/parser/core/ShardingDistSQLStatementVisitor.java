@@ -245,8 +245,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null != shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm()) {
             algorithmSegment = (AlgorithmSegment) visitAlgorithmDefinition(shardingStrategyContext.shardingAlgorithm().autoCreativeAlgorithm().algorithmDefinition());
         }
-        String defaultType = new IdentifierValue(ctx.type.getText()).getValue().toLowerCase();
-        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType()).toLowerCase();
+        String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
+        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());
         String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         return new AlterDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, shardingAlgorithmName, algorithmSegment);
     }
