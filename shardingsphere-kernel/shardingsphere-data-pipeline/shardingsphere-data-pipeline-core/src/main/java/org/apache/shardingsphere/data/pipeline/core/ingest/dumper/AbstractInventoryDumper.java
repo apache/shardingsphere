@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
@@ -108,7 +109,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             channel.close();
             throw new IngestException(ex);
         } finally {
-            pushRecord(new FinishedRecord(new PlaceholderPosition()));
+            pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
     
