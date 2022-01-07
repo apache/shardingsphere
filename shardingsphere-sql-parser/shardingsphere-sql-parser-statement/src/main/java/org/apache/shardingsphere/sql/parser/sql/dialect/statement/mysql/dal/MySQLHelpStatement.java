@@ -15,40 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Properties;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Data source parameters for YAML.
+ * MySQL help statement.
  */
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class YamlDataSourceParameter implements YamlConfiguration {
+@ToString
+public final class MySQLHelpStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+    private String searchString;
 }

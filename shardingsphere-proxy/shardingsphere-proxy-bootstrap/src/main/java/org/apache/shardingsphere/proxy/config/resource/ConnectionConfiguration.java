@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.proxy.config.resource;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule configuration for YAML.
+ * Connection configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlProxyRuleConfiguration implements YamlConfiguration {
+public final class ConnectionConfiguration {
     
-    private String schemaName;
+    private final String url;
     
-    private Map<String, YamlResourceConfiguration> dataSources = new HashMap<>();
+    private final String username;
     
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private final String password;
 }

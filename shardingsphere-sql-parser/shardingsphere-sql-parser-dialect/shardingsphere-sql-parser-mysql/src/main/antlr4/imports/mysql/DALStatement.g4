@@ -24,7 +24,7 @@ use
     ;
 
 help
-    : HELP string_
+    : HELP textOrIdentifier
     ;
 
 explain

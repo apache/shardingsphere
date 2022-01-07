@@ -15,39 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Data source parameter.
+ * help statement test case.
  */
 @Getter
-@Setter
-@EqualsAndHashCode
-public final class DataSourceParameter {
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+public final class HelpStatementTestCase extends SQLParserTestCase {
+
+    @XmlAttribute(name = "search-string")
+    private String searchString;
 }
