@@ -120,7 +120,7 @@ public final class TablesContext {
             }
             return result;
         }
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
         Collection<String> columnNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
