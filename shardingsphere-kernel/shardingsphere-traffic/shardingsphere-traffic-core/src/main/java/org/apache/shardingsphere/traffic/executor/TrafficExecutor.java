@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 /**
  * Traffic executor.
  */
-public interface TrafficExecutor extends AutoCloseable {
+public final class TrafficExecutor implements AutoCloseable {
+    
+    private Statement statement;
     
     /**
      * Execute.
@@ -36,7 +43,26 @@ public interface TrafficExecutor extends AutoCloseable {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    <T> T execute(JDBCExecutionUnit executionUnit, TrafficExecutorCallback<T> callback) throws SQLException;
+    public <T> T execute(final JDBCExecutionUnit executionUnit, final TrafficExecutorCallback<T> callback) throws SQLException {
+        SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
+        cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
+        return callback.execute(statement, sqlUnit.getSql());
+    }
+    
+    private void cacheStatement(final List<Object> parameters, final Statement statement) throws SQLException {
+        this.statement = statement;
+        setParameters(statement, parameters);
+    }
+    
+    private void setParameters(final Statement statement, final List<Object> parameters) throws SQLException {
+        if (!(statement instanceof PreparedStatement)) {
+            return;
+        }
+        int index = 1;
+        for (Object each : parameters) {
+            ((PreparedStatement) statement).setObject(index++, each);
+        }
+    }
     
     /**
      * Get result set.
@@ -44,8 +70,16 @@ public interface TrafficExecutor extends AutoCloseable {
      * @return result set
      * @throws SQLException SQL exception
      */
-    ResultSet getResultSet() throws SQLException;
+    public ResultSet getResultSet() throws SQLException {
+        return statement.getResultSet();
+    }
     
     @Override
-    void close() throws SQLException;
+    public void close() throws SQLException {
+        if (null != statement) {
+            Connection connection = statement.getConnection();
+            statement.close();
+            connection.close();
+        }
+    }
 }
