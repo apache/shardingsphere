@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.config.resource;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -62,19 +62,19 @@ public final class ResourceConfigurationConverterTest {
     }
     
     @Test
-    public void assertGetDataSourceParameterMapFromYamlConfiguration() {
-        YamlDataSourceParameter yamlDataSourceParameter0 = new YamlDataSourceParameter();
-        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/ds_0");
-        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProperties());
-        setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter0);
-        YamlDataSourceParameter yamlDataSourceParameter1 = new YamlDataSourceParameter();
-        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/ds_1");
-        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProperties());
-        setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
-        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
-        yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
-        yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
-        Map<String, ResourceConfiguration> actualResourceConfig = ResourceConfigurationConverter.getResourceConfigurationMapFromYamlConfiguration(yamlDataSourceParameterMap);
+    public void assertGetResourceConfigurationMap() {
+        YamlResourceConfiguration yamlResourceConfig0 = new YamlResourceConfiguration();
+        yamlResourceConfig0.setUrl("jdbc:mysql://localhost:3306/ds_0");
+        yamlResourceConfig0.setCustomPoolProps(getCustomPoolProperties());
+        setYamlResourceConfigurationPropertyWithoutUrl(yamlResourceConfig0);
+        YamlResourceConfiguration yamlResourceConfig1 = new YamlResourceConfiguration();
+        yamlResourceConfig1.setUrl("jdbc:mysql://localhost:3306/ds_1");
+        yamlResourceConfig1.setCustomPoolProps(getCustomPoolProperties());
+        setYamlResourceConfigurationPropertyWithoutUrl(yamlResourceConfig1);
+        Map<String, YamlResourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
+        yamlResourceConfigs.put("ds_0", yamlResourceConfig0);
+        yamlResourceConfigs.put("ds_1", yamlResourceConfig1);
+        Map<String, ResourceConfiguration> actualResourceConfig = ResourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
         assertThat(actualResourceConfig.size(), is(2));
         assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
         assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));
@@ -82,14 +82,14 @@ public final class ResourceConfigurationConverterTest {
         assertResourceConfiguration(actualResourceConfig.get("ds_1"));
     }
     
-    private void setYamlDataSourceParameterPropertyWithoutUrl(final YamlDataSourceParameter yamlDataSourceParameter) {
-        yamlDataSourceParameter.setMaxPoolSize(50);
-        yamlDataSourceParameter.setMinPoolSize(1);
-        yamlDataSourceParameter.setConnectionTimeoutMilliseconds(30 * 1000L);
-        yamlDataSourceParameter.setIdleTimeoutMilliseconds(60 * 1000L);
-        yamlDataSourceParameter.setMaxLifetimeMilliseconds(0L);
-        yamlDataSourceParameter.setUsername("root");
-        yamlDataSourceParameter.setPassword("root");
+    private void setYamlResourceConfigurationPropertyWithoutUrl(final YamlResourceConfiguration yamlResourceConfig) {
+        yamlResourceConfig.setUsername("root");
+        yamlResourceConfig.setPassword("root");
+        yamlResourceConfig.setConnectionTimeoutMilliseconds(30 * 1000L);
+        yamlResourceConfig.setIdleTimeoutMilliseconds(60 * 1000L);
+        yamlResourceConfig.setMaxLifetimeMilliseconds(0L);
+        yamlResourceConfig.setMaxPoolSize(50);
+        yamlResourceConfig.setMinPoolSize(1);
     }
     
     private void assertResourceConfiguration(final ResourceConfiguration resourceConfig) {

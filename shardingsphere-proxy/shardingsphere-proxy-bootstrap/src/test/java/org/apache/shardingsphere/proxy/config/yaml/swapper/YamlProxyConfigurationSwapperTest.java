@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -105,7 +105,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
     }
-
+    
     private Collection<ShardingSphereUser> getUsersFromAuthorityRule(final Collection<RuleConfiguration> globalRuleConfigs) {
         for (RuleConfiguration ruleConfig : globalRuleConfigs) {
             if (ruleConfig instanceof AuthorityRuleConfiguration) {
@@ -126,7 +126,7 @@ public final class YamlProxyConfigurationSwapperTest {
         mockRules(yamlProxyRuleConfig);
         return result;
     }
-
+    
     private void mockProps(final YamlProxyServerConfiguration yamlProxyServerConfig) {
         Properties props = new Properties();
         props.setProperty("key4", "value4");
@@ -142,19 +142,19 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void mockDataSources(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
-        YamlDataSourceParameter yamlDataSourceParameter = new YamlDataSourceParameter();
-        yamlDataSourceParameter.setUrl("url1");
-        yamlDataSourceParameter.setUsername("username1");
-        yamlDataSourceParameter.setPassword("password1");
-        yamlDataSourceParameter.setConnectionTimeoutMilliseconds(1L);
-        yamlDataSourceParameter.setIdleTimeoutMilliseconds(2L);
-        yamlDataSourceParameter.setMaxLifetimeMilliseconds(3L);
-        yamlDataSourceParameter.setMaxPoolSize(4);
-        yamlDataSourceParameter.setMinPoolSize(5);
-        yamlDataSourceParameter.setReadOnly(true);
-        Map<String, YamlDataSourceParameter> dataSources = new HashMap<>(1, 1);
-        dataSources.put("ds1", yamlDataSourceParameter);
-        when(yamlProxyRuleConfig.getDataSources()).thenReturn(dataSources);
+        YamlResourceConfiguration yamlResourceConfig = new YamlResourceConfiguration();
+        yamlResourceConfig.setUrl("url1");
+        yamlResourceConfig.setUsername("username1");
+        yamlResourceConfig.setPassword("password1");
+        yamlResourceConfig.setConnectionTimeoutMilliseconds(1L);
+        yamlResourceConfig.setIdleTimeoutMilliseconds(2L);
+        yamlResourceConfig.setMaxLifetimeMilliseconds(3L);
+        yamlResourceConfig.setMaxPoolSize(4);
+        yamlResourceConfig.setMinPoolSize(5);
+        yamlResourceConfig.setReadOnly(true);
+        Map<String, YamlResourceConfiguration> yamlResourceMap = new HashMap<>(1, 1);
+        yamlResourceMap.put("ds1", yamlResourceConfig);
+        when(yamlProxyRuleConfig.getDataSources()).thenReturn(yamlResourceMap);
     }
     
     private void mockRules(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
@@ -172,11 +172,11 @@ public final class YamlProxyConfigurationSwapperTest {
         yamlAuthorityRuleConfig.setProvider(provider);
         when(yamlProxyServerConfig.getRules()).thenReturn(Collections.singletonList(yamlAuthorityRuleConfig));
     }
-
+    
     private Collection<String> getUsers() {
         return Collections.singleton("user1@:pass");
     }
-
+    
     private YamlProxyServerConfiguration getYamlProxyServerConfiguration(final YamlProxyConfiguration yamlProxyConfig) {
         YamlProxyServerConfiguration result = mock(YamlProxyServerConfiguration.class);
         when(yamlProxyConfig.getServerConfiguration()).thenReturn(result);

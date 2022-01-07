@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Data source parameters for YAML.
+ * Resource configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlDataSourceParameter implements YamlConfiguration {
+public final class YamlResourceConfiguration implements YamlConfiguration {
     
     private String url;
     

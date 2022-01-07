@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,21 +35,21 @@ import java.util.stream.Collectors;
 public final class ResourceConfigurationConverter {
     
     /**
-     * Get resource configuration map from YAML configuration.
+     * Get resource configuration map.
      *
-     * @param dataSourceParameters yaml data source parameters
-     * @return data source parameter map
+     * @param yamlResourceConfigMap yaml resource configuration map
+     * @return resource configuration map
      */
-    public static Map<String, ResourceConfiguration> getResourceConfigurationMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        return dataSourceParameters.entrySet().stream()
+    public static Map<String, ResourceConfiguration> getResourceConfigurationMap(final Map<String, YamlResourceConfiguration> yamlResourceConfigMap) {
+        return yamlResourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createResourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static ResourceConfiguration createResourceConfiguration(final YamlDataSourceParameter yamlDataSourceParameter) {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlDataSourceParameter.getUrl(), yamlDataSourceParameter.getUsername(), yamlDataSourceParameter.getPassword());
-        PoolConfiguration poolConfig = new PoolConfiguration(yamlDataSourceParameter.getConnectionTimeoutMilliseconds(), yamlDataSourceParameter.getIdleTimeoutMilliseconds(), 
-                yamlDataSourceParameter.getMaxLifetimeMilliseconds(), yamlDataSourceParameter.getMaxPoolSize(), yamlDataSourceParameter.getMinPoolSize(), yamlDataSourceParameter.getReadOnly(), 
-                yamlDataSourceParameter.getCustomPoolProps());
+    private static ResourceConfiguration createResourceConfiguration(final YamlResourceConfiguration yamlConfig) {
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
+        PoolConfiguration poolConfig = new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(), 
+                yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), 
+                yamlConfig.getCustomPoolProps());
         return new ResourceConfiguration(connectionConfig, poolConfig);
     }
     
