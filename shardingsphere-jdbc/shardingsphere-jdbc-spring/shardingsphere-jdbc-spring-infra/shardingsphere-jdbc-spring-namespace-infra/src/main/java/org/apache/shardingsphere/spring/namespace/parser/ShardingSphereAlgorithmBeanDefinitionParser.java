@@ -57,7 +57,6 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
         return factory.getBeanDefinition();
     }
     
-    
     private void filledPropToRuleConfig(final ParserContext parserContext, final Element element) {
         switch (element.getTagName()) {
             case "database-discovery:discovery-type":
@@ -84,11 +83,11 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
     }
     
     @SuppressWarnings("unchecked")
-    private void setPropertyValue(final ParserContext parserContext, final String elementId, final Class<? extends SchemaRuleConfiguration> RuleConfigClass, final String propertyName) {
+    private void setPropertyValue(final ParserContext parserContext, final String elementId, final Class<? extends SchemaRuleConfiguration> ruleConfigClass, final String propertyName) {
         String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
         for (String each : beanDefinitionNames) {
             BeanDefinition beanDefinition = parserContext.getRegistry().getBeanDefinition(each);
-            if (null != beanDefinition.getBeanClassName() && beanDefinition.getBeanClassName().equals(RuleConfigClass.getName())) {
+            if (null != beanDefinition.getBeanClassName() && beanDefinition.getBeanClassName().equals(ruleConfigClass.getName())) {
                 MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
                 PropertyValue propertyValue = propertyValues.getPropertyValue(propertyName);
                 if (null != propertyValue && propertyValue.getValue() instanceof ManagedMap) {
