@@ -19,20 +19,23 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -70,11 +73,11 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
     @Override
     public ResponseHeader execute() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String defaultSchemaName = connectionSession.getDefaultSchemaName();
-        String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(defaultSchemaName).getResource().getDatabaseType());
+        String schemaName = getSchemaName();
+        String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get()).parse(previewStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, defaultSchemaName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, schemaName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
@@ -102,6 +105,17 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
         Collection<Object> result = new LinkedList<>();
         result.add(executionUnit.getDataSourceName());
         result.add(executionUnit.getSqlUnit().getSql());
+        return result;
+    }
+    
+    private String getSchemaName() {
+        String result = StringUtils.isNotBlank(connectionSession.getSchemaName()) ? connectionSession.getSchemaName() : connectionSession.getDefaultSchemaName();
+        if (StringUtils.isBlank(result)) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().getAllSchemaNames().contains(result)) {
+            throw new SchemaNotExistedException(result);
+        }
         return result;
     }
 }
