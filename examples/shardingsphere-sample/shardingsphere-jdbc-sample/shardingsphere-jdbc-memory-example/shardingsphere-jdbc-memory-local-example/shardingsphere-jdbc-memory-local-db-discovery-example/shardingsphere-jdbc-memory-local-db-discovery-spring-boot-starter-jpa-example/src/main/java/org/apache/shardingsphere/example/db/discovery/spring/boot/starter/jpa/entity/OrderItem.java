@@ -42,6 +42,9 @@ public class OrderItem implements Serializable {
     @Column(name = "user_id")
     private int userId;
     
+    @Column(name = "phone")
+    private String phone;
+    
     @Column(name = "status")
     private String status;
     
@@ -69,6 +72,14 @@ public class OrderItem implements Serializable {
         this.userId = userId;
     }
     
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
     public String getStatus() {
         return status;
     }
@@ -79,6 +90,6 @@ public class OrderItem implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_item_id:%s, order_id: %s, user_id: %s, status: %s", orderItemId, orderId, userId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s, phone: %s, status: %s", orderItemId, orderId, userId, phone, status);
     }
 }

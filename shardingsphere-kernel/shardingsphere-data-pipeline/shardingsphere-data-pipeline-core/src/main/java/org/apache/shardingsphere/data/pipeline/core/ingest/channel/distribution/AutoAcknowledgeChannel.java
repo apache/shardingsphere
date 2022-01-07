@@ -39,7 +39,7 @@ public final class AutoAcknowledgeChannel extends AbstractBitSetChannel {
     }
     
     @Override
-    public void ack() {
+    public void ack(final List<Record> records) {
         throw new UnsupportedOperationException("Auto ack channel do not have to ack.");
     }
 }

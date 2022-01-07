@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.traffic.algorithm.loadbalance.RandomTrafficLoadBalanceAlgorithm
+org.apache.shardingsphere.traffic.algorithm.loadbalance.RoundRobinTrafficLoadBalanceAlgorithm

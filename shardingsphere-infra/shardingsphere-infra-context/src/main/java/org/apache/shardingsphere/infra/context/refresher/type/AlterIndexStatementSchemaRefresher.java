@@ -42,6 +42,8 @@ import java.util.Optional;
  */
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
+    private static final String TYPE = AlterIndexStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -69,6 +71,6 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return AlterIndexStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

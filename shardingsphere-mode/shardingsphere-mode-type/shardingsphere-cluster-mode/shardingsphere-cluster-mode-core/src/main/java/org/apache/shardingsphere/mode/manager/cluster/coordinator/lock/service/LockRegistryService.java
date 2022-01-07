@@ -19,10 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -112,7 +111,8 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue, final long timeoutMilliseconds) {
-        Collection<String> onlineInstanceIds = repository.getChildrenKeys(ComputeStatusNode.getStatusPath(ComputeNodeStatus.ONLINE));
+        // TODO will be removed
+        Collection<String> onlineInstanceIds = new ArrayList<>();
         long checkMilliseconds = timeoutMilliseconds;
         while (checkMilliseconds > 0) {
             long start = System.currentTimeMillis();

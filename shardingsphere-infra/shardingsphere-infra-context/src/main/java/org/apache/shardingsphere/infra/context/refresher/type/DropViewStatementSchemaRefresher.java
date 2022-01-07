@@ -37,6 +37,8 @@ import java.util.Map;
  */
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
+    private static final String TYPE = DropViewStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -54,6 +56,6 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     
     @Override
     public String getType() {
-        return DropViewStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

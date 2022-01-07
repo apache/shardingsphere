@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
@@ -49,6 +50,8 @@ public final class RuleAlteredContext {
     }
     
     private static volatile ModeConfiguration modeConfig;
+    
+    private static volatile ContextManager contextManager;
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
@@ -111,5 +114,23 @@ public final class RuleAlteredContext {
      */
     public static void initModeConfig(final ModeConfiguration modeConfig) {
         RuleAlteredContext.modeConfig = modeConfig;
+    }
+    
+    /**
+     * Get context manager.
+     *
+     * @return context manager
+     */
+    public static ContextManager getContextManager() {
+        return contextManager;
+    }
+    
+    /**
+     * Initialize context manager.
+     *
+     * @param contextManager context manager
+     */
+    public static void initContextManager(final ContextManager contextManager) {
+        RuleAlteredContext.contextManager = contextManager;
     }
 }

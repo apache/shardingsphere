@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.BitSet;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
@@ -49,6 +50,6 @@ public final class AutoAcknowledgeChannelTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertAckFailure() {
-        channel.ack();
+        channel.ack(Collections.emptyList());
     }
 }
