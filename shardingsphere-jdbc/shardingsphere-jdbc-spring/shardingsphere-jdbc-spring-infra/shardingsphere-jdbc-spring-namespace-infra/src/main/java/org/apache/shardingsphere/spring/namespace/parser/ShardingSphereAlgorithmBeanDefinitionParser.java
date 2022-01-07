@@ -19,6 +19,11 @@ package org.apache.shardingsphere.spring.namespace.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 import org.apache.shardingsphere.spring.namespace.tag.ShardingSphereAlgorithmBeanDefinitionTag;
 import org.springframework.beans.MutablePropertyValues;
@@ -48,19 +53,47 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         factory.addConstructorArgValue(element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parsePropsElement(element, parserContext));
-        filledDiscoveryTypePropToRuleConfig(parserContext, element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
+        filledPropToRuleConfig(parserContext, element);
         return factory.getBeanDefinition();
     }
     
-    private void filledDiscoveryTypePropToRuleConfig(final ParserContext parserContext, final String elementId) {
+    
+    private void filledPropToRuleConfig(final ParserContext parserContext, final Element element) {
+        switch (element.getTagName()) {
+            case "database-discovery:discovery-type":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class, "discoveryTypes");
+                break;
+            case "encrypt:encrypt-algorithm":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedEncryptRuleConfiguration.class, "encryptors");
+                break;
+            case "readwrite-splitting:load-balance-algorithm":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, "loadBalanceAlgorithms");
+                break;
+            case "shadow:shadow-algorithm":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedShadowRuleConfiguration.class, "shadowAlgorithms");
+                break;
+            case "sharding:sharding-algorithm":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedShardingRuleConfiguration.class, "shardingAlgorithms");
+                break;
+            case "key-generate-algorithm":
+                setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedShardingRuleConfiguration.class, "keyGenerators");
+                break;
+            default:
+                break;
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void setPropertyValue(final ParserContext parserContext, final String elementId, final Class<? extends SchemaRuleConfiguration> RuleConfigClass, final String propertyName) {
         String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
         for (String each : beanDefinitionNames) {
             BeanDefinition beanDefinition = parserContext.getRegistry().getBeanDefinition(each);
-            if (null != beanDefinition.getBeanClassName() && beanDefinition.getBeanClassName().equals(AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class.getName())) {
+            if (null != beanDefinition.getBeanClassName() && beanDefinition.getBeanClassName().equals(RuleConfigClass.getName())) {
                 MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
-                ManagedMap<String, RuntimeBeanReference> managedMap = new ManagedMap<>();
-                managedMap.put(elementId, new RuntimeBeanReference(elementId));
-                propertyValues.setPropertyValueAt(new PropertyValue("discoveryTypes", managedMap), 2);
+                PropertyValue propertyValue = propertyValues.getPropertyValue(propertyName);
+                if (null != propertyValue && propertyValue.getValue() instanceof ManagedMap) {
+                    ((ManagedMap<String, RuntimeBeanReference>) propertyValue.getValue()).put(elementId, new RuntimeBeanReference(elementId));
+                }
             }
         }
     }
