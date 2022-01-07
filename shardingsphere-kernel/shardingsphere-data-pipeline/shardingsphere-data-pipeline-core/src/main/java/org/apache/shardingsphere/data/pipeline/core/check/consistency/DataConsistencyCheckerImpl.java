@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
@@ -166,7 +167,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
-                        inputRateLimitAlgorithm.onQuery();
+                        inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
