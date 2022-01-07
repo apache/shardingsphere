@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryChannel;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
@@ -61,7 +61,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private Dumper dumper;
     
-    private IngestPosition<?> position;
+    private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final ExecuteEngine importerExecuteEngine) {
         this.inventoryDumperConfig = inventoryDumperConfig;
@@ -86,6 +86,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
             
             @Override
             public void onSuccess() {
+                log.info("importer onSuccess");
             }
             
             @Override
@@ -96,6 +97,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         });
         dumper.start();
         waitForResult(future);
+        log.info("importer future done");
         dataSourceManager.close();
     }
     
@@ -104,7 +106,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private void instanceChannel(final Importer importer) {
-        MemoryChannel channel = new MemoryChannel(inventoryDumperConfig.getReadBatchSize(), records -> {
+        MemoryChannel channel = new MemoryChannel(inventoryDumperConfig.getBlockQueueSize(), records -> {
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> position = value.getPosition());
         });

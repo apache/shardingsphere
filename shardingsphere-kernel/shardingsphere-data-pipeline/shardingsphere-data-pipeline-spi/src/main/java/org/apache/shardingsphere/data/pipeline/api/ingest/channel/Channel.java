@@ -45,8 +45,10 @@ public interface Channel {
     
     /**
      * Ack the last batch.
+     *
+     * @param records record list
      */
-    void ack();
+    void ack(List<Record> records);
     
     /**
      * Close channel.

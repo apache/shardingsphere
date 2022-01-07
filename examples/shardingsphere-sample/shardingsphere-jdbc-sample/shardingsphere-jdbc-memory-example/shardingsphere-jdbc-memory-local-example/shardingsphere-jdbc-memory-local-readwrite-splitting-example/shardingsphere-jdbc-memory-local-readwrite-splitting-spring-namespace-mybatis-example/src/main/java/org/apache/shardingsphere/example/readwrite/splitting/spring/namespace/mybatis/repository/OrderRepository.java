@@ -24,16 +24,17 @@ import java.util.List;
 
 @Mapper
 public interface OrderRepository {
-
+    
     void createTableIfNotExists();
-
+    
     void truncateTable();
-
+    
     void dropTable();
-
+    
+    
     void insert(Order order);
-
+    
     void delete(long orderId);
-
+    
     List<Order> selectAll();
 }

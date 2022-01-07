@@ -43,7 +43,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     private static final String TYPE = "type";
     
-    private static final String PROPERTIES = "properties";
+    private static final String PROPS = "props";
     
     private static final String DEFAULT = "is_default";
     
@@ -63,7 +63,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPERTIES, DEFAULT);
+        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPS, DEFAULT);
     }
     
     @Override
