@@ -42,13 +42,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TablesContextTest {
-
+    
     @Test
     public void assertGetTableNames() {
         TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), createTableSegment("table_2", "tbl_2")));
         assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
     }
-
+    
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
@@ -56,7 +56,7 @@ public final class TablesContextTest {
         new TablesContext(Collections.singleton(tableSegment));
         // TODO add assertion
     }
-
+    
     @Test
     public void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
@@ -65,7 +65,7 @@ public final class TablesContextTest {
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
-
+    
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -75,7 +75,7 @@ public final class TablesContextTest {
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
     }
-
+    
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -84,7 +84,7 @@ public final class TablesContextTest {
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
         assertTrue(actual.isEmpty());
     }
-
+    
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumn() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -96,7 +96,7 @@ public final class TablesContextTest {
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
-
+    
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
@@ -110,18 +110,18 @@ public final class TablesContextTest {
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }
-
+    
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;
     }
-
+    
     private ColumnProjection createColumnProjection(final String owner, final String name, final String alias) {
         return new ColumnProjection(owner, name, alias);
     }
-
+    
     @Test
     public void assertGetSchemaNameWithSameSchemaAndSameTable() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -132,7 +132,7 @@ public final class TablesContextTest {
         assertTrue(tablesContext.getSchemaName().isPresent());
         assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
     }
-
+    
     @Test
     public void assertGetSchemaNameWithSameSchemaAndDifferentTable() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -143,7 +143,7 @@ public final class TablesContextTest {
         assertTrue(tablesContext.getSchemaName().isPresent());
         assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertGetSchemaNameWithDifferentSchemaAndSameTable() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -152,7 +152,7 @@ public final class TablesContextTest {
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
         new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).getSchemaName();
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertGetSchemaNameWithDifferentSchemaAndDifferentTable() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
