@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.enums;
 /**
  * Sharding strategy level enum.
  */
-public enum ShardingStrategyLevelEnum {
+public enum ShardingStrategyLevelType {
     
     DATABASE, TABLE
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -60,8 +60,8 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
         if (null == strategyConfiguration) {
             return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
         }
-        ShardingStrategyTypeEnum strategyType = ShardingStrategyTypeEnum.getValueOf(strategyConfiguration);
-        if (strategyType == ShardingStrategyTypeEnum.NONE) {
+        ShardingStrategyType strategyType = ShardingStrategyType.getValueOf(strategyConfiguration);
+        if (strategyType == ShardingStrategyType.NONE) {
             return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
         }
         LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));

@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * Sharding strategy type enum.
  */
-public enum ShardingStrategyTypeEnum {
+public enum ShardingStrategyType {
     
     STANDARD {
         @Override
@@ -124,7 +124,7 @@ public enum ShardingStrategyTypeEnum {
      * @param name name
      * @return sharding strategy type
      */
-    public static ShardingStrategyTypeEnum getValueOf(final String name) {
+    public static ShardingStrategyType getValueOf(final String name) {
         try {
             return valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -138,8 +138,8 @@ public enum ShardingStrategyTypeEnum {
      * @param shardingStrategyConfiguration Implementation class of sharding strategy configuration
      * @return sharding strategy type
      */
-    public static ShardingStrategyTypeEnum getValueOf(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        Optional<ShardingStrategyTypeEnum> type = Arrays.stream(values())
+    public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        Optional<ShardingStrategyType> type = Arrays.stream(values())
                 .filter(each -> shardingStrategyConfiguration.getClass().getCanonicalName().equals(each.getImplementedClass().getCanonicalName())).findFirst();
         type.orElseThrow(() -> new UnsupportedOperationException(String.format("unsupported strategy type %s", shardingStrategyConfiguration.getClass().getName())));
         return type.get();

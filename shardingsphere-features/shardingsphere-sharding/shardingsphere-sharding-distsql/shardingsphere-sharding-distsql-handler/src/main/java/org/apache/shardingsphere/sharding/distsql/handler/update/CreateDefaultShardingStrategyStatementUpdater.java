@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 
 import java.util.Collections;
@@ -55,7 +55,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private void checkAlgorithm(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final CreateDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
-        DistSQLException.predictionThrow(ShardingStrategyTypeEnum.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        DistSQLException.predictionThrow(ShardingStrategyType.contain(sqlStatement.getStrategyType()), new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         DistSQLException.predictionThrow(isAlgorithmDefinitionExists(sqlStatement), new RequiredAlgorithmMissedException());
         if (null == sqlStatement.getShardingAlgorithmName() && null != sqlStatement.getAlgorithmSegment()) {
             return;
@@ -75,7 +75,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
-        ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())
+        ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
                 ? currentRuleConfig.getDefaultTableShardingStrategy() : currentRuleConfig.getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
@@ -112,7 +112,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private void setStrategyConfiguration(final ShardingRuleConfiguration configuration, final String type, final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        if (type.equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())) {
+        if (type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             configuration.setDefaultTableShardingStrategy(shardingStrategyConfiguration);
         } else {
             configuration.setDefaultDatabaseShardingStrategy(shardingStrategyConfiguration);
