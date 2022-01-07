@@ -516,16 +516,16 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     @Test
     public void assertExecuteSelectWithOrderByAndExecuteGetResultSet() throws SQLException {
         Collection<Integer> result = Arrays.asList(1000, 1001, 1100, 1101);
+        int count = 0;
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_WITH_ORDER_BY)) {
-            int count = 0;
             preparedStatement.executeQuery();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     count++;
                 }
             }
-            assertThat(result.size(), is(count));
         }
+        assertThat(count, is(result.size()));
     }
     
     @Test
