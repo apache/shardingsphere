@@ -17,8 +17,8 @@
 
 mode: memory
 transaction: local
-feature: shadow
-framework: spring-namespace-jdbc
+feature: db-discovery
+framework: spring-namespace-mybatis
 
 host: localhost
 port: 3306

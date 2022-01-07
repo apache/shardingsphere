@@ -19,6 +19,8 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -54,18 +56,24 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent()) {
             return result;
         }
-        List<String> dataSourceNames = getDataSourceNamesByLabels(strategyRule.get().getLabels());
-        if (!dataSourceNames.isEmpty()) {
+        List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
+        if (!instanceIds.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-            result.setDataSourceName(loadBalancer.getDataSourceName(dataSourceNames));
+            String instanceId = loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
+            result.getExecutionUnits().add(createExecutionUnit(logicSQL, instanceId));
         }
         return result;
     }
     
-    private List<String> getDataSourceNamesByLabels(final Collection<String> labels) {
+    private ExecutionUnit createExecutionUnit(final LogicSQL logicSQL, final String instanceId) {
+        return new ExecutionUnit(instanceId, new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
+    }
+    
+    private List<String> getInstanceIdsByLabels(final Collection<String> labels) {
         List<String> result = new ArrayList<>();
         if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-            for (ComputeNodeInstance each : metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels)) {
+            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels);
+            for (ComputeNodeInstance each : instances) {
                 result.add(each.getInstanceDefinition().getInstanceId().getId());
             }
         }

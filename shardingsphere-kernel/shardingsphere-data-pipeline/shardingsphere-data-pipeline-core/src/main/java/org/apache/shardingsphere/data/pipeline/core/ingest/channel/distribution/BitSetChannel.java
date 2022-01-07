@@ -47,8 +47,10 @@ public interface BitSetChannel {
     
     /**
      * Ack the last batch.
+     *
+     * @param records record list
      */
-    void ack();
+    void ack(List<Record> records);
     
     /**
      * Get acknowledged BitSet.

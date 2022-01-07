@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
@@ -158,7 +159,9 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             if (!hasSchemas() || !hasResources()) {
                 return new NoResourceShowExecutor(sqlStatement);
             } else {
-                return new UnicastResourceShowExecutor(sqlStatement, sql);
+                // TODO Avoid accessing database here, consider using `org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler`
+                String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+                return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
             }
         }
         return null;
