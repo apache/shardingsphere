@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.DataSourceParameterConverter;
+import org.apache.shardingsphere.proxy.config.resource.ResourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -92,7 +92,7 @@ public final class BootstrapInitializer {
     private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, ResourceConfiguration>> resourceConfigMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(resourceConfigMap.size(), 1);
         for (Entry<String, Map<String, ResourceConfiguration>> entry : resourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
+            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(ResourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
     }

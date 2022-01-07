@@ -36,7 +36,7 @@ public final class ResourceConfigurationConverterTest {
         Map<String, ResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
         resourceConfigMap.put("ds_0", createResourceConfiguration());
         resourceConfigMap.put("ds_1", createResourceConfiguration());
-        Map<String, DataSourceConfiguration> actual = DataSourceParameterConverter.getDataSourceConfigurationMap(resourceConfigMap);
+        Map<String, DataSourceConfiguration> actual = ResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
         assertThat(actual.size(), is(2));
         assertParameter(actual.get("ds_0"));
         assertParameter(actual.get("ds_1"));
@@ -74,7 +74,7 @@ public final class ResourceConfigurationConverterTest {
         Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
         yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
-        Map<String, ResourceConfiguration> actualResourceConfig = DataSourceParameterConverter.getResourceConfigurationMapFromYamlConfiguration(yamlDataSourceParameterMap);
+        Map<String, ResourceConfiguration> actualResourceConfig = ResourceConfigurationConverter.getResourceConfigurationMapFromYamlConfiguration(yamlDataSourceParameterMap);
         assertThat(actualResourceConfig.size(), is(2));
         assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
         assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));

@@ -29,10 +29,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Data source parameter converter.
+ * Resource configuration converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceParameterConverter {
+public final class ResourceConfigurationConverter {
     
     /**
      * Get resource configuration map from YAML configuration.

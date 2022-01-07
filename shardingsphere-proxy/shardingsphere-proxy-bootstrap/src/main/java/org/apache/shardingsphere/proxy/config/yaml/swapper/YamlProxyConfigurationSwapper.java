@@ -22,7 +22,7 @@ import org.apache.shardingsphere.proxy.config.resource.ResourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.DataSourceParameterConverter;
+import org.apache.shardingsphere.proxy.config.resource.ResourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, Map<String, ResourceConfiguration>> getResourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         return yamlRuleConfigurations.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> DataSourceParameterConverter.getResourceConfigurationMapFromYamlConfiguration(entry.getValue().getDataSources()),
+                Collectors.toMap(Entry::getKey, entry -> ResourceConfigurationConverter.getResourceConfigurationMapFromYamlConfiguration(entry.getValue().getDataSources()),
                     (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
