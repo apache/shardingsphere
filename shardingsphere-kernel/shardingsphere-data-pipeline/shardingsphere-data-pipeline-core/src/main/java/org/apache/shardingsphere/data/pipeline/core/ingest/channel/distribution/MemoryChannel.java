@@ -41,12 +41,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * Distribution channel.
  */
 @Slf4j
-public final class DistributionChannel implements Channel {
+public final class MemoryChannel implements Channel {
     
     private final int channelNumber;
     
     private final BitSetChannel[] channels;
     
+    // TODO remove autoAckChannel
     private final BitSetChannel autoAckChannel = new AutoAcknowledgeChannel();
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
@@ -61,7 +62,15 @@ public final class DistributionChannel implements Channel {
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
-    public DistributionChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
+    public MemoryChannel(final AckCallback ackCallback) {
+        this(10000, ackCallback);
+    }
+    
+    public MemoryChannel(final int blockQueueSize, final AckCallback ackCallback) {
+        this(1, blockQueueSize, ackCallback);
+    }
+    
+    public MemoryChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];
@@ -71,6 +80,7 @@ public final class DistributionChannel implements Channel {
         scheduleAckRecords();
     }
     
+    // TODO remove scheduleAckRecords
     private void scheduleAckRecords() {
         scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduleAckRecordsExecutor.scheduleWithFixedDelay(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
@@ -85,7 +95,7 @@ public final class DistributionChannel implements Channel {
         } else if (DataRecord.class.equals(record.getClass())) {
             pushRecord(record, Math.abs(record.hashCode() % channelNumber));
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
-            pushRecord(record, -1);
+            pushRecord(record, 0);
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
@@ -102,8 +112,9 @@ public final class DistributionChannel implements Channel {
     }
     
     @Override
-    public void ack() {
-        findChannel().ack();
+    public void ack(final List<Record> records) {
+        findChannel().ack(records);
+        ackCallback.onAck(records);
     }
     
     private synchronized void ackRecords0() {
@@ -112,7 +123,7 @@ public final class DistributionChannel implements Channel {
             if (0 == count) {
                 return;
             }
-            ackCallback.onAck(fetchAckRecords(count));
+            //ackCallback.onAck(fetchAckRecords(count));
             lastAckIndex += count;
             for (BitSetChannel channel : channels) {
                 channel.clear(lastAckIndex);
@@ -171,6 +182,7 @@ public final class DistributionChannel implements Channel {
     
     @Override
     public void close() {
+        // TODO shutdownNow?
         scheduleAckRecordsExecutor.shutdown();
         ackRecords0();
         for (BitSetChannel each : channels) {

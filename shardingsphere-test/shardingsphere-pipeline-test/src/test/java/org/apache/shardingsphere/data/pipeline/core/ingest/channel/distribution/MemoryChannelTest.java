@@ -33,20 +33,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DistributionChannelTest {
+public final class MemoryChannelTest {
+    
+    private static final int CHANNEL_NUMBER = 2;
     
     @Test
     public void assertAckCallbackResultSortable() {
         Record[] records = mockRecords();
-        AtomicInteger lastId = new AtomicInteger();
         execute(ackRecords -> {
+            AtomicInteger lastId = new AtomicInteger();
             for (Record record : ackRecords) {
                 int currentId = ((IntPosition) record.getPosition()).getId();
                 assertTrue(currentId > lastId.get());
@@ -57,33 +59,33 @@ public final class DistributionChannelTest {
     
     @Test
     public void assertBroadcastFinishedRecord() {
-        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new PlaceholderPosition()));
+        execute(records -> assertThat(records.size(), is(1)), 2, new FinishedRecord(new PlaceholderPosition()));
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void execute(final AckCallback ackCallback, final int count, final Record... records) {
-        CountDownLatch countDownLatch = new CountDownLatch(count);
-        AtomicBoolean acknowledged = new AtomicBoolean();
-        DistributionChannel distributionChannel = new DistributionChannel(2, 10000, ackRecords -> {
-            ackCallback.onAck(ackRecords);
-            acknowledged.set(true);
-        });
-        fetchWithMultiThreading(distributionChannel, countDownLatch);
+    private void execute(final AckCallback ackCallback, final int recordCount, final Record... records) {
+        CountDownLatch countDownLatch = new CountDownLatch(recordCount);
+        MemoryChannel memoryChannel = new MemoryChannel(CHANNEL_NUMBER, 10000, ackCallback);
+        fetchWithMultiThreading(memoryChannel, countDownLatch);
         for (Record record : records) {
-            distributionChannel.pushRecord(record);
+            memoryChannel.pushRecord(record);
         }
-        countDownLatch.await();
-        distributionChannel.close();
-        assertTrue(acknowledged.get());
+        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        assertTrue("await failed", awaitResult);
+        memoryChannel.close();
     }
     
-    private void fetchWithMultiThreading(final DistributionChannel distributionChannel, final CountDownLatch countDownLatch) {
-        for (int i = 0; i < 2; i++) {
+    private void fetchWithMultiThreading(final MemoryChannel memoryChannel, final CountDownLatch countDownLatch) {
+        for (int i = 0; i < CHANNEL_NUMBER; i++) {
             new Thread(() -> {
-                while (true) {
-                    List<Record> records = distributionChannel.fetchRecords(100, 0);
-                    distributionChannel.ack();
+                int maxLoopCount = 10;
+                for (int j = 1; j <= maxLoopCount; j++) {
+                    List<Record> records = memoryChannel.fetchRecords(100, 1);
+                    memoryChannel.ack(records);
                     records.forEach(each -> countDownLatch.countDown());
+                    if (!records.isEmpty() && records.get(records.size() - 1) instanceof FinishedRecord) {
+                        break;
+                    }
                 }
             }).start();
         }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.DistributionChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryChannel;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
@@ -100,7 +100,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private void instanceChannel(final Collection<Importer> importers) {
-        DistributionChannel channel = new DistributionChannel(importers.size(), dumperConfig.getBlockQueueSize(), records -> {
+        MemoryChannel channel = new MemoryChannel(importers.size(), dumperConfig.getBlockQueueSize(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());
@@ -108,6 +108,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             }
         });
         dumper.setChannel(channel);
+        // TODO merge logic into AckCallback after Channel.ack refactoring, and then remove ImporterListener
         ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);
