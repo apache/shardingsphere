@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.proxy.config.datasource.DataSourceParameter;
 
 import java.util.Collection;
 import java.util.Map;

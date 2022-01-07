@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.proxy.config.DataSourceParameter;
+import org.apache.shardingsphere.proxy.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
+import org.apache.shardingsphere.proxy.config.datasource.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 
 import java.util.Collection;
