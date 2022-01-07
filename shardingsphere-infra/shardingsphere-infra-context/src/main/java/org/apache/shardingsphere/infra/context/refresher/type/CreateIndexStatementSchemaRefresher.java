@@ -38,6 +38,8 @@ import java.util.Map;
  */
 public final class CreateIndexStatementSchemaRefresher implements MetaDataRefresher<CreateIndexStatement> {
     
+    private static final String TYPE = CreateIndexStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -54,6 +56,6 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public String getType() {
-        return CreateIndexStatement.class.getCanonicalName();
+        return TYPE;
     }
 }
