@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder.segment.table;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -30,6 +32,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -92,6 +95,20 @@ public final class TablesContextTest {
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
+        SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
+        TableMetaData tableMetaData = new TableMetaData("TABLE_1",
+                Arrays.asList(new ColumnMetaData("COL", 0, false, false, true)),
+                Collections.EMPTY_LIST);
+        ShardingSphereSchema schema = new ShardingSphereSchema(Arrays.asList(tableMetaData).stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
+        ColumnProjection columnProjection = createColumnProjection(null, "COL", null);
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), schema);
+        assertFalse(actual.isEmpty());
+        assertThat(actual.get("col"), is("TABLE_1"));
     }
     
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
