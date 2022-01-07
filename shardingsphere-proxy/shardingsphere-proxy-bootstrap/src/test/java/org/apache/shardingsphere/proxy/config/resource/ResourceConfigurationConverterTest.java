@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.util;
+package org.apache.shardingsphere.proxy.config.resource;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
 
@@ -30,21 +29,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class DataSourceParameterConverterTest {
+public final class ResourceConfigurationConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, DataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
-        dataSourceParameterMap.put("ds_0", crateDataSourceParameter());
-        dataSourceParameterMap.put("ds_1", crateDataSourceParameter());
-        Map<String, DataSourceConfiguration> actual = DataSourceParameterConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
+        Map<String, ResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
+        resourceConfigMap.put("ds_0", createResourceConfiguration());
+        resourceConfigMap.put("ds_1", createResourceConfiguration());
+        Map<String, DataSourceConfiguration> actual = ResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
         assertThat(actual.size(), is(2));
         assertParameter(actual.get("ds_0"));
         assertParameter(actual.get("ds_1"));
     }
     
-    private DataSourceParameter crateDataSourceParameter() {
-        return new DataSourceParameter("jdbc:mysql://localhost:3306/demo_ds", "root", "root", null, null, null, null, null, null, null);
+    private ResourceConfiguration createResourceConfiguration() {
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
+        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
+        return new ResourceConfiguration(connectionConfig, poolConfig);
     }
     
     private void assertParameter(final DataSourceConfiguration actual) {
@@ -63,22 +64,22 @@ public final class DataSourceParameterConverterTest {
     @Test
     public void assertGetDataSourceParameterMapFromYamlConfiguration() {
         YamlDataSourceParameter yamlDataSourceParameter0 = new YamlDataSourceParameter();
-        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/t_order");
-        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProps());
+        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/ds_0");
+        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProperties());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter0);
         YamlDataSourceParameter yamlDataSourceParameter1 = new YamlDataSourceParameter();
-        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
-        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProps());
+        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/ds_1");
+        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProperties());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
         Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
         yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
-        Map<String, DataSourceParameter> actualDataSourceParameters = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
-        assertThat(actualDataSourceParameters.size(), is(2));
-        assertThat(actualDataSourceParameters.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
-        assertThat(actualDataSourceParameters.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
-        assertDataSourceParameter(actualDataSourceParameters.get("ds_0"));
-        assertDataSourceParameter(actualDataSourceParameters.get("ds_1"));
+        Map<String, ResourceConfiguration> actualResourceConfig = ResourceConfigurationConverter.getResourceConfigurationMapFromYamlConfiguration(yamlDataSourceParameterMap);
+        assertThat(actualResourceConfig.size(), is(2));
+        assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
+        assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));
+        assertResourceConfiguration(actualResourceConfig.get("ds_0"));
+        assertResourceConfiguration(actualResourceConfig.get("ds_1"));
     }
     
     private void setYamlDataSourceParameterPropertyWithoutUrl(final YamlDataSourceParameter yamlDataSourceParameter) {
@@ -91,20 +92,20 @@ public final class DataSourceParameterConverterTest {
         yamlDataSourceParameter.setPassword("root");
     }
     
-    private void assertDataSourceParameter(final DataSourceParameter dataSourceParameter) {
-        assertThat(dataSourceParameter.getMaxPoolSize(), is(50));
-        assertThat(dataSourceParameter.getMinPoolSize(), is(1));
-        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
-        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(60 * 1000L));
-        assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(0L));
-        assertThat(dataSourceParameter.getUsername(), is("root"));
-        assertThat(dataSourceParameter.getPassword(), is("root"));
-        assertThat(dataSourceParameter.getCustomPoolProps().size(), is(2));
-        assertThat(dataSourceParameter.getCustomPoolProps().get("maxPoolSize"), is(30));
-        assertThat(dataSourceParameter.getCustomPoolProps().get("idleTimeoutMilliseconds"), is("30000"));
+    private void assertResourceConfiguration(final ResourceConfiguration resourceConfig) {
+        assertThat(resourceConfig.getConnection().getUsername(), is("root"));
+        assertThat(resourceConfig.getConnection().getPassword(), is("root"));
+        assertThat(resourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(30 * 1000L));
+        assertThat(resourceConfig.getPool().getIdleTimeoutMilliseconds(), is(60 * 1000L));
+        assertThat(resourceConfig.getPool().getMaxLifetimeMilliseconds(), is(0L));
+        assertThat(resourceConfig.getPool().getMaxPoolSize(), is(50));
+        assertThat(resourceConfig.getPool().getMinPoolSize(), is(1));
+        assertThat(resourceConfig.getPool().getCustomProperties().size(), is(2));
+        assertThat(resourceConfig.getPool().getCustomProperties().get("maxPoolSize"), is(30));
+        assertThat(resourceConfig.getPool().getCustomProperties().get("idleTimeoutMilliseconds"), is("30000"));
     }
     
-    private Properties getCustomPoolProps() {
+    private Properties getCustomPoolProperties() {
         Properties result = new Properties();
         result.put("maxPoolSize", 30);
         result.put("idleTimeoutMilliseconds", "30000");

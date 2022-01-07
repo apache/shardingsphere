@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.proxy.config.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfiguration;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * Proxy configuration.
+ * Pool configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration {
+public final class PoolConfiguration {
     
-    private final Map<String, Map<String, ResourceConfiguration>> schemaResources;
+    private final Long connectionTimeoutMilliseconds;
     
-    private final Map<String, Collection<RuleConfiguration>> schemaRules;
+    private final Long idleTimeoutMilliseconds;
     
-    private final Collection<RuleConfiguration> globalRules;
+    private final Long maxLifetimeMilliseconds;
     
-    private final Properties props;
+    private final Integer maxPoolSize;
     
-    private final Collection<String> labels;
+    private final Integer minPoolSize;
+    
+    private final Boolean readOnly;
+    
+    private final Properties customProperties;
 }
