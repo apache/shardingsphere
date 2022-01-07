@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.datasource;
+package org.apache.shardingsphere.proxy.config.resource;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
