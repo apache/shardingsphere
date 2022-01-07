@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data source parameter.
+ * Resource configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceParameter {
+public final class ResourceConfiguration {
     
     private final ConnectionConfiguration connection;
     

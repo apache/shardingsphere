@@ -35,48 +35,48 @@ import java.util.stream.Collectors;
 public final class DataSourceParameterConverter {
     
     /**
-     * Get data source parameter map from YAML configuration.
+     * Get resource configuration map from YAML configuration.
      *
      * @param dataSourceParameters yaml data source parameters
      * @return data source parameter map
      */
-    public static Map<String, DataSourceParameter> getDataSourceParameterMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+    public static Map<String, ResourceConfiguration> getResourceConfigurationMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         return dataSourceParameters.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> createResourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
+    private static ResourceConfiguration createResourceConfiguration(final YamlDataSourceParameter yamlDataSourceParameter) {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlDataSourceParameter.getUrl(), yamlDataSourceParameter.getUsername(), yamlDataSourceParameter.getPassword());
         PoolConfiguration poolConfig = new PoolConfiguration(yamlDataSourceParameter.getConnectionTimeoutMilliseconds(), yamlDataSourceParameter.getIdleTimeoutMilliseconds(), 
                 yamlDataSourceParameter.getMaxLifetimeMilliseconds(), yamlDataSourceParameter.getMaxPoolSize(), yamlDataSourceParameter.getMinPoolSize(), yamlDataSourceParameter.getReadOnly(), 
                 yamlDataSourceParameter.getCustomPoolProps());
-        return new DataSourceParameter(connectionConfig, poolConfig);
+        return new ResourceConfiguration(connectionConfig, poolConfig);
     }
     
     /**
      * Get data source configuration map.
      *
-     * @param dataSourceParameterMap data source parameter map
+     * @param resourceConfigMap resource configuration map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        return dataSourceParameterMap.entrySet().stream()
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, ResourceConfiguration> resourceConfigMap) {
+        return resourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+    private static DataSourceConfiguration createDataSourceConfiguration(final ResourceConfiguration resourceConfig) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.getProps().put("jdbcUrl", dataSourceParameter.getConnection().getUrl());
-        result.getProps().put("username", dataSourceParameter.getConnection().getUsername());
-        result.getProps().put("password", dataSourceParameter.getConnection().getPassword());
-        result.getProps().put("connectionTimeout", dataSourceParameter.getPool().getConnectionTimeoutMilliseconds());
-        result.getProps().put("idleTimeout", dataSourceParameter.getPool().getIdleTimeoutMilliseconds());
-        result.getProps().put("maxLifetime", dataSourceParameter.getPool().getMaxLifetimeMilliseconds());
-        result.getProps().put("maximumPoolSize", dataSourceParameter.getPool().getMaxPoolSize());
-        result.getProps().put("minimumIdle", dataSourceParameter.getPool().getMinPoolSize());
-        result.getProps().put("readOnly", dataSourceParameter.getPool().getReadOnly());
-        if (null != dataSourceParameter.getPool().getCustomProperties()) {
-            result.getCustomPoolProps().putAll(dataSourceParameter.getPool().getCustomProperties());
+        result.getProps().put("jdbcUrl", resourceConfig.getConnection().getUrl());
+        result.getProps().put("username", resourceConfig.getConnection().getUsername());
+        result.getProps().put("password", resourceConfig.getConnection().getPassword());
+        result.getProps().put("connectionTimeout", resourceConfig.getPool().getConnectionTimeoutMilliseconds());
+        result.getProps().put("idleTimeout", resourceConfig.getPool().getIdleTimeoutMilliseconds());
+        result.getProps().put("maxLifetime", resourceConfig.getPool().getMaxLifetimeMilliseconds());
+        result.getProps().put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
+        result.getProps().put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
+        result.getProps().put("readOnly", resourceConfig.getPool().getReadOnly());
+        if (null != resourceConfig.getPool().getCustomProperties()) {
+            result.getCustomPoolProps().putAll(resourceConfig.getPool().getCustomProperties());
         }
         return result;
     }

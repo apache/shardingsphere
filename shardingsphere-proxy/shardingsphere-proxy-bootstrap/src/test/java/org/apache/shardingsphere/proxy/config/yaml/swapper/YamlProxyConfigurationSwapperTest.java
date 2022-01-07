@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.proxy.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.proxy.config.datasource.ResourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -64,22 +64,21 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = proxyConfig.getSchemaDataSources();
-        assertNotNull(schemaDataSources);
-        assertThat(schemaDataSources.size(), is(1));
-        assertTrue(schemaDataSources.containsKey("yamlProxyRule1"));
-        Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("yamlProxyRule1");
-        DataSourceParameter dataSourceParameter = dataSourceParameterMap.get("ds1");
-        assertNotNull(dataSourceParameter);
-        assertThat(dataSourceParameter.getConnection().getUrl(), is("url1"));
-        assertThat(dataSourceParameter.getConnection().getUsername(), is("username1"));
-        assertThat(dataSourceParameter.getConnection().getPassword(), is("password1"));
-        assertThat(dataSourceParameter.getPool().getConnectionTimeoutMilliseconds(), is(1L));
-        assertThat(dataSourceParameter.getPool().getIdleTimeoutMilliseconds(), is(2L));
-        assertThat(dataSourceParameter.getPool().getMaxLifetimeMilliseconds(), is(3L));
-        assertThat(dataSourceParameter.getPool().getMaxPoolSize(), is(4));
-        assertThat(dataSourceParameter.getPool().getMinPoolSize(), is(5));
-        assertTrue(dataSourceParameter.getPool().getReadOnly());
+        Map<String, Map<String, ResourceConfiguration>> schemaResourceConfigs = proxyConfig.getSchemaResources();
+        assertNotNull(schemaResourceConfigs);
+        assertThat(schemaResourceConfigs.size(), is(1));
+        assertTrue(schemaResourceConfigs.containsKey("yamlProxyRule1"));
+        ResourceConfiguration resourceConfig = schemaResourceConfigs.get("yamlProxyRule1").get("ds1");
+        assertNotNull(resourceConfig);
+        assertThat(resourceConfig.getConnection().getUrl(), is("url1"));
+        assertThat(resourceConfig.getConnection().getUsername(), is("username1"));
+        assertThat(resourceConfig.getConnection().getPassword(), is("password1"));
+        assertThat(resourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(1L));
+        assertThat(resourceConfig.getPool().getIdleTimeoutMilliseconds(), is(2L));
+        assertThat(resourceConfig.getPool().getMaxLifetimeMilliseconds(), is(3L));
+        assertThat(resourceConfig.getPool().getMaxPoolSize(), is(4));
+        assertThat(resourceConfig.getPool().getMinPoolSize(), is(5));
+        assertTrue(resourceConfig.getPool().getReadOnly());
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
