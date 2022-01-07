@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.rulealtered;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 /**
@@ -26,17 +27,40 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class OnRuleAlteredActionConfiguration {
     
     private final int blockQueueSize;
     
-    private final int workerThread;
+    private final InputConfiguration inputConfig;
     
-    private final int readBatchSize;
-    
-    private final ShardingSphereAlgorithmConfiguration rateLimiter;
+    private final OutputConfiguration outputConfig;
     
     private final ShardingSphereAlgorithmConfiguration completionDetector;
     
     private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    
+    @RequiredArgsConstructor
+    @Getter
+    @ToString
+    public static final class InputConfiguration {
+        
+        private final int workerThread;
+        
+        private final int batchSize;
+        
+        private final ShardingSphereAlgorithmConfiguration rateLimiter;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    @ToString
+    public static final class OutputConfiguration {
+        
+        private final int workerThread;
+        
+        private final int batchSize;
+        
+        private final ShardingSphereAlgorithmConfiguration rateLimiter;
+    }
 }

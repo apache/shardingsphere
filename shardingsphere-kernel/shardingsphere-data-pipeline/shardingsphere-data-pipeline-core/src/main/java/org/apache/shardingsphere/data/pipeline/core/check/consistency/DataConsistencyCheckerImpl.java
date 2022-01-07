@@ -143,7 +143,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
+        JobRateLimitAlgorithm inputRateLimitAlgorithm = jobContext.getRuleAlteredContext().getInputRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
@@ -165,8 +165,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
-                    if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.onQuery();
+                    if (null != inputRateLimitAlgorithm) {
+                        inputRateLimitAlgorithm.onQuery();
                     }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);

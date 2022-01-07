@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
@@ -27,17 +29,36 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSp
  */
 @Getter
 @Setter
+@ToString
 public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
     private int blockQueueSize = 10000;
     
-    private int workerThread = 40;
+    private YamlInputConfiguration inputConfig;
     
-    private int readBatchSize = 1000;
-    
-    private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    private YamlOutputConfiguration outputConfig;
     
     private YamlShardingSphereAlgorithmConfiguration completionDetector;
     
     private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    
+    @Data
+    public static final class YamlInputConfiguration implements YamlConfiguration {
+        
+        private int workerThread = 40;
+        
+        private int batchSize = 1000;
+        
+        private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    }
+    
+    @Data
+    public static final class YamlOutputConfiguration implements YamlConfiguration {
+        
+        private int workerThread = 40;
+        
+        private int batchSize = 1000;
+        
+        private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    }
 }

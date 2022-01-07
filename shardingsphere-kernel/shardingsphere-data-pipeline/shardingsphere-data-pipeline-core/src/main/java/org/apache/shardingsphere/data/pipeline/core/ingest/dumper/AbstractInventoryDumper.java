@@ -58,7 +58,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
-    private final int readBatchSize;
+    private final int batchSize;
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
@@ -74,7 +74,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
-        this.readBatchSize = inventoryDumperConfig.getReadBatchSize();
+        this.batchSize = inventoryDumperConfig.getBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
@@ -126,7 +126,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
-            preparedStatement.setInt(3, readBatchSize);
+            preparedStatement.setInt(3, batchSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
