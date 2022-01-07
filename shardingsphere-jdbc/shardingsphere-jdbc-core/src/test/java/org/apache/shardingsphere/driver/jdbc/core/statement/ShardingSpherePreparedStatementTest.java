@@ -57,6 +57,8 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS = "SELECT item_id, user_id, status FROM t_order_item WHERE  order_id= ? AND user_id = ?";
     
+    private static final String SELECT_WITH_ORDER_BY = "SELECT order_id, user_id, status FROM t_order ORDER BY order_id";
+    
     private static final String SELECT_AUTO_SQL = "SELECT item_id, order_id, status FROM t_order_item_auto WHERE order_id >= ?";
 
     private static final String SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER = "SELECT ?, order_id, status FROM t_order_item_auto";
@@ -504,6 +506,21 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     assertTrue(result.contains(resultSet.getInt(2)));
+                    count++;
+                }
+            }
+            assertThat(result.size(), is(count));
+        }
+    }
+    
+    @Test
+    public void assertExecuteSelectWithOrderByAndExecuteGetResultSet() throws SQLException {
+        Collection<Integer> result = Arrays.asList(1000, 1001, 1100, 1101);
+        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_WITH_ORDER_BY)) {
+            int count = 0;
+            preparedStatement.executeQuery();
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
                     count++;
                 }
             }
