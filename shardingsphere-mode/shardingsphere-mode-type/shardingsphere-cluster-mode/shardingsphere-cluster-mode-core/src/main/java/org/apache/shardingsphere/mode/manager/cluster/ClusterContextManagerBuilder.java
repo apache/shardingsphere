@@ -81,7 +81,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         beforeBuildContextManager(parameter);
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts, null);
+        contextManager.init(metaDataContexts, transactionContexts);
         afterBuildContextManager(parameter);
         return contextManager;
     }
