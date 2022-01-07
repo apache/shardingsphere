@@ -74,7 +74,7 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
             case "sharding:sharding-algorithm":
                 setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedShardingRuleConfiguration.class, "shardingAlgorithms");
                 break;
-            case "key-generate-algorithm":
+            case "sharding:key-generate-algorithm":
                 setPropertyValue(parserContext, element.getAttribute(ID_ATTRIBUTE), AlgorithmProvidedShardingRuleConfiguration.class, "keyGenerators");
                 break;
             default:
