@@ -164,19 +164,6 @@ public final class ShardingRuleTest {
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
     }
-
-    @Test
-    public void assertIsAllBindingTableOnUpperCase() {
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_Logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_logic_table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "sub_Logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
-    }
     
     @Test
     public void assertGetBindingTableRuleForNotConfig() {
