@@ -47,20 +47,9 @@ public final class DataSourceParameterConverter {
     }
     
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
-        DataSourceParameter result = new DataSourceParameter();
-        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
-        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
-        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
-        result.setUsername(yamlDataSourceParameter.getUsername());
-        result.setPassword(yamlDataSourceParameter.getPassword());
-        result.setReadOnly(yamlDataSourceParameter.getReadOnly());
-        result.setUrl(yamlDataSourceParameter.getUrl());
-        if (null != yamlDataSourceParameter.getCustomPoolProps()) {
-            result.setCustomPoolProps(yamlDataSourceParameter.getCustomPoolProps());
-        }
-        return result;
+        return new DataSourceParameter(yamlDataSourceParameter.getUrl(), yamlDataSourceParameter.getUsername(), yamlDataSourceParameter.getPassword(), 
+                yamlDataSourceParameter.getConnectionTimeoutMilliseconds(), yamlDataSourceParameter.getIdleTimeoutMilliseconds(), yamlDataSourceParameter.getMaxLifetimeMilliseconds(),
+                yamlDataSourceParameter.getMaxPoolSize(), yamlDataSourceParameter.getMinPoolSize(), yamlDataSourceParameter.getReadOnly(), yamlDataSourceParameter.getCustomPoolProps());
     }
     
     /**

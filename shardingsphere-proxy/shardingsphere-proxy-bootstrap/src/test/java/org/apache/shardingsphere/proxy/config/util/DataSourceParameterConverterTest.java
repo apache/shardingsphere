@@ -44,11 +44,7 @@ public final class DataSourceParameterConverterTest {
     }
     
     private DataSourceParameter crateDataSourceParameter() {
-        DataSourceParameter result = new DataSourceParameter();
-        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
+        return new DataSourceParameter("jdbc:mysql://localhost:3306/demo_ds", "root", "root", null, null, null, null, null, null, null);
     }
     
     private void assertParameter(final DataSourceConfiguration actual) {

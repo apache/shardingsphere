@@ -17,37 +17,35 @@
 
 package org.apache.shardingsphere.proxy.config;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
 /**
  * Data source parameter.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@EqualsAndHashCode
 public final class DataSourceParameter {
     
-    private String url;
+    private final String url;
     
-    private String username;
+    private final String username;
     
-    private String password;
+    private final String password;
     
-    private Long connectionTimeoutMilliseconds;
+    private final Long connectionTimeoutMilliseconds;
     
-    private Long idleTimeoutMilliseconds;
+    private final Long idleTimeoutMilliseconds;
     
-    private Long maxLifetimeMilliseconds;
+    private final Long maxLifetimeMilliseconds;
     
-    private Integer maxPoolSize;
+    private final Integer maxPoolSize;
     
-    private Integer minPoolSize;
+    private final Integer minPoolSize;
     
-    private Boolean readOnly;
+    private final Boolean readOnly;
     
-    private Properties customPoolProps;
+    private final Properties customPoolProps;
 }
