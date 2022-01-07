@@ -17,61 +17,52 @@
 
 package org.apache.shardingsphere.traffic.executor;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * Traffic executor.
  */
-public interface TrafficExecutor extends AutoCloseable {
+public final class TrafficExecutor implements AutoCloseable {
     
-    /**
-     * Prepare for traffic executor.
-     * 
-     * @param logicSQL logic SQL
-     * @param instanceId instance id
-     * @param type type
-     * @return traffic executor context
-     * @throws SQLException SQL exception
-     */
-    TrafficExecutorContext<Statement> prepare(LogicSQL logicSQL, String instanceId, String type) throws SQLException;
-    
-    /**
-     * Execute query.
-     * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
-     * @param callback traffic executor callback
-     * @return result set
-     * @throws SQLException SQL exception
-     */
-    ResultSet executeQuery(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<ResultSet> callback) throws SQLException;
-    
-    /**
-     * Execute update.
-     * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
-     * @param callback traffic executor callback
-     * @return update count
-     * @throws SQLException SQL exception
-     */
-    int executeUpdate(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<Integer> callback) throws SQLException;
+    private Statement statement;
     
     /**
      * Execute.
      * 
-     * @param logicSQL logic SQL
-     * @param context traffic executor context
+     * @param executionUnit execution unit
      * @param callback traffic executor callback
-     * @return whether execute success or not
+     * @param <T> return type
+     * @return execute result
      * @throws SQLException SQL exception
      */
-    boolean execute(LogicSQL logicSQL, TrafficExecutorContext<Statement> context, TrafficExecutorCallback<Boolean> callback) throws SQLException;
+    public <T> T execute(final JDBCExecutionUnit executionUnit, final TrafficExecutorCallback<T> callback) throws SQLException {
+        SQLUnit sqlUnit = executionUnit.getExecutionUnit().getSqlUnit();
+        cacheStatement(sqlUnit.getParameters(), executionUnit.getStorageResource());
+        return callback.execute(statement, sqlUnit.getSql());
+    }
+    
+    private void cacheStatement(final List<Object> parameters, final Statement statement) throws SQLException {
+        this.statement = statement;
+        setParameters(statement, parameters);
+    }
+    
+    private void setParameters(final Statement statement, final List<Object> parameters) throws SQLException {
+        if (!(statement instanceof PreparedStatement)) {
+            return;
+        }
+        int index = 1;
+        for (Object each : parameters) {
+            ((PreparedStatement) statement).setObject(index++, each);
+        }
+    }
     
     /**
      * Get result set.
@@ -79,8 +70,16 @@ public interface TrafficExecutor extends AutoCloseable {
      * @return result set
      * @throws SQLException SQL exception
      */
-    ResultSet getResultSet() throws SQLException;
+    public ResultSet getResultSet() throws SQLException {
+        return statement.getResultSet();
+    }
     
     @Override
-    void close() throws SQLException;
+    public void close() throws SQLException {
+        if (null != statement) {
+            Connection connection = statement.getConnection();
+            statement.close();
+            connection.close();
+        }
+    }
 }
