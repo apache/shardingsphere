@@ -64,7 +64,7 @@ import java.util.Random;
  */
 public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
@@ -78,7 +78,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     private final Random random = new SecureRandom();
     
     public ConnectionManager(final String schema, final ContextManager contextManager) {
-        dataSourceMap = contextManager.getDataSourceMap(schema);
+        dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
         connectionTransaction = createConnectionTransaction(schema, contextManager);
     }
