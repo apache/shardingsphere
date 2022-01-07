@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.OpenGaussDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
@@ -29,7 +27,7 @@ import java.util.Collections;
 /**
  * Database type of openGauss.
  */
-public final class OpenGaussDatabaseType implements BranchDatabaseType {
+public final class OpenGaussDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {
@@ -49,10 +47,5 @@ public final class OpenGaussDatabaseType implements BranchDatabaseType {
     @Override
     public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OpenGaussDataSourceMetaData(url);
-    }
-    
-    @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
     }
 }
