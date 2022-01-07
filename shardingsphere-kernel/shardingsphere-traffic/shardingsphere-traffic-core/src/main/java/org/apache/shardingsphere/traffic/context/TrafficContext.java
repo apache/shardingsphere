@@ -32,9 +32,16 @@ import java.util.LinkedList;
 @Setter
 public final class TrafficContext {
     
-    private boolean matchTraffic;
-    
+    private RouteContext routeContext = new RouteContext();
+
     private Collection<ExecutionUnit> executionUnits = new LinkedList<>();
     
-    private RouteContext routeContext = new RouteContext();
+    /**
+     * Judge whether statement is match traffic or not.
+     * 
+     * @return whether statement is match traffic or not
+     */
+    public boolean isMatchTraffic() {
+        return executionUnits.size() > 0;
+    }
 }

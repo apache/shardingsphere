@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -109,9 +108,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
                                                            final DataSourceConfiguration dataSourceConfigSample, final String schema) {
         Map<String, Object> props = dataSourceConfigSample.getProps();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
-        if (instance.getUsers().isEmpty()) {
-            throw new ShardingSphereException("Can not get users from meta data.");
-        }
+        Preconditions.checkState(!instance.getUsers().isEmpty(), "Can not get users from meta data.");
         ShardingSphereUser user = instance.getUsers().iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());

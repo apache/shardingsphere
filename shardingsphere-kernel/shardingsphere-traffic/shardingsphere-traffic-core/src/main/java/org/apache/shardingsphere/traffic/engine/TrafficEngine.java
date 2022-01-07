@@ -60,10 +60,13 @@ public final class TrafficEngine {
         if (!instanceIds.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
             String instanceId = loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
-            result.setMatchTraffic(true);
-            result.getExecutionUnits().add(new ExecutionUnit(instanceId, new SQLUnit(logicSQL.getSql(), logicSQL.getParameters())));
+            result.getExecutionUnits().add(createExecutionUnit(logicSQL, instanceId));
         }
         return result;
+    }
+    
+    private ExecutionUnit createExecutionUnit(final LogicSQL logicSQL, final String instanceId) {
+        return new ExecutionUnit(instanceId, new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
     }
     
     private List<String> getInstanceIdsByLabels(final Collection<String> labels) {
