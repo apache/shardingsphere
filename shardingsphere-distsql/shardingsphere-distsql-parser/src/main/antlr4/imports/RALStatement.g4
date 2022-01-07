@@ -63,6 +63,10 @@ refreshTableMetadata
     : REFRESH TABLE METADATA refreshScope?
     ;
 
+showTableMetadata
+    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM schemaName)?
+    ;
+    
 variableName
     : IDENTIFIER
     ;
@@ -127,3 +131,6 @@ concurrencyLevel
     : INT
     ;
 
+schemaName
+    : IDENTIFIER
+    ;
