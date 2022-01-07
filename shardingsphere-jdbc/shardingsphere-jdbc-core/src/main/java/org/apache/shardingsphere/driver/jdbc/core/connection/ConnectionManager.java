@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -65,6 +66,8 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
+    private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
+    
     @Getter
     private final ConnectionTransaction connectionTransaction;
     
@@ -79,6 +82,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     public ConnectionManager(final String schema, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
+        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         connectionTransaction = createConnectionTransaction(schema, contextManager);
     }
     
@@ -231,7 +235,8 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        Collection<String> datasourceNames = cachedConnections.isEmpty() ? dataSourceMap.keySet() : cachedConnections.keySet();
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
+        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
