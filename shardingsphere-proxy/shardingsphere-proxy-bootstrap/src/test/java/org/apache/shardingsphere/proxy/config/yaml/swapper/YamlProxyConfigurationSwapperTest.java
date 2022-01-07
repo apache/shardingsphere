@@ -71,15 +71,15 @@ public final class YamlProxyConfigurationSwapperTest {
         Map<String, DataSourceParameter> dataSourceParameterMap = schemaDataSources.get("yamlProxyRule1");
         DataSourceParameter dataSourceParameter = dataSourceParameterMap.get("ds1");
         assertNotNull(dataSourceParameter);
-        assertThat(dataSourceParameter.getUrl(), is("url1"));
-        assertThat(dataSourceParameter.getUsername(), is("username1"));
-        assertThat(dataSourceParameter.getPassword(), is("password1"));
-        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(1L));
-        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(2L));
-        assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(3L));
-        assertThat(dataSourceParameter.getMaxPoolSize(), is(4));
-        assertThat(dataSourceParameter.getMinPoolSize(), is(5));
-        assertTrue(dataSourceParameter.getReadOnly());
+        assertThat(dataSourceParameter.getConnection().getUrl(), is("url1"));
+        assertThat(dataSourceParameter.getConnection().getUsername(), is("username1"));
+        assertThat(dataSourceParameter.getConnection().getPassword(), is("password1"));
+        assertThat(dataSourceParameter.getPool().getConnectionTimeoutMilliseconds(), is(1L));
+        assertThat(dataSourceParameter.getPool().getIdleTimeoutMilliseconds(), is(2L));
+        assertThat(dataSourceParameter.getPool().getMaxLifetimeMilliseconds(), is(3L));
+        assertThat(dataSourceParameter.getPool().getMaxPoolSize(), is(4));
+        assertThat(dataSourceParameter.getPool().getMinPoolSize(), is(5));
+        assertTrue(dataSourceParameter.getPool().getReadOnly());
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
