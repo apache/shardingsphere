@@ -74,3 +74,5 @@
 #  proxy-backend-executor-suitable: OLAP
 #  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
 #  sql-federation-enabled: false
+#  Available proxy backend driver type: JDBC (default), ExperimentalVertx
+#  proxy-backend-driver-type: JDBC
