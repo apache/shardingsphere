@@ -46,9 +46,11 @@ public final class DataSourceParameterConverter {
     }
     
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
-        return new DataSourceParameter(yamlDataSourceParameter.getUrl(), yamlDataSourceParameter.getUsername(), yamlDataSourceParameter.getPassword(), 
-                yamlDataSourceParameter.getConnectionTimeoutMilliseconds(), yamlDataSourceParameter.getIdleTimeoutMilliseconds(), yamlDataSourceParameter.getMaxLifetimeMilliseconds(),
-                yamlDataSourceParameter.getMaxPoolSize(), yamlDataSourceParameter.getMinPoolSize(), yamlDataSourceParameter.getReadOnly(), yamlDataSourceParameter.getCustomPoolProps());
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlDataSourceParameter.getUrl(), yamlDataSourceParameter.getUsername(), yamlDataSourceParameter.getPassword());
+        PoolConfiguration poolConfig = new PoolConfiguration(yamlDataSourceParameter.getConnectionTimeoutMilliseconds(), yamlDataSourceParameter.getIdleTimeoutMilliseconds(), 
+                yamlDataSourceParameter.getMaxLifetimeMilliseconds(), yamlDataSourceParameter.getMaxPoolSize(), yamlDataSourceParameter.getMinPoolSize(), yamlDataSourceParameter.getReadOnly(), 
+                yamlDataSourceParameter.getCustomPoolProps());
+        return new DataSourceParameter(connectionConfig, poolConfig);
     }
     
     /**
@@ -64,17 +66,17 @@ public final class DataSourceParameterConverter {
     
     private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.getProps().put("jdbcUrl", dataSourceParameter.getUrl());
-        result.getProps().put("username", dataSourceParameter.getUsername());
-        result.getProps().put("password", dataSourceParameter.getPassword());
-        result.getProps().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.getProps().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
-        result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
-        result.getProps().put("maximumPoolSize", dataSourceParameter.getMaxPoolSize());
-        result.getProps().put("minimumIdle", dataSourceParameter.getMinPoolSize());
-        result.getProps().put("readOnly", dataSourceParameter.getReadOnly());
-        if (null != dataSourceParameter.getCustomPoolProps()) {
-            result.getCustomPoolProps().putAll(dataSourceParameter.getCustomPoolProps());
+        result.getProps().put("jdbcUrl", dataSourceParameter.getConnection().getUrl());
+        result.getProps().put("username", dataSourceParameter.getConnection().getUsername());
+        result.getProps().put("password", dataSourceParameter.getConnection().getPassword());
+        result.getProps().put("connectionTimeout", dataSourceParameter.getPool().getConnectionTimeoutMilliseconds());
+        result.getProps().put("idleTimeout", dataSourceParameter.getPool().getIdleTimeoutMilliseconds());
+        result.getProps().put("maxLifetime", dataSourceParameter.getPool().getMaxLifetimeMilliseconds());
+        result.getProps().put("maximumPoolSize", dataSourceParameter.getPool().getMaxPoolSize());
+        result.getProps().put("minimumIdle", dataSourceParameter.getPool().getMinPoolSize());
+        result.getProps().put("readOnly", dataSourceParameter.getPool().getReadOnly());
+        if (null != dataSourceParameter.getPool().getCustomProperties()) {
+            result.getCustomPoolProps().putAll(dataSourceParameter.getPool().getCustomProperties());
         }
         return result;
     }

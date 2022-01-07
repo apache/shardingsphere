@@ -20,14 +20,26 @@ package org.apache.shardingsphere.proxy.config.datasource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Properties;
+
 /**
- * Data source parameter.
+ * Pool configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceParameter {
+public final class PoolConfiguration {
     
-    private final ConnectionConfiguration connection;
+    private final Long connectionTimeoutMilliseconds;
     
-    private final PoolConfiguration pool;
+    private final Long idleTimeoutMilliseconds;
+    
+    private final Long maxLifetimeMilliseconds;
+    
+    private final Integer maxPoolSize;
+    
+    private final Integer minPoolSize;
+    
+    private final Boolean readOnly;
+    
+    private final Properties customProperties;
 }

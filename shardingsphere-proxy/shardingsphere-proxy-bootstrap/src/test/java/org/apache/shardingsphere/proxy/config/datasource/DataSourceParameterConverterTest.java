@@ -43,7 +43,9 @@ public final class DataSourceParameterConverterTest {
     }
     
     private DataSourceParameter crateDataSourceParameter() {
-        return new DataSourceParameter("jdbc:mysql://localhost:3306/demo_ds", "root", "root", null, null, null, null, null, null, null);
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
+        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
+        return new DataSourceParameter(connectionConfig, poolConfig);
     }
     
     private void assertParameter(final DataSourceConfiguration actual) {
@@ -62,20 +64,20 @@ public final class DataSourceParameterConverterTest {
     @Test
     public void assertGetDataSourceParameterMapFromYamlConfiguration() {
         YamlDataSourceParameter yamlDataSourceParameter0 = new YamlDataSourceParameter();
-        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/t_order");
-        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProps());
+        yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/ds_0");
+        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProperties());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter0);
         YamlDataSourceParameter yamlDataSourceParameter1 = new YamlDataSourceParameter();
-        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
-        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProps());
+        yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/ds_1");
+        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProperties());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
         Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
         yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
         Map<String, DataSourceParameter> actualDataSourceParameters = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
         assertThat(actualDataSourceParameters.size(), is(2));
-        assertThat(actualDataSourceParameters.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
-        assertThat(actualDataSourceParameters.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
+        assertThat(actualDataSourceParameters.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
+        assertThat(actualDataSourceParameters.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));
         assertDataSourceParameter(actualDataSourceParameters.get("ds_0"));
         assertDataSourceParameter(actualDataSourceParameters.get("ds_1"));
     }
@@ -91,19 +93,19 @@ public final class DataSourceParameterConverterTest {
     }
     
     private void assertDataSourceParameter(final DataSourceParameter dataSourceParameter) {
-        assertThat(dataSourceParameter.getMaxPoolSize(), is(50));
-        assertThat(dataSourceParameter.getMinPoolSize(), is(1));
-        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
-        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(60 * 1000L));
-        assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(0L));
-        assertThat(dataSourceParameter.getUsername(), is("root"));
-        assertThat(dataSourceParameter.getPassword(), is("root"));
-        assertThat(dataSourceParameter.getCustomPoolProps().size(), is(2));
-        assertThat(dataSourceParameter.getCustomPoolProps().get("maxPoolSize"), is(30));
-        assertThat(dataSourceParameter.getCustomPoolProps().get("idleTimeoutMilliseconds"), is("30000"));
+        assertThat(dataSourceParameter.getConnection().getUsername(), is("root"));
+        assertThat(dataSourceParameter.getConnection().getPassword(), is("root"));
+        assertThat(dataSourceParameter.getPool().getConnectionTimeoutMilliseconds(), is(30 * 1000L));
+        assertThat(dataSourceParameter.getPool().getIdleTimeoutMilliseconds(), is(60 * 1000L));
+        assertThat(dataSourceParameter.getPool().getMaxLifetimeMilliseconds(), is(0L));
+        assertThat(dataSourceParameter.getPool().getMaxPoolSize(), is(50));
+        assertThat(dataSourceParameter.getPool().getMinPoolSize(), is(1));
+        assertThat(dataSourceParameter.getPool().getCustomProperties().size(), is(2));
+        assertThat(dataSourceParameter.getPool().getCustomProperties().get("maxPoolSize"), is(30));
+        assertThat(dataSourceParameter.getPool().getCustomProperties().get("idleTimeoutMilliseconds"), is("30000"));
     }
     
-    private Properties getCustomPoolProps() {
+    private Properties getCustomPoolProperties() {
         Properties result = new Properties();
         result.put("maxPoolSize", 30);
         result.put("idleTimeoutMilliseconds", "30000");

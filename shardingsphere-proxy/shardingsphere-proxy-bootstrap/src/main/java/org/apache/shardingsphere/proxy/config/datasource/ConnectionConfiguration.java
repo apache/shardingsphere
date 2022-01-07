@@ -21,13 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data source parameter.
+ * Connection configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceParameter {
+public final class ConnectionConfiguration {
     
-    private final ConnectionConfiguration connection;
+    private final String url;
     
-    private final PoolConfiguration pool;
+    private final String username;
+    
+    private final String password;
 }
