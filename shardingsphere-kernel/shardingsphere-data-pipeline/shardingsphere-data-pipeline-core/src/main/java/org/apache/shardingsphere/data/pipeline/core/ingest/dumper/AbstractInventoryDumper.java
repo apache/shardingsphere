@@ -105,10 +105,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             }
         } catch (final SQLException ex) {
             stop();
+            // TODO channel.close() when job success too, e.g. InventoryTask/IncrementalTask?
             channel.close();
             throw new IngestException(ex);
         } finally {
-            pushRecord(new FinishedRecord(new PlaceholderPosition()));
+            pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
     
@@ -146,7 +147,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     rowCount++;
                 }
                 log.info("dump, rowCount={}, maxUniqueKeyValue={}", rowCount, maxUniqueKeyValue);
-                pushRecord(new FinishedRecord(new FinishedPosition()));
                 return Optional.ofNullable(maxUniqueKeyValue);
             }
         }

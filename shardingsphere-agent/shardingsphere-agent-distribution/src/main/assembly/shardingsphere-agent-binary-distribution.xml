@@ -39,6 +39,14 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
+
+        <fileSet>
+            <directory>../../</directory>
+            <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+            </includes>
+        </fileSet>
         
         <fileSet>
             <directory>../shardingsphere-agent-plugins/shardingsphere-agent-plugin-logging/target/plugins</directory>

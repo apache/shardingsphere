@@ -75,8 +75,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
-import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
-import org.apache.shardingsphere.traffic.executor.context.TrafficExecutorContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
@@ -180,6 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet executeQuery() throws SQLException {
+        ResultSet result;
         try {
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
@@ -188,10 +187,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceName().isPresent()) {
-                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
-                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
-                return trafficExecutor.executeQuery(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
             // TODO move federation route logic to binder
             executionContext = createExecutionContext(logicSQL);
@@ -200,10 +198,18 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            return new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             clearBatch();
         }
+        currentResultSet = result;
+        return result;
+    }
+    
+    private JDBCExecutionUnit createTrafficExecutionUnit(final TrafficContext trafficContext) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
+        ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), trafficContext.getExecutionUnits());
+        return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(() -> new ShardingSphereException("Can not get traffic execution unit."));
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
@@ -260,10 +266,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceName().isPresent()) {
-                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
-                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
-                return trafficExecutor.executeUpdate(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             }
             executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
@@ -313,10 +318,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = createTrafficContext(logicSQL);
-            if (trafficContext.getDataSourceName().isPresent()) {
-                TrafficExecutor trafficExecutor = executor.getTrafficExecutor();
-                TrafficExecutorContext<Statement> context = trafficExecutor.prepare(logicSQL, trafficContext.getDataSourceName().get(), JDBCDriverType.PREPARED_STATEMENT);
-                return trafficExecutor.execute(logicSQL, context, (statement, sql) -> ((PreparedStatement) statement).execute());
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
             executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
@@ -369,7 +373,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (trafficContext.getDataSourceName().isPresent()) {
+        if (trafficContext.isMatchTraffic()) {
             return executor.getTrafficExecutor().getResultSet();
         }
         if (executionContext.getRouteContext().isFederated()) {

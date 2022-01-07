@@ -48,6 +48,7 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
         queue.put(dataRecord);
     }
     
+    // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeout) {
         List<Record> result = new ArrayList<>(batchSize);
@@ -59,13 +60,14 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
             ThreadUtil.sleep(100L);
         }
         queue.drainTo(result, batchSize);
+        // TODO memory released after job completed?
         getToBeAckRecords().addAll(result);
         fetchedIndex = getManualBitSet().getEndIndex(fetchedIndex, result.size());
         return result;
     }
     
     @Override
-    public void ack() {
+    public void ack(final List<Record> records) {
         setAcknowledgedIndex(fetchedIndex);
     }
     

@@ -38,6 +38,8 @@ import java.util.Map;
  */
 public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
     
+    private static final String TYPE = CreateViewStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -58,6 +60,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return CreateViewStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

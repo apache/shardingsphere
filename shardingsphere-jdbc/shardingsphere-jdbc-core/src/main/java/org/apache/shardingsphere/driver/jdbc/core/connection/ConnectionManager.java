@@ -20,13 +20,25 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceId;
+import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -41,6 +53,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +64,9 @@ import java.util.Random;
  */
 public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+    
+    private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
@@ -65,8 +80,54 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     private final Random random = new SecureRandom();
     
     public ConnectionManager(final String schema, final ContextManager contextManager) {
-        dataSourceMap = contextManager.getDataSourceMap(schema);
+        dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
+        dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
+        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         connectionTransaction = createConnectionTransaction(schema, contextManager);
+    }
+    
+    private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
+        Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        if (!trafficRule.isPresent() || !metaDataPersistService.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Map<String, DataSourceConfiguration> dataSourceConfigs = metaDataPersistService.get().getDataSourceService().load(schema);
+        Preconditions.checkState(!dataSourceConfigs.isEmpty(), "Can not get dataSource configurations from meta data.");
+        DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
+        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, dataSourceConfigSample, schema));
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final Collection<ComputeNodeInstance> instances,
+                                                                         final DataSourceConfiguration dataSourceConfigSample, final String schema) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        for (ComputeNodeInstance each : instances) {
+            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceConfig(each, dataSourceConfigSample, schema));
+        }
+        return result;
+    }
+    
+    private DataSourceConfiguration createDataSourceConfig(final ComputeNodeInstance instance,
+                                                           final DataSourceConfiguration dataSourceConfigSample, final String schema) {
+        Map<String, Object> props = dataSourceConfigSample.getProps();
+        props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
+        Preconditions.checkState(!instance.getUsers().isEmpty(), "Can not get users from meta data.");
+        ShardingSphereUser user = instance.getUsers().iterator().next();
+        props.put("username", user.getGrantee().getUsername());
+        props.put("password", user.getPassword());
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProps().putAll(props);
+        return result;
+    }
+    
+    private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {
+        String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
+        String username = String.valueOf(props.get("username"));
+        DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, username);
+        InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
+        return jdbcUrl.replace(dataSourceMetaData.getHostname(), instanceId.getIp())
+                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getPort())).replace(dataSourceMetaData.getCatalog(), schema);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
@@ -174,7 +235,8 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        Collection<String> datasourceNames = cachedConnections.isEmpty() ? dataSourceMap.keySet() : cachedConnections.keySet();
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
+        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     

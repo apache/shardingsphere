@@ -50,6 +50,14 @@
     <update id="dropTableShadow">
         DROP TABLE IF EXISTS t_order; /*shadow:true,foo:bar*/
     </update>
+
+     <select id="selectShadowOrder" resultMap="baseResultMap">
+         SELECT * FROM t_order WHERE order_type=1;
+     </select>
+
+     <delete id="deleteShadow">
+         DELETE FROM t_order WHERE order_id = ${r"#{orderId,jdbcType=INTEGER}"} AND order_type=1;
+     </delete>
  </#if>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">

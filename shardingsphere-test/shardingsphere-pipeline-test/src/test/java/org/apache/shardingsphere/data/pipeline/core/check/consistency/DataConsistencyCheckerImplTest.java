@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.junit.Test;
 
@@ -46,9 +47,10 @@ public final class DataConsistencyCheckerImplTest {
     @Test
     public void assertCountAndDataCheck() {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
         initTableData(jobContext.getTaskConfigs().iterator().next().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfigs().iterator().next().getImporterConfig().getDataSourceConfig());
+        RuleAlteredContextUtil.mockContextManager();
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
         assertTrue(resultMap.get("t_order").isRecordsCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
