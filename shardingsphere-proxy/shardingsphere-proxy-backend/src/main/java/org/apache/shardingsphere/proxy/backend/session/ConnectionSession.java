@@ -21,10 +21,14 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -51,11 +55,17 @@ public final class ConnectionSession {
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
     
-    private volatile BackendConnection backendConnection;
+    private final BackendConnection backendConnection;
     
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
+        backendConnection = determineBackendConnection();
+    }
+    
+    private BackendConnection determineBackendConnection() {
+        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
     }
     
     /**

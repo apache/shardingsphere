@@ -29,14 +29,14 @@ import java.util.Optional;
 @Setter
 public final class TrafficContext {
     
-    private String dataSourceName;
+    private String instanceId;
     
     /**
-     * Get data source name.
+     * Get instance id.
      * 
-     * @return data source config
+     * @return instance id
      */
-    public Optional<String> getDataSourceName() {
-        return Optional.ofNullable(dataSourceName);
+    public Optional<String> getInstanceId() {
+        return Optional.ofNullable(instanceId);
     }
 }

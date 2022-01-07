@@ -141,6 +141,7 @@ public final class PipelineJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
+        RuleAlteredContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
@@ -151,6 +152,7 @@ public final class PipelineJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
+        RuleAlteredContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
