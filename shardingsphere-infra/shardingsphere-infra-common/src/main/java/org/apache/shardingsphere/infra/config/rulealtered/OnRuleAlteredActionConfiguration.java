@@ -32,9 +32,9 @@ public final class OnRuleAlteredActionConfiguration {
     
     private final int blockQueueSize;
     
-    private final InputConfiguration inputConfig;
+    private final InputConfiguration input;
     
-    private final OutputConfiguration outputConfig;
+    private final OutputConfiguration output;
     
     private final ShardingSphereAlgorithmConfiguration completionDetector;
     

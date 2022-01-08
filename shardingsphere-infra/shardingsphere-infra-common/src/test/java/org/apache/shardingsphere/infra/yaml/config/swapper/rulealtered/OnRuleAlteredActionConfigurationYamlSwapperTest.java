@@ -46,12 +46,12 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         yamlInputConfig.setWorkerThread(40);
         yamlInputConfig.setBatchSize(1000);
         yamlInputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("INPUT", rateLimiterProps));
-        yamlConfig.setInputConfig(yamlInputConfig);
+        yamlConfig.setInput(yamlInputConfig);
         YamlOutputConfiguration yamlOutputConfig = new YamlOutputConfiguration();
         yamlOutputConfig.setWorkerThread(40);
         yamlOutputConfig.setBatchSize(1000);
         yamlOutputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("OUTPUT", rateLimiterProps));
-        yamlConfig.setOutputConfig(yamlOutputConfig);
+        yamlConfig.setOutput(yamlOutputConfig);
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));

@@ -102,7 +102,7 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
             final RuleAlteredJobContext jobContext, final DataSource dataSource, final PipelineMetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        InputConfiguration inputConfig = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getInputConfig();
+        InputConfiguration inputConfig = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getInput();
         if (null == inputConfig) {
             inputConfig = new InputConfigurationSwapper().swapToObject(new YamlInputConfiguration());
         }

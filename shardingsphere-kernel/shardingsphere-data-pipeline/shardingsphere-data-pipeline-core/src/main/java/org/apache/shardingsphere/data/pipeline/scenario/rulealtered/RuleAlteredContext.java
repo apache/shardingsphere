@@ -81,13 +81,13 @@ public final class RuleAlteredContext {
     
     public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
-        InputConfiguration inputConfig = onRuleAlteredActionConfig.getInputConfig();
+        InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
         if (null == inputConfig) {
             inputConfig = new InputConfigurationSwapper().swapToObject(new YamlInputConfiguration());
         }
         ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
         inputRateLimitAlgorithm = null != inputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(inputRateLimiter, JobRateLimitAlgorithm.class) : null;
-        OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutputConfig();
+        OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
         if (null == outputConfig) {
             outputConfig = new OutputConfigurationSwapper().swapToObject(new YamlOutputConfiguration());
         }

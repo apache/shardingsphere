@@ -34,9 +34,9 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     
     private int blockQueueSize = 10000;
     
-    private YamlInputConfiguration inputConfig;
+    private YamlInputConfiguration input;
     
-    private YamlOutputConfiguration outputConfig;
+    private YamlOutputConfiguration output;
     
     private YamlShardingSphereAlgorithmConfiguration completionDetector;
     
