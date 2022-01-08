@@ -20,11 +20,17 @@ ALTER DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
 
 DROP DEFAULT SHARDING shardingScope STRATEGY;
 
-CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [,  shardingAlgorithmDefinition] ...
+CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
 
-ALTER SHARDING ALGORITHM shardingAlgorithmDefinition [,  shardingAlgorithmDefinition] ...
+ALTER SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
 
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
+
+CREATE SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
+
+ALTER SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
+
+DROP SHARDING KEY GENERATOR keyGeneratorName [, keyGeneratorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
@@ -96,7 +102,10 @@ algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
 
 algorithmProperty:
-    key=value                          
+    key=value   
+
+keyGeneratorDefinition: 
+    keyGeneratorName (algorithmDefinition)
 ```
 - `RESOURCES` 需使用 RDL 管理的数据源资源
 - `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)

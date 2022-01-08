@@ -48,7 +48,7 @@ dropDefaultShardingStrategy
     ;
 
 createShardingKeyGenerator
-    : CREATE SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
+    : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
 alterShardingTableRule
@@ -68,7 +68,7 @@ alterShardingAlgorithm
     ;
 
 alterShardingKeyGenerator
-    : ALTER SHARDING KEY GENERATOR keyGeneratorDefination (COMMA keyGeneratorDefination)*
+    : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
 dropShardingTableRule
@@ -103,7 +103,7 @@ shardingTableRule
     : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
     ;
 
-keyGeneratorDefination
+keyGeneratorDefinition
     : keyGeneratorName LP algorithmDefinition RP
     ;
 
