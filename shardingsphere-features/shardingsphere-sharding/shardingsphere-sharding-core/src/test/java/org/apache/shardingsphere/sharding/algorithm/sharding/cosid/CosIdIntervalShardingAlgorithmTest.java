@@ -27,6 +27,7 @@ import org.junit.runners.Parameterized;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
 import java.util.function.Function;
@@ -122,15 +123,15 @@ public final class CosIdIntervalShardingAlgorithmTest {
                 
                 Arguments.of(Range.greaterThan(datetimeConvert.apply(LOWER_DATE_TIME)), ALL_NODES),
                 Arguments.of(Range.atLeast(datetimeConvert.apply(LOWER_DATE_TIME)), ALL_NODES),
-                Arguments.of(Range.greaterThan(datetimeConvert.apply(UPPER_DATE_TIME)), new ExactCollection<>("table_202201")),
-                Arguments.of(Range.atLeast(datetimeConvert.apply(UPPER_DATE_TIME)), new ExactCollection<>("table_202201")),
+                Arguments.of(Range.greaterThan(datetimeConvert.apply(UPPER_DATE_TIME)), Collections.singleton("table_202201")),
+                Arguments.of(Range.atLeast(datetimeConvert.apply(UPPER_DATE_TIME)), Collections.singleton("table_202201")),
                 Arguments.of(Range.greaterThan(datetimeConvert.apply(LocalDateTime.of(2021, 12, 5, 0, 0))),
                         new ExactCollection<>("table_202112", "table_202201")),
                 Arguments.of(Range.atLeast(datetimeConvert.apply(LocalDateTime.of(2021, 12, 5, 0, 0))),
                         new ExactCollection<>("table_202112", "table_202201")),
                 
                 Arguments.of(Range.lessThan(datetimeConvert.apply(LOWER_DATE_TIME)), ExactCollection.empty()),
-                Arguments.of(Range.atMost(datetimeConvert.apply(LOWER_DATE_TIME)), new ExactCollection<>("table_202101")),
+                Arguments.of(Range.atMost(datetimeConvert.apply(LOWER_DATE_TIME)), Collections.singleton("table_202101")),
                 Arguments.of(Range.lessThan(datetimeConvert.apply(UPPER_DATE_TIME)), new ExactCollection<>("table_202101",
                         "table_202102", "table_202103", "table_202104", "table_202105", "table_202106", "table_202107",
                         "table_202108", "table_202109", "table_202110", "table_202111", "table_202112")),
