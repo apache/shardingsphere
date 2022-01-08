@@ -32,9 +32,8 @@ public interface BitSetChannel {
      *
      * @param dataRecord data
      * @param index data index
-     * @throws InterruptedException if thread interrupted
      */
-    void pushRecord(Record dataRecord, long index) throws InterruptedException;
+    void pushRecord(Record dataRecord, long index);
     
     /**
      * Fetch {@code Record} from channel, if the timeout also returns the record.

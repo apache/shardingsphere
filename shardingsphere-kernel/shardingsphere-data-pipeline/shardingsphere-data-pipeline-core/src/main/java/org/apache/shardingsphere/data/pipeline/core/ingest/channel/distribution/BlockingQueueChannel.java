@@ -43,9 +43,13 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
     }
     
     @Override
-    public void pushRecord(final Record dataRecord, final long index) throws InterruptedException {
+    public void pushRecord(final Record dataRecord, final long index) {
         getManualBitSet().set(index);
-        queue.put(dataRecord);
+        try {
+            queue.put(dataRecord);
+        } catch (final InterruptedException ex) {
+            throw new RuntimeException("put " + dataRecord + " into queue at index " + index + " failed", ex);
+        }
     }
     
     // TODO thread-safe?

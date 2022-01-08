@@ -30,9 +30,8 @@ public interface Channel {
      * Push {@code DataRecord} into channel.
      *
      * @param dataRecord data
-     * @throws InterruptedException if thread interrupted
      */
-    void pushRecord(Record dataRecord) throws InterruptedException;
+    void pushRecord(Record dataRecord);
     
     /**
      * Fetch {@code Record} list from channel.

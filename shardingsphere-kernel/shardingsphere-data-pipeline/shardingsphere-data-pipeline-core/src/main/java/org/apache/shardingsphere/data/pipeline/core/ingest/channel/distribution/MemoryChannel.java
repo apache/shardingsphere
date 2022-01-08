@@ -87,7 +87,7 @@ public final class MemoryChannel implements Channel {
     }
     
     @Override
-    public void pushRecord(final Record record) throws InterruptedException {
+    public void pushRecord(final Record record) {
         if (FinishedRecord.class.equals(record.getClass())) {
             for (int i = 0; i < channels.length; i++) {
                 pushRecord(record, i);
@@ -101,7 +101,7 @@ public final class MemoryChannel implements Channel {
         }
     }
     
-    private void pushRecord(final Record record, final int index) throws InterruptedException {
+    private void pushRecord(final Record record, final int index) {
         toBeAckBitSetIndexes.add(index);
         getBitSetChannel(index).pushRecord(record, indexAutoIncreaseGenerator.getAndIncrement());
     }
