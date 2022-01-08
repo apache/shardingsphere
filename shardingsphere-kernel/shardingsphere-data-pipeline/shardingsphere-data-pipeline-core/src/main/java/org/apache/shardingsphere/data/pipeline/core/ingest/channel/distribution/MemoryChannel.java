@@ -107,8 +107,8 @@ public final class MemoryChannel implements Channel {
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout) {
-        return findChannel().fetchRecords(batchSize, timeout);
+    public List<Record> fetchRecords(final int batchSize, final int timeoutSeconds) {
+        return findChannel().fetchRecords(batchSize, timeoutSeconds);
     }
     
     @Override

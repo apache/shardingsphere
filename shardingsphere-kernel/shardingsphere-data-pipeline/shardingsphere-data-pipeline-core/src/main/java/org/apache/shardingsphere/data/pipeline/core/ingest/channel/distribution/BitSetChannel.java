@@ -40,10 +40,10 @@ public interface BitSetChannel {
      * Fetch {@code Record} from channel, if the timeout also returns the record.
      *
      * @param batchSize record batch size
-     * @param timeout timeout(seconds)
+     * @param timeoutSeconds timeout(seconds)
      * @return record
      */
-    List<Record> fetchRecords(int batchSize, int timeout);
+    List<Record> fetchRecords(int batchSize, int timeoutSeconds);
     
     /**
      * Ack the last batch.

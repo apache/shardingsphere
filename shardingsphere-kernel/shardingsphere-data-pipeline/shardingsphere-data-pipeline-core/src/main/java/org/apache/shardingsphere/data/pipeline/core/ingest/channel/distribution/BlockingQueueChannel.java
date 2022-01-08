@@ -50,11 +50,11 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
     
     // TODO thread-safe?
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout) {
+    public List<Record> fetchRecords(final int batchSize, final int timeoutSeconds) {
         List<Record> result = new ArrayList<>(batchSize);
         long start = System.currentTimeMillis();
         while (batchSize > queue.size()) {
-            if (timeout * 1000L <= System.currentTimeMillis() - start) {
+            if (timeoutSeconds * 1000L <= System.currentTimeMillis() - start) {
                 break;
             }
             ThreadUtil.sleep(100L);
