@@ -36,7 +36,7 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private Integer shardingItem;
     
-    private int readBatchSize = 1000;
+    private int batchSize = 1000;
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     

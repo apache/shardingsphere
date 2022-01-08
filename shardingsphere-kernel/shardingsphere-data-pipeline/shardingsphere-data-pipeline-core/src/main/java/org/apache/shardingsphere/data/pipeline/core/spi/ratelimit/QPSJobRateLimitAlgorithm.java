@@ -21,14 +21,15 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.Properties;
 
 /**
- * Source rule altered job rate limit algorithm for SPI.
+ * QPS job rate limit algorithm for SPI.
  */
-public final class SourceJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
+public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private static final String QPS_KEY = "qps";
     
@@ -51,16 +52,19 @@ public final class SourceJobRateLimitAlgorithm implements JobRateLimitAlgorithm 
     
     @Override
     public String getType() {
-        return "SOURCE";
+        return "QPS";
     }
     
     @Override
-    public void onQuery() {
+    public void intercept(final JobOperationType type, final Number data) {
+        if (type != JobOperationType.SELECT) {
+            return;
+        }
         rateLimiter.acquire();
     }
     
     @Override
     public String toString() {
-        return "SourceJobRateLimitAlgorithm{" + "props=" + props + '}';
+        return "QPSJobRateLimitAlgorithm{" + "props=" + props + '}';
     }
 }

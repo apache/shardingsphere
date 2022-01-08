@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Job rate limit algorithm, SPI.
+ * Job operation type.
  */
-public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@RequiredArgsConstructor
+@Getter
+public enum JobOperationType {
     
-    /**
-     * Intercept.
-     *
-     * @param type job operation type
-     * @param data it's delta that means how much changed if type is INSERT, DELETE, UPDATE, SELECT; it's null if type is SYSTEM_LOAD, CPU_USAGE
-     */
-    void intercept(JobOperationType type, Number data);
+    INSERT, DELETE, UPDATE, SELECT,
+    SYSTEM_LOAD, CPU_USAGE,
 }

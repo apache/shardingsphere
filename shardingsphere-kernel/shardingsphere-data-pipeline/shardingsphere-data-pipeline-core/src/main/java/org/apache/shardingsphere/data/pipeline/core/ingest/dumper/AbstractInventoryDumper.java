@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
@@ -58,7 +59,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
-    private final int readBatchSize;
+    private final int batchSize;
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
@@ -74,7 +75,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
-        this.readBatchSize = inventoryDumperConfig.getReadBatchSize();
+        this.batchSize = inventoryDumperConfig.getBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
@@ -121,12 +122,12 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue) throws SQLException {
         if (null != rateLimitAlgorithm) {
-            rateLimitAlgorithm.onQuery();
+            rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
-            preparedStatement.setInt(3, readBatchSize);
+            preparedStatement.setInt(3, batchSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
