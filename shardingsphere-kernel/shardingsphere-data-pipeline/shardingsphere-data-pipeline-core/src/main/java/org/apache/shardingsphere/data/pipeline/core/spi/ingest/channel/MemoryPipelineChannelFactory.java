@@ -30,6 +30,8 @@ import java.util.Properties;
  */
 public final class MemoryPipelineChannelFactory implements PipelineChannelFactory {
     
+    public static final String TYPE = "MEMORY";
+    
     private static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
     
     private int blockQueueSize = 10000;
@@ -61,6 +63,6 @@ public final class MemoryPipelineChannelFactory implements PipelineChannelFactor
     
     @Override
     public String getType() {
-        return "MEMORY";
+        return TYPE;
     }
 }

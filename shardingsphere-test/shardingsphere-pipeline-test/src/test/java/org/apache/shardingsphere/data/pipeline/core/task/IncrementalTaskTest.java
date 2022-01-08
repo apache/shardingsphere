@@ -44,7 +44,8 @@ public final class IncrementalTaskTest {
     public void setUp() {
         TaskConfiguration taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
-        incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine());
+        incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
+                RuleAlteredContextUtil.getPipelineChannelFactory(), RuleAlteredContextUtil.getExecuteEngine());
     }
     
     @Test

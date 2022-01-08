@@ -57,7 +57,8 @@ public final class InventoryTaskTest {
             position = new PrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
+                RuleAlteredContextUtil.getPipelineChannelFactory(), RuleAlteredContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
     }
@@ -72,7 +73,8 @@ public final class InventoryTaskTest {
             position = new PrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine())) {
+        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
+                RuleAlteredContextUtil.getPipelineChannelFactory(), RuleAlteredContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
         }

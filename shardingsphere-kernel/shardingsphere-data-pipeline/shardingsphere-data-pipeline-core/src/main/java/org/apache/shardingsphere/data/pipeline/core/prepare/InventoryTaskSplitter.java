@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -64,15 +65,16 @@ public final class InventoryTaskSplitter {
      * @param jobContext job context
      * @param taskConfig task configuration
      * @param dataSourceManager data source manager
+     * @param pipelineChannelFactory channel factory
      * @param importerExecuteEngine execute engine
      * @return split inventory data task
      */
     // TODO remove jobContext, use init JobProgress -  sourceDatabaseType - readBatchSize - rateLimitAlgorithm
     public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager,
-                                                  final ExecuteEngine importerExecuteEngine) {
+                                                  final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
         List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), importerExecuteEngine));
+            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelFactory, importerExecuteEngine));
         }
         return result;
     }
