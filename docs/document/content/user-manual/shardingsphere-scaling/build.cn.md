@@ -67,7 +67,7 @@ rules:
           type: # 算法类型。可选项：TPS
           props: # 算法属性
             tps: # tps属性。适用算法类型：TPS
-      streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节
+      streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节。如果没配置则默认使用 MEMORY 类型
         type: # 算法类型。可选项：MEMORY
         props: # 算法属性
           block-queue-size: # 属性：阻塞队列大小

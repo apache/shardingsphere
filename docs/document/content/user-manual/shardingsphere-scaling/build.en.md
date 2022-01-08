@@ -66,7 +66,7 @@ rules:
           type: # Algorithm type. Options: TPS
           props: # Algorithm properties
             tps: # TPS property. Available for types: TPS
-      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output
+      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
         type: # Algorithm type. Options: MEMORY
         props: # Algorithm properties
           block-queue-size: # Property: data channel block queue size. Available for types: MEMORY
