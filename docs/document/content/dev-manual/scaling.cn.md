@@ -17,16 +17,6 @@ chapter = true
 | PostgreSQLScalingEntry | 基于 PostgreSQL 的弹性伸缩入口 |
 | OpenGaussScalingEntry  | 基于 openGauss 的弹性伸缩入口  |
 
-## JobRateLimitAlgorithm
-
-| *SPI 名称*                                   | *详细说明*                                   |
-| ------------------------------------------- | ------------------------------------------- |
-| JobRateLimitAlgorithm                       | 任务限流算法                                  |
-
-| *已知实现类*                                  | *详细说明*                                   |
-| ------------------------------------------- | ------------------------------------------- |
-| SourceJobRateLimitAlgorithm                 | 源端限流算法                                  |
-
 ## JobCompletionDetectAlgorithm
 
 | *SPI 名称*                                   | *详细说明*                                   |
