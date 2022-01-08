@@ -79,9 +79,6 @@ keyGenerateConstruction
 
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
-
-shardingColumn:
-    SHARDING_COLUMN=columnName
     
 shardingAlgorithm:
     existingAlgorithm | autoCreativeAlgorithm
