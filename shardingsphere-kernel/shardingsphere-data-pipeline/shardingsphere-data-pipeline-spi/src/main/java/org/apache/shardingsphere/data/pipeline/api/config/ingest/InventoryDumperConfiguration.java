@@ -44,6 +44,5 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());
-        setBlockQueueSize(dumperConfig.getBlockQueueSize());
     }
 }

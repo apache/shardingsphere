@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.ingest;
+package org.apache.shardingsphere.data.pipeline.api.ingest.channel;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * Dumper configuration.
+ * Record acknowledged callback.
  */
-@Getter
-@Setter
-@ToString(exclude = "dataSourceConfig")
-public class DumperConfiguration {
-    
-    private String dataSourceName;
-    
-    private PipelineDataSourceConfiguration dataSourceConfig;
-    
-    private IngestPosition<?> position;
+public interface AckCallback {
     
     /**
-     * Table name map. Key is actual table name, value is logic table name.
+     * Call after record acknowledged.
+     *
+     * @param records acknowledged record list
      */
-    private Map<String, String> tableNameMap;
+    void onAck(List<Record> records);
 }

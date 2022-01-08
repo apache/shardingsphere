@@ -43,9 +43,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
             return null;
         }
         YamlOnRuleAlteredActionConfiguration result = new YamlOnRuleAlteredActionConfiguration();
-        result.setBlockQueueSize(data.getBlockQueueSize());
         result.setInput(INPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getInput()));
         result.setOutput(OUTPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getOutput()));
+        result.setStreamChannel(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getStreamChannel()));
         result.setCompletionDetector(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getCompletionDetector()));
         result.setDataConsistencyChecker(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getDataConsistencyChecker()));
         return result;
@@ -56,9 +56,10 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         if (null == yamlConfig) {
             return null;
         }
-        return new OnRuleAlteredActionConfiguration(yamlConfig.getBlockQueueSize(),
+        return new OnRuleAlteredActionConfiguration(
                 INPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getInput()),
                 OUTPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getOutput()),
+                ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getStreamChannel()),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getCompletionDetector()),
                 ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getDataConsistencyChecker()));
     }

@@ -187,9 +187,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void pushRecord(final Record record) {
-        try {
-            channel.pushRecord(record);
-        } catch (final InterruptedException ignored) {
-        }
+        channel.pushRecord(record);
     }
 }

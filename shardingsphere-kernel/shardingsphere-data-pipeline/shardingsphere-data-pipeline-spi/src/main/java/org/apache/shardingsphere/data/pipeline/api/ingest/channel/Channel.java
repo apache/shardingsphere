@@ -24,24 +24,25 @@ import java.util.List;
 /**
  * Channel.
  */
+// TODO rename to PipelineChannel
 public interface Channel {
     
     /**
-     * push a {@code DataRecord} to channel.
+     * Push {@code DataRecord} into channel.
      *
      * @param dataRecord data
-     * @throws InterruptedException if thread interrupted
      */
-    void pushRecord(Record dataRecord) throws InterruptedException;
+    void pushRecord(Record dataRecord);
     
     /**
-     * fetch {@code Record} from channel, if the timeout also returns the record.
+     * Fetch {@code Record} list from channel.
+     * It might be blocked at most timeout seconds if available records count doesn't reach batch size.
      *
      * @param batchSize record batch size
-     * @param timeout timeout(seconds)
+     * @param timeoutSeconds timeout(seconds)
      * @return record
      */
-    List<Record> fetchRecords(int batchSize, int timeout);
+    List<Record> fetchRecords(int batchSize, int timeoutSeconds);
     
     /**
      * Ack the last batch.

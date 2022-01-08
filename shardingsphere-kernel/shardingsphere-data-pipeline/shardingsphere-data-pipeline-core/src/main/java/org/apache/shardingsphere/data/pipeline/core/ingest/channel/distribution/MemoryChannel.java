@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -87,7 +87,7 @@ public final class MemoryChannel implements Channel {
     }
     
     @Override
-    public void pushRecord(final Record record) throws InterruptedException {
+    public void pushRecord(final Record record) {
         if (FinishedRecord.class.equals(record.getClass())) {
             for (int i = 0; i < channels.length; i++) {
                 pushRecord(record, i);
@@ -101,14 +101,14 @@ public final class MemoryChannel implements Channel {
         }
     }
     
-    private void pushRecord(final Record record, final int index) throws InterruptedException {
+    private void pushRecord(final Record record, final int index) {
         toBeAckBitSetIndexes.add(index);
         getBitSetChannel(index).pushRecord(record, indexAutoIncreaseGenerator.getAndIncrement());
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout) {
-        return findChannel().fetchRecords(batchSize, timeout);
+    public List<Record> fetchRecords(final int batchSize, final int timeoutSeconds) {
+        return findChannel().fetchRecords(batchSize, timeoutSeconds);
     }
     
     @Override
