@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.channel;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.channel;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Record acknowledged callback.
+ * Pipeline channel factory, SPI.
  */
-public interface AckCallback {
+public interface PipelineChannelFactory extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
-     * Call after record acknowledged.
+     * Create pipeline channel.
      *
-     * @param records acknowledged record list
+     * @param outputConcurrency output concurrency
+     * @param ackCallback ack callback
+     * @return {@link Channel}
      */
-    void onAck(List<Record> records);
+    Channel createPipelineChannel(int outputConcurrency, AckCallback ackCallback);
 }

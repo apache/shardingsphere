@@ -22,37 +22,14 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import java.util.List;
 
 /**
- * Channel.
+ * Record acknowledged callback.
  */
-// TODO rename to PipelineChannel
-public interface Channel {
+public interface AckCallback {
     
     /**
-     * Push {@code DataRecord} into channel.
+     * Call after record acknowledged.
      *
-     * @param dataRecord data
+     * @param records acknowledged record list
      */
-    void pushRecord(Record dataRecord);
-    
-    /**
-     * Fetch {@code Record} list from channel.
-     * It might be blocked at most timeout seconds if available records count doesn't reach batch size.
-     *
-     * @param batchSize record batch size
-     * @param timeoutSeconds timeout(seconds)
-     * @return record
-     */
-    List<Record> fetchRecords(int batchSize, int timeoutSeconds);
-    
-    /**
-     * Ack the last batch.
-     *
-     * @param records record list
-     */
-    void ack(List<Record> records);
-    
-    /**
-     * Close channel.
-     */
-    void close();
+    void onAck(List<Record> records);
 }
