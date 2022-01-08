@@ -125,7 +125,7 @@ rules:
       streamChannel:
         type: MEMORY
         props:
-          block-queue-size: 1000
+          block-queue-size: 10000
       completionDetector:
         type: IDLE
         props:
