@@ -53,7 +53,6 @@ rules:
   scalingName: # 启用的弹性伸缩配置名称
   scaling:
     <scaling-action-config-name> (+):
-      blockQueueSize: # 数据通道阻塞队列大小
       input:
         workerThread: # 从源端摄取全量数据的线程池大小
         batchSize: # 一次查询操作返回的最大记录数
@@ -68,6 +67,10 @@ rules:
           type: # 算法类型。可选项：TPS
           props: # 算法属性
             tps: # tps属性。适用算法类型：TPS
+      streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节
+        type: # 算法类型。可选项：MEMORY
+        props: # 算法属性
+          block-queue-size: # 属性：阻塞队列大小
       completionDetector: # 作业是否接近完成检测算法。如果不配置，那么系统无法自动进行后续步骤，可以通过 DistSQL 手动操作。
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
@@ -87,7 +90,6 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
       input:
         workerThread: 40
         batchSize: 1000
@@ -102,6 +104,10 @@ rules:
           type: TPS
           props:
             tps: 2000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 1000
       completionDetector:
         type: IDLE
         props:

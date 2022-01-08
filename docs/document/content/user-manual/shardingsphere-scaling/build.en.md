@@ -52,7 +52,6 @@ rules:
   scalingName: # Enabled scaling action config name
   scaling:
     <scaling-action-config-name> (+):
-      blockQueueSize: # Data channel blocking queue size
       input:
         workerThread: # Worker thread pool size for inventory data ingestion from source
         batchSize: # Maximum records count of a DML select operation
@@ -67,6 +66,10 @@ rules:
           type: # Algorithm type. Options: TPS
           props: # Algorithm properties
             tps: # TPS property. Available for types: TPS
+      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output
+        type: # Algorithm type. Options: MEMORY
+        props: # Algorithm properties
+          block-queue-size: # Property: data channel block queue size. Available for types: MEMORY
       completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
@@ -86,7 +89,6 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
       input:
         workerThread: 40
         batchSize: 1000
@@ -101,6 +103,10 @@ rules:
           type: TPS
           props:
             tps: 2000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 1000
       completionDetector:
         type: IDLE
         props:

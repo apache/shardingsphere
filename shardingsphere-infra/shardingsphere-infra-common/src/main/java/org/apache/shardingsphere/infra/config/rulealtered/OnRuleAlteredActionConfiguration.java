@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 @ToString
 public final class OnRuleAlteredActionConfiguration {
     
-    private final int blockQueueSize;
-    
     private final InputConfiguration input;
     
     private final OutputConfiguration output;
+    
+    private final ShardingSphereAlgorithmConfiguration streamChannel;
     
     private final ShardingSphereAlgorithmConfiguration completionDetector;
     

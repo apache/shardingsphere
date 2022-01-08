@@ -106,7 +106,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private void instanceChannel(final Importer importer) {
-        MemoryChannel channel = new MemoryChannel(inventoryDumperConfig.getBlockQueueSize(), records -> {
+        MemoryChannel channel = new MemoryChannel(10000, records -> {
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> position = value.getPosition());
         });
