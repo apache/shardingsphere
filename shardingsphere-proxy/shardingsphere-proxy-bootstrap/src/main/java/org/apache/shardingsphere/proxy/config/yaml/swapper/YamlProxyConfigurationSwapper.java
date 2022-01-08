@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfigurationConverter;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class YamlProxyConfigurationSwapper {
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
-        Map<String, Map<String, ResourceConfiguration>> schemaResourceConfigs = getResourceConfigurationMap(yamlConfig.getRuleConfigurations());
+        Map<String, Map<String, ProxyResourceConfiguration>> schemaResourceConfigs = getResourceConfigurationMap(yamlConfig.getRuleConfigurations());
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlConfig.getRuleConfigurations());
         Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         Properties props = yamlConfig.getServerConfiguration().getProps();
@@ -57,9 +57,9 @@ public final class YamlProxyConfigurationSwapper {
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, Map<String, ResourceConfiguration>> getResourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
+    private Map<String, Map<String, ProxyResourceConfiguration>> getResourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         return yamlRuleConfigurations.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> ResourceConfigurationConverter.getResourceConfigurationMap(entry.getValue().getDataSources()),
+                Collectors.toMap(Entry::getKey, entry -> ProxyResourceConfigurationConverter.getResourceConfigurationMap(entry.getValue().getDataSources()),
                     (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

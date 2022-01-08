@@ -29,23 +29,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class ResourceConfigurationConverterTest {
+public final class ProxyProxyResourceConfigurationConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, ResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
+        Map<String, ProxyResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
         resourceConfigMap.put("ds_0", createResourceConfiguration());
         resourceConfigMap.put("ds_1", createResourceConfiguration());
-        Map<String, DataSourceConfiguration> actual = ResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
+        Map<String, DataSourceConfiguration> actual = ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
         assertThat(actual.size(), is(2));
         assertParameter(actual.get("ds_0"));
         assertParameter(actual.get("ds_1"));
     }
     
-    private ResourceConfiguration createResourceConfiguration() {
+    private ProxyResourceConfiguration createResourceConfiguration() {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
         PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
-        return new ResourceConfiguration(connectionConfig, poolConfig);
+        return new ProxyResourceConfiguration(connectionConfig, poolConfig);
     }
     
     private void assertParameter(final DataSourceConfiguration actual) {
@@ -74,7 +74,7 @@ public final class ResourceConfigurationConverterTest {
         Map<String, YamlResourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
         yamlResourceConfigs.put("ds_0", yamlResourceConfig0);
         yamlResourceConfigs.put("ds_1", yamlResourceConfig1);
-        Map<String, ResourceConfiguration> actualResourceConfig = ResourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
+        Map<String, ProxyResourceConfiguration> actualResourceConfig = ProxyResourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
         assertThat(actualResourceConfig.size(), is(2));
         assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
         assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));
@@ -92,7 +92,7 @@ public final class ResourceConfigurationConverterTest {
         yamlResourceConfig.setMinPoolSize(1);
     }
     
-    private void assertResourceConfiguration(final ResourceConfiguration resourceConfig) {
+    private void assertResourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
         assertThat(resourceConfig.getConnection().getUsername(), is("root"));
         assertThat(resourceConfig.getConnection().getPassword(), is("root"));
         assertThat(resourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(30 * 1000L));

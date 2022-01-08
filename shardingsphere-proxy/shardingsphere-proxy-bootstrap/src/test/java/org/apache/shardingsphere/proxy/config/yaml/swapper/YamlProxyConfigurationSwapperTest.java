@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -64,11 +64,11 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, Map<String, ResourceConfiguration>> schemaResourceConfigs = proxyConfig.getSchemaResources();
+        Map<String, Map<String, ProxyResourceConfiguration>> schemaResourceConfigs = proxyConfig.getSchemaResources();
         assertNotNull(schemaResourceConfigs);
         assertThat(schemaResourceConfigs.size(), is(1));
         assertTrue(schemaResourceConfigs.containsKey("yamlProxyRule1"));
-        ResourceConfiguration resourceConfig = schemaResourceConfigs.get("yamlProxyRule1").get("ds1");
+        ProxyResourceConfiguration resourceConfig = schemaResourceConfigs.get("yamlProxyRule1").get("ds1");
         assertNotNull(resourceConfig);
         assertThat(resourceConfig.getConnection().getUrl(), is("url1"));
         assertThat(resourceConfig.getConnection().getUsername(), is("username1"));

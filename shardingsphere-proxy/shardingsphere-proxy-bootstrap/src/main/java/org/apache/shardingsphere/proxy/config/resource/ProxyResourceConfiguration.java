@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Resource configuration.
+ * Resource configuration for ShardingSphere-Proxy.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResourceConfiguration {
+public final class ProxyResourceConfiguration {
     
     private final ConnectionConfiguration connection;
     

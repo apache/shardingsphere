@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceDefinition;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ResourceConfigurationConverter;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -89,10 +89,10 @@ public final class BootstrapInitializer {
     }
     
     // TODO add ResourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, ResourceConfiguration>> resourceConfigMap) {
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, ProxyResourceConfiguration>> resourceConfigMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(resourceConfigMap.size(), 1);
-        for (Entry<String, Map<String, ResourceConfiguration>> entry : resourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(ResourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
+        for (Entry<String, Map<String, ProxyResourceConfiguration>> entry : resourceConfigMap.entrySet()) {
+            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
     }
