@@ -53,12 +53,20 @@ rules:
   scaling:
     <scaling-action-config-name> (+):
       blockQueueSize: # Data channel blocking queue size
-      workerThread: # Worker thread pool size for inventory data ingestion and data importing
-      readBatchSize: # Maximum records count of a query operation returning
-      rateLimiter: # Rate limit algorithm
-        type: # Algorithm type. Options: SOURCE
-        props: # Algorithm properties
-          qps: # QPS property. Available for types: SOURCE
+      input:
+        workerThread: # Worker thread pool size for inventory data ingestion from source
+        batchSize: # Maximum records count of a DML select operation
+        rateLimiter: # Rate limit algorithm
+          type: # Algorithm type. Options: QPS
+          props: # Algorithm properties
+            qps: # QPS property. Available for types: QPS
+      output:
+        workerThread: # Worker thread pool size for data importing to target
+        batchSize: # Maximum records count of a DML insert/delete/update operation
+        rateLimiter: # Rate limit algorithm
+          type: # Algorithm type. Options: TPS
+          props: # Algorithm properties
+            tps: # TPS property. Available for types: TPS
       completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
@@ -79,12 +87,20 @@ rules:
   scaling:
     default_scaling:
       blockQueueSize: 10000
-      workerThread: 40
-      readBatchSize: 1000
-      rateLimiter:
-        type: SOURCE
-        props:
-          qps: 50
+      input:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
+      output:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       completionDetector:
         type: IDLE
         props:

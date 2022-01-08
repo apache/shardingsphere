@@ -54,12 +54,20 @@ rules:
   scaling:
     <scaling-action-config-name> (+):
       blockQueueSize: # 数据通道阻塞队列大小
-      workerThread: # 给全量数据摄取和数据导入使用的工作线程池大小
-      readBatchSize: # 一次查询操作返回的最大记录数
-      rateLimiter: # 限流算法
-        type: # 算法类型。可选项：SOURCE
-        props: # 算法属性
-          qps: # QPS属性。适用算法类型：SOURCE
+      input:
+        workerThread: # 从源端摄取全量数据的线程池大小
+        batchSize: # 一次查询操作返回的最大记录数
+        rateLimiter: # 限流算法
+          type: # 算法类型。可选项：QPS
+          props: # 算法属性
+            qps: # qps属性。适用算法类型：QPS
+      output:
+        workerThread: # 数据导入到目标端的线程池大小
+        batchSize: # 一次批量写入操作的最大记录数
+        rateLimiter: # 限流算法
+          type: # 算法类型。可选项：TPS
+          props: # 算法属性
+            tps: # tps属性。适用算法类型：TPS
       completionDetector: # 作业是否接近完成检测算法。如果不配置，那么系统无法自动进行后续步骤，可以通过 DistSQL 手动操作。
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
@@ -80,12 +88,20 @@ rules:
   scaling:
     default_scaling:
       blockQueueSize: 10000
-      workerThread: 40
-      readBatchSize: 1000
-      rateLimiter:
-        type: SOURCE
-        props:
-          qps: 50
+      input:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
+      output:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       completionDetector:
         type: IDLE
         props:
