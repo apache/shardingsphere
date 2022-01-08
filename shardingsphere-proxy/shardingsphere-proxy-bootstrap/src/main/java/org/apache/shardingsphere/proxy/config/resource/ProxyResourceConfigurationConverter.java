@@ -29,10 +29,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Resource configuration converter.
+ * ShardingSphere-Proxy resource configuration converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceConfigurationConverter {
+public final class ProxyResourceConfigurationConverter {
     
     /**
      * Get resource configuration map.
@@ -40,17 +40,17 @@ public final class ResourceConfigurationConverter {
      * @param yamlResourceConfigMap yaml resource configuration map
      * @return resource configuration map
      */
-    public static Map<String, ResourceConfiguration> getResourceConfigurationMap(final Map<String, YamlResourceConfiguration> yamlResourceConfigMap) {
+    public static Map<String, ProxyResourceConfiguration> getResourceConfigurationMap(final Map<String, YamlResourceConfiguration> yamlResourceConfigMap) {
         return yamlResourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createResourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static ResourceConfiguration createResourceConfiguration(final YamlResourceConfiguration yamlConfig) {
+    private static ProxyResourceConfiguration createResourceConfiguration(final YamlResourceConfiguration yamlConfig) {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
         PoolConfiguration poolConfig = new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(), 
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), 
                 yamlConfig.getCustomPoolProps());
-        return new ResourceConfiguration(connectionConfig, poolConfig);
+        return new ProxyResourceConfiguration(connectionConfig, poolConfig);
     }
     
     /**
@@ -59,12 +59,12 @@ public final class ResourceConfigurationConverter {
      * @param resourceConfigMap resource configuration map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, ResourceConfiguration> resourceConfigMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, ProxyResourceConfiguration> resourceConfigMap) {
         return resourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final ResourceConfiguration resourceConfig) {
+    private static DataSourceConfiguration createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
         result.getProps().put("jdbcUrl", resourceConfig.getConnection().getUrl());
         result.getProps().put("username", resourceConfig.getConnection().getUsername());
