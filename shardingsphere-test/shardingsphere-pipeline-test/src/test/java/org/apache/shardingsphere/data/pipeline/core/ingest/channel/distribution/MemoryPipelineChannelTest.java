@@ -40,7 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MemoryChannelTest {
+public final class MemoryPipelineChannelTest {
     
     private static final int CHANNEL_NUMBER = 2;
     
@@ -65,7 +65,7 @@ public final class MemoryChannelTest {
     @SneakyThrows(InterruptedException.class)
     private void execute(final AckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
-        MemoryChannel memoryChannel = new MemoryChannel(CHANNEL_NUMBER, 10000, ackCallback);
+        MemoryPipelineChannel memoryChannel = new MemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
         fetchWithMultiThreading(memoryChannel, countDownLatch);
         for (Record record : records) {
             memoryChannel.pushRecord(record);
@@ -75,7 +75,7 @@ public final class MemoryChannelTest {
         memoryChannel.close();
     }
     
-    private void fetchWithMultiThreading(final MemoryChannel memoryChannel, final CountDownLatch countDownLatch) {
+    private void fetchWithMultiThreading(final MemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         for (int i = 0; i < CHANNEL_NUMBER; i++) {
             new Thread(() -> {
                 int maxLoopCount = 10;

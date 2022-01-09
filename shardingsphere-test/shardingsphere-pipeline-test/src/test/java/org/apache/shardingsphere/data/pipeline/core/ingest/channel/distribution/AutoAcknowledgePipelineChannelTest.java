@@ -27,7 +27,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AutoAcknowledgeChannelTest {
+public final class AutoAcknowledgePipelineChannelTest {
     
     private AutoAcknowledgeChannel channel;
     

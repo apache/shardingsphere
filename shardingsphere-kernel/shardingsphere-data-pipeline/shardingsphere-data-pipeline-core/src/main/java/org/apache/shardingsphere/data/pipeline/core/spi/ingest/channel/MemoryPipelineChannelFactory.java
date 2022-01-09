@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 
 import java.util.Properties;
@@ -57,8 +57,8 @@ public final class MemoryPipelineChannelFactory implements PipelineChannelFactor
     }
     
     @Override
-    public Channel createPipelineChannel(final int outputConcurrency, final AckCallback ackCallback) {
-        return new MemoryChannel(outputConcurrency, blockQueueSize, ackCallback);
+    public PipelineChannel createPipelineChannel(final int outputConcurrency, final AckCallback ackCallback) {
+        return new MemoryPipelineChannel(outputConcurrency, blockQueueSize, ackCallback);
     }
     
     @Override

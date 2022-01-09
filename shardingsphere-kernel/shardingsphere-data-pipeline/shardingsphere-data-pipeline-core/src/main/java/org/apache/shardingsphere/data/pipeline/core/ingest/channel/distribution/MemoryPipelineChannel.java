@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Distribution channel.
  */
 @Slf4j
-public final class MemoryChannel implements Channel {
+public final class MemoryPipelineChannel implements PipelineChannel {
     
     private final int channelNumber;
     
@@ -62,15 +62,15 @@ public final class MemoryChannel implements Channel {
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
-    public MemoryChannel(final AckCallback ackCallback) {
+    public MemoryPipelineChannel(final AckCallback ackCallback) {
         this(10000, ackCallback);
     }
     
-    public MemoryChannel(final int blockQueueSize, final AckCallback ackCallback) {
+    public MemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
         this(1, blockQueueSize, ackCallback);
     }
     
-    public MemoryChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
+    public MemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];
