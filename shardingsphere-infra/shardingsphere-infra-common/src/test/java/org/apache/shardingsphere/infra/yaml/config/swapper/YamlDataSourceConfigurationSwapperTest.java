@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -38,13 +39,13 @@ public final class YamlDataSourceConfigurationSwapperTest {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
         Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
         HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
-        assertThat(actual0.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual0.getJdbcUrl(), is("jdbc:h2:mem:test_ds_0;MODE=MySQL"));
+        assertThat(actual0.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual0.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
         assertThat(actual0.getUsername(), is("root"));
         assertThat(actual0.getPassword(), is("root"));
         HikariDataSource actual1 = (HikariDataSource) dataSources.get("ds_1");
-        assertThat(actual1.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual1.getJdbcUrl(), is("jdbc:h2:mem:test_ds_1;MODE=MySQL"));
+        assertThat(actual1.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual1.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
     }
@@ -52,11 +53,11 @@ public final class YamlDataSourceConfigurationSwapperTest {
     @Test
     public void assertSwapToDataSourceConfiguration() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
-        yamlConfig.put("dataSourceClassName", "xxx.jdbc.driver");
+        yamlConfig.put("dataSourceClassName", MockedDataSource.class.getCanonicalName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
         DataSourceConfiguration actual = swapper.swapToDataSourceConfiguration(yamlConfig);
-        assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
+        assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
         assertThat(actual.getProps().get("username").toString(), is("root"));
@@ -64,11 +65,11 @@ public final class YamlDataSourceConfigurationSwapperTest {
     
     @Test
     public void assertSwapToMap() {
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration("xxx.jdbc.driver");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(MockedDataSource.class.getCanonicalName());
         dataSourceConfig.getProps().put("url", "xx:xxx");
         dataSourceConfig.getProps().put("username", "root");
         Map<String, Object> actual = swapper.swapToMap(dataSourceConfig);
-        assertThat(actual.get("dataSourceClassName"), is("xxx.jdbc.driver"));
+        assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
     }
@@ -83,8 +84,8 @@ public final class YamlDataSourceConfigurationSwapperTest {
     private Map<String, Object> createPropertyMap(final String name) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1);
         result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        result.put("driverClassName", "org.h2.Driver");
-        result.put("jdbcUrl", String.format("jdbc:h2:mem:test_%s;MODE=MySQL", name));
+        result.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        result.put("jdbcUrl", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");
         result.put("password", "root");
         return result;
