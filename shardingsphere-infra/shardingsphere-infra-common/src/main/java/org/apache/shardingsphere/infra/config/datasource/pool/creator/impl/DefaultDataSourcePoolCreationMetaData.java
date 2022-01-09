@@ -44,17 +44,17 @@ public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePo
     }
     
     @Override
-    public String getDataSourcePropertiesFieldName() {
-        return null;
-    }
-    
-    @Override
     public String getJdbcUrlFieldName() {
         return null;
     }
     
     @Override
-    public Properties getDefaultDataSourceProperties() {
+    public String getJdbcUrlPropertiesFieldName() {
+        return null;
+    }
+    
+    @Override
+    public Properties getDefaultJdbcUrlProperties() {
         return new Properties();
     }
     
