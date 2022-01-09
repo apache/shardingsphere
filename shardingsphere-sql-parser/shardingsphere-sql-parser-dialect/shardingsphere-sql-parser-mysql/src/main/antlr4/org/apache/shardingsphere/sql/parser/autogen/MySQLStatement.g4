@@ -20,7 +20,8 @@ grammar MySQLStatement;
 import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement;
 
 execute
-    : (select
+    : (table
+    | select
     | insert
     | update
     | delete
