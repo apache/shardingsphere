@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Collections;
 
-public final class ModShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
+public final class BoundaryRangeShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
     
     @Override
     public void init() {
@@ -43,12 +43,12 @@ public final class ModShardingAlgorithmFixture implements StandardShardingAlgori
     
     @Override
     public String getType() {
-        return "MOD_TEST";
+        return "BOUNDARY_RANGE_TEST";
     }
     
     @Override
     public int getAutoTablesAmount() {
-        return 2;
+        return 4;
     }
     
     @Override
