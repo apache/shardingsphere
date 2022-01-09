@@ -22,10 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import java.util.List;
 
 /**
- * Channel.
+ * Pipeline channel.
  */
-// TODO rename to PipelineChannel
-public interface Channel {
+public interface PipelineChannel {
     
     /**
      * Push {@code DataRecord} into channel.

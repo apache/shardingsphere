@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.spi.ingest.channel;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
@@ -32,7 +32,7 @@ public interface PipelineChannelFactory extends ShardingSphereAlgorithm, Shardin
      *
      * @param outputConcurrency output concurrency
      * @param ackCallback ack callback
-     * @return {@link Channel}
+     * @return {@link PipelineChannel}
      */
-    Channel createPipelineChannel(int outputConcurrency, AckCallback ackCallback);
+    PipelineChannel createPipelineChannel(int outputConcurrency, AckCallback ackCallback);
 }

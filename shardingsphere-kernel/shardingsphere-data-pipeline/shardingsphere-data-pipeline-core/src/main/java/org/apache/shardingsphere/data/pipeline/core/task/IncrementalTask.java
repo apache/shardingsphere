@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
@@ -106,7 +106,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private void instanceChannel(final Collection<Importer> importers) {
-        Channel channel = pipelineChannelFactory.createPipelineChannel(importers.size(), records -> {
+        PipelineChannel channel = pipelineChannelFactory.createPipelineChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());
@@ -114,7 +114,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             }
         });
         dumper.setChannel(channel);
-        // TODO merge logic into AckCallback after Channel.ack refactoring, and then remove ImporterListener
+        // TODO merge logic into AckCallback after PipelineChannel.ack refactoring, and then remove ImporterListener
         ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);

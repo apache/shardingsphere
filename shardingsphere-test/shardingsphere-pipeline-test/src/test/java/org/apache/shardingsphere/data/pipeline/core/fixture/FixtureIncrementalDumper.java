@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 
@@ -28,7 +28,7 @@ public final class FixtureIncrementalDumper implements IncrementalDumper {
     }
     
     @Override
-    public void setChannel(final Channel channel) {
+    public void setChannel(final PipelineChannel channel) {
     }
     
     @Override

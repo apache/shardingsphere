@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -73,7 +73,7 @@ public final class AbstractImporterTest {
     private PipelineDataSourceConfiguration dataSourceConfig;
     
     @Mock
-    private Channel channel;
+    private PipelineChannel channel;
     
     @Mock
     private PipelineDataSourceWrapper dataSource;
