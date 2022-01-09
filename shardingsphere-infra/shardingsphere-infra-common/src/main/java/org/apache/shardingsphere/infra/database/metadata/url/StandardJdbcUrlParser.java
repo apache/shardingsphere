@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -58,34 +59,30 @@ public final class StandardJdbcUrlParser {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
+            if (null == authority) {
+                throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+            }
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
-        return new JdbcUrl("", -1, "", Collections.emptyMap());
+        throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
     }
     
     private String parseHostname(final String authority) {
         if (!authority.contains(":")) {
             return authority;
         }
-        String[] values = authority.split(":");
-        if (2 == values.length) {
-            return values[0];
-        }
-        // TODO process with multiple services, for example: replication, failover etc
-        return null;
+        return authority.split(":")[0];
     }
     
     private int parsePort(final String authority) {
         if (!authority.contains(":")) {
-            // TODO adapt other databases
-            return 3306;
+            return -1;
         }
-        String[] values = authority.split(":");
-        if (2 == values.length) {
-            return Integer.parseInt(values[1]);
+        String port = authority.split(":")[1];
+        if (port.contains(",")) {
+            port = port.split(",")[0];
         }
-        // TODO process with multiple services, for example: replication, failover etc
-        return -1;
+        return Integer.parseInt(port);
     }
     
     private Map<String, String> parseQueryProperties(final String query) {

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.metadata.url;
 
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -33,7 +33,7 @@ public final class StandardJdbcUrlParserTest {
     public void assertParseSimpleJdbcUrl() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("mock:jdbc://127.0.0.1/");
         assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getPort(), is(-1));
         assertThat(actual.getDatabase(), is(""));
         assertTrue(actual.getQueryProperties().isEmpty());
     }
@@ -52,8 +52,8 @@ public final class StandardJdbcUrlParserTest {
     @Test
     public void assertParseMySQLJdbcUrlWithReplication() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/demo_ds?useUnicode=true");
-        assertNull(actual.getHostname());
-        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getHostname(), is("master-ip"));
+        assertThat(actual.getPort(), is(3306));
         assertThat(actual.getDatabase(), is("demo_ds"));
         assertThat(actual.getQueryProperties().size(), is(1));
         assertThat(actual.getQueryProperties().get("useUnicode"), is("true"));
@@ -79,7 +79,7 @@ public final class StandardJdbcUrlParserTest {
         assertTrue(actual.getQueryProperties().isEmpty());
     }
     
-    @Test
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertParseIncorrectURL() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostname(), is(""));
@@ -96,7 +96,8 @@ public final class StandardJdbcUrlParserTest {
     
     @Test
     public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
+        String actual = new StandardJdbcUrlParser().appendQueryProperties(
+                "jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
         assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
     
