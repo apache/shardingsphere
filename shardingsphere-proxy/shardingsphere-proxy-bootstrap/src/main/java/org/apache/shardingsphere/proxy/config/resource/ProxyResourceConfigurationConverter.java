@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,12 +40,12 @@ public final class ProxyResourceConfigurationConverter {
      * @param yamlResourceConfigMap yaml resource configuration map
      * @return resource configuration map
      */
-    public static Map<String, ProxyResourceConfiguration> getResourceConfigurationMap(final Map<String, YamlResourceConfiguration> yamlResourceConfigMap) {
+    public static Map<String, ProxyResourceConfiguration> getResourceConfigurationMap(final Map<String, YamlProxyResourceConfiguration> yamlResourceConfigMap) {
         return yamlResourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createResourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static ProxyResourceConfiguration createResourceConfiguration(final YamlResourceConfiguration yamlConfig) {
+    private static ProxyResourceConfiguration createResourceConfiguration(final YamlProxyResourceConfiguration yamlConfig) {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
         PoolConfiguration poolConfig = new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(), 
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), 

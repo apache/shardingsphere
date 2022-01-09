@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -142,7 +142,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void mockDataSources(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
-        YamlResourceConfiguration yamlResourceConfig = new YamlResourceConfiguration();
+        YamlProxyResourceConfiguration yamlResourceConfig = new YamlProxyResourceConfiguration();
         yamlResourceConfig.setUrl("url1");
         yamlResourceConfig.setUsername("username1");
         yamlResourceConfig.setPassword("password1");
@@ -152,7 +152,7 @@ public final class YamlProxyConfigurationSwapperTest {
         yamlResourceConfig.setMaxPoolSize(4);
         yamlResourceConfig.setMinPoolSize(5);
         yamlResourceConfig.setReadOnly(true);
-        Map<String, YamlResourceConfiguration> yamlResourceMap = new HashMap<>(1, 1);
+        Map<String, YamlProxyResourceConfiguration> yamlResourceMap = new HashMap<>(1, 1);
         yamlResourceMap.put("ds1", yamlResourceConfig);
         when(yamlProxyRuleConfig.getDataSources()).thenReturn(yamlResourceMap);
     }
