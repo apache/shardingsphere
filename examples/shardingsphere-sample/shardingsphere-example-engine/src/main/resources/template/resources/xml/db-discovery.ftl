@@ -15,29 +15,8 @@
   ~ limitations under the License.
   -->
     
-    <bean id="ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.15:3306/ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="root"/>
-    </bean>
-    
-    <bean id="ds_0_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.16:3306/ds_0_replica_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="root"/>
-    </bean>
-    
-    <bean id="ds_0_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://172.72.0.17:3306/ds_0_replica_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value="root"/>
-    </bean>
-    
-    <database-discovery:rule id="databaseDiscoveryRule">
-        <database-discovery:data-source-rule id="db" data-source-names="ds_0,ds_0_replica_1,ds_0_replica_1" discovery-heartbeat-name="mgr-heartbeat"
+    <database-discovery:rule id="dbDiscoveryRule">
+        <database-discovery:data-source-rule id="db" data-source-names="ds_0,ds_1,ds_2" discovery-heartbeat-name="mgr-heartbeat"
                                              discovery-type-name="mgr"/>
         <database-discovery:discovery-heartbeat id="mgr-heartbeat">
             <props>
@@ -53,4 +32,3 @@
         </props>
     </database-discovery:discovery-type>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0,ds_0_replica_1,ds_0_replica_1" rule-refs="databaseDiscoveryRule" />

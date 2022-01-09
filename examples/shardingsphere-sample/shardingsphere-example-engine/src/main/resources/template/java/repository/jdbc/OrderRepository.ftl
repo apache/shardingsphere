@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,7 +65,7 @@ public final class OrderRepository {
             statement.executeUpdate(sql);
         }
     }
-<#if feature=="shadow">
+<#if feature?contains("shadow")>
 
     public void createTableIfNotExistsShadow() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)) /*shadow:true,foo:bar*/";

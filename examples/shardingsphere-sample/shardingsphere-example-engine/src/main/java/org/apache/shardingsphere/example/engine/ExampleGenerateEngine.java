@@ -30,6 +30,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Example generate engine.
@@ -39,21 +40,37 @@ public final class ExampleGenerateEngine {
     private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_31);
     
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-example"
-            + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${feature}-example"
-            + "/shardingsphere-jdbc-${mode}-${transaction}-${feature}-${framework}-example/src/main/";
+            + "<#assign package=\"\">"
+            + "<#if feature?split(\",\")?size gt 1>"
+            + "<#assign package=\"mixed\">"
+            + "<#else>"
+            + "<#assign package=feature />"
+            + "</#if>"
+            + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${package}-example"
+            + "/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/src/main/";
 
-    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/${feature?replace('-', '/')}/${framework?replace('-', '/')}";
+    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/"
+            + "<#assign package=\"\">"
+            + "<#if feature?split(\",\")?size gt 1>"
+            + "<#assign package=\"mixed\">"
+            + "<#else>"
+            + "<#assign package=feature?replace('-', '/') />"
+            + "</#if>"
+            + "${package}/${framework?replace('-', '/')}";
     
     private static final String RESOURCES_PATH = "resources";
     
     private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}"
             + "<#assign featureName=\"\">"
-            + "<#list feature?split(\"-\") as feature1>"
-            + "<#assign featureName=featureName + feature1?cap_first>"
-            + "</#list>${featureName}"
+            + "<#if feature?split(\",\")?size gt 1>"
+            + "<#assign featureName=\"Mixed\">"
+            + "<#else>"
+            + "<#list feature?split(\"-\") as item>"
+            + "<#assign featureName=featureName + item?cap_first>"
+            + "</#list></#if>${featureName}"
             + "<#assign frameworkName=\"\">"
-            + "<#list framework?split(\"-\") as framework1>"
-            + "<#assign frameworkName=frameworkName + framework1?cap_first>"
+            + "<#list framework?split(\"-\") as item>"
+            + "<#assign frameworkName=frameworkName + item?cap_first>"
             + "</#list>${frameworkName}";
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
@@ -66,7 +83,7 @@ public final class ExampleGenerateEngine {
     
     static {
         try {
-            CONFIGURATION.setDirectoryForTemplateLoading(new File(ExampleGenerateEngine.class.getClassLoader().getResource("").getFile()));
+            CONFIGURATION.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("")).getFile()));
             CONFIGURATION.setDefaultEncoding("UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,7 +92,7 @@ public final class ExampleGenerateEngine {
     
     /**
      * Generate file 
-     * @param args
+     * @param args args
      */
     public static void main(String[] args) {
         Yaml yaml = new Yaml();

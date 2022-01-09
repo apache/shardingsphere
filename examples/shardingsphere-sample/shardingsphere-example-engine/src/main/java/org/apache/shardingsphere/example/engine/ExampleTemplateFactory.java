@@ -50,7 +50,7 @@ public final class ExampleTemplateFactory {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
-        if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
+        if (null != feature && feature.contains(FeatureType.ENCRYPT.getFeature())) {
             result.put("java/TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
         }
         result.put("java/entity/Order", "entity/Order.java");
@@ -82,7 +82,7 @@ public final class ExampleTemplateFactory {
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
         result.put("resources/logback", "logback.xml");
-        if (FeatureType.ENCRYPT.getFeature().equals(feature)) {
+        if (null != feature && feature.contains(FeatureType.ENCRYPT.getFeature())) {
             result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         if (framework.contains("spring-boot-starter")) {

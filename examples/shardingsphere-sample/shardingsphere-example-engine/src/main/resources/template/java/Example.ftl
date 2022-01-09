@@ -15,7 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
 <#if framework?contains("spring-boot")>
 <#if framework=="spring-boot-starter-mybatis">
@@ -34,19 +40,23 @@ import javax.sql.DataSource;
 </#if>
 import java.sql.SQLException;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
+<#assign frameworkName="" />
+<#list framework?split("-") as item>
+    <#assign frameworkName=frameworkName + item?cap_first />
 </#list>
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
+<#assign featureName="" />
+<#if feature?split(",")?size gt 1>
+    <#assign featureName="Mixed" />
+<#else>
+    <#list feature?split("-") as item>
+        <#assign featureName=featureName + item?cap_first />
+    </#list>
+</#if>
 <#if framework=="spring-boot-starter-mybatis">
-@MapperScan("org.apache.shardingsphere.example.${feature?replace('-', '.')}.spring.boot.starter.mybatis.repository")
+@MapperScan("org.apache.shardingsphere.example.${package}.spring.boot.starter.mybatis.repository")
 </#if>
 <#if framework=="spring-boot-starter-jpa">
-@EntityScan(basePackages = "org.apache.shardingsphere.example.${feature?replace('-', '.')}.spring.boot.starter.jpa.entity")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.${package}.spring.boot.starter.jpa.entity")
 </#if>
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
