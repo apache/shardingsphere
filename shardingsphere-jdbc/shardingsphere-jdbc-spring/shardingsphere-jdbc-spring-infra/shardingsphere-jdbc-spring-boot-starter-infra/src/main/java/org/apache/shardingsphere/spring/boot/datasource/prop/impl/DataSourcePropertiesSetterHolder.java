@@ -19,10 +19,9 @@ package org.apache.shardingsphere.spring.boot.datasource.prop.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.apache.shardingsphere.spring.boot.datasource.prop.DataSourcePropertiesSetter;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,13 +31,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertiesSetterHolder {
     
-    private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP = new HashMap<>();
+    private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP;
     
     static {
-        ShardingSphereServiceLoader.register(DataSourcePropertiesSetter.class);
-        for (DataSourcePropertiesSetter each : ShardingSphereServiceLoader.getSingletonServiceInstances(DataSourcePropertiesSetter.class)) {
-            DATA_SOURCE_PROPERTIES_SETTER_MAP.put(each.getType(), each);
-        }
+        DATA_SOURCE_PROPERTIES_SETTER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(DataSourcePropertiesSetter.class, DataSourcePropertiesSetter::getType);
     }
     
     /**
