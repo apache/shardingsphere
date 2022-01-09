@@ -81,7 +81,7 @@ public final class DataSourcePoolCreator {
         setDefaultFields(dataSourceReflection);
         setConfiguredFields(dataSourceConfig, dataSourceReflection);
         dataSourceReflection.addDefaultDataSourceProperties(
-                creationMetaData.getDataSourcePropertiesFieldName(), creationMetaData.getJdbcUrlFieldName(), creationMetaData.getDefaultDataSourceProperties());
+                creationMetaData.getJdbcUrlPropertiesFieldName(), creationMetaData.getJdbcUrlFieldName(), creationMetaData.getDefaultJdbcUrlProperties());
         return result;
     }
     
