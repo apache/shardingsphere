@@ -18,12 +18,19 @@ chapter = true
 
 ## 开发流程
 
-**1. Fork分支到本地，设置upstream**
+**1. 准备仓库**
 
- - 从shardingsphere的repo上fork一个分支到您自己的repo来开始工作，并设置upstream为shardingsphere的repo。
+到 [ShardingSphere GitHub Repo]( https://github.com/apache/shardingsphere ) fork 仓库到你的 GitHub 账号。
 
+克隆到本地。
 ```shell
-git remote add upstream https://github.com/apache/shardingsphere.git
+git clone https://github.com/(your_github_name)/shardingsphere.git
+```
+
+添加 ShardingSphere 远程仓库。
+```shell
+git remote add apache https://github.com/apache/shardingsphere.git
+git remote -v
 ```
 
 **2. 选择issue**
@@ -38,11 +45,13 @@ git remote add upstream https://github.com/apache/shardingsphere.git
 
 ```shell
 git checkout master
-git pull upstream master
+git fetch apache
+git rebase apache/master
+git push origin master # 可选操作
 git checkout -b issueNo
 ```
 
- **注意** ：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
+ **注意** ：PR 会按照 squash 的方式进行 merge。如果不创建新分支，本地和远程的提交记录将不能保持同步。
 
 **4. 编码**
 
@@ -68,6 +77,7 @@ git push origin issueNo
 ```shell
 git checkout master
 git branch -d issueNo
+git remote prune origin # 如果你已经在 GitHub PR 页面删除了分支，否则的话可以执行下面的命令删除
 git push origin --delete issueNo
 ```
 
