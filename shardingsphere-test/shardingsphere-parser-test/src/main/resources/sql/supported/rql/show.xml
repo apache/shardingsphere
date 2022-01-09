@@ -38,4 +38,5 @@
     <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" />
     <distsql-case id="show-transaction-rule" value="SHOW TRANSACTION RULE" />
     <distsql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" />
+    <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM schemaName" />
 </sql-cases>
