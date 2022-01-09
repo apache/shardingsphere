@@ -34,8 +34,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrl;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -98,7 +98,7 @@ public final class MySQLIncrementalDumperTest {
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setAfterRows(rows);
-        invokeHandleEvent(new JdbcUrlParser().parse(URL), rowsEvent);
+        invokeHandleEvent(new StandardJdbcUrlParser().parse(URL), rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -116,7 +116,7 @@ public final class MySQLIncrementalDumperTest {
         afterRows.add(new String[]{"1", "order_new"});
         rowsEvent.setBeforeRows(beforeRows);
         rowsEvent.setAfterRows(afterRows);
-        invokeHandleEvent(new JdbcUrlParser().parse(URL), rowsEvent);
+        invokeHandleEvent(new StandardJdbcUrlParser().parse(URL), rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -131,7 +131,7 @@ public final class MySQLIncrementalDumperTest {
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setBeforeRows(rows);
-        invokeHandleEvent(new JdbcUrlParser().parse(URL), rowsEvent);
+        invokeHandleEvent(new StandardJdbcUrlParser().parse(URL), rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -140,7 +140,7 @@ public final class MySQLIncrementalDumperTest {
     
     @Test
     public void assertPlaceholderEvent() {
-        invokeHandleEvent(new JdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/test_db"), new PlaceholderEvent());
+        invokeHandleEvent(new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/test_db"), new PlaceholderEvent());
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof PlaceholderRecord);
@@ -150,7 +150,7 @@ public final class MySQLIncrementalDumperTest {
     public void assertRowsEventFiltered() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setSchemaName("unknown_schema");
-        invokeHandleEvent(new JdbcUrlParser().parse(URL), rowsEvent);
+        invokeHandleEvent(new StandardJdbcUrlParser().parse(URL), rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof PlaceholderRecord);

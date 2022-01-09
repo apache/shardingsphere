@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.url;
+package org.apache.shardingsphere.infra.database.metadata.url;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

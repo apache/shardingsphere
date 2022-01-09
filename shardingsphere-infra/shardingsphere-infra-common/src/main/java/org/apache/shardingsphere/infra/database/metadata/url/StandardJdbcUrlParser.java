@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.url;
+package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -28,9 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * JDBC URL parser.
+ * Standard JDBC URL parser.
  */
-public final class JdbcUrlParser {
+public final class StandardJdbcUrlParser {
     
     private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
     
@@ -40,7 +40,7 @@ public final class JdbcUrlParser {
     
     private static final String QUERY_PATTERN = "(?:\\?(?!\\s*\\?)(?<query>[^#]*))?";
     
-    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + QUERY_PATTERN);
+    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + QUERY_PATTERN, Pattern.CASE_INSENSITIVE);
     
     private static final String AUTHORITY_GROUP_KEY = "authority";
     
