@@ -40,9 +40,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding algorithm.
+ * Result set for show unused sharding algorithms.
  */
-public final class UnusedShardingAlgorithmQueryResultSet implements DistSQLResultSet {
+public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
     private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getCanonicalName();
     
