@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -44,6 +43,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -81,7 +81,7 @@ public final class ContextManagerTest {
     
     private static Map<String, DataSource> dataSourceMap;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
     @Mock
@@ -337,50 +337,51 @@ public final class ContextManagerTest {
     
     @Test
     @Ignore
-    // TODO fix the test case
+    // TODO fix test cases
     public void assertAlterDataSourceConfiguration() {
         ShardingSphereMetaData originalMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(originalMetaData.getName()).thenReturn("test_schema");
+        ShardingSphereResource originalResource = mockOriginalResource();
+        when(originalMetaData.getResource()).thenReturn(originalResource);
+        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        when(originalMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
         Map<String, ShardingSphereMetaData> originalMetaDataMap = new LinkedHashMap<>();
         originalMetaDataMap.put("test_schema", originalMetaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(originalMetaDataMap);
-        Map<String, DataSource> originalDataSources = new LinkedHashMap<>();
-        MockedDataSource ds1 = mock(MockedDataSource.class, RETURNS_DEEP_STUBS);
-        MockedDataSource ds2 = mock(MockedDataSource.class, RETURNS_DEEP_STUBS);
-        originalDataSources.put("test_ds_1", ds1);
-        originalDataSources.put("test_ds_2", ds2);
-        ShardingSphereResource originalShardingSphereResource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
-        when(originalShardingSphereResource.getDataSources()).thenReturn(originalDataSources);
-        when(originalMetaData.getResource()).thenReturn(originalShardingSphereResource);
-        ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
-        List<RuleConfiguration> ruleConfigurations = new LinkedList<>();
-        ruleConfigurations.add(mock(RuleConfiguration.class));
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(ruleConfigurations);
-        when(originalMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        ShardingSphereRuleMetaData globalShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalShardingSphereRuleMetaData);
-        ConfigurationProperties configurationProperties = new ConfigurationProperties(new Properties());
-        when(metaDataContexts.getProps()).thenReturn(configurationProperties);
-        OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
-        FederationMetaData federationMetaData = mock(FederationMetaData.class);
-        Map<String, FederationSchemaMetaData> federationSchemaMetaDataMap = new LinkedHashMap<>();
-        when(federationMetaData.getSchemas()).thenReturn(federationSchemaMetaDataMap);
-        when(optimizerContext.getFederationMetaData()).thenReturn(federationMetaData);
-        when(metaDataContexts.getOptimizerContext()).thenReturn(optimizerContext);
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
         Map<String, DataSourceConfiguration> newDataSourceConfigs = new LinkedHashMap<>();
-        Properties dsProps = new Properties();
-        dsProps.put("username", "test");
-        dsProps.put("password", "test");
-        newDataSourceConfigs.put("test_ds_1", createDataSourceConfiguration(dsProps));
+        Properties dataSourceProps = new Properties();
+        dataSourceProps.put("username", "test");
+        dataSourceProps.put("password", "test");
+        newDataSourceConfigs.put("ds_1", createDataSourceConfiguration(dataSourceProps));
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceConfigs);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
-        MockedDataSource actualDs = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("test_ds_1");
+        MockedDataSource actualDs = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
         assertThat(actualDs.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actualDs.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actualDs.getPassword(), is("test"));
         assertThat(actualDs.getUsername(), is("test"));
+    }
+    
+    private ShardingSphereResource mockOriginalResource() {
+        ShardingSphereResource result = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
+        Map<String, DataSource> originalDataSources = new LinkedHashMap<>();
+        originalDataSources.put("ds_1", new MockedDataSource());
+        originalDataSources.put("ds_2", new MockedDataSource());
+        when(result.getDataSources()).thenReturn(originalDataSources);
+        return result;
+    }
+    
+    private ShardingSphereRuleMetaData mockRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        List<RuleConfiguration> ruleConfigs = new LinkedList<>();
+        ruleConfigs.add(mock(RuleConfiguration.class));
+        when(result.getConfigurations()).thenReturn(ruleConfigs);
+        return result;
     }
     
     @Test
@@ -400,15 +401,14 @@ public final class ContextManagerTest {
         assertThat(contextManager.getMetaDataContexts().getProps().getProps().get("test1"), is("test1_value"));
     }
     
-    @SneakyThrows
     @Test
-    public void assertReloadMetaData() {
-        MockedDataSource testDs = mock(MockedDataSource.class, RETURNS_DEEP_STUBS);
-        when(testDs.getConnection()).thenReturn(mock(Connection.class));
-        when(testDs.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
-        when(testDs.getConnection().getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+    public void assertReloadMetaData() throws SQLException {
+        MockedDataSource testDataSource = mock(MockedDataSource.class, RETURNS_DEEP_STUBS);
+        when(testDataSource.getConnection()).thenReturn(mock(Connection.class));
+        when(testDataSource.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(testDataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         Map<String, DataSource> dataSources = new LinkedHashMap<>();
-        dataSources.put("test_ds", testDs);
+        dataSources.put("test_ds", testDataSource);
         ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
         when(originalResource.getDataSources()).thenReturn(dataSources);
         ShardingSphereRuleMetaData originalRuleMetaData = mock(ShardingSphereRuleMetaData.class);

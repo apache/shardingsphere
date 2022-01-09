@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -60,11 +59,13 @@ public final class StandardJdbcUrlParser {
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
             if (null == authority) {
-                throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+                return new JdbcUrl("", -1, "", new LinkedHashMap<>());
+                // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
             }
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
-        throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+        return new JdbcUrl("", -1, "", new LinkedHashMap<>());
+        // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
     }
     
     private String parseHostname(final String authority) {

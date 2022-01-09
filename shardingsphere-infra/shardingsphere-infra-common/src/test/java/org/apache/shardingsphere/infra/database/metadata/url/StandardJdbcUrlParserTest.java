@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.metadata.url;
 
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import java.util.LinkedHashMap;
@@ -79,7 +78,7 @@ public final class StandardJdbcUrlParserTest {
         assertTrue(actual.getQueryProperties().isEmpty());
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertParseIncorrectURL() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostname(), is(""));
