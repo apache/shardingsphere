@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
@@ -125,7 +125,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(md5EncryptAlgorithmConfig.getType(), is("MD5"));
     }
     
-    private void assertResourceConfiguration(final YamlResourceConfiguration actual, final String expectedURL) {
+    private void assertResourceConfiguration(final YamlProxyResourceConfiguration actual, final String expectedURL) {
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());

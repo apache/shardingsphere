@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import java.util.Map;
 
 /**
- * YAML proxy configuration.
+ * YAML configuration for ShardingSphere-Proxy.
  */
 @RequiredArgsConstructor
 @Getter
