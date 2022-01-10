@@ -31,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -56,12 +55,9 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
+            oldPrimaryDataSource = "";
             return;
         }
         if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
@@ -91,15 +87,13 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     @Override
     public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (oldPrimaryDataSource.equals(entry.getKey())) {
-                continue;
-            }
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
-                    if (resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
+                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
+                            || entry.getKey().equals(oldPrimaryDataSource)) {
                         disable = false;
                     }
                 }

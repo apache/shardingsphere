@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultShardingStrategyStatement;
 
 import java.util.Optional;
@@ -48,7 +48,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
-        ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())
+        ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
                 ? currentRuleConfig.getDefaultTableShardingStrategy() : currentRuleConfig.getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
@@ -59,7 +59,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelEnum.TABLE.name())) {
+        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             currentRuleConfig.setDefaultTableShardingStrategy(null);
         } else {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);

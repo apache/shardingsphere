@@ -138,7 +138,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
         Collection<YamlRuleConfiguration> rules = Strings.isNullOrEmpty(yamlContent)
-                ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+                ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class, true);
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     

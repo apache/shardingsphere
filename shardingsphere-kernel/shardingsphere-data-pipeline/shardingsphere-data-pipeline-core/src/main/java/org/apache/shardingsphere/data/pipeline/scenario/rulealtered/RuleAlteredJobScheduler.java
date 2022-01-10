@@ -92,7 +92,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             @Override
             public void onSuccess() {
                 if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
-                    log.info("All inventory tasks finished.");
+                    log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
             }

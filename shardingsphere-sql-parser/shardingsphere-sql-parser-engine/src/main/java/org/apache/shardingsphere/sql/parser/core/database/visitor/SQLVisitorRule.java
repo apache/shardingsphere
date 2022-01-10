@@ -235,6 +235,8 @@ public enum SQLVisitorRule {
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),
+
+    HELP("Help", SQLStatementType.DAL),
     
     EXPLAIN("Explain", SQLStatementType.DAL),
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
@@ -64,13 +64,13 @@ public final class PostgreSQLWalDumperTest {
     
     private StandardPipelineDataSourceConfiguration pipelineDataSourceConfig;
     
-    private MemoryChannel channel;
+    private MemoryPipelineChannel channel;
     
     @Before
     public void setUp() {
         position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
-        channel = new MemoryChannel(records -> {
+        channel = new MemoryPipelineChannel(records -> {
         });
         walDumper.setChannel(channel);
     }

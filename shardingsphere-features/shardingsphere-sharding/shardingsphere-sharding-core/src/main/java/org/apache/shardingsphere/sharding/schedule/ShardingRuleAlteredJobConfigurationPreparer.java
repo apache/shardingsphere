@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -140,16 +139,11 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                 tableMap.put(dataNode.getTableName(), each.getLogicTableName());
             }
         }
-        OnRuleAlteredActionConfiguration ruleAlteredActionConfig = getRuleAlteredActionConfig(targetRuleConfig.orElse(sourceRuleConfig)).orElse(null);
-        DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, sourceDataSource.get(dataSourceName).getProps(), tableMap, ruleAlteredActionConfig);
+        DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, sourceDataSource.get(dataSourceName).getProps(), tableMap);
         ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, shardingColumnsMap);
         TaskConfiguration taskConfig = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
         log.info("toTaskConfigs, dataSourceName={}, taskConfig={}", dataSourceName, taskConfig);
         return Collections.singletonList(taskConfig);
-    }
-    
-    private Optional<OnRuleAlteredActionConfiguration> getRuleAlteredActionConfig(final ShardingRuleConfiguration shardingRuleConfig) {
-        return Optional.ofNullable(shardingRuleConfig.getScaling().get(shardingRuleConfig.getScalingName()));
     }
     
     private static ShardingSpherePipelineDataSourceConfiguration getSourceConfiguration(final PipelineConfiguration pipelineConfig) {
@@ -194,15 +188,11 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return Collections.emptySet();
     }
     
-    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap,
-                                                          final OnRuleAlteredActionConfiguration ruleAlteredActionConfig) {
+    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
         result.setTableNameMap(tableMap);
-        if (null != ruleAlteredActionConfig) {
-            result.setBlockQueueSize(ruleAlteredActionConfig.getBlockQueueSize());
-        }
         return result;
     }
     

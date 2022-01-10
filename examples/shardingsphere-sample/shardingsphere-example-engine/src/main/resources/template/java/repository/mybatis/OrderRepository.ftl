@@ -39,6 +39,8 @@ public interface OrderRepository {
     void dropTableShadow();
     
     List<Order> selectShadowOrder();
+
+    void deleteShadow(long orderId);
 </#if>
     
     void insert(Order order);

@@ -17,16 +17,6 @@ chapter = true
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
 | OpenGaussScalingEntry  | openGauss entry of scaling |
 
-## JobRateLimitAlgorithm
-
-| *SPI Name*                                   | *Description*                              |
-| ------------------------------------------- | ------------------------------------------- |
-| JobRateLimitAlgorithm                       | job rate limit algorithm                    |
-
-| *Implementation Class*                      | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| SourceJobRateLimitAlgorithm                 | rate limit algorithm for source side        |
-
 ## JobCompletionDetectAlgorithm
 
 | *SPI Name*                                  | *Description*                               |

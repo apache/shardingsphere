@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
@@ -143,7 +144,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm rateLimitAlgorithm = jobContext.getRuleAlteredContext().getRateLimitAlgorithm();
+        JobRateLimitAlgorithm inputRateLimitAlgorithm = jobContext.getRuleAlteredContext().getInputRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
@@ -165,8 +166,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
-                    if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.onQuery();
+                    if (null != inputRateLimitAlgorithm) {
+                        inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);

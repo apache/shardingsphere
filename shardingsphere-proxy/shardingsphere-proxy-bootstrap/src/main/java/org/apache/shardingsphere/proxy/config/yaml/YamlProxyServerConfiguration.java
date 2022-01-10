@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 /**
- * Server configuration for YAML.
+ * YAML server configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter

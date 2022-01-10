@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -161,7 +161,7 @@ public final class DataSourceReflection {
             return;
         }
         Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
-        Map<String, String> queryProps = new JdbcUrlParser().parse(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
+        Map<String, String> queryProps = new StandardJdbcUrlParser().parse(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
         for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();

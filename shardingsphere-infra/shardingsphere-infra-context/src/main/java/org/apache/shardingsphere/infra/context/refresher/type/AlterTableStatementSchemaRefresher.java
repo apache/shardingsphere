@@ -43,6 +43,8 @@ import java.util.Optional;
  */
 public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
+    private static final String TYPE = AlterTableStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -87,6 +89,6 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return AlterTableStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

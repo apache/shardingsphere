@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
  */
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
+    private static final String TYPE = DropIndexStatement.class.getCanonicalName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
@@ -89,6 +91,6 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public String getType() {
-        return DropIndexStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

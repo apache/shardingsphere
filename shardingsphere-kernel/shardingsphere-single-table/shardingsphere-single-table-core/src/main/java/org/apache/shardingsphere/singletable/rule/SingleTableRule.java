@@ -38,9 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -97,9 +95,21 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @return whether single tables are in same data source or not
      */
     public boolean isSingleTablesInSameDataSource(final Collection<String> singleTableNames) {
-        Set<String> dataSourceNames = singleTableNames.stream().map(each -> findSingleTableDataNode(each)
-                .orElse(null)).filter(Objects::nonNull).map(DataNode::getDataSourceName).collect(Collectors.toSet());
-        return dataSourceNames.size() <= 1;
+        String firstFoundDataSourceName = null;
+        for (String each : singleTableNames) {
+            Optional<DataNode> dataNode = findSingleTableDataNode(each);
+            if (!dataNode.isPresent()) {
+                continue;
+            }
+            if (null == firstFoundDataSourceName) {
+                firstFoundDataSourceName = dataNode.get().getDataSourceName();
+                continue;
+            }
+            if (!firstFoundDataSourceName.equals(dataNode.get().getDataSourceName())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

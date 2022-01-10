@@ -33,27 +33,35 @@ public class OrderRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public void createTableIfNotExists() throws SQLException {
+    public void createTableIfNotExists() {
     }
     
-    public void dropTable() throws SQLException {
+    public void dropTable() {
     }
     
-    public void truncateTable() throws SQLException {
+    public void truncateTable() {
     }
 
-    public Long insert(final Order order) throws SQLException {
+    public Long insert(final Order order) {
         entityManager.persist(order);
         return order.getOrderId();
     }
     
-    public void delete(final Long orderId) throws SQLException {
+    public void delete(final Long orderId) {
         Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1");
         query.setParameter(1, orderId);
         query.executeUpdate();
     }
+
+    <#if feature=="shadow">
+    public void deleteShadow(final Long orderId) {
+        Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND order_type=1");
+        query.setParameter(1, orderId);
+        query.executeUpdate();
+    }
+    </#if>
     
-    public List<Order> selectAll() throws SQLException {
+    public List<Order> selectAll() {
         return (List<Order>) entityManager.createQuery("SELECT o FROM Order o").getResultList();
     }
 }

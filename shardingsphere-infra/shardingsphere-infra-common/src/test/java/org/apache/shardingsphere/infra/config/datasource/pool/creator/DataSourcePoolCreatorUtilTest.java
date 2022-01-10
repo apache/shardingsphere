@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -37,9 +38,9 @@ public final class DataSourcePoolCreatorUtilTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(1, 1);
-        dataSourceConfigurationMap.put("ds_0", createDataSourceConfiguration());
-        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourceConfigurationMap);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = new HashMap<>(1, 1);
+        dataSourceConfigMap.put("ds_0", createDataSourceConfiguration());
+        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourceConfigMap);
         assertThat(actual.size(), is(1));
     }
     
@@ -54,15 +55,15 @@ public final class DataSourcePoolCreatorUtilTest {
     @Test
     public void assertGetDataSourceConfiguration() throws SQLException {
         HikariDataSource actualDataSource = new HikariDataSource();
-        actualDataSource.setDriverClassName("org.h2.Driver");
-        actualDataSource.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        actualDataSource.setDriverClassName(MockedDataSource.class.getName());
+        actualDataSource.setJdbcUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setLoginTimeout(1);
         DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is("org.h2.Driver"));
-        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getProps().get("username").toString(), is("root"));
         assertThat(actual.getProps().get("password").toString(), is("root"));
         assertNull(actual.getProps().get("loginTimeout"));
@@ -71,8 +72,8 @@ public final class DataSourcePoolCreatorUtilTest {
     @Test
     public void assertGetDataSource() {
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(createDataSourceConfiguration());
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getMaximumPoolSize(), is(50));
@@ -83,16 +84,16 @@ public final class DataSourcePoolCreatorUtilTest {
     @Test
     public void assertCreateDataSourceWithIntegerPassword() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", "org.h2.Driver");
-        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         props.put("username", "root");
         props.put("password", 123);
         props.put("loginTimeout", "5000");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("123"));
     }
@@ -115,8 +116,8 @@ public final class DataSourcePoolCreatorUtilTest {
     
     private DataSourceConfiguration createDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", "org.h2.Driver");
-        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         props.put("username", "root");
         props.put("password", "root");
         props.put("loginTimeout", "5000");

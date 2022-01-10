@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 
 /**
  * Dumper interface.
@@ -30,5 +30,5 @@ public interface Dumper extends LifecycleExecutor {
      *
      * @param channel channel
      */
-    void setChannel(Channel channel);
+    void setChannel(PipelineChannel channel);
 }

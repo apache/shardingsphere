@@ -91,12 +91,12 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
     <tx:annotation-driven />
-
+    
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
     </bean>
-
+    
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

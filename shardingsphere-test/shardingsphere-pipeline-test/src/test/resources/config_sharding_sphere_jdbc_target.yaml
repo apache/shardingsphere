@@ -54,13 +54,24 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
-      workerThread: 40
-      readBatchSize: 1000
-      rateLimiter:
-        type: SOURCE
+      input:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
+      output:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
+      streamChannel:
+        type: MEMORY
         props:
-          qps: 50
+          block-queue-size: 10000
       completionDetector:
         type: FIXTURE
       dataConsistencyChecker:

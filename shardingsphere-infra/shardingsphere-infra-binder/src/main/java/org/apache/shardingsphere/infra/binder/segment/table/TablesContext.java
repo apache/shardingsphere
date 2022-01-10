@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -120,9 +120,9 @@ public final class TablesContext {
             }
             return result;
         }
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
-        Collection<String> columnNames = new LinkedHashSet<>();
+        Collection<String> columnNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
             if (null == each.getOwner()) {
                 columnNames.add(each.getName());

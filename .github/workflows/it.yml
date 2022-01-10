@@ -46,9 +46,6 @@ jobs:
             scenario: tbl
           - adapter: proxy
             database: PostgreSQL
-            scenario: dbtbl_with_readwrite_splitting_and_encrypt
-          - adapter: proxy
-            database: PostgreSQL
             scenario: empty_rules
     steps:
       - name: Cache Maven Repos

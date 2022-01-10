@@ -37,13 +37,13 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
-    private final Properties defaultDataSourceProperties = new Properties();
+    private final Properties defaultJdbcUrlProperties = new Properties();
     
     public HikariDataSourcePoolCreationMetaData() {
         buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
-        buildDefaultDataSourceProperties();
+        buildDefaultJdbcUrlProperties();
     }
     
     private void buildDefaultProperties() {
@@ -65,31 +65,31 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }
     
-    private void buildDefaultDataSourceProperties() {
-        defaultDataSourceProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("prepStmtCacheSize", "200000");
-        defaultDataSourceProperties.setProperty("prepStmtCacheSqlLimit", "2048");
-        defaultDataSourceProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        defaultDataSourceProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("netTimeoutForStreamingResults", "0");
-        defaultDataSourceProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("useSSL", Boolean.FALSE.toString());
-        defaultDataSourceProperties.setProperty("serverTimezone", "UTC");
-    }
-    
-    @Override
-    public String getDataSourcePropertiesFieldName() {
-        return "dataSourceProperties";
+    private void buildDefaultJdbcUrlProperties() {
+        defaultJdbcUrlProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultJdbcUrlProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultJdbcUrlProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("netTimeoutForStreamingResults", "0");
+        defaultJdbcUrlProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("serverTimezone", "UTC");
     }
     
     @Override
     public String getJdbcUrlFieldName() {
         return "jdbcUrl";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return "dataSourceProperties";
     }
     
     @Override

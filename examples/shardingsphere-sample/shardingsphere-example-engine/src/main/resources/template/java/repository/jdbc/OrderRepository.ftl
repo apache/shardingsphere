@@ -85,9 +85,18 @@ public final class OrderRepository {
         }
     }
     
-    public List<Order> selectShadowOrder() {
+    public List<Order> selectShadowOrder() throws SQLException {
         String sql = "SELECT * FROM t_order WHERE order_type=1";
         return getOrders(sql);
+    }
+    
+    public void deleteShadow(final Long orderId) throws SQLException {
+        String sql = "DELETE FROM t_order WHERE order_id=? AND order_type=1";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, orderId);
+            preparedStatement.executeUpdate();
+        }
     }
 </#if>
     
@@ -106,7 +115,7 @@ public final class OrderRepository {
                 }
             }
         }
-        return order;
+        return order.getOrderId();
     }
     
     public void delete(final Long orderId) throws SQLException {
@@ -131,9 +140,10 @@ public final class OrderRepository {
             while (resultSet.next()) {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
-                order.setUserId(resultSet.getInt(2));
-                order.setAddressId(resultSet.getLong(3));
-                order.setStatus(resultSet.getString(4));
+                order.setOrderType(resultSet.getInt(2));
+                order.setUserId(resultSet.getInt(3));
+                order.setAddressId(resultSet.getLong(4));
+                order.setStatus(resultSet.getString(5));
                 result.add(order);
             }
         }

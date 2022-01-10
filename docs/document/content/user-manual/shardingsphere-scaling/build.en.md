@@ -52,13 +52,24 @@ rules:
   scalingName: # Enabled scaling action config name
   scaling:
     <scaling-action-config-name> (+):
-      blockQueueSize: # Data channel blocking queue size
-      workerThread: # Worker thread pool size for inventory data ingestion and data importing
-      readBatchSize: # Maximum records count of a query operation returning
-      rateLimiter: # Rate limit algorithm
-        type: # Algorithm type. Options: SOURCE
+      input:
+        workerThread: # Worker thread pool size for inventory data ingestion from source
+        batchSize: # Maximum records count of a DML select operation
+        rateLimiter: # Rate limit algorithm
+          type: # Algorithm type. Options: QPS
+          props: # Algorithm properties
+            qps: # QPS property. Available for types: QPS
+      output:
+        workerThread: # Worker thread pool size for data importing to target
+        batchSize: # Maximum records count of a DML insert/delete/update operation
+        rateLimiter: # Rate limit algorithm
+          type: # Algorithm type. Options: TPS
+          props: # Algorithm properties
+            tps: # TPS property. Available for types: TPS
+      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
+        type: # Algorithm type. Options: MEMORY
         props: # Algorithm properties
-          qps: # QPS property. Available for types: SOURCE
+          block-queue-size: # Property: data channel block queue size. Available for types: MEMORY
       completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
@@ -78,13 +89,24 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
-      workerThread: 40
-      readBatchSize: 1000
-      rateLimiter:
-        type: SOURCE
+      input:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
+      output:
+        workerThread: 40
+        batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
+      streamChannel:
+        type: MEMORY
         props:
-          qps: 50
+          block-queue-size: 10000
       completionDetector:
         type: IDLE
         props:

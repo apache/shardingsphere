@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
@@ -47,8 +47,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQ
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrl;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.io.Serializable;
@@ -76,7 +76,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private final Random random = new SecureRandom();
     
     @Setter
-    private Channel channel;
+    private PipelineChannel channel;
     
     static {
         ShardingSphereServiceLoader.register(ValueHandler.class);
@@ -100,7 +100,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private void dump() {
         HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
         log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        JdbcUrl jdbcUrl = new JdbcUrlParser().parse(hikariConfig.getJdbcUrl());
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(hikariConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), jdbcUrl.getHostname(), jdbcUrl.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
@@ -199,9 +199,6 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private void pushRecord(final Record record) {
-        try {
-            channel.pushRecord(record);
-        } catch (final InterruptedException ignored) {
-        }
+        channel.pushRecord(record);
     }
 }

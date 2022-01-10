@@ -146,7 +146,7 @@ CLEAR
 DEFAULT
     : D E F A U L T
     ;
-    
+
 DATABASE
     : D A T A B A S E
     ;
@@ -158,15 +158,15 @@ SHARDING_ALGORITHM
 STRATEGY
     : S T R A T E G Y
     ;
-        
+
 DATANODES
     : D A T A N O D E S
     ;
-    
+
 DATABASE_STRATEGY
     : D A T A B A S E UL_ S T R A T E G Y
     ;
-    
+
 TABLE_STRATEGY
     : T A B L E UL_ S T R A T E G Y
     ;
@@ -189,4 +189,8 @@ GENERATORS
 
 GENERATED_KEY_ALGORITHM
     : G E N E R A T E D UL_ K E Y UL_ A L G O R I T H M
+    ;
+
+UNUSED
+    : U N U S E D
     ;

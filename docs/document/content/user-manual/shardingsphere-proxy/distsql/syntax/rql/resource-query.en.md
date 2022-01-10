@@ -11,14 +11,14 @@ SHOW SCHEMA RESOURCES [FROM schemaName]
 
 ## Return Value Description
 
-| Column        | Description             |
-| ------------- | ----------------------- |
-| name          | Data source name        |
-| type          | Data source type        |
-| host          | Data source host        |
-| port          | Data source port        |
-| db            | Database name           |
-| attribute     | Data source parameter   |
+| Column    | Description           |
+| --------- | --------------------- |
+| name      | Data source name      |
+| type      | Data source type      |
+| host      | Data source host      |
+| port      | Data source port      |
+| db        | Database name         |
+| attribute | Data source attribute |
 
 ## Example
 

@@ -23,7 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -35,6 +37,8 @@ import java.util.Properties;
 public final class RuleAlteredContextUtil {
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
+    
+    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelFactory();
     
     /**
      * Mock mode configuration.
@@ -73,5 +77,14 @@ public final class RuleAlteredContextUtil {
      */
     public static ExecuteEngine getExecuteEngine() {
         return EXECUTE_ENGINE;
+    }
+    
+    /**
+     * Get pipeline channel factory.
+     *
+     * @return channel factory
+     */
+    public static PipelineChannelFactory getPipelineChannelFactory() {
+        return PIPELINE_CHANNEL_FACTORY;
     }
 }
