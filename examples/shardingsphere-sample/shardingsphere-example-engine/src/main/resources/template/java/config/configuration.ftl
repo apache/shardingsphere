@@ -25,6 +25,8 @@ package org.apache.shardingsphere.example.${package}.${framework};
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 <#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -47,7 +49,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 <#if feature?contains("shadow")>
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -104,8 +105,8 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
         return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createShardingSphereProps());
     </#if>
     }
-    
 <#if mode!="memory">
+    
     private static ModeConfiguration createModeConfiguration() {
     <#if mode=="cluster">
         return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()), true);
@@ -142,7 +143,6 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
     </#if>
         return result; 
     }
-    
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
 </#list>
