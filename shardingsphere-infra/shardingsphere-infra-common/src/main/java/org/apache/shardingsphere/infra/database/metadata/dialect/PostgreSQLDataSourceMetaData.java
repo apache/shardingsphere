@@ -50,4 +50,9 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
     }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
+    }
 }

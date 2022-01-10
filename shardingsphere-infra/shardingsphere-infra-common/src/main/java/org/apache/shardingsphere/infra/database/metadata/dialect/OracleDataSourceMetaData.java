@@ -77,4 +77,9 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     public Properties getQueryProperties() {
         return new Properties();
     }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
+    }
 }

@@ -90,6 +90,11 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         if (!(dataSourceMetaData instanceof H2DataSourceMetaData)) {
             return false;

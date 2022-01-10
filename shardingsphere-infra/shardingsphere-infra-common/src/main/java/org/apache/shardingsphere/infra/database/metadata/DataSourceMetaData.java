@@ -60,6 +60,13 @@ public interface DataSourceMetaData {
     Properties getQueryProperties();
     
     /**
+     * Get default query properties.
+     *
+     * @return default query properties
+     */
+    Properties getDefaultQueryProperties();
+    
+    /**
      * Judge whether two of data sources are in the same database instance.
      *
      * @param dataSourceMetaData data source meta data
