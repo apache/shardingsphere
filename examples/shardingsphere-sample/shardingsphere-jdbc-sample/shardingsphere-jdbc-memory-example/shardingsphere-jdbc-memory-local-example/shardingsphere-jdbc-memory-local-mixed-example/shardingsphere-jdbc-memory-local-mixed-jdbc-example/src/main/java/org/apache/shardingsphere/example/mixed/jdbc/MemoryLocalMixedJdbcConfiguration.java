@@ -127,7 +127,6 @@ public final class MemoryLocalMixedJdbcConfiguration {
         return new EncryptRuleConfiguration(Arrays.asList(orderRule, orderItemRule), encryptAlgorithmConfigs);
     }
     
-    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", createDataSource("demo_ds_0"));

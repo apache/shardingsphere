@@ -45,4 +45,3 @@
         result.setProperty("worker-id", "123");
         return result;
     }
-    
