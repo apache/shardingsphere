@@ -44,7 +44,7 @@ public final class PostgreSQLDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
         assertThat(actual.getQueryProperties().size(), is(1));
-        assertThat(actual.getQueryProperties().get("targetServerType"), is("master"));
+        assertThat(actual.getQueryProperties().getProperty("targetServerType"), is("master"));
     }
     
     // TODO fixme

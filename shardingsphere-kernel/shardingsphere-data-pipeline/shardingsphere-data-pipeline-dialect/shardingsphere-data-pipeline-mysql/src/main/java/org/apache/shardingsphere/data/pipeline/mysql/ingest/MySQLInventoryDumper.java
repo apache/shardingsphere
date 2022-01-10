@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
@@ -27,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Properties;
 
 /**
  * MySQL JDBC Dumper.
@@ -35,7 +35,9 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        inventoryDumperConfig.getDataSourceConfig().appendJDBCQueryProperties(ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
+        Properties queryProps = new Properties();
+        queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
+        inventoryDumperConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);
     }
     
     @Override

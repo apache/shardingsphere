@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableM
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,10 +38,8 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLTableMetaDataLoaderTest {
     
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
+    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
+            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -82,20 +79,20 @@ public final class MySQLTableMetaDataLoaderTest {
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "json", "geometry");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12, -1, -2);
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
+        when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
 
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci", "utf8_general_ci");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year");
+        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "");
+        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "", "");
+        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
         return result;
     }
 
@@ -108,21 +105,21 @@ public final class MySQLTableMetaDataLoaderTest {
     }
 
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
-            if ("MySQL".equals(each.getDatabaseType())) {
-                return each;
-            }
+        DialectTableMetaDataLoader result = DIALECT_METADATA_LOADER_MAP.get("MySQL");
+        if (null != result) {
+            return result;
         }
         throw new IllegalStateException("Can not find MySQLTableMetaDataLoader");
     }
 
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(4));
+        assertThat(actual.get("tbl").getColumns().size(), is(5));
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(actual.get("tbl").getColumnMetaData(3), is(new ColumnMetaData("geo", -2, false, false, false)));
+        assertThat(actual.get("tbl").getColumnMetaData(4), is(new ColumnMetaData("t_year", 91, false, false, false)));
         assertThat(actual.get("tbl").getIndexes().size(), is(1));
         assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }

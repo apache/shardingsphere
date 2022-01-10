@@ -15,27 +15,9 @@
   ~ limitations under the License.
   -->
     
-    /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
-    */
-    public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createReadwriteSplittingRuleConfiguration()), new Properties());
-    }
-    
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "demo_read_query_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
-        result.put("demo_write_ds", createDataSource("demo_write_ds"));
-        result.put("demo_read_ds_0", createDataSource("demo_read_ds_0"));
-        result.put("demo_read_ds_1", createDataSource("demo_read_ds_1"));
-        return result;
     }
     

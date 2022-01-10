@@ -351,7 +351,8 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 解压缩
 `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`，
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件

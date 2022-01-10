@@ -30,6 +30,8 @@ public enum SQLVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
+    TABLE("Table", SQLStatementType.DML),
+    
     INSERT("Insert", SQLStatementType.DML),
     
     UPDATE("Update", SQLStatementType.DML),

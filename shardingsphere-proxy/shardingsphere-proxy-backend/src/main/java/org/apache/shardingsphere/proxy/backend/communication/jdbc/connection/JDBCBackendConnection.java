@@ -35,8 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -51,8 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * JDBC backend connection.
@@ -60,10 +57,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCManager {
-    
-    static {
-        ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
-    }
     
     private final ConnectionSession connectionSession;
     
@@ -85,8 +78,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
-        fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
-                .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+        fetchSizeSetters = SingletonSPIRegistry.getTypedSingletonInstancesMap(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     
     @Override

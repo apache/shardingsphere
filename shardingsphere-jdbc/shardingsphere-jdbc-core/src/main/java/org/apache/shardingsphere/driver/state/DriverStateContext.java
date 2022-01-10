@@ -20,11 +20,9 @@ package org.apache.shardingsphere.driver.state;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -36,13 +34,7 @@ public final class DriverStateContext {
     private static final Map<String, DriverState> STATES;
     
     static {
-        // TODO add singleton cache with TypedSPI init
-        ShardingSphereServiceLoader.register(DriverState.class);
-        Collection<DriverState> driverStates = ShardingSphereServiceLoader.getSingletonServiceInstances(DriverState.class);
-        STATES = new HashMap<>();
-        for (DriverState each : driverStates) {
-            STATES.put(each.getType(), each);
-        }
+        STATES = SingletonSPIRegistry.getTypedSingletonInstancesMap(DriverState.class);
     }
     
     /**

@@ -16,9 +16,15 @@
   ~ limitations under the License.
   -->
 
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.AddressRepository">
-    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Address">
+<mapper namespace="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.AddressRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Address">
         <result column="address_id" property="addressId" jdbcType="BIGINT"/>
         <result column="address_name" property="addressName" jdbcType="VARCHAR"/>
     </resultMap>

@@ -15,16 +15,6 @@
   ~ limitations under the License.
   -->
     
-    /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
-    */
-    public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSource("demo_ds_0"), Collections.singleton(createEncryptRuleConfiguration()), new Properties());
-    }
-    
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");

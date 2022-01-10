@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
+    
     <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">insert</prop>
@@ -22,7 +22,7 @@
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">delete</prop>
@@ -30,7 +30,7 @@
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">select</prop>
@@ -38,16 +38,16 @@
             <prop key="value">1</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds_0" shadow-data-source-name="demo_ds_1"/>
+        <shadow:data-source id="shadow-data-source" source-data-source-name="ds_0" shadow-data-source-name="ds_1"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
@@ -57,11 +57,11 @@
     </shadow:rule>
     
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
-
+    
     <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
     <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0,demo_ds_1" rule-refs="shadowRule, sqlParseRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1" rule-refs="shadowRule, sqlParseRule">
         <props>
             <prop key="sql-show">true</prop>
         </props>

@@ -49,7 +49,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHa
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * MySQL incremental dumper.
@@ -79,9 +78,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private PipelineChannel channel;
     
     static {
-        ShardingSphereServiceLoader.register(ValueHandler.class);
-        VALUE_HANDLER_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(ValueHandler.class)
-                .stream().collect(Collectors.toMap(ValueHandler::getTypeName, v -> v));
+        VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
     }
     
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition) {
