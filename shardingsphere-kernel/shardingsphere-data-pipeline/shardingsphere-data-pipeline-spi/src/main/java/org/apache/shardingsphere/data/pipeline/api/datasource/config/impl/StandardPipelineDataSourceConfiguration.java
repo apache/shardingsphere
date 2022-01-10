@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Pipeline data source configuration for standard JDBC.
@@ -96,7 +97,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     @Override
-    public void appendJDBCQueryProperties(final Map<String, String> queryProps) {
+    public void appendJDBCQueryProperties(final Properties queryProps) {
         hikariConfig.setJdbcUrl(new StandardJdbcUrlParser().appendQueryProperties(hikariConfig.getJdbcUrl(), queryProps));
     }
     

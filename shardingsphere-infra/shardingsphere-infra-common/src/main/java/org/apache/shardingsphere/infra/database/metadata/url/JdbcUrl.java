@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * JDBC URL.
@@ -35,5 +35,5 @@ public final class JdbcUrl {
     
     private final String database;
     
-    private final Map<String, String> queryProperties;
+    private final Properties queryProperties;
 }

@@ -161,7 +161,7 @@ public final class DataSourceReflection {
             return;
         }
         Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
-        Map<String, String> queryProps = new StandardJdbcUrlParser().parse(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
+        Properties queryProps = new StandardJdbcUrlParser().parse(getJdbcUrl(jdbcUrlFieldName)).getQueryProperties();
         for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
@@ -171,7 +171,7 @@ public final class DataSourceReflection {
         }
     }
     
-    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Map<String, String> queryProps) {
+    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {
         return targetDataSourceProps.containsKey(defaultPropertyKey) || queryProps.containsKey(defaultPropertyKey);
     }
     
