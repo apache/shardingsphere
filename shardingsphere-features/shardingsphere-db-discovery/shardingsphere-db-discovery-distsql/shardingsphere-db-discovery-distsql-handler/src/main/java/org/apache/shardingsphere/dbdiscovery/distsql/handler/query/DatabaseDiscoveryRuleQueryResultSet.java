@@ -42,11 +42,13 @@ import java.util.Optional;
  */
 public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
     
-    private static final String NAME = "group_name";
+    private static final String GROUP_NAME = "group_name";
     
     private static final String DATA_SOURCE_NAMES = "data_source_names";
     
     private static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
+    
+    private static final String NAME = "name";
     
     private static final String DISCOVER_TYPE = "discovery_type";
     
@@ -74,7 +76,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
+        return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
     }
     
     @Override
