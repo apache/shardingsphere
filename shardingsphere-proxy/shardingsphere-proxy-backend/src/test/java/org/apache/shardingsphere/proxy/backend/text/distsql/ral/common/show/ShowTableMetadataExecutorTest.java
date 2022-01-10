@@ -66,7 +66,7 @@ public final class ShowTableMetadataExecutorTest {
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("schema_name"));
         assertThat(data.get(1), is("t_order"));
-        assertThat(data.get(2), is("TABLE"));
+        assertThat(data.get(2), is("COLUMN"));
         assertThat(data.get(3), is("order_id"));
         executor.next();
         data = new ArrayList<>(executor.getQueryResponseRow().getData());

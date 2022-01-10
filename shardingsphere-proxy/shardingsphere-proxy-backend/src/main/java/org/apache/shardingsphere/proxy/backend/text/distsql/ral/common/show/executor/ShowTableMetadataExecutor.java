@@ -81,7 +81,7 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
     
     private Collection<List<Object>> buildTableRows(final String schemaName, final ShardingSphereSchema schema, final String tableName) {
         Collection<List<Object>> result = new LinkedList<>();
-        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(schemaName, tableName, "TABLE", each))
+        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(schemaName, tableName, "COLUMN", each))
                 .collect(Collectors.toCollection(LinkedList::new));
         Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(each -> each.getName())
                 .map(each -> buildRow(schemaName, tableName, "INDEX", each)).collect(Collectors.toCollection(LinkedList::new));
