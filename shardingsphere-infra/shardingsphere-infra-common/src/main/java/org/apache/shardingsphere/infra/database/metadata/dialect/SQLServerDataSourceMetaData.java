@@ -61,7 +61,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
-    public Properties getDefaultJdbcUrlProperties() {
+    public Properties getDefaultQueryProperties() {
         return new Properties();
     }
 }
