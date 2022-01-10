@@ -74,16 +74,16 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
             throw new SchemaNotExistedException(schemaName);
         }
         ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(schemaName).getSchema();
-        LinkedList<List<Object>> rows = schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
+        Collection<List<Object>> rows = schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(schemaName, schema, each)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
         return new MultipleLocalDataMergedResult(rows);
     }
     
     private Collection<List<Object>> buildTableRows(final String schemaName, final ShardingSphereSchema schema, final String tableName) {
         Collection<List<Object>> result = new LinkedList<>();
-        LinkedList<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(schemaName, tableName, "TABLE", each))
+        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(schemaName, tableName, "TABLE", each))
                 .collect(Collectors.toCollection(LinkedList::new));
-        LinkedList<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(each -> each.getName())
+        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(each -> each.getName())
                 .map(each -> buildRow(schemaName, tableName, "INDEX", each)).collect(Collectors.toCollection(LinkedList::new));
         result.addAll(columnRows);
         result.addAll(indexRows);
