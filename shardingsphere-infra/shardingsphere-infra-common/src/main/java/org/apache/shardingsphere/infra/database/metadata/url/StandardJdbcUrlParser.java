@@ -50,19 +50,19 @@ public final class StandardJdbcUrlParser {
     /**
      * Parse JDBC URL.
      * 
-     * @param jdbcURL JDBC URL to be parsed
+     * @param jdbcUrl JDBC URL to be parsed
      * @return parsed JDBC URL
      */
-    public JdbcUrl parse(final String jdbcURL) {
-        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
+    public JdbcUrl parse(final String jdbcUrl) {
+        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
-            if (null == authority) {                 
-                throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+            if (null == authority) {
+                throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
             }
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
-        throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+        throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
     }
     
     private String parseHostname(final String authority) {
