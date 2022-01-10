@@ -200,6 +200,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.Par
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.util.Collection;
@@ -1571,6 +1572,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitTable(final MySQLStatementParser.TableContext ctx) {
+        MySQLTableStatement result = new MySQLTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setColumn((ColumnSegment) visit(ctx.columnName()));
+        result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        return result;
     }
     
     /**
