@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitte
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -110,20 +111,22 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
+        PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
         ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
         List<InventoryTask> allInventoryTasks = new LinkedList<>();
         for (TaskConfiguration each : jobContext.getTaskConfigs()) {
-            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(jobContext, each, dataSourceManager, importerExecuteEngine));
+            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(jobContext, each, dataSourceManager, pipelineChannelFactory, importerExecuteEngine));
         }
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
     
     private void initIncrementalTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) throws SQLException {
+        PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
         for (TaskConfiguration each : jobContext.getTaskConfigs()) {
             each.getDumperConfig().setPosition(getIncrementalPosition(jobContext, each, dataSourceManager));
             jobContext.getIncrementalTasks().add(new IncrementalTask(each.getHandleConfig().getConcurrency(),
-                    each.getDumperConfig(), each.getImporterConfig(), incrementalDumperExecuteEngine));
+                    each.getDumperConfig(), each.getImporterConfig(), pipelineChannelFactory, incrementalDumperExecuteEngine));
         }
     }
     

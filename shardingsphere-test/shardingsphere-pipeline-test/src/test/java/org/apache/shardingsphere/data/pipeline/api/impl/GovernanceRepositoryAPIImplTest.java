@@ -129,12 +129,12 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
         dumperConfig.setShardingItem(0);
-        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine());
+        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getPipelineChannelFactory(), RuleAlteredContextUtil.getExecuteEngine());
     }
     
     private IncrementalTask mockIncrementalTask(final TaskConfiguration taskConfig) {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
-        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getExecuteEngine());
+        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), RuleAlteredContextUtil.getPipelineChannelFactory(), RuleAlteredContextUtil.getExecuteEngine());
     }
 }

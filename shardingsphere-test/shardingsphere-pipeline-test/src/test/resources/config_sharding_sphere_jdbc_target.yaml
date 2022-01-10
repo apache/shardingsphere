@@ -54,7 +54,6 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
       input:
         workerThread: 40
         batchSize: 1000
@@ -69,6 +68,10 @@ rules:
           type: TPS
           props:
             tps: 2000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
       completionDetector:
         type: FIXTURE
       dataConsistencyChecker:

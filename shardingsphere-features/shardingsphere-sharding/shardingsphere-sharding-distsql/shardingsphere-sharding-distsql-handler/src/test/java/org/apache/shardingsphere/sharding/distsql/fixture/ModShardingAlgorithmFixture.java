@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.fixture;
 
+import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Collections;
 
-public final class ModShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class ModShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
     
     @Override
     public void init() {
@@ -43,5 +44,15 @@ public final class ModShardingAlgorithmFixture implements StandardShardingAlgori
     @Override
     public String getType() {
         return "MOD_TEST";
+    }
+    
+    @Override
+    public int getAutoTablesAmount() {
+        return 2;
+    }
+    
+    @Override
+    public Collection<String> getAllPropertyKeys() {
+        return null;
     }
 }

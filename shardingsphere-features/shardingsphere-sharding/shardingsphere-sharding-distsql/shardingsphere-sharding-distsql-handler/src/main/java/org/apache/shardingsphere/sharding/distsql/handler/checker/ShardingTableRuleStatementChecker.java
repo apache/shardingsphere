@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
@@ -216,7 +216,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static boolean isAlgorithmInvalid(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
-        return !ShardingStrategyTypeEnum.contain(shardingStrategySegment.getType()) || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+        return !ShardingStrategyType.contain(shardingStrategySegment.getType()) || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
     }
     
     private static boolean isAlgorithmExists(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {

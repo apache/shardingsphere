@@ -20,23 +20,33 @@ package org.apache.shardingsphere.proxy.config.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Rule configuration for YAML.
+ *  YAML resource configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxyRuleConfiguration implements YamlConfiguration {
+public final class YamlProxyResourceConfiguration implements YamlConfiguration {
     
-    private String schemaName;
+    private String url;
     
-    private Map<String, YamlResourceConfiguration> dataSources = new HashMap<>();
+    private String username;
     
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private String password;
+    
+    private Long connectionTimeoutMilliseconds;
+    
+    private Long idleTimeoutMilliseconds;
+    
+    private Long maxLifetimeMilliseconds;
+    
+    private Integer maxPoolSize;
+    
+    private Integer minPoolSize;
+    
+    private Boolean readOnly;
+    
+    private Properties customPoolProps;
 }

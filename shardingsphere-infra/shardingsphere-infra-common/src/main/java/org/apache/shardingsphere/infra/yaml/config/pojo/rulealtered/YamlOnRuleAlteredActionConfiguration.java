@@ -32,11 +32,11 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSp
 @ToString
 public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
-    private int blockQueueSize = 10000;
-    
     private YamlInputConfiguration input;
     
     private YamlOutputConfiguration output;
+    
+    private YamlShardingSphereAlgorithmConfiguration streamChannel;
     
     private YamlShardingSphereAlgorithmConfiguration completionDetector;
     

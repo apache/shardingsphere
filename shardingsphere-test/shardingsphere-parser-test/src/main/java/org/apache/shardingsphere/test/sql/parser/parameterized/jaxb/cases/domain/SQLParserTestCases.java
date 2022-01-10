@@ -240,6 +240,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowTransactionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
@@ -392,16 +393,16 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-procedure-status")
     private final List<ShowProcedureStatusStatementTestCase> showProcedureStatusStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-procedure-code")
     private final List<ShowProcedureCodeStatementTestCase> showProcedureCodeStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-relaylog-events")
     private final List<ShowRelaylogEventsStatementTestCase> showRelaylogEventsStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-slave-hosts")
     private final List<ShowSlaveHostsStatementTestCase> showSlaveHostsStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-columns")
     private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
@@ -467,10 +468,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-database")
     private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-database-link")
     private final List<CreateDatabaseLinkStatementTestCase> createDatabaseLinkTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-dimension")
     private final List<CreateDimensionStatementTestCase> createDimensionTestCase = new LinkedList<>();
     
@@ -518,10 +519,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-domain")
     private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-triggers")
     private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
     
@@ -557,7 +558,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "audit")
     private final List<AuditStatementTestCase> auditTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "no-audit")
     private final List<NoAuditStatementTestCase> noAuditTestCase = new LinkedList<>();
     
@@ -638,7 +639,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-sharding-auto-table-rule")
     private final List<CreateShardingAutoTableRuleStatementTestCase> createShardingTableRuleTestCase = new LinkedList<>();
-  
+    
     @XmlElement(name = "create-sharding-table-rule")
     private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCases = new LinkedList<>();
     
@@ -707,10 +708,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "checkout-scaling")
     private final List<CheckoutScalingStatementTestCase> checkoutScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sharding-scaling")
     private final List<CreateShardingScalingStatementTestCase> createShardingScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sharding-scaling")
     private final List<DropShardingScalingStatementTestCase> dropShardingScalingStatementTestCases = new LinkedList<>();
     
@@ -767,7 +768,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-shadow-algorithm")
     private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCase = new LinkedList<>();
- 
+    
     @XmlElement(name = "create-shadow-algorithm")
     private final List<CreateShadowAlgorithmStatementTestCase> createShadowAlgorithmTestCase = new LinkedList<>();
     
@@ -821,7 +822,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "uninstall-component")
     private final List<UninstallComponentStatementTestCase> uninstallComponentStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "uninstall-plugin")
     private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
     
@@ -851,7 +852,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-default-sharding-strategy")
     private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
-  
+    
     @XmlElement(name = "alter-default-sharding-strategy")
     private final List<AlterDefaultShardingStrategyStatementTestCase> alterDefaultShardingStrategyStatementTestCases = new LinkedList<>();
     
@@ -860,19 +861,19 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-replicas")
     private final List<ShowReplicasStatementTestCase> showReplicasStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-replica-status")
     private final List<ShowReplicaStatusStatementTestCase> showReplicaStatusStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-slave-status")
     private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-sharding-algorithm")
     private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-key-generator")
     private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sharding-key-generator")
     private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorStatementTestCases = new LinkedList<>();
     
@@ -881,7 +882,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "reset")
     private final List<ResetStatementTestCase> resetStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "reset-persist")
     private final List<ResetPersistStatementTestCase> resetPersistStatementTestCases = new LinkedList<>();
     
@@ -890,13 +891,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "load-index")
     private final List<LoadIndexInfoStatementTestCase> loadIndexInfoStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "kill")
     private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "shutdown")
     private final List<ShutdownStatementTestCase> shutdownStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-default-single-table")
     private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
     
@@ -908,7 +909,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-open-tables")
     private final List<ShowOpenTablesStatementTestCase> showOpenTablesStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "check-table")
     private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
     
@@ -932,7 +933,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-variables")
     private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-key-generators")
     private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
     
@@ -980,6 +981,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "help")
     private final List<HelpStatementTestCase> helpStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-unused-sharding-algorithms")
+    private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "table")
     private final List<TableStatementTestCase> tableStatementTestCases = new LinkedList<>();
@@ -1206,8 +1210,8 @@ public final class SQLParserTestCases {
         putAll(showCharacterSetStatementTestCases, result);
         putAll(showCollationStatementTestCases, result);
         putAll(showVariablesStatementTestCases, result);
-        putAll(showShardingKeyGeneratorsStatementTestCases,result);
-        putAll(showDefaultShardingStrategyStatementTestCases,result);
+        putAll(showShardingKeyGeneratorsStatementTestCases, result);
+        putAll(showDefaultShardingStrategyStatementTestCases, result);
         putAll(dropShardingKeyGeneratorStatementTestCases, result);
         putAll(dropDefaultShardingStrategyStatementTestCases, result);
         putAll(delimiterStatementTestCases, result);
@@ -1215,7 +1219,7 @@ public final class SQLParserTestCases {
         putAll(showSQLParserRuleStatementTestCases, result);
         putAll(createDomainStatementTestCases, result);
         putAll(createRuleStatementTestCases, result);
-        putAll(showAuthorityRuleStatementTestCases,result);
+        putAll(showAuthorityRuleStatementTestCases, result);
         putAll(showTransactionRuleStatementTestCases, result);
         putAll(alterSQLParserRuleStatementTestCases, result);
         putAll(createTypeStatementTestCases, result);
@@ -1228,6 +1232,7 @@ public final class SQLParserTestCases {
         putAll(alterLanguageStatementTestCases, result);
         putAll(dropLanguageStatementTestCases, result);
         putAll(helpStatementTestCases, result);
+        putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
         putAll(tableStatementTestCases, result);
         return result;
     }

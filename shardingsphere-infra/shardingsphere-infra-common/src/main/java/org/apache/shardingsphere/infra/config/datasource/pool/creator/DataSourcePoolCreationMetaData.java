@@ -50,23 +50,23 @@ public interface DataSourcePoolCreationMetaData extends TypedSPI, RequiredSPI {
     Map<String, String> getPropertySynonyms();
     
     /**
-     * Get data source properties field name.
-     * 
-     * @return data source properties field name
-     */
-    String getDataSourcePropertiesFieldName();
-    
-    /**
      * Get JDBC URL field name.
-     * 
+     *
      * @return JDBC URL field name
      */
     String getJdbcUrlFieldName();
     
     /**
-     * Get default data source properties.
+     * Get JDBC URL properties field name.
      * 
-     * @return default data source properties
+     * @return JDBC URL properties field name
      */
-    Properties getDefaultDataSourceProperties();
+    String getJdbcUrlPropertiesFieldName();
+    
+    /**
+     * Get default JDBC URL properties.
+     * 
+     * @return default JDBC URL properties
+     */
+    Properties getDefaultJdbcUrlProperties();
 }

@@ -37,8 +37,6 @@ public class DumperConfiguration {
     
     private PipelineDataSourceConfiguration dataSourceConfig;
     
-    private int blockQueueSize = 10000;
-    
     private IngestPosition<?> position;
     
     /**

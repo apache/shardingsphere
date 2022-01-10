@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.channel;
+package org.apache.shardingsphere.data.pipeline.api.ingest.channel;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 

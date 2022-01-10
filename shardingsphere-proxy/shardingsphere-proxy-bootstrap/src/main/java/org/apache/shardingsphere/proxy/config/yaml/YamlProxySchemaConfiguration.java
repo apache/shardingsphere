@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.enums;
+package org.apache.shardingsphere.proxy.config.yaml;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Sharding strategy level enum.
+ * YAML schema configuration for ShardingSphere-Proxy.
  */
-public enum ShardingStrategyLevelEnum {
+@Getter
+@Setter
+public final class YamlProxySchemaConfiguration implements YamlConfiguration {
     
-    DATABASE, TABLE
+    private String schemaName;
+    
+    private Map<String, YamlProxyResourceConfiguration> dataSources = new HashMap<>();
+    
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

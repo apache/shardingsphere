@@ -19,6 +19,9 @@ package org.apache.shardingsphere.agent.plugin.tracing;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class MockDataSourceMetaData implements DataSourceMetaData {
     
     @Override
@@ -39,5 +42,10 @@ public final class MockDataSourceMetaData implements DataSourceMetaData {
     @Override
     public String getSchema() {
         return "mock.schema";
+    }
+    
+    @Override
+    public Map<String, String> getQueryProperties() {
+        return new LinkedHashMap<>();
     }
 }

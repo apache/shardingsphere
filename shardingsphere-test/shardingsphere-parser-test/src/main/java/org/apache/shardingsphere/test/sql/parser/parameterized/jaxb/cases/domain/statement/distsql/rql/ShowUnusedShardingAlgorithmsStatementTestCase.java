@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.url;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * JDBC URL.
+ * Show unused sharding algorithms statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class JdbcUrl {
+@Setter
+public final class ShowUnusedShardingAlgorithmsStatementTestCase extends SQLParserTestCase {
     
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String database;
-    
-    private final Map<String, String> queryProperties;
+    @XmlElement
+    private ExpectedSchema schema;
 }

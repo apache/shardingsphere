@@ -15,38 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Resource configuration for YAML.
+ * Show unused sharding algorithms statement.
  */
-@Getter
-@Setter
-public final class YamlResourceConfiguration implements YamlConfiguration {
+public final class ShowUnusedShardingAlgorithmsStatement extends ShowRulesStatement {
     
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+    public ShowUnusedShardingAlgorithmsStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

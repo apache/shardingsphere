@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,5 +54,10 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
         port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3));
         catalog = matcher.group(5);
         schema = null;
+    }
+    
+    @Override
+    public Map<String, String> getQueryProperties() {
+        return new LinkedHashMap<>();
     }
 }
