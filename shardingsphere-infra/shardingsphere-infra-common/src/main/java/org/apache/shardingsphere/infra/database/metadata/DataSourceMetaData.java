@@ -60,6 +60,13 @@ public interface DataSourceMetaData {
     Properties getQueryProperties();
     
     /**
+     * Get default JDBC URL properties.
+     *
+     * @return default JDBC URL properties
+     */
+    Properties getDefaultJdbcUrlProperties();
+    
+    /**
      * Judge whether two of data sources are in the same database instance.
      *
      * @param dataSourceMetaData data source meta data

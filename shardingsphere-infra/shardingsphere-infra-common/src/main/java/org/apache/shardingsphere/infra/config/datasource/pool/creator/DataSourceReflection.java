@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import javax.sql.DataSource;
@@ -155,17 +155,16 @@ public final class DataSourceReflection {
      *
      * @param dataSourcePropsFieldName data source properties field name
      * @param jdbcUrlFieldName JDBC URL field name
-     * @param defaultDataSourceProps default data source properties
      */
-    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrlFieldName, final Properties defaultDataSourceProps) {
+    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrlFieldName) {
         if (null == dataSourcePropsFieldName || null == jdbcUrlFieldName) {
             return;
         }
         Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
         String jdbcUrl = getJdbcUrl(jdbcUrlFieldName);
-        DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
-        Properties queryProps = databaseType.getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
-        for (Entry<Object, Object> entry : defaultDataSourceProps.entrySet()) {
+        DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
+        Properties queryProps = dataSourceMetaData.getQueryProperties();
+        for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultJdbcUrlProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
             if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, queryProps)) {

@@ -42,6 +42,8 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final Properties queryProperties;
     
+    private final Properties defaultJdbcUrlProperties = new Properties();
+    
     public MySQLDataSourceMetaData(final String url) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
         hostname = jdbcUrl.getHostname();
@@ -49,5 +51,23 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         catalog = jdbcUrl.getDatabase();
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
+        buildDefaultJdbcUrlProperties();
+    }
+    
+    private void buildDefaultJdbcUrlProperties() {
+        defaultJdbcUrlProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultJdbcUrlProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultJdbcUrlProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultJdbcUrlProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("netTimeoutForStreamingResults", "0");
+        defaultJdbcUrlProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultJdbcUrlProperties.setProperty("serverTimezone", "UTC");
     }
 }
