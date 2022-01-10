@@ -15,39 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.metadata.dialect;
+package org.apache.shardingsphere.infra.database.metadata.url;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 /**
- * Data source meta data for MySQL.
+ * JDBC URL.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MySQLDataSourceMetaData implements DataSourceMetaData {
-    
-    private static final int DEFAULT_PORT = 3306;
+public final class JdbcUrl {
     
     private final String hostname;
     
     private final int port;
     
-    private final String catalog;
-    
-    private final String schema;
+    private final String database;
     
     private final Map<String, String> queryProperties;
-    
-    public MySQLDataSourceMetaData(final String url) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        hostname = jdbcUrl.getHostname();
-        port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
-        catalog = jdbcUrl.getDatabase();
-        schema = null;
-        queryProperties = jdbcUrl.getQueryProperties();
-    }
 }
