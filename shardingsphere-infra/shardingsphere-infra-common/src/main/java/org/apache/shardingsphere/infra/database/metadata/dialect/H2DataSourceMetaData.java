@@ -90,7 +90,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
-    public Properties getDefaultJdbcUrlProperties() {
+    public Properties getDefaultQueryProperties() {
         return new Properties();
     }
     

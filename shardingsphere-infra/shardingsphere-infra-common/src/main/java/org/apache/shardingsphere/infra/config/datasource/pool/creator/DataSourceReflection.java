@@ -164,7 +164,7 @@ public final class DataSourceReflection {
         String jdbcUrl = getJdbcUrl(jdbcUrlFieldName);
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
-        for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultJdbcUrlProperties().entrySet()) {
+        for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
             if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, queryProps)) {

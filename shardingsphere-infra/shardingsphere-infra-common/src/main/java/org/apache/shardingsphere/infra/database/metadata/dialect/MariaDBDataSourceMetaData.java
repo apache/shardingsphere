@@ -42,7 +42,7 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
     
     private final Properties queryProperties;
     
-    private final Properties defaultJdbcUrlProperties = new Properties();
+    private final Properties defaultQueryProperties = new Properties();
     
     public MariaDBDataSourceMetaData(final String url) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
@@ -51,23 +51,23 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
         catalog = jdbcUrl.getDatabase();
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
-        buildDefaultJdbcUrlProperties();
+        buildDefaultQueryProperties();
     }
     
-    private void buildDefaultJdbcUrlProperties() {
-        defaultJdbcUrlProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("prepStmtCacheSize", "200000");
-        defaultJdbcUrlProperties.setProperty("prepStmtCacheSqlLimit", "2048");
-        defaultJdbcUrlProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("netTimeoutForStreamingResults", "0");
-        defaultJdbcUrlProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("useSSL", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("serverTimezone", "UTC");
+    private void buildDefaultQueryProperties() {
+        defaultQueryProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultQueryProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultQueryProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("netTimeoutForStreamingResults", "0");
+        defaultQueryProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("serverTimezone", "UTC");
     }
 }

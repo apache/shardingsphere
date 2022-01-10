@@ -52,7 +52,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
-    public Properties getDefaultJdbcUrlProperties() {
+    public Properties getDefaultQueryProperties() {
         return new Properties();
     }
 }
