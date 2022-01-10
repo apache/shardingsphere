@@ -46,15 +46,15 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     
     private final ParameterMarkerType parameterMarkerType;
     
+    @Setter
+    private AliasSegment alias;
+    
     public ParameterMarkerExpressionSegment(final int startIndex, final int stopIndex, final int parameterMarkerIndex) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.parameterMarkerIndex = parameterMarkerIndex;
         this.parameterMarkerType = ParameterMarkerType.QUESTION;
     }
-    
-    @Setter
-    private AliasSegment alias;
 
     @Override
     public Optional<String> getAlias() {
