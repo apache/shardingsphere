@@ -201,7 +201,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         for (TableRule tableRule : tableRules.values()) {
             ShardingStrategyConfiguration shardingStrategyConfig = tableRule.getDatabaseShardingStrategyConfig();
             String loopShardingColumn = getShardingColumn(shardingStrategyConfig);
-            String loopShardingAlgorithm = ((ShardingStrategyConfiguration) shardingStrategyConfig).getShardingAlgorithmName();
+            String loopShardingAlgorithm = shardingStrategyConfig.getShardingAlgorithmName();
             if (null == shardingColumn) {
                 shardingColumn = loopShardingColumn;
             } else if (null != shardingColumn && !shardingColumn.equalsIgnoreCase(loopShardingColumn)) {
