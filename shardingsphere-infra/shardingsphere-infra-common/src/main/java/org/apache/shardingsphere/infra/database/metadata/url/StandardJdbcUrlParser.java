@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -103,7 +104,7 @@ public final class StandardJdbcUrlParser {
      * @return appended JDBC URL
      */
     public String appendQueryProperties(final String jdbcURL, final Properties queryProps) {
-        Properties currentQueryProps = parse(jdbcURL).getQueryProperties();
+        Properties currentQueryProps = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcURL).getDataSourceMetaData(jdbcURL, null).getQueryProperties();
         if (hasConflictedQueryProperties(currentQueryProps, queryProps)) {
             Properties newQueryProps = new Properties();
             newQueryProps.putAll(currentQueryProps);
