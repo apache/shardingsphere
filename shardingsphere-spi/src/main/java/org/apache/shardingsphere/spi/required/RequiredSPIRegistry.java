@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
 import java.util.Collection;
 
@@ -38,7 +39,13 @@ public final class RequiredSPIRegistry {
      * @return registered service
      */
     public static <T extends RequiredSPI> T getRegisteredService(final Class<T> requiredSPIClass) {
-        Collection<T> services = ShardingSphereServiceLoader.newServiceInstances(requiredSPIClass);
+        Collection<T> services;
+        if (SingletonSPI.class.isAssignableFrom(requiredSPIClass)) {
+            ShardingSphereServiceLoader.register(requiredSPIClass);
+            services = ShardingSphereServiceLoader.getSingletonServiceInstances(requiredSPIClass);
+        } else {
+            services = ShardingSphereServiceLoader.newServiceInstances(requiredSPIClass);
+        }
         if (services.isEmpty()) {
             throw new ServiceProviderNotFoundException(requiredSPIClass);
         }

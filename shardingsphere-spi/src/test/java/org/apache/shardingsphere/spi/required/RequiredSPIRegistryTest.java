@@ -23,8 +23,11 @@ import org.apache.shardingsphere.spi.fixture.required.NoImplRequiredSPIFixture;
 import org.apache.shardingsphere.spi.fixture.required.RequiredSPIFixture;
 import org.apache.shardingsphere.spi.fixture.required.RequiredSPIFixtureDefaultTrueImpl;
 import org.apache.shardingsphere.spi.fixture.required.RequiredSPIImpl;
+import org.apache.shardingsphere.spi.fixture.required.RequiredSingletonSPIFixture;
+import org.apache.shardingsphere.spi.fixture.required.RequiredSingletonSPIFixtureImpl;
 import org.junit.Test;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public final class RequiredSPIRegistryTest {
@@ -32,6 +35,7 @@ public final class RequiredSPIRegistryTest {
     static {
         ShardingSphereServiceLoader.register(RequiredSPIFixture.class);
         ShardingSphereServiceLoader.register(RequiredSPI.class);
+        ShardingSphereServiceLoader.register(RequiredSingletonSPIFixture.class);
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
@@ -49,5 +53,14 @@ public final class RequiredSPIRegistryTest {
     public void assertRegisteredServiceMoreThanOne() {
         RequiredSPIFixture actualRegisteredService = RequiredSPIRegistry.getRegisteredService(RequiredSPIFixture.class);
         assertTrue(actualRegisteredService instanceof RequiredSPIFixtureDefaultTrueImpl);
+    }
+    
+    @Test
+    public void assertRegisteredServiceSingleton() {
+        RequiredSPIFixture actualOne = RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class);
+        assertTrue(actualOne instanceof RequiredSingletonSPIFixtureImpl);
+        RequiredSPIFixture actualTwo = RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class);
+        assertTrue(actualTwo instanceof RequiredSingletonSPIFixtureImpl);
+        assertSame(actualOne, actualTwo);
     }
 }

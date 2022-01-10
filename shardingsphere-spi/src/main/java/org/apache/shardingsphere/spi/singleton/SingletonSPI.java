@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
-
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+package org.apache.shardingsphere.spi.singleton;
 
 /**
- * Pipeline data source creator.
+ * Singleton SPI.
  */
-public interface PipelineDataSourceCreator extends TypedSPI, SingletonSPI {
-    
-    /**
-     * Create pipeline data source.
-     *
-     * @param pipelineDataSourceConfig pipeline data source configuration
-     * @return pipeline data source
-     * @throws SQLException if create data source failed
-     */
-    DataSource createPipelineDataSource(Object pipelineDataSourceConfig) throws SQLException;
+public interface SingletonSPI {
 }
