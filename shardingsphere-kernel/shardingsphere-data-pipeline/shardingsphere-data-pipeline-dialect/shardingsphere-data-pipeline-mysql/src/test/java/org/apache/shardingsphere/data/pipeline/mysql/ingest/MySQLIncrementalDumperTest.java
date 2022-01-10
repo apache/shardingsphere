@@ -67,7 +67,6 @@ public final class MySQLIncrementalDumperTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        // TODO FIXME should use MySQL URL
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         Map<String, String> tableNameMap = new HashedMap<>(1);
         tableNameMap.put("t_order", "t_order");
