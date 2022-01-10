@@ -82,8 +82,8 @@ public final class MySQLTableMetaDataLoaderTest {
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "json", "geometry");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12, -1, -2);
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
+        when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
 
