@@ -131,6 +131,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowF
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -222,7 +223,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -533,7 +534,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return new SubqueryExpressionSegment(subquerySegment);
         }
         if (null != ctx.parameterMarker()) {
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
