@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.sql.Connection;
@@ -25,7 +26,7 @@ import java.sql.Connection;
 /**
  * Driver state.
  */
-public interface DriverState extends TypedSPI {
+public interface DriverState extends TypedSPI, SingletonSPI {
     
     /**
      * Get connection.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.metadata;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Data source meta data.
@@ -57,7 +57,14 @@ public interface DataSourceMetaData {
      * 
      * @return query properties
      */
-    Map<String, String> getQueryProperties();
+    Properties getQueryProperties();
+    
+    /**
+     * Get default query properties.
+     *
+     * @return default query properties
+     */
+    Properties getDefaultQueryProperties();
     
     /**
      * Judge whether two of data sources are in the same database instance.

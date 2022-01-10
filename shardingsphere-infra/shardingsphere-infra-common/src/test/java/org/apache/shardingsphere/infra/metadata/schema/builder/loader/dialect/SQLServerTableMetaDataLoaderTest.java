@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableM
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,10 +38,8 @@ import static org.mockito.Mockito.when;
 
 public final class SQLServerTableMetaDataLoaderTest {
     
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
+    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
+            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -119,10 +116,9 @@ public final class SQLServerTableMetaDataLoaderTest {
     }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
-            if ("SQLServer".equals(each.getDatabaseType())) {
-                return each;
-            }
+        DialectTableMetaDataLoader result = DIALECT_METADATA_LOADER_MAP.get("SQLServer");
+        if (null != result) {
+            return result;
         }
         throw new IllegalStateException("Can not find SQLServerTableMetaDataLoader");
     }

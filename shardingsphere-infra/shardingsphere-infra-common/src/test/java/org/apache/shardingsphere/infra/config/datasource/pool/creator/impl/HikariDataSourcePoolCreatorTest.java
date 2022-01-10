@@ -38,7 +38,7 @@ public final class HikariDataSourcePoolCreatorTest {
     @Test
     public void assertCreateDataSourceConfigurationWithoutDriverClassName() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mock://127.0.0.1/foo_ds");
+        dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1/foo_ds");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
         DataSourceConfiguration dataSourceConfiguration = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceConfiguration(dataSource);
@@ -51,7 +51,7 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
         DataSourceConfiguration configuration = dataSourcePoolCreator.createDataSourceConfiguration(dataSourcePoolCreator.createDataSource(createDataSourceConfiguration()));
         assertThat(configuration.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(configuration.getProps().get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(configuration.getProps().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
         assertThat(configuration.getProps().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
         assertThat(configuration.getProps().get("username"), is("root"));
         assertThat(configuration.getProps().get("password"), is("root"));
@@ -66,7 +66,7 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-        assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mysql://127.0.0.1/foo_ds"));
         assertThat(hikariDataSource.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is("root"));
@@ -77,7 +77,7 @@ public final class HikariDataSourcePoolCreatorTest {
     
     private DataSourceConfiguration createDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        props.put("jdbcUrl", "jdbc:mysql://127.0.0.1/foo_ds");
         props.put("driverClassName", MockedDataSource.class.getCanonicalName());
         props.put("username", "root");
         props.put("password", "root");

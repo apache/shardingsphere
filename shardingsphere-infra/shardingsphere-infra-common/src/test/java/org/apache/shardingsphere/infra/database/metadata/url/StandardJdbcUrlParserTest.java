@@ -19,10 +19,11 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import org.junit.Test;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -89,19 +90,24 @@ public final class StandardJdbcUrlParserTest {
     
     @Test
     public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/demo_ds", createQueryProperties());
-        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?useSSL=false&rewriteBatchedStatements=true"));
+        String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/foo_ds", createQueryProperties());
+        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
+        assertThat(actual, containsString("rewriteBatchedStatements=true"));
+        assertThat(actual, containsString("useSSL=false"));
     }
     
     @Test
     public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
         String actual = new StandardJdbcUrlParser().appendQueryProperties(
-                "jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
-        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
+                "jdbc:mysql://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
+        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
+        assertThat(actual, containsString("serverTimezone=UTC"));
+        assertThat(actual, containsString("rewriteBatchedStatements=true"));
+        assertThat(actual, containsString("useSSL=false"));
     }
     
-    private Map<String, String> createQueryProperties() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
+    private Properties createQueryProperties() {
+        Properties result = new Properties();
         result.put("useSSL", Boolean.FALSE.toString());
         result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
         return result;

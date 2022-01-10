@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Pipeline data source configuration for ShardingSphere-JDBC.
@@ -84,7 +85,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     @Override
-    public void appendJDBCQueryProperties(final Map<String, String> queryProps) {
+    public void appendJDBCQueryProperties(final Properties queryProps) {
         rootConfig.getDataSources()
                 .forEach((key, value) -> {
                     String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
