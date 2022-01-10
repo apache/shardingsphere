@@ -44,8 +44,8 @@ public final class MariaDBDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
         assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().get("serverTimezone"), is("UTC"));
-        assertThat(actual.getQueryProperties().get("useSSL"), is("false"));
+        assertThat(actual.getQueryProperties().getProperty("serverTimezone"), is("UTC"));
+        assertThat(actual.getQueryProperties().getProperty("useSSL"), is("false"));
     }
     
     // TODO fixme

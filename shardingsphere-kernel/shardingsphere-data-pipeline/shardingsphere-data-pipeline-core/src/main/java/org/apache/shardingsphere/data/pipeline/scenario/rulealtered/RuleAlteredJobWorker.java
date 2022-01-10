@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -54,6 +53,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -258,7 +258,8 @@ public final class RuleAlteredJobWorker {
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
-        Map<String, String> queryProps = ImmutableMap.of("useSSL", "false");
+        Properties queryProps = new Properties();
+        queryProps.setProperty("useSSL", "false");
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
             entry.getValue().put("jdbcUrl", new StandardJdbcUrlParser().appendQueryProperties((String) entry.getValue().get("jdbcUrl"), queryProps));
         }

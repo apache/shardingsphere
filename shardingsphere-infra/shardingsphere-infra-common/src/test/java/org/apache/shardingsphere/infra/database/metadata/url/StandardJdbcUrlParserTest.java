@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import org.junit.Test;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -90,7 +89,7 @@ public final class StandardJdbcUrlParserTest {
     @Test
     public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
         String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/demo_ds", createQueryProperties());
-        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?useSSL=false&rewriteBatchedStatements=true"));
+        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?rewriteBatchedStatements=true&useSSL=false"));
     }
     
     @Test
@@ -100,8 +99,8 @@ public final class StandardJdbcUrlParserTest {
         assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
     
-    private Map<String, String> createQueryProperties() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
+    private Properties createQueryProperties() {
+        Properties result = new Properties();
         result.put("useSSL", Boolean.FALSE.toString());
         result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
         return result;
