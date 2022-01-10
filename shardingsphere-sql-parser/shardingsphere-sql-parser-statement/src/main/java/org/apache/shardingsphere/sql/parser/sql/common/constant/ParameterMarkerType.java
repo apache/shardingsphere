@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 
 /**
- * Parameter marker value.
+ * Parameter marker type enum.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParameterMarkerValue implements ValueASTNode<Integer> {
+public enum ParameterMarkerType {
     
-    private final Integer value;
+    QUESTION("?"), DOLLAR("$");
     
-    private final ParameterMarkerType type;
+    private final String marker;
 }
