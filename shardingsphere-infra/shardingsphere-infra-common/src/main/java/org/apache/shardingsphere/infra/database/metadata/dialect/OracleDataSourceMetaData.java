@@ -23,7 +23,9 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,5 +72,10 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             catalog = matcher.group(8);
             schema = username;
         }
+    }
+    
+    @Override
+    public Map<String, String> getQueryProperties() {
+        return new LinkedHashMap<>();
     }
 }

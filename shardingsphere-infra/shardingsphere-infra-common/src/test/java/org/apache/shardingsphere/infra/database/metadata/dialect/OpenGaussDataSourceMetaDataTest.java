@@ -24,13 +24,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MariaDBDataSourceMetaDataTest {
+public final class OpenGaussDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithSimpleJdbcUrl() {
-        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb://127.0.0.1/foo_ds");
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:openGauss://127.0.0.1/foo_ds");
         assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getPort(), is(5432));
         assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
         assertTrue(actual.getQueryProperties().isEmpty());
@@ -38,20 +38,19 @@ public final class MariaDBDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithComplexJdbcUrl() {
-        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb:replication://127.0.0.1:9999, 127.0.0.2:9999/foo_ds?serverTimezone=UTC&useSSL=false");
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:openGauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
-        assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().get("serverTimezone"), is("UTC"));
-        assertThat(actual.getQueryProperties().get("useSSL"), is("false"));
+        assertThat(actual.getQueryProperties().size(), is(1));
+        assertThat(actual.getQueryProperties().get("targetServerType"), is("master"));
     }
     
     // TODO fixme
     @Test
     //(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
-        new MariaDBDataSourceMetaData("jdbc:mariadb:xxxxxxxx");
+        new PostgreSQLDataSourceMetaData("jdbc:openGauss:xxxxxxxx");
     }
 }

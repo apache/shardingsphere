@@ -43,7 +43,7 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
         buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
-        buildDefaultDataSourceProperties();
+        buildDefaultJdbcUrlProperties();
     }
     
     private void buildDefaultProperties() {
@@ -65,7 +65,7 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }
     
-    private void buildDefaultDataSourceProperties() {
+    private void buildDefaultJdbcUrlProperties() {
         defaultJdbcUrlProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
         defaultJdbcUrlProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
         defaultJdbcUrlProperties.setProperty("prepStmtCacheSize", "200000");

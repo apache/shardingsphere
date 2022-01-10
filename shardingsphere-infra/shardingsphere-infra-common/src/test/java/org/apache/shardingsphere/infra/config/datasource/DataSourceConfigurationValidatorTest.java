@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,8 +36,8 @@ public final class DataSourceConfigurationValidatorTest {
     
     private DataSourceConfiguration createValidDataSourceConfiguration() {
         Map<String, Object> props = new HashMap<>();
-        props.put("driverClassName", "org.h2.Driver");
-        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         props.put("username", "root");
         props.put("password", "root");
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());

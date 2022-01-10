@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public final class MockDataSourceMetaData implements DataSourceMetaData {
+/**
+ * Show unused sharding algorithms statement.
+ */
+public final class ShowUnusedShardingAlgorithmsStatement extends ShowRulesStatement {
     
-    @Override
-    public String getHostname() {
-        return "mock.host";
-    }
-    
-    @Override
-    public int getPort() {
-        return 1000;
-    }
-    
-    @Override
-    public String getCatalog() {
-        return "";
-    }
-    
-    @Override
-    public String getSchema() {
-        return "mock.schema";
-    }
-    
-    @Override
-    public Map<String, String> getQueryProperties() {
-        return new LinkedHashMap<>();
+    public ShowUnusedShardingAlgorithmsStatement(final SchemaSegment schema) {
+        super(schema);
     }
 }
