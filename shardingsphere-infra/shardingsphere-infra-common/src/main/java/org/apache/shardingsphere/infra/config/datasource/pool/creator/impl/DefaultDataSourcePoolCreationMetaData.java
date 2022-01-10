@@ -54,7 +54,7 @@ public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePo
     
     @Override
     public String getType() {
-        return null;
+        return "Default";
     }
     
     @Override
