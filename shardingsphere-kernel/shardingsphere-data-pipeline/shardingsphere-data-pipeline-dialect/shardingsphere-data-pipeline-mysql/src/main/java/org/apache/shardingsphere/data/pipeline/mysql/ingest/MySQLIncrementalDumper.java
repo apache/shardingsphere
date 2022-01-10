@@ -47,8 +47,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQ
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
@@ -97,15 +97,15 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private void dump() {
         HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
         log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(hikariConfig.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), jdbcUrl.getHostname(), jdbcUrl.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
+        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(hikariConfig.getJdbcUrl(), null);
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
-                handleEvent(jdbcUrl, event);
+                handleEvent(metaData.getCatalog(), event);
                 eventCount++;
             }
         }
@@ -113,8 +113,8 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private void handleEvent(final JdbcUrl jdbcUrl, final AbstractBinlogEvent event) {
-        if (event instanceof PlaceholderEvent || filter(jdbcUrl.getDatabase(), (AbstractRowsEvent) event)) {
+    private void handleEvent(final String catalog, final AbstractBinlogEvent event) {
+        if (event instanceof PlaceholderEvent || filter(catalog, (AbstractRowsEvent) event)) {
             createPlaceholderRecord(event);
             return;
         }
