@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingK
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,19 +39,19 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        LinkedList<String> keyGeneratorNames = sqlStatement.getKeyGeneratorNames().stream().collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> keyGeneratorNames = sqlStatement.getKeyGeneratorNames().stream().collect(Collectors.toCollection(LinkedList::new));
         checkDuplicate(schemaName, keyGeneratorNames);
         checkExist(schemaName, keyGeneratorNames, currentRuleConfig);
     }
 
     private void checkDuplicate(final String schemaName, final Collection<String> keyGeneratorNames) throws DistSQLException {
-        Set<String> duplicateNames = keyGeneratorNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+        Collection<String> duplicateNames = keyGeneratorNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicateNames.isEmpty(), new DuplicateKeyGeneratorException("sharding", schemaName, duplicateNames));
     }
     
     private void checkExist(final String schemaName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        LinkedList<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistKeyGenerators.isEmpty(), new RequiredKeyGeneratorMissedException("sharding", schemaName, notExistKeyGenerators));
     }
 
