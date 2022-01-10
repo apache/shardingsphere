@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVi
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLTableStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,5 +56,14 @@ public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
         return new MySQLDoStatement();
+    }
+    
+    @Override
+    public ASTNode visitTable(final TableContext ctx) {
+        MySQLTableStatement result = new MySQLTableStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setColumn((ColumnSegment) visit(ctx.columnName()));
+        result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        return result;
     }
 }
