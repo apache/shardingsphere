@@ -15,33 +15,15 @@
   ~ limitations under the License.
   -->
     
-    /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
-     */
-    public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createDatabaseDiscoveryRuleConfiguration()), new Properties());
-    }
-
     private DatabaseDiscoveryRuleConfiguration createDatabaseDiscoveryRuleConfiguration() {
         return new DatabaseDiscoveryRuleConfiguration(createDataSources(), createDiscoveryHeartbeats(), createDiscoveryTypes());
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", createPrimaryDataSource());
-        dataSourceMap.put("ds_0_replica_0", createReplicaDataSource1());
-        dataSourceMap.put("ds_0_replica_1", createReplicaDataSource2());
-        return dataSourceMap;
-    }
-    
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> createDataSources() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dsRuleConf1 = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Lists.newArrayList("ds_0", "ds_0_replica_0", "ds_0_replica_1"), "mgr-heartbeat", "mgr");
+        DatabaseDiscoveryDataSourceRuleConfiguration dsRuleConf1 = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Lists.newArrayList("ds_0", "ds_1", "ds_2"), "mgr-heartbeat", "mgr");
         return Lists.newArrayList(dsRuleConf1);
     }
-
+    
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartBeatConfiguration = new HashMap<>(1, 1);
         Properties props = new Properties();
@@ -49,7 +31,7 @@
         discoveryHeartBeatConfiguration.put("mgr-heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(props));
         return discoveryHeartBeatConfiguration;
     }
-
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> createDiscoveryTypes() {
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         Properties props = new Properties();
@@ -57,31 +39,4 @@
         props.put("group-name", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         discoveryTypes.put("mgr", new ShardingSphereAlgorithmConfiguration("MGR", props));
         return discoveryTypes;
-    }
-    
-    private DataSource createPrimaryDataSource() {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl("jdbc:mysql://172.72.0.15:3306/ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-        result.setUsername(USER_NAME);
-        result.setPassword(PASSWORD);
-        return result;
-    }
-
-    private DataSource createReplicaDataSource1() {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl("jdbc:mysql://172.72.0.16:3306/ds_0_replica_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-        result.setUsername(USER_NAME);
-        result.setPassword(PASSWORD);
-        return result;
-    }
-
-    private DataSource createReplicaDataSource2() {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl("jdbc:mysql://172.72.0.17:3306/ds_0_replica_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-        result.setUsername(USER_NAME);
-        result.setPassword(PASSWORD);
-        return result;
     }
