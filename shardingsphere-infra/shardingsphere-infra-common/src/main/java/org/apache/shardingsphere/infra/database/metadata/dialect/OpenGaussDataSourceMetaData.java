@@ -50,4 +50,9 @@ public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
     }
+    
+    @Override
+    public Properties getDefaultJdbcUrlProperties() {
+        return new Properties();
+    }
 }

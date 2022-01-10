@@ -58,4 +58,9 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     public Properties getQueryProperties() {
         return new Properties();
     }
+    
+    @Override
+    public Properties getDefaultJdbcUrlProperties() {
+        return new Properties();
+    }
 }
