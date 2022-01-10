@@ -29,12 +29,12 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Show table metadata executor.
@@ -91,7 +91,7 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
     }
     
     private List<Object> buildRow(final String schemaName, final String tableName, final String type, final String name) {
-        return Stream.of(schemaName, tableName, type, name).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
+        return new ArrayList<>(Arrays.asList(schemaName, tableName, type, name));
     }
     
 }
