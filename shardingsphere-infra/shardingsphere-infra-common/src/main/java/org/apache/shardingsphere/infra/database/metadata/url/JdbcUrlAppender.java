@@ -30,27 +30,30 @@ public final class JdbcUrlAppender {
     /**
      * Append query properties.
      *
-     * @param jdbcURL JDBC URL to be appended
+     * @param jdbcUrl JDBC URL to be appended
      * @param queryProps query properties to be appended
      * @return appended JDBC URL
      */
-    public String appendQueryProperties(final String jdbcURL, final Properties queryProps) {
-        Properties currentQueryProps = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcURL).getDataSourceMetaData(jdbcURL, null).getQueryProperties();
-        if (hasConflictedQueryProperties(currentQueryProps, queryProps)) {
-            Properties mergedQueryProps = new Properties();
-            mergedQueryProps.putAll(currentQueryProps);
-            mergedQueryProps.putAll(queryProps);
-            return appendQueryPropertiesOnURLBuilder(jdbcURL.substring(0, jdbcURL.indexOf('?') + 1), mergedQueryProps);
-        }
-        return appendQueryPropertiesOnURLBuilder(jdbcURL + (currentQueryProps.isEmpty() ? "?" : "&"), queryProps);
+    public String appendQueryProperties(final String jdbcUrl, final Properties queryProps) {
+        Properties currentQueryProps = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
+        return hasConflictedQueryProperties(currentQueryProps, queryProps)
+                ? concat(jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1), getMergedProperties(currentQueryProps, queryProps))
+                : concat(jdbcUrl + (currentQueryProps.isEmpty() ? "?" : "&"), queryProps);
     }
     
-    private boolean hasConflictedQueryProperties(final Properties currentQueryProps, final Properties tobeAppendedQueryProps) {
-        return tobeAppendedQueryProps.keySet().stream().anyMatch(currentQueryProps::containsKey);
+    private boolean hasConflictedQueryProperties(final Properties currentQueryProps, final Properties toBeAppendedQueryProps) {
+        return toBeAppendedQueryProps.keySet().stream().anyMatch(currentQueryProps::containsKey);
     }
     
-    private String appendQueryPropertiesOnURLBuilder(final String jdbcUrlPrefix, final Properties queryProps) {
-        StringBuilder result = new StringBuilder(jdbcUrlPrefix);
+    private Properties getMergedProperties(final Properties currentQueryProps, final Properties toBeAppendedQueryProps) {
+        Properties result = new Properties();
+        result.putAll(currentQueryProps);
+        result.putAll(toBeAppendedQueryProps);
+        return result;
+    }
+    
+    private String concat(final String jdbcUrl, final Properties queryProps) {
+        StringBuilder result = new StringBuilder(jdbcUrl);
         for (Entry<Object, Object> entry : queryProps.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {
