@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import com.google.common.base.Strings;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -37,6 +38,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -115,7 +117,6 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     @RequiredArgsConstructor
     @Getter
-    @EqualsAndHashCode
     private static final class CalculatedResult {
         
         @NonNull
@@ -124,5 +125,39 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         private final int recordCount;
         
         private final Collection<Collection<Object>> records;
+    
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CalculatedResult)) {
+                return false;
+            }
+        
+            final CalculatedResult that = (CalculatedResult) o;
+    
+            boolean equalsFirst = new EqualsBuilder().append(getRecordCount(), that.getRecordCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
+            if (!equalsFirst) {
+                return false;
+            }
+            Iterator<Collection<Object>> thisIterator = this.records.iterator();
+            Iterator<Collection<Object>> thatIterator = that.records.iterator();
+            while (thisIterator.hasNext() && thatIterator.hasNext()) {
+                Iterator<Object> thisNextIterator = thisIterator.next().iterator();
+                Iterator<Object> thatNextIterator = thatIterator.next().iterator();
+                while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    if (!new EqualsBuilder().append(thisNextIterator.next(), thatNextIterator.next()).isEquals()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordCount()).append(getRecords()).toHashCode();
+        }
     }
 }
