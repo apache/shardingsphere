@@ -15,50 +15,23 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.scaling.distsql.statement.segment;
 
-import Keyword, Literals, Symbol, BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-showScalingList
-    : SHOW SCALING LIST
-    ;
+/**
+ * Input or output configuration segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InputOrOutputSegment implements ASTNode {
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
-    ;
+    private final int workerThread;
 
-startScaling
-    : START SCALING jobId
-    ;
-
-stopScaling
-    : STOP SCALING jobId
-    ;
-
-dropScaling
-    : DROP SCALING jobId
-    ;
-
-resetScaling
-    : RESET SCALING jobId
-    ;
-
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
-    ;
-
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
-    ;
-
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
-    ;
-
-checkoutScaling
-    : CHECKOUT SCALING jobId
-    ;
-
-jobId
-    : INT
-    ;
+    private final int batchSize;
+    
+    private final AlgorithmSegment rateLimiter;
+}

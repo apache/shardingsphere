@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedShardingScalingConfigurationSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create sharding scaling statement test case.
+ * Expected algorithm.
  */
 @Getter
 @Setter
-public final class CreateShardingScalingStatementTestCase extends SQLParserTestCase {
+public final class ExpectedInputOrOutputSegment extends AbstractExpectedIdentifierSQLSegment {
 
-    @XmlAttribute(name = "scaling-name")
-    private String scalingName;
+    @XmlAttribute(name = "worker-thread")
+    private int workerThread;
 
-    @XmlElement(name = "configuration")
-    private ExpectedShardingScalingConfigurationSegment configurationSegment;
+    @XmlAttribute(name = "batch-size")
+    private int batchSize;
+
+    @XmlElement(name = "rate-limiter")
+    private ExpectedAlgorithm rateLimiter;
 }

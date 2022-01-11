@@ -15,50 +15,27 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.scaling.distsql.statement.segment;
 
-import Keyword, Literals, Symbol, BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-showScalingList
-    : SHOW SCALING LIST
-    ;
+/**
+ * Sharding scaling configuration segment.
+ */
+@Getter
+@Setter
+public final class ShardingScalingConfigurationSegment implements ASTNode {
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
-    ;
+    private InputOrOutputSegment inputSegment;
 
-startScaling
-    : START SCALING jobId
-    ;
+    private InputOrOutputSegment outputSegment;
 
-stopScaling
-    : STOP SCALING jobId
-    ;
+    private AlgorithmSegment streamChannel;
 
-dropScaling
-    : DROP SCALING jobId
-    ;
+    private AlgorithmSegment completionDetector;
 
-resetScaling
-    : RESET SCALING jobId
-    ;
-
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
-    ;
-
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
-    ;
-
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
-    ;
-
-checkoutScaling
-    : CHECKOUT SCALING jobId
-    ;
-
-jobId
-    : INT
-    ;
+    private AlgorithmSegment dataConsistencyChecker;
+}

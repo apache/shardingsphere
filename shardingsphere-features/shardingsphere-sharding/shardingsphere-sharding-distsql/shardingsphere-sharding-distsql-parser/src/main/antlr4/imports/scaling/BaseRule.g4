@@ -15,50 +15,22 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+grammar BaseRule;
 
-import Keyword, Literals, Symbol, BaseRule;
+import Symbol, Keyword, Literals;
 
-showScalingList
-    : SHOW SCALING LIST
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
+algorithmName
+    : IDENTIFIER
     ;
 
-startScaling
-    : START SCALING jobId
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
     ;
 
-stopScaling
-    : STOP SCALING jobId
-    ;
-
-dropScaling
-    : DROP SCALING jobId
-    ;
-
-resetScaling
-    : RESET SCALING jobId
-    ;
-
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
-    ;
-
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
-    ;
-
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
-    ;
-
-checkoutScaling
-    : CHECKOUT SCALING jobId
-    ;
-
-jobId
-    : INT
-    ;
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
+    ;  
