@@ -18,7 +18,7 @@
 mode: memory
 transaction: local
 feature: sharding,readwrite-splitting,encrypt
-framework: spring-namespace-jdbc
+framework: jdbc
 
 host: localhost
 port: 3306
