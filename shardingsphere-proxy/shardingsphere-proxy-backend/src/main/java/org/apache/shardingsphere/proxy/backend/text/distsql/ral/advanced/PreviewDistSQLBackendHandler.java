@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -109,8 +109,8 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
     }
     
     private String getSchemaName() {
-        String result = StringUtils.isNotBlank(connectionSession.getSchemaName()) ? connectionSession.getSchemaName() : connectionSession.getDefaultSchemaName();
-        if (StringUtils.isBlank(result)) {
+        String result = !Strings.isNullOrEmpty(connectionSession.getSchemaName()) ? connectionSession.getSchemaName() : connectionSession.getDefaultSchemaName();
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(result)) {
