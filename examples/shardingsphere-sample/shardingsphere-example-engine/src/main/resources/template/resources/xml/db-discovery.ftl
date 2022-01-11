@@ -31,4 +31,3 @@
             <prop key="group-name">aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</prop>
         </props>
     </database-discovery:discovery-type>
-    

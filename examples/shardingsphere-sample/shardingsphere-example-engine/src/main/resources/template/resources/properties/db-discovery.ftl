@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
+
 spring.shardingsphere.rules.database-discovery.data-sources.rule.data-source-names=ds-0,ds-1,ds-2
 spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-heartbeat-name=mgr-heartbeat
 spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-type-name=mgr

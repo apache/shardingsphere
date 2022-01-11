@@ -15,13 +15,4 @@
 # limitations under the License.
 #
 
-mode: memory
-transaction: local
-feature: sharding,readwrite-splitting,encrypt
-framework: spring-namespace-jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
-
+org.apache.shardingsphere.example.mixed.spring.namespace.jdbc.TestQueryAssistedShardingEncryptAlgorithm

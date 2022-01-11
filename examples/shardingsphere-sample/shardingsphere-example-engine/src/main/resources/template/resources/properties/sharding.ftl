@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
+
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=database-inline
 
