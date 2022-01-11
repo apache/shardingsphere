@@ -39,8 +39,6 @@ public final class JDBCRowsLoader {
     
     private static final String YEAR_DATA_TYPE = "YEAR";
     
-    private static final String YEAR_DATA_TYPE_SHORT = Short.class.getName();
-    
     /**
      * Load rows.
      * 
