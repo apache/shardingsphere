@@ -39,7 +39,7 @@ public final class JDBCRowsLoader {
     
     private static final String YEAR_DATA_TYPE = "YEAR";
     
-    private static final String YEAR_DATA_TYPE_SHORT = "java.lang.Short";
+    private static final String YEAR_DATA_TYPE_SHORT = Short.class.getName();
     
     /**
      * Load rows.
@@ -94,8 +94,8 @@ public final class JDBCRowsLoader {
                 return resultSet.getString(columnIndex);
             case Types.DATE:
                 if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
-                    return isYearShortDataType(resultSet.getMetaData().getColumnClassName(columnIndex))
-                            ? getYearShortData(resultSet, columnIndex) : getYearDateData(resultSet, columnIndex);
+                    Object result = resultSet.getObject(columnIndex);
+                    return resultSet.wasNull() ? null : result;
                 }
                 return resultSet.getDate(columnIndex);
             case Types.TIME:
@@ -119,17 +119,5 @@ public final class JDBCRowsLoader {
     
     private static boolean isYearDataType(final String columnDataTypeName) {
         return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
-    }
-    
-    private static boolean isYearShortDataType(final String columnClassName) {
-        return YEAR_DATA_TYPE_SHORT.equalsIgnoreCase(columnClassName);
-    }
-    
-    private static Object getYearDateData(final ResultSet resultSet, final int index) throws SQLException {
-        return resultSet.getObject(index) == null ? null : resultSet.getDate(index);
-    }
-    
-    private static Object getYearShortData(final ResultSet resultSet, final int index) throws SQLException {
-        return resultSet.getObject(index) == null ? null : resultSet.getShort(index);
     }
 }

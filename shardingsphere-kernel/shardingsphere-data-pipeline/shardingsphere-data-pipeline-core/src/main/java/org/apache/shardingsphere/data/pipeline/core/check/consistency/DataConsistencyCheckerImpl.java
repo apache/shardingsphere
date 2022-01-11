@@ -138,12 +138,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
-        if (sourceDataSourceConfig.getDatabaseType().getName().equalsIgnoreCase(new MySQLDatabaseType().getName())) {
-            Properties queryProps = new Properties();
-            queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
-            sourceDataSourceConfig.appendJDBCQueryProperties(queryProps);
-            targetDataSourceConfig.appendJDBCQueryProperties(queryProps);
-        }
+        addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
         Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
         String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
         String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
@@ -208,5 +203,14 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Preconditions.checkNotNull(contextManager, "contextManager null");
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
         return metaData.getSchema().getTables();
+    }
+    
+    private void addDataSourceConfigToMySQL(final PipelineDataSourceConfiguration sourceDataSourceConfig, final PipelineDataSourceConfiguration targetDataSourceConfig) {
+        if (sourceDataSourceConfig.getDatabaseType().getName().equalsIgnoreCase(new MySQLDatabaseType().getName())) {
+            Properties queryProps = new Properties();
+            queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
+            sourceDataSourceConfig.appendJDBCQueryProperties(queryProps);
+            targetDataSourceConfig.appendJDBCQueryProperties(queryProps);
+        }
     }
 }

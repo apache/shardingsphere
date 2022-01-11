@@ -45,7 +45,8 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     @Override
     public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
         if (isYearDataType(resultSet.getMetaData().getColumnTypeName(index))) {
-            return resultSet.getObject(index) == null ? null : resultSet.getShort(index);
+            Object result = resultSet.getObject(index);
+            return resultSet.wasNull() ? null : result;
         } else if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
             return resultSet.getString(index);
         } else {
