@@ -141,11 +141,17 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
             if (!equalsFirst) {
                 return false;
             }
+            
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {
-                Iterator<Object> thisNextIterator = thisIterator.next().iterator();
-                Iterator<Object> thatNextIterator = thatIterator.next().iterator();
+                Collection<Object> thisNext = thisIterator.next();
+                Collection<Object> thatNext = thatIterator.next();
+                if (thisNext.size() != thatNext.size()) {
+                    return false;
+                }
+                Iterator<Object> thisNextIterator = thisNext.iterator();
+                Iterator<Object> thatNextIterator = thatNext.iterator();
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
                     if (!new EqualsBuilder().append(thisNextIterator.next(), thatNextIterator.next()).isEquals()) {
                         return false;
