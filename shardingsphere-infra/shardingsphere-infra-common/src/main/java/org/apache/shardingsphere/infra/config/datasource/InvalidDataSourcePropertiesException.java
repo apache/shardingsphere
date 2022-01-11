@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.config.datasource;
 
 /**
- * Invalid data source configuration exception.
+ * Invalid data source properties exception.
  */
-public final class InvalidDataSourceConfigurationException extends Exception {
+public final class InvalidDataSourcePropertiesException extends Exception {
     
     private static final long serialVersionUID = -7221138369057943935L;
     
-    public InvalidDataSourceConfigurationException(final String dataSourceConfigName, final String errorMessage) {
-        super(String.format("Invalid data source configuration name `%s`, error message is: %s", dataSourceConfigName, errorMessage));
+    public InvalidDataSourcePropertiesException(final String dataSourcePropertyName, final String errorMessage) {
+        super(String.format("Invalid data source property name `%s`, error message is: %s", dataSourcePropertyName, errorMessage));
     }
 }

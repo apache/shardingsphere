@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -47,24 +47,24 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private final DatabaseType databaseType;
     
-    private final DataSourceConfigurationValidator dataSourceConfigValidator;
+    private final DataSourcePropertiesValidator validator;
     
     public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         this.databaseType = databaseType;
-        dataSourceConfigValidator = new DataSourceConfigurationValidator();
+        validator = new DataSourcePropertiesValidator();
     }
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigs = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        dataSourceConfigValidator.validate(dataSourceConfigs);
+        Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
+        validator.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourceConfigs);
+            ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             log.error("Add resource failed", ex);
-            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourceConfigs.keySet()));
+            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourcePropsMap.keySet()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }

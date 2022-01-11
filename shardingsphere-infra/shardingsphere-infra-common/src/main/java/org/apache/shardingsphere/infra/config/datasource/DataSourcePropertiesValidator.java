@@ -29,22 +29,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Data source configuration validator.
+ * Data source properties validator.
  */
-public final class DataSourceConfigurationValidator {
+public final class DataSourcePropertiesValidator {
     
     /**
-     * Validate data source configurations.
+     * Validate data source properties map.
      * 
-     * @param dataSourceConfigs data source configurations
+     * @param dataSourcePropertiesMap data source properties map
      * @throws InvalidResourcesException invalid resources exception
      */
-    public void validate(final Map<String, DataSourceConfiguration> dataSourceConfigs) throws InvalidResourcesException {
+    public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) throws InvalidResourcesException {
         Collection<String> errorMessages = new LinkedList<>();
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             try {
                 validate(entry.getKey(), entry.getValue());
-            } catch (final InvalidDataSourceConfigurationException ex) {
+            } catch (final InvalidDataSourcePropertiesException ex) {
                 errorMessages.add(ex.getMessage());
             }
         }
@@ -53,14 +53,14 @@ public final class DataSourceConfigurationValidator {
         }
     }
     
-    private void validate(final String dataSourceConfigName, final DataSourceConfiguration dataSourceConfig) throws InvalidDataSourceConfigurationException {
+    private void validate(final String dataSourcePropertyName, final DataSourceProperties dataSourceProperties) throws InvalidDataSourcePropertiesException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
+            dataSource = DataSourcePoolCreatorUtil.getDataSource(dataSourceProperties);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new InvalidDataSourceConfigurationException(dataSourceConfigName, ex.getMessage());
+            throw new InvalidDataSourcePropertiesException(dataSourcePropertyName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 try {

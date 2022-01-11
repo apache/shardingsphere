@@ -128,7 +128,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourceConfigurations());
+        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
     }
     
     /**

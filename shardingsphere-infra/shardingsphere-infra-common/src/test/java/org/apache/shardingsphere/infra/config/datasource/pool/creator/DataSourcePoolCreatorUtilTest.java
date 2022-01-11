@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -38,15 +38,15 @@ public final class DataSourcePoolCreatorUtilTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = new HashMap<>(1, 1);
-        dataSourceConfigMap.put("ds_0", createDataSourceConfiguration());
-        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourceConfigMap);
+        Map<String, DataSourceProperties> dataSourcePropsMap = new HashMap<>(1, 1);
+        dataSourcePropsMap.put("ds_0", createDataSourceProperties());
+        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourcePropsMap);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, DataSourceConfiguration> actual = DataSourcePoolCreatorUtil.getDataSourceConfigurationMap(createDataSourceMap());
+        Map<String, DataSourceProperties> actual = DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(createDataSourceMap());
         assertThat(actual.size(), is(2));
         assertNotNull(actual.get("ds_0"));
         assertNotNull(actual.get("ds_1"));
@@ -60,7 +60,7 @@ public final class DataSourcePoolCreatorUtilTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setLoginTimeout(1);
-        DataSourceConfiguration actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
+        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -71,7 +71,7 @@ public final class DataSourcePoolCreatorUtilTest {
     
     @Test
     public void assertGetDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(createDataSourceConfiguration());
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
@@ -89,9 +89,9 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("username", "root");
         props.put("password", 123);
         props.put("loginTimeout", "5000");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfig.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceConfig);
+        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
+        dataSourceProps.getProps().putAll(props);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
@@ -114,7 +114,7 @@ public final class DataSourcePoolCreatorUtilTest {
         return result;
     }
     
-    private DataSourceConfiguration createDataSourceConfiguration() {
+    private DataSourceProperties createDataSourceProperties() {
         Map<String, Object> props = new HashMap<>(16, 1);
         props.put("driverClassName", MockedDataSource.class.getCanonicalName());
         props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
@@ -125,7 +125,7 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("minimumIdle", "1");
         props.put("maxLifetime", "60000");
         props.put("test", "test");
-        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
         result.getProps().putAll(props);
         return result;
     }

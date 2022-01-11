@@ -28,11 +28,11 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Data source configuration.
+ * Data source properties.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceConfiguration {
+public final class DataSourceProperties {
     
     public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
@@ -71,18 +71,18 @@ public final class DataSourceConfiguration {
     
     @Override
     public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceConfiguration) obj);
+        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
     }
     
-    private boolean equalsByProperties(final DataSourceConfiguration dataSourceConfig) {
-        if (!dataSourceClassName.equals(dataSourceConfig.dataSourceClassName)) {
+    private boolean equalsByProperties(final DataSourceProperties dataSourceProperties) {
+        if (!dataSourceClassName.equals(dataSourceProperties.dataSourceClassName)) {
             return false;
         }
         for (Entry<String, Object> entry : props.entrySet()) {
-            if (!dataSourceConfig.props.containsKey(entry.getKey())) {
+            if (!dataSourceProperties.props.containsKey(entry.getKey())) {
                 continue;
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfig.props.get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.props.get(entry.getKey())))) {
                 return false;
             }
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public final class DefaultDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSourceConfiguration() {
-        assertThat(new DataSourcePoolCreator("Default").createDataSourceConfiguration(createDataSource()), is(createDataSourceConfiguration()));
+        assertThat(new DataSourcePoolCreator("Default").createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
     }
     
     private DataSource createDataSource() {
@@ -45,15 +45,15 @@ public final class DefaultDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        MockedDataSource actual = (MockedDataSource) new DataSourcePoolCreator("Default").createDataSource(createDataSourceConfiguration());
+        MockedDataSource actual = (MockedDataSource) new DataSourcePoolCreator("Default").createDataSource(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
     }
     
-    private DataSourceConfiguration createDataSourceConfiguration() {
-        DataSourceConfiguration result = new DataSourceConfiguration(MockedDataSource.class.getCanonicalName());
+    private DataSourceProperties createDataSourceProperties() {
+        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
         result.getProps().put("driverClassName", "org.h2.Driver");
         result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.getProps().put("username", "root");

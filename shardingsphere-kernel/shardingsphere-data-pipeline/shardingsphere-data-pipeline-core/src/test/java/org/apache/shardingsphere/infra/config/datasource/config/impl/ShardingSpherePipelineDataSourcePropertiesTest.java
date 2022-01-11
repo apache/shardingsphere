@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.datasource.config.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSpherePipelineDataSourceConfigurationTest {
+public final class ShardingSpherePipelineDataSourcePropertiesTest {
     
     @Test
     public void assertAppendJDBCParameters() {
@@ -39,7 +39,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         Properties queryProps = new Properties();
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         dataSourceConfig.appendJDBCQueryProperties(queryProps);
-        List<DataSourceConfiguration> actual = new ArrayList<>(getDataSourceConfigurations(dataSourceConfig.getRootConfig().getDataSources()).values());
+        List<DataSourceProperties> actual = new ArrayList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
         assertThat(actual.get(0).getProps().get("url"), is("jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
         assertThat(actual.get(1).getProps().get("url"), is("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
@@ -54,9 +54,9 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
                 + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
     }
     
-    private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
-        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+    private static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
         return result;
     }
 }

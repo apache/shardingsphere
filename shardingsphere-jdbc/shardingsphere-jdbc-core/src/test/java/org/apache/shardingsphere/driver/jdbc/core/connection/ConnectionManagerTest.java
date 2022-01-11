@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -95,19 +95,19 @@ public final class ConnectionManagerTest {
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceConfigMap());
+        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
         when(result.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> mockDataSourceConfigMap() {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.put(DefaultSchema.LOGIC_NAME, dataSourceConfig);
-        dataSourceConfig.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceConfig.getProps().put("username", "root");
-        dataSourceConfig.getProps().put("password", "123456");
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
+        result.put(DefaultSchema.LOGIC_NAME, dataSourceProps);
+        dataSourceProps.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        dataSourceProps.getProps().put("username", "root");
+        dataSourceProps.getProps().put("password", "123456");
         return result;
     }
     
