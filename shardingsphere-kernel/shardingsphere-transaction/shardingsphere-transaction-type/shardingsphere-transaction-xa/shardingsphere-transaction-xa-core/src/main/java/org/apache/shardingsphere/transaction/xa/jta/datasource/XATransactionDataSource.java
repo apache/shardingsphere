@@ -44,7 +44,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private final ThreadLocal<Map<Transaction,Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
+    private final ThreadLocal<Map<Transaction, Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
     private final DatabaseType databaseType;
     
