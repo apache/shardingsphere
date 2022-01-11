@@ -95,25 +95,25 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         Map<String, DataSourceConfiguration> dataSourceConfigs = metaDataPersistService.get().getDataSourceService().load(schema);
         Preconditions.checkState(!dataSourceConfigs.isEmpty(), "Can not get dataSource configurations from meta data.");
         DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
-        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
-        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, dataSourceConfigSample, schema));
+        Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
+        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, users, dataSourceConfigSample, schema));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final Collection<ComputeNodeInstance> instances,
+    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
                                                                          final DataSourceConfiguration dataSourceConfigSample, final String schema) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
         for (ComputeNodeInstance each : instances) {
-            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceConfig(each, dataSourceConfigSample, schema));
+            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceConfig(each, users, dataSourceConfigSample, schema));
         }
         return result;
     }
     
-    private DataSourceConfiguration createDataSourceConfig(final ComputeNodeInstance instance,
+    private DataSourceConfiguration createDataSourceConfig(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
                                                            final DataSourceConfiguration dataSourceConfigSample, final String schema) {
         Map<String, Object> props = dataSourceConfigSample.getProps();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
-        Preconditions.checkState(!instance.getUsers().isEmpty(), "Can not get users from meta data.");
-        ShardingSphereUser user = instance.getUsers().iterator().next();
+        ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());

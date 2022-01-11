@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
@@ -31,13 +29,10 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Meta data persist service.
@@ -97,25 +92,6 @@ public final class MetaDataPersistService {
      */
     public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
         computeNodePersistService.persistInstanceLabels(instanceId, labels);
-    }
-    
-    /**
-     * Load compute node instances by instance type and labels.
-     * 
-     * @param instanceType instance type
-     * @param labels collection of label
-     * @return collection of compute node instance
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Collection<ComputeNodeInstance> computeNodeInstances = computeNodePersistService.loadAllComputeNodeInstances(instanceType);
-        Collection<ComputeNodeInstance> result = new ArrayList<>(computeNodeInstances.size());
-        result.addAll(computeNodeInstances.stream().filter(each -> each.getLabels().stream().anyMatch(labels::contains)).collect(Collectors.toList()));
-        if (!result.isEmpty()) {
-            Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleService.load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
-                    .map(each -> (AuthorityRuleConfiguration) each).findFirst();
-            authorityRuleConfig.ifPresent(optional -> result.forEach(each -> each.setUsers(optional.getUsers())));
-        }
-        return result;
     }
     
     /**
