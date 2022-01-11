@@ -96,7 +96,6 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         Preconditions.checkState(!dataSourceConfigs.isEmpty(), "Can not get dataSource configurations from meta data.");
         DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Preconditions.checkState(!users.isEmpty(), "Can not get users from meta data.");
         Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
         return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, users, dataSourceConfigSample, schema));
     }
