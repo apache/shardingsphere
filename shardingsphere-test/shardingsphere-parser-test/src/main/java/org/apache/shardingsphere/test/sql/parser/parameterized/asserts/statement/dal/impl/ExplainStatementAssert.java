@@ -62,7 +62,7 @@ public final class ExplainStatementAssert {
         } else if (null != expected.getCreateTableAsSelectClause()) {
             assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getCreateTableAsSelectClause());
-        } else if (actual instanceof MySQLExplainStatement && null != expected.getTableName()) {
+        } else if (actual instanceof MySQLExplainStatement && null != expected.getTable()) {
             mysqlExplainStatementAssert(assertContext, (MySQLExplainStatement) actual, expected);
         } else {
             assertFalse(assertContext.getText("Actual statement should not exist."), actual.getStatement().isPresent());
@@ -71,7 +71,7 @@ public final class ExplainStatementAssert {
     
     private static void mysqlExplainStatementAssert(final SQLCaseAssertContext assertContext, final MySQLExplainStatement actual, final ExplainStatementTestCase expected) {
         if (actual.getTable().isPresent()) {
-            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTableName());
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
             if (actual.getColumnWild().isPresent()) {
                 ColumnAssert.assertIs(assertContext, actual.getColumnWild().get(), expected.getColumn());
             } else {

@@ -56,8 +56,8 @@ public final class ExplainStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "create-table")
     private CreateTableStatementTestCase createTableAsSelectClause;
     
-    @XmlElement(name = "table")
-    private ExpectedSimpleTable tableName;
+    @XmlElement(name = "simple-table")
+    private ExpectedSimpleTable table;
     
     @XmlElement(name = "column-wild")
     private ExpectedColumn column;
