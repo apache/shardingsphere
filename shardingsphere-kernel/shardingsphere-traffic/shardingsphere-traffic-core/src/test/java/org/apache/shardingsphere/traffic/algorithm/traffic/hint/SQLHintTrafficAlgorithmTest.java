@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.algorithm.traffic;
+package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
-import org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class SQLHintTrafficAlgorithmTest {
@@ -45,5 +46,10 @@ public final class SQLHintTrafficAlgorithmTest {
     @Test
     public void assertMatchWhenSQLHintOneMatch() {
         assertFalse(sqlHintAlgorithm.match(new HintTrafficValue<>("/* ShardingSphere hint: foo=bar */")));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(sqlHintAlgorithm.getType(), is("SQL_HINT"));
     }
 }
