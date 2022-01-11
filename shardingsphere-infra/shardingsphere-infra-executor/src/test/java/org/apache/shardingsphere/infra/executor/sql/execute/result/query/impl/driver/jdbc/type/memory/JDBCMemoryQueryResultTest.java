@@ -276,33 +276,33 @@ public final class JDBCMemoryQueryResultTest {
     @Test
     public void assertGetValueByBinary() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.BINARY);
-        Blob value = mock(Blob.class);
-        when(resultSet.getBlob(1)).thenReturn(value);
+        byte[] value = new byte[10];
+        when(resultSet.getBytes(1)).thenReturn(value);
         JDBCMemoryQueryResult actual = new JDBCMemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is(value));
+        assertThat(actual.getValue(1, byte[].class), is(value));
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValueByVarBinary() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
-        Blob value = mock(Blob.class);
-        when(resultSet.getBlob(1)).thenReturn(value);
+        byte[] value = new byte[10];
+        when(resultSet.getBytes(1)).thenReturn(value);
         JDBCMemoryQueryResult actual = new JDBCMemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is(value));
+        assertThat(actual.getValue(1, byte[].class), is(value));
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValueByLongVarBinary() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.LONGVARBINARY);
-        Blob value = mock(Blob.class);
-        when(resultSet.getBlob(1)).thenReturn(value);
+        byte[] value = new byte[10];
+        when(resultSet.getBytes(1)).thenReturn(value);
         JDBCMemoryQueryResult actual = new JDBCMemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is(value));
+        assertThat(actual.getValue(1, byte[].class), is(value));
         assertFalse(actual.next());
     }
     

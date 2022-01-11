@@ -97,10 +97,11 @@ public final class JDBCRowsLoader {
             case Types.CLOB:
                 return resultSet.getClob(columnIndex);
             case Types.BLOB:
+                return resultSet.getBlob(columnIndex);
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
-                return resultSet.getBlob(columnIndex);
+                return resultSet.getBytes(columnIndex);
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:

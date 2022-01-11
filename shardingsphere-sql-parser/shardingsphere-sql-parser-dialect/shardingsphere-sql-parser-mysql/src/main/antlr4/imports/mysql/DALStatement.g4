@@ -408,10 +408,9 @@ shutdown
 explainType
     : FORMAT EQ_ formatName
     ;
-
-// TODO support table statement
+    
 explainableStatement
-    : select | delete | insert | replace | update
+    : table | select | delete | insert | replace | update
     ;
 
 formatName

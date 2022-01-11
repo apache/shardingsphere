@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.TableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -36,7 +37,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExplainStatementTestCase extends SQLParserTestCase {
-
+    
+    @XmlElement(name = "table")
+    private TableStatementTestCase tableClause;
+    
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;
 
@@ -52,8 +56,8 @@ public final class ExplainStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "create-table")
     private CreateTableStatementTestCase createTableAsSelectClause;
     
-    @XmlElement(name = "table")
-    private ExpectedSimpleTable tableName;
+    @XmlElement(name = "simple-table")
+    private ExpectedSimpleTable table;
     
     @XmlElement(name = "column-wild")
     private ExpectedColumn column;

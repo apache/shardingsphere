@@ -542,7 +542,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitExplainableStatement(final ExplainableStatementContext ctx) {
-        if (null != ctx.select()) {
+        if (null != ctx.table()) {
+            return visit(ctx.table());
+        } else if (null != ctx.select()) {
             return visit(ctx.select());
         } else if (null != ctx.delete()) {
             return visit(ctx.delete());

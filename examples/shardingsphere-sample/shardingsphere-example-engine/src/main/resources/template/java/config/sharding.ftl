@@ -22,7 +22,7 @@
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
-        props.setProperty("algorithm-expression", "${r"demo_ds_${user_id % 2}"}");
+        props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
@@ -45,4 +45,3 @@
         result.setProperty("worker-id", "123");
         return result;
     }
-    

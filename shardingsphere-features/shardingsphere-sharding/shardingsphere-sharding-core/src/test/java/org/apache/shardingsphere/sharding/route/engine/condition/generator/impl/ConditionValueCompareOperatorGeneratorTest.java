@@ -129,11 +129,12 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         assertThat(conditionValue.getValues(), is(Collections.singletonList(1)));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "order_id = ?");
-        generator.generate(predicate, column, new LinkedList<>());
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>());
+        assertFalse(actual.isPresent());
     }
 }
