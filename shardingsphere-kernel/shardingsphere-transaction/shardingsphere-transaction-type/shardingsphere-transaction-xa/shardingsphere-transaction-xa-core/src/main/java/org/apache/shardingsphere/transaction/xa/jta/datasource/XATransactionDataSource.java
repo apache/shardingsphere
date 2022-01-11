@@ -79,7 +79,6 @@ public final class XATransactionDataSource implements AutoCloseable {
         if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             return dataSource.getConnection();
         }
-
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().containsKey(transaction)) {
             Connection result = dataSource.getConnection();
@@ -90,7 +89,7 @@ public final class XATransactionDataSource implements AutoCloseable {
                 public void beforeCompletion() {
                     enlistedTransactions.get().remove(transaction);
                 }
-
+    
                 @Override
                 public void afterCompletion(final int status) {
                     enlistedTransactions.get().clear();
