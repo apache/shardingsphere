@@ -30,6 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +144,7 @@ public final class ReadwriteSplittingDataSourceRule {
         if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
             result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
             result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",",
-                    readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toSet())));
+                    readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new))));
         }
         return result;
     }
