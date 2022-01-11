@@ -37,6 +37,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCRowsLoader {
     
+    private static final String YEAR_DATA_TYPE = "YEAR";
+    
+    private static final String YEAR_DATA_TYPE_SHORT = "java.lang.Short";
+    
     /**
      * Load rows.
      * 
@@ -89,6 +93,10 @@ public final class JDBCRowsLoader {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
+                if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
+                    return isYearShortDataType(resultSet.getMetaData().getColumnClassName(columnIndex))
+                            ? getYearShortData(resultSet, columnIndex) : getYearDateData(resultSet, columnIndex);
+                }
                 return resultSet.getDate(columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
@@ -107,5 +115,21 @@ public final class JDBCRowsLoader {
             default:
                 return resultSet.getObject(columnIndex);
         }
+    }
+    
+    private static boolean isYearDataType(final String columnDataTypeName) {
+        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
+    }
+    
+    private static boolean isYearShortDataType(final String columnClassName) {
+        return YEAR_DATA_TYPE_SHORT.equalsIgnoreCase(columnClassName);
+    }
+    
+    private static Object getYearDateData(final ResultSet resultSet, final int index) throws SQLException {
+        return resultSet.getObject(index) == null ? null : resultSet.getDate(index);
+    }
+    
+    private static Object getYearShortData(final ResultSet resultSet, final int index) throws SQLException {
+        return resultSet.getObject(index) == null ? null : resultSet.getShort(index);
     }
 }
