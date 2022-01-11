@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.resource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
@@ -57,15 +57,15 @@ public final class ProxyResourceConfigurationConverter {
      * Get data source configuration map.
      *
      * @param resourceConfigMap resource configuration map
-     * @return data source configuration map
+     * @return data source properties map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, ProxyResourceConfiguration> resourceConfigMap) {
+    public static Map<String, DataSourceProperties> getDataSourceConfigurationMap(final Map<String, ProxyResourceConfiguration> resourceConfigMap) {
         return resourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
-        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+    private static DataSourceProperties createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
+        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
         result.getProps().put("jdbcUrl", resourceConfig.getConnection().getUrl());
         result.getProps().put("username", resourceConfig.getConnection().getUsername());
         result.getProps().put("password", resourceConfig.getConnection().getPassword());

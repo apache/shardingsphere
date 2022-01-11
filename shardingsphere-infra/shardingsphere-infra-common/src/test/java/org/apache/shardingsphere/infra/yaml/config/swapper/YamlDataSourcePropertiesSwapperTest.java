@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlDataSourceConfigurationSwapperTest {
+public final class YamlDataSourcePropertiesSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
@@ -51,12 +51,12 @@ public final class YamlDataSourceConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToDataSourceConfiguration() {
+    public void assertSwapToDataSourceProperties() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getCanonicalName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
-        DataSourceConfiguration actual = swapper.swapToDataSourceConfiguration(yamlConfig);
+        DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
@@ -65,10 +65,10 @@ public final class YamlDataSourceConfigurationSwapperTest {
     
     @Test
     public void assertSwapToMap() {
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(MockedDataSource.class.getCanonicalName());
-        dataSourceConfig.getProps().put("url", "xx:xxx");
-        dataSourceConfig.getProps().put("username", "root");
-        Map<String, Object> actual = swapper.swapToMap(dataSourceConfig);
+        DataSourceProperties dataSourceProps = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
+        dataSourceProps.getProps().put("url", "xx:xxx");
+        dataSourceProps.getProps().put("username", "root");
+        Map<String, Object> actual = swapper.swapToMap(dataSourceProps);
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StandardPipelineDataSourceConfigurationTest {
+public final class StandardPipelineDataSourcePropertiesTest {
     
     @Test
     public void assertConstructionByParameter() {

@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShadowDataSourceConfigurationYamlSwapperTest {
+public final class ShadowDataSourcePropertiesYamlSwapperTest {
 
     @Test
     public void assertSwapToYamlConfiguration() {

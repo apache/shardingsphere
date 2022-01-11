@@ -25,7 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -92,31 +92,31 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         if (!trafficRule.isPresent() || !metaDataPersistService.isPresent()) {
             return Collections.emptyMap();
         }
-        Map<String, DataSourceConfiguration> dataSourceConfigs = metaDataPersistService.get().getDataSourceService().load(schema);
-        Preconditions.checkState(!dataSourceConfigs.isEmpty(), "Can not get dataSource configurations from meta data.");
-        DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
+        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
+        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
         Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
-        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, users, dataSourceConfigSample, schema));
+        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
-                                                                         final DataSourceConfiguration dataSourceConfigSample, final String schema) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
+                                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (ComputeNodeInstance each : instances) {
-            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceConfig(each, users, dataSourceConfigSample, schema));
+            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
         }
         return result;
     }
     
-    private DataSourceConfiguration createDataSourceConfig(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
-                                                           final DataSourceConfiguration dataSourceConfigSample, final String schema) {
-        Map<String, Object> props = dataSourceConfigSample.getProps();
+    private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
+                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, Object> props = dataSourcePropsSample.getProps();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
         result.getProps().putAll(props);
         return result;
     }
