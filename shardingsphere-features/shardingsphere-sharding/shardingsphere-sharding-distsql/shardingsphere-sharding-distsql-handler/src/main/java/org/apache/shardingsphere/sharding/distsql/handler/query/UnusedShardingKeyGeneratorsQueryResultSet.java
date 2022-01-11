@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -41,11 +41,11 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding algorithms.
+ * Result set for show unused sharding key generators.
  */
-public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
+public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getCanonicalName();
+    private static final String TYPE = ShowUnusedShardingKeyGeneratorsStatement.class.getCanonicalName();
     
     private static final String NAME = "name";
     
@@ -59,7 +59,7 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(rule -> getUnusedShardingAlgorithms(rule));
+        ruleConfig.ifPresent(rule -> getUnusedKeyGenerators(rule));
     }
     
     @Override
@@ -94,10 +94,10 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
         return TYPE;
     }
     
-    private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> inUsedSet = getUsedShardingAlgorithms(shardingRuleConfig);
+    private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<String> inUsedSet = getUsedKeyGenerators(shardingRuleConfig);
         Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
+        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
             if (!inUsedSet.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
@@ -105,24 +105,13 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
         data = map.entrySet().iterator();
     }
     
-    private Collection<String> getUsedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
+    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().forEach(each -> {
-            if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
-                result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
-            }
-            if (Objects.nonNull(each.getTableShardingStrategy())) {
-                result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
-            }
-        });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
-        ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
-        if (Objects.nonNull(tableShardingStrategy) && !Strings.isNullOrEmpty(tableShardingStrategy.getShardingAlgorithmName())) {
-            result.add(tableShardingStrategy.getShardingAlgorithmName());
-        }
-        ShardingStrategyConfiguration databaseShardingStrategy = shardingRuleConfig.getDefaultDatabaseShardingStrategy();
-        if (Objects.nonNull(databaseShardingStrategy) && !Strings.isNullOrEmpty(databaseShardingStrategy.getShardingAlgorithmName())) {
-            result.add(databaseShardingStrategy.getShardingAlgorithmName());
+        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
+        if (Objects.nonNull(keyGenerateStrategy) && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
+            result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
         return result;
     }

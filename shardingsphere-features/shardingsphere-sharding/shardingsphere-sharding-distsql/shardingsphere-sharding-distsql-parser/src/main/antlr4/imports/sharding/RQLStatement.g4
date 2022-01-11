@@ -50,7 +50,11 @@ showShardingDefaultShardingStrategy
 showUnusedShardingAlgorithms
     : SHOW UNUSED SHARDING ALGORITHMS (FROM schemaName)?
     ;
-    
+
+showUnusedShardingKeyGenerators
+    : SHOW UNUSED SHARDING KEY GENERATORS (FROM schemaName)?
+    ;
+
 tableRule
     : RULE tableName
     ;

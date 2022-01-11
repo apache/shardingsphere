@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsQueryResultSet;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.junit.Test;
 
@@ -38,44 +38,38 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class UnusedShardingAlgorithmQueryResultSetTest {
+public final class UnusedShardingKeyGeneratorsQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        UnusedShardingAlgorithmsQueryResultSet resultSet = new UnusedShardingAlgorithmsQueryResultSet();
+        UnusedShardingKeyGeneratorsQueryResultSet resultSet = new UnusedShardingKeyGeneratorsQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("database_inline"));
-        assertThat(actual.get(1), is("INLINE"));
-        assertThat(actual.get(2), is("algorithm-expression=ds_${user_id % 2}"));
+        assertThat(actual.get(0), is("uuid_key_generator"));
+        assertThat(actual.get(1), is("UUID"));
+        assertThat(actual.get(2).toString(), is(""));
     }
     
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration());
-        result.getShardingAlgorithms().put("t_order_hash_mod", createShardingHashModAlgorithmConfiguration());
+        result.getKeyGenerators().put("snowflake_key_generator", createSnowflakeKeyGeneratorConfiguration());
+        result.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("UUID", null));
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration() {
+    private ShardingSphereAlgorithmConfiguration createSnowflakeKeyGeneratorConfiguration() {
         Properties props = new Properties();
-        props.put("algorithm-expression", "ds_${user_id % 2}");
-        return new ShardingSphereAlgorithmConfiguration("INLINE", props);
-    }
-    
-    private ShardingSphereAlgorithmConfiguration createShardingHashModAlgorithmConfiguration() {
-        Properties props = new Properties();
-        props.put("sharding-count", 4);
-        return new ShardingSphereAlgorithmConfiguration("hash_mod", props);
+        props.put("work-id", 123);
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake_key_generator"));
         return result;
     }
 }
