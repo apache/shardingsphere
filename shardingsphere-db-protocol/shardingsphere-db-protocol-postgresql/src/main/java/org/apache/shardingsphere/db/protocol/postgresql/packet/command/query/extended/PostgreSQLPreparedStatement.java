@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
@@ -44,5 +45,14 @@ public final class PostgreSQLPreparedStatement {
      */
     public PostgreSQLParameterDescriptionPacket describeParameters() {
         return new PostgreSQLParameterDescriptionPacket(parameterTypes);
+    }
+    
+    /**
+     * Describe rows of the prepared statement.
+     * 
+     * @return packet of row description
+     */
+    public PostgreSQLRowDescriptionPacket describeRows() {
+        throw new UnsupportedOperationException();
     }
 }
