@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')};
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Address;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.AddressRepository;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderItemRepository;
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderRepository;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Address;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.OrderItem;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.AddressRepository;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderItemRepository;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderRepository;
 <#if framework?contains("spring")>
 
 import org.springframework.stereotype.Service;
@@ -35,14 +41,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-<#assign frameworkName="">
-<#list framework?split("-") as framework1>
-    <#assign frameworkName=frameworkName + framework1?cap_first>
+<#assign frameworkName="" />
+<#list framework?split("-") as item>
+    <#assign frameworkName=frameworkName + item?cap_first />
 </#list>
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
+<#assign featureName="" />
+<#if feature?split(",")?size gt 1>
+    <#assign featureName="Mixed" />
+<#else>
+    <#list feature?split("-") as item>
+        <#assign featureName=featureName + item?cap_first />
+    </#list>
+</#if>
 <#if framework?contains("spring")>
 @Service
 </#if>
@@ -94,7 +104,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();
-    <#if feature=="shadow">
+    <#if feature?contains("shadow")>
         orderRepository.createTableIfNotExistsShadow();
         orderRepository.truncateTableShadow();
     </#if>
@@ -141,7 +151,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
         System.out.println("---------------------------- Delete Data ----------------------------");
         long count = 1;
         for (Long each : orderIds) {
-        <#if feature=="shadow">
+        <#if feature?contains("shadow")>
             orderRepository.deleteShadow(each);
         </#if>        
             orderRepository.delete(each);
@@ -167,7 +177,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
     
     private List<Order> selectAll() throws SQLException {
         List<Order> result = orderRepository.selectAll();
-    <#if feature=="shadow">
+    <#if feature?contains("shadow")>
         result.addAll(orderRepository.selectShadowOrder());
     </#if>
         return result;
@@ -178,7 +188,7 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
      * @throws SQLException
      */
     private void cleanEnvironment() throws SQLException {
-    <#if feature=="shadow">
+    <#if feature?contains("shadow")>
         orderRepository.dropTableShadow();
     </#if>
         orderRepository.dropTable();

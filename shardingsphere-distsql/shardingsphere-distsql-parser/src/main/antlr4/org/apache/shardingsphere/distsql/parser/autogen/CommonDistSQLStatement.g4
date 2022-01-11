@@ -41,5 +41,6 @@ execute
     | alterSQLParserRule
     | showAuthorityRule
     | showTransactionRule
+    | showTableMetadata
     ) SEMI?
     ;

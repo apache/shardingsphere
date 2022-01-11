@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Data source meta data for PostgreSQL.
@@ -40,7 +40,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Map<String, String> queryProperties;
+    private final Properties queryProperties;
     
     public PostgreSQLDataSourceMetaData(final String url) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
@@ -49,5 +49,10 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
         catalog = jdbcUrl.getDatabase();
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Data source meta data for MySQL.
@@ -40,7 +40,9 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Map<String, String> queryProperties;
+    private final Properties queryProperties;
+    
+    private final Properties defaultQueryProperties = new Properties();
     
     public MySQLDataSourceMetaData(final String url) {
         JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
@@ -49,5 +51,23 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         catalog = jdbcUrl.getDatabase();
         schema = null;
         queryProperties = jdbcUrl.getQueryProperties();
+        buildDefaultQueryProperties();
+    }
+    
+    private void buildDefaultQueryProperties() {
+        defaultQueryProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultQueryProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultQueryProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("netTimeoutForStreamingResults", "0");
+        defaultQueryProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("serverTimezone", "UTC");
     }
 }

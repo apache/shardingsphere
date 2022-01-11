@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Pipeline data source configuration for ShardingSphere-JDBC.
@@ -84,11 +85,11 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     @Override
-    public void appendJDBCQueryProperties(final Map<String, String> queryProps) {
+    public void appendJDBCQueryProperties(final Properties queryProps) {
         rootConfig.getDataSources()
                 .forEach((key, value) -> {
                     String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
-                    value.replace(jdbcUrlKey, new StandardJdbcUrlParser().appendQueryProperties(value.get(jdbcUrlKey).toString(), queryProps));
+                    value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(value.get(jdbcUrlKey).toString(), queryProps));
                 });
     }
     

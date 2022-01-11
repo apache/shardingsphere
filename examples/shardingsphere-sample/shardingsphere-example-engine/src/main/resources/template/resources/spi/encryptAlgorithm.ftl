@@ -15,4 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.TestQueryAssistedShardingEncryptAlgorithm
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.TestQueryAssistedShardingEncryptAlgorithm

@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.metadata.url;
 
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -78,32 +76,8 @@ public final class StandardJdbcUrlParserTest {
         assertTrue(actual.getQueryProperties().isEmpty());
     }
     
-    @Test
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertParseIncorrectURL() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getDatabase(), is(""));
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/demo_ds", createQueryProperties());
-        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?useSSL=false&rewriteBatchedStatements=true"));
-    }
-    
-    @Test
-    public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties(
-                "jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
-        assertThat(actual, is("jdbc:mysql://192.168.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
-    }
-    
-    private Map<String, String> createQueryProperties() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        return result;
+        new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
     }
 }

@@ -15,16 +15,6 @@
   ~ limitations under the License.
   -->
     
-    /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
-    */
-    public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());
-    }
-    
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(getOrderTableRuleConfiguration());
@@ -32,14 +22,10 @@
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         Properties props = new Properties();
-        props.setProperty("algorithm-expression", "${r"demo_ds_${user_id % 2}"}");
+        props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
-    }
-    
-    private static ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
     }
     
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -54,16 +40,8 @@
         return result;
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("demo_ds_0", createDataSource("demo_ds_0"));
-        result.put("demo_ds_1", createDataSource("demo_ds_1"));
-        return result;
-    }
-    
     private static Properties getProperties() {
         Properties result = new Properties();
         result.setProperty("worker-id", "123");
         return result;
     }
-    

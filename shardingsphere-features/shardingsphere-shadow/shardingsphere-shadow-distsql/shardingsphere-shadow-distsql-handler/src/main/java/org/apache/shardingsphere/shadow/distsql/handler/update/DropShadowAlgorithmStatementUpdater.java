@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -65,11 +64,11 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     }
     
     private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
-                                      final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+                                      final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, currentAlgorithms, thrower);
     }
     
-    private Set<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
+    private Collection<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
         return currentRuleConfig.getTables().values().stream().filter(each -> !each.getDataSourceNames().isEmpty()).map(ShadowTableConfiguration::getShadowAlgorithmNames)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
     }
@@ -83,7 +82,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
         return false;
     }
     
-    private Set<String> getEmptyTableRules(final Map<String, ShadowTableConfiguration> tables) {
+    private Collection<String> getEmptyTableRules(final Map<String, ShadowTableConfiguration> tables) {
         return tables.entrySet().stream().filter(entry -> entry.getValue().getShadowAlgorithmNames().isEmpty() && entry.getValue().getDataSourceNames().isEmpty())
                 .map(Entry::getKey).collect(Collectors.toSet());
     }

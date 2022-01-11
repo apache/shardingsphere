@@ -19,11 +19,10 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,21 +50,19 @@ public final class StandardJdbcUrlParser {
     /**
      * Parse JDBC URL.
      * 
-     * @param jdbcURL JDBC URL to be parsed
+     * @param jdbcUrl JDBC URL to be parsed
      * @return parsed JDBC URL
      */
-    public JdbcUrl parse(final String jdbcURL) {
-        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
+    public JdbcUrl parse(final String jdbcUrl) {
+        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
             if (null == authority) {
-                return new JdbcUrl("", -1, "", new LinkedHashMap<>());
-                // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+                throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
             }
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
-        return new JdbcUrl("", -1, "", new LinkedHashMap<>());
-        // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+        throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
     }
     
     private String parseHostname(final String authority) {
@@ -86,51 +83,14 @@ public final class StandardJdbcUrlParser {
         return Integer.parseInt(port);
     }
     
-    private Map<String, String> parseQueryProperties(final String query) {
-        return Strings.isNullOrEmpty(query) ? Collections.emptyMap() : Splitter.on("&").withKeyValueSeparator("=").split(query);
-    }
-    
-    /**
-     * Append query properties.
-     *
-     * @param jdbcURL JDBC URL to be appended
-     * @param queryProps query properties to be appended
-     * @return appended JDBC URL
-     */
-    public String appendQueryProperties(final String jdbcURL, final Map<String, String> queryProps) {
-        Map<String, String> currentQueryProps = parse(jdbcURL).getQueryProperties();
-        if (hasConflictedQueryProperties(currentQueryProps, queryProps)) {
-            Map<String, String> newQueryProps = new LinkedHashMap<>(currentQueryProps);
-            newQueryProps.putAll(queryProps);
-            StringBuilder result = new StringBuilder(jdbcURL.substring(0, jdbcURL.indexOf('?')));
-            result.append('?');
-            appendQueryPropertiesOnURLBuilder(result, newQueryProps);
-            return result.toString();
+    private Properties parseQueryProperties(final String query) {
+        if (Strings.isNullOrEmpty(query)) {
+            return new Properties();
         }
-        StringBuilder result = new StringBuilder(jdbcURL);
-        String delimiter = currentQueryProps.isEmpty() ? "?" : "&";
-        result.append(delimiter);
-        appendQueryPropertiesOnURLBuilder(result, queryProps);
-        return result.toString();
-    }
-    
-    private boolean hasConflictedQueryProperties(final Map<String, String> currentQueryProps, final Map<String, String> queryProps) {
-        for (Entry<String, String> entry : queryProps.entrySet()) {
-            if (currentQueryProps.containsKey(entry.getKey())) {
-                return true;
-            }
+        Properties result = new Properties();
+        for (Entry<String, String> entry : Splitter.on("&").withKeyValueSeparator("=").split(query).entrySet()) {
+            result.setProperty(entry.getKey(), entry.getValue());
         }
-        return false;
-    }
-    
-    private void appendQueryPropertiesOnURLBuilder(final StringBuilder result, final Map<String, String> queryProps) {
-        for (Entry<String, String> entry : queryProps.entrySet()) {
-            result.append(entry.getKey());
-            if (null != entry.getValue()) {
-                result.append("=").append(entry.getValue());
-            }
-            result.append("&");
-        }
-        result.deleteCharAt(result.length() - 1);
+        return result;
     }
 }

@@ -82,7 +82,7 @@ public abstract class AbstractStreamingSingleTableDataCalculator extends Abstrac
             Optional<Object> nextResult = this.nextResult;
             dataCalculateParameter.setPreviousCalculatedResult(nextResult.orElse(null));
             this.nextResult = null;
-            return nextResult;
+            return nextResult.orElse(null);
         }
         
         private void calculateIfNecessary() {

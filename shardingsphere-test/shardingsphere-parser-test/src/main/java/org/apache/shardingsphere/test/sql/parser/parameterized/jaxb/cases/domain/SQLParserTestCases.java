@@ -168,6 +168,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
@@ -247,6 +248,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.TableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
@@ -954,6 +956,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-table-metadata")
+    private final List<ShowTableMetadataStatementTestCase> showTableMetadataStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-conversion")
     private final List<CreateConversionStatementTestCase> createConversionStatementTestCase = new LinkedList<>();
     
@@ -983,6 +988,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-unused-sharding-algorithms")
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "table")
+    private final List<TableStatementTestCase> tableStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1227,8 +1235,10 @@ public final class SQLParserTestCases {
         putAll(createLanguageStatementTestCases, result);
         putAll(alterLanguageStatementTestCases, result);
         putAll(dropLanguageStatementTestCases, result);
+        putAll(showTableMetadataStatementTestCases, result);
         putAll(helpStatementTestCases, result);
         putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
+        putAll(tableStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

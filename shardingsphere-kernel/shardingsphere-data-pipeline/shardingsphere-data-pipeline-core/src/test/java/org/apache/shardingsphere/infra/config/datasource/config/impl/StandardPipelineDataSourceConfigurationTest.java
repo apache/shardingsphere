@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.datasource.config.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Test;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,7 +56,9 @@ public final class StandardPipelineDataSourceConfigurationTest {
     public void assertAppendJDBCParameters() {
         StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(
                 "jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false", null, null);
-        pipelineDataSourceConfig.appendJDBCQueryProperties(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+        Properties queryProps = new Properties();
+        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        pipelineDataSourceConfig.appendJDBCQueryProperties(queryProps);
         assertThat(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
 }

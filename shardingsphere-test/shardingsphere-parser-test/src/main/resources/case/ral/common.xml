@@ -42,4 +42,8 @@
             <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100"  />
         </sql-parser>
     </alter-sql-parser-rule>
+    <show-table-metadata sql-case-id="show-table-metadata" >
+        <table-name>t_order</table-name>
+        <schema name="schema_name" start-index="33" stop-index="43"/>
+    </show-table-metadata>
 </sql-parser-test-cases>

@@ -125,6 +125,10 @@ select
     | queryExpressionParens
     | selectWithInto
     ;
+    
+table
+    : TABLE tableName (ORDER BY columnName)? limitClause?
+    ;
 
 selectWithInto
     : LP_ selectWithInto RP_

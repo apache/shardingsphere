@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.Order;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -32,7 +38,7 @@ public class OrderRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
-
+    
     public void createTableIfNotExists() {
     }
     
@@ -41,7 +47,7 @@ public class OrderRepository {
     
     public void truncateTable() {
     }
-
+    
     public Long insert(final Order order) {
         entityManager.persist(order);
         return order.getOrderId();
@@ -52,8 +58,8 @@ public class OrderRepository {
         query.setParameter(1, orderId);
         query.executeUpdate();
     }
-
-    <#if feature=="shadow">
+    
+    <#if feature?contains("shadow")>
     public void deleteShadow(final Long orderId) {
         Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND order_type=1");
         query.setParameter(1, orderId);

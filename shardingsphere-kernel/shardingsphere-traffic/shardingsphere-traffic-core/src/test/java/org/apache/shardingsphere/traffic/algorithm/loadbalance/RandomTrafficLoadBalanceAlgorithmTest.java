@@ -22,6 +22,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class RandomTrafficLoadBalanceAlgorithmTest {
@@ -34,5 +37,15 @@ public final class RandomTrafficLoadBalanceAlgorithmTest {
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(randomAlgorithm.getType(), is("RANDOM"));
+    }
+    
+    @Test
+    public void assertIsDefault() {
+        assertFalse(randomAlgorithm.isDefault());
     }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Data source pool creation meta data.
@@ -62,11 +61,4 @@ public interface DataSourcePoolCreationMetaData extends TypedSPI, RequiredSPI {
      * @return JDBC URL properties field name
      */
     String getJdbcUrlPropertiesFieldName();
-    
-    /**
-     * Get default JDBC URL properties.
-     * 
-     * @return default JDBC URL properties
-     */
-    Properties getDefaultJdbcUrlProperties();
 }

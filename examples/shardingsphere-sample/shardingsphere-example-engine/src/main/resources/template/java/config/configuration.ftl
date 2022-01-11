@@ -15,11 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework};
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework};
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-<#if feature=="sharding">
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+<#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
@@ -27,24 +35,27 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-<#elseif feature=="readwrite-splitting">
+</#if>
+<#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-<#elseif feature=="encrypt">
+</#if>
+<#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-<#elseif feature=="shadow">
+</#if>
+<#if feature?contains("shadow")>
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-<#elseif feature=="db-discovery">
+</#if>
+<#if feature?contains("db-discovery")>
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -63,23 +74,87 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-<#assign featureName="">
-<#list feature?split("-") as feature1>
-    <#assign featureName=featureName + feature1?cap_first>
-</#list>
+<#assign featureName="" />
+<#if feature?split(",")?size gt 1>
+    <#assign featureName="Mixed" />
+<#else>
+    <#list feature?split("-") as item>
+        <#assign featureName=featureName + item?cap_first />
+    </#list>
+</#if>
 public final class ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration {
-<#if feature!="db-discovery">
     
     private static final String HOST = "${host}";
     
     private static final int PORT = ${(port)?c};
-</#if>
     
     private static final String USER_NAME = "${username}";
     
     private static final String PASSWORD = "${(password)?string}";
-<#include "${feature}.ftl">
-<#if feature!="db-discovery">
+    
+    /**
+     * Create a DataSource object, which is an object rewritten by ShardingSphere itself
+     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
+     * @return datasource
+     * @throws SQLException SQL exception
+     */
+    public DataSource getDataSource() throws SQLException {
+    <#if mode=="memory">
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), createRuleConfiguration(), createShardingSphereProps());
+    <#else>
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createShardingSphereProps());
+    </#if>
+    }
+<#if mode!="memory">
+    
+    private static ModeConfiguration createModeConfiguration() {
+    <#if mode=="cluster">
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()), true);
+    </#if>
+    <#if mode=="standalone">
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
+    </#if> 
+    }
+</#if>
+    
+    private Properties createShardingSphereProps() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        return result;
+    }
+    
+    private Collection<RuleConfiguration> createRuleConfiguration() {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+    <#if feature?contains("db-discovery")>
+        result.add(createDatabaseDiscoveryRuleConfiguration());
+    </#if>
+    <#if feature?contains("encrypt")>
+        result.add(createEncryptRuleConfiguration());
+    </#if>
+    <#if feature?contains("readwrite-splitting")>
+        result.add(createReadwriteSplittingRuleConfiguration());
+    </#if>
+    <#if feature?contains("shadow")>
+        result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
+    </#if>
+    <#if feature?contains("sharding")>
+        result.add(createShardingRuleConfiguration());
+    </#if>
+        return result; 
+    }
+<#list feature?split(",") as item>
+    <#include "${item}.ftl">
+</#list>
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds_0", createDataSource("demo_ds_0"));
+        dataSourceMap.put("ds_1", createDataSource("demo_ds_1"));
+        dataSourceMap.put("ds_2", createDataSource("demo_ds_2"));
+        return dataSourceMap;
+    }
+    
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
@@ -88,5 +163,4 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
         result.setPassword(PASSWORD);
         return result;
     }
-</#if>
 }

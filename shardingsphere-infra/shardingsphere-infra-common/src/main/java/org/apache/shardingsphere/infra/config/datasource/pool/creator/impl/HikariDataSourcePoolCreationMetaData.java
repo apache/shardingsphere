@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSource
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Hikari data source pool creator.
@@ -37,13 +36,10 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
-    private final Properties defaultJdbcUrlProperties = new Properties();
-    
     public HikariDataSourcePoolCreationMetaData() {
         buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
-        buildDefaultJdbcUrlProperties();
     }
     
     private void buildDefaultProperties() {
@@ -63,23 +59,6 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     private void buildPropertySynonyms() {
         propertySynonyms.put("maxPoolSize", "maximumPoolSize");
         propertySynonyms.put("minPoolSize", "minimumIdle");
-    }
-    
-    private void buildDefaultJdbcUrlProperties() {
-        defaultJdbcUrlProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("prepStmtCacheSize", "200000");
-        defaultJdbcUrlProperties.setProperty("prepStmtCacheSqlLimit", "2048");
-        defaultJdbcUrlProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        defaultJdbcUrlProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("netTimeoutForStreamingResults", "0");
-        defaultJdbcUrlProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("useSSL", Boolean.FALSE.toString());
-        defaultJdbcUrlProperties.setProperty("serverTimezone", "UTC");
     }
     
     @Override

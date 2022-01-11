@@ -30,6 +30,4 @@
             <encrypt:column logic-column="phone" cipher-column="phone" plain-column="phone_plain" encrypt-algorithm-ref="phone_encryptor" />
         </encrypt:table>
     </encrypt:rule>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0" rule-refs="encryptRule" />
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,12 +45,10 @@ public final class OpenGaussDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
         assertThat(actual.getQueryProperties().size(), is(1));
-        assertThat(actual.getQueryProperties().get("targetServerType"), is("master"));
+        assertThat(actual.getQueryProperties().getProperty("targetServerType"), is("master"));
     }
     
-    // TODO fixme
-    @Test
-    //(expected = UnrecognizedDatabaseURLException.class)
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
         new PostgreSQLDataSourceMetaData("jdbc:openGauss:xxxxxxxx");
     }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSource
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Default data source pool creator.
@@ -51,11 +50,6 @@ public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePo
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return null;
-    }
-    
-    @Override
-    public Properties getDefaultJdbcUrlProperties() {
-        return new Properties();
     }
     
     @Override

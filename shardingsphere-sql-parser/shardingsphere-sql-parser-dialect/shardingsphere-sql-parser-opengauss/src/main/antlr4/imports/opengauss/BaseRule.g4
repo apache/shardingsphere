@@ -21,11 +21,7 @@ import Keyword, OpenGaussKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_ literalsType?
-    | POSITIONAL_PARAMETER_
-    ;
-    
-POSITIONAL_PARAMETER_
-    : DOLLAR_ INT_
+    | DOLLAR_ numberLiterals
     ;
 
 reservedKeyword

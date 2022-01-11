@@ -61,8 +61,8 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         assertThat(actual.get(0), is("ms_group"));
         assertThat(actual.get(1), is("ds_0,ds_1"));
         assertThat(actual.get(2), is(""));
-        assertThat(actual.get(3).toString(), is("{group_name=type_test, type=MGR, props={}}"));
-        assertThat(actual.get(4).toString(), is("{group_name=heartbeat_test, props={}}"));
+        assertThat(actual.get(3).toString(), is("{name=type_test, type=MGR, props={}}"));
+        assertThat(actual.get(4).toString(), is("{name=heartbeat_test, props={}}"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
