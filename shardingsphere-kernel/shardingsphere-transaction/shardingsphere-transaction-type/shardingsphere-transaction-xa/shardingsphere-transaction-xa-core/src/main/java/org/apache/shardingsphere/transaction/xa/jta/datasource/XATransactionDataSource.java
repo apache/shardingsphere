@@ -33,7 +33,8 @@ import javax.transaction.Transaction;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,7 +44,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private final ThreadLocal<Set<Transaction>> enlistedTransactions = ThreadLocal.withInitial(HashSet::new);
+    private final ThreadLocal<Map<Transaction, Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
     private final DatabaseType databaseType;
     
@@ -78,10 +79,10 @@ public final class XATransactionDataSource implements AutoCloseable {
         if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             return dataSource.getConnection();
         }
-        Connection result = dataSource.getConnection();
-        XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
-        if (!enlistedTransactions.get().contains(transaction)) {
+        if (!enlistedTransactions.get().containsKey(transaction)) {
+            Connection result = dataSource.getConnection();
+            XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 @Override
@@ -94,9 +95,9 @@ public final class XATransactionDataSource implements AutoCloseable {
                     enlistedTransactions.get().clear();
                 }
             });
-            enlistedTransactions.get().add(transaction);
+            enlistedTransactions.get().put(transaction, result);
         }
-        return result;
+        return enlistedTransactions.get().get(transaction);
     }
     
     @Override
