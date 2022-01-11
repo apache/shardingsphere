@@ -72,20 +72,24 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load all compute node instances by instance type.
-     * 
-     * @param instanceType instance type     
+     * Load compute node instances by instance type and labels.
+     *
+     * @param instanceType instance type
+     * @param labels collection of contained label                     
      * @return collection of compute node instance
      */
-    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances(final InstanceType instanceType) {
+    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
         List<ComputeNodeInstance> result = new ArrayList<>(onlineComputeNodes.size());
         onlineComputeNodes.forEach(each -> {
-            ComputeNodeInstance instance = new ComputeNodeInstance();
-            instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
-            instance.setLabels(loadInstanceLabels(each));
-            instance.setStatus(loadInstanceStatus(each));
-            result.add(instance);
+            Collection<String> actualLabels = loadInstanceLabels(each);
+            if (actualLabels.stream().anyMatch(labels::contains)) {
+                ComputeNodeInstance instance = new ComputeNodeInstance();
+                instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
+                instance.setLabels(actualLabels);
+                instance.setStatus(loadInstanceStatus(each));
+                result.add(instance);
+            }
         });
         return result;
     }

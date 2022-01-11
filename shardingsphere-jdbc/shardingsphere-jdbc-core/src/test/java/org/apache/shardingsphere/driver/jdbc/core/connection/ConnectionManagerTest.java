@@ -96,7 +96,8 @@ public final class ConnectionManagerTest {
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceConfigMap());
-        when(result.loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
+        when(result.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
+        when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     
@@ -112,7 +113,6 @@ public final class ConnectionManagerTest {
     
     private ComputeNodeInstance mockComputeNodeInstance() {
         ComputeNodeInstance result = new ComputeNodeInstance();
-        result.setUsers(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         result.setLabels(Collections.singletonList("OLTP"));
         result.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         return result;

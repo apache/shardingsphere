@@ -23,11 +23,13 @@ import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -62,6 +64,11 @@ public final class TrafficEngineTest {
     @Mock
     private MetaDataPersistService metaDataPersistService;
     
+    @Before
+    public void setUp() {
+        when(metaDataPersistService.getComputeNodePersistService()).thenReturn(mock(ComputeNodePersistService.class));
+    }
+    
     @Test
     public void assertDispatchWhenNotExistTrafficStrategyRule() {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, metaDataContexts);
@@ -76,7 +83,7 @@ public final class TrafficEngineTest {
         when(trafficRule.findMatchedStrategyRule(logicSQL)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(metaDataPersistService.loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.emptyList());
+        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.emptyList());
         TrafficContext actual = trafficEngine.dispatch(logicSQL);
         assertThat(actual.getExecutionUnits().size(), is(0));
     }
@@ -89,7 +96,7 @@ public final class TrafficEngineTest {
         when(strategyRule.getLoadBalancerName()).thenReturn("RANDOM");
         when(strategyRule.getName()).thenReturn("traffic");
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(metaDataPersistService.loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(mockComputeNodeInstances());
+        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(mockComputeNodeInstances());
         TrafficLoadBalanceAlgorithm algorithm = mock(TrafficLoadBalanceAlgorithm.class);
         when(algorithm.getInstanceId("traffic", Arrays.asList("127.0.0.1@3307", "127.0.0.1@3308"))).thenReturn("127.0.0.1@3307");
         when(trafficRule.findLoadBalancer("RANDOM")).thenReturn(algorithm);
