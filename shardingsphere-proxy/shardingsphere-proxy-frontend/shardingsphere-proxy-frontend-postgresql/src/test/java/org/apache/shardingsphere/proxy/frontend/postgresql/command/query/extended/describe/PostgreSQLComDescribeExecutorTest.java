@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -56,7 +57,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertDescribePortal() {
+    public void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
         PostgreSQLPortal portal = mock(PostgreSQLPortal.class);
@@ -69,7 +70,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
-    public void assertDescribePreparedStatement() {
+    public void assertDescribePreparedStatement() throws SQLException {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn("S_1");
         when(connectionSession.getConnectionId()).thenReturn(1);
@@ -86,7 +87,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertDescribeUnknownType() {
+    public void assertDescribeUnknownType() throws SQLException {
         new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
     }
 }

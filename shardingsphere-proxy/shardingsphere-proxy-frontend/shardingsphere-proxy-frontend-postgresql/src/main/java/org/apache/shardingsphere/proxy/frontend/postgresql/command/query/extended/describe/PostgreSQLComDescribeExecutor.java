@@ -19,15 +19,39 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
+import java.sql.Connection;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Command describe for PostgreSQL.
@@ -42,7 +66,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
         switch (packet.getType()) {
             case 'S':
                 return describePreparedStatement();
@@ -53,8 +77,71 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private List<DatabasePacket<?>> describePreparedStatement() {
-        // TODO Unsupported yet. Refer to https://github.com/apache/shardingsphere/issues/10814
-        return Collections.singletonList(PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getName()).describeParameters());
+    private List<DatabasePacket<?>> describePreparedStatement() throws SQLException {
+        List<DatabasePacket<?>> result = new ArrayList<>(2);
+        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getName());
+        Optional<PostgreSQLPacket> rowDescription = preparedStatement.describeRows();
+        if (rowDescription.isPresent()) {
+            result.add(rowDescription.get());
+        } else {
+            describe(preparedStatement);
+            preparedStatement.describeRows().ifPresent(result::add);
+        }
+        result.add(preparedStatement.describeParameters());
+        return result;
+    }
+    
+    private void describe(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
+        if (!(connectionSession.getBackendConnection() instanceof JDBCBackendConnection)) {
+            // TODO Unsupported yet excepts JDBC.
+            return;
+        }
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        String schemaName = connectionSession.getSchemaName();
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), preparedStatement.getSqlStatement(), schemaName);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
+        ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
+        JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
+        try (Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next()) {
+            try (PreparedStatement ps = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
+                populateParameterTypes(preparedStatement, ps);
+                populateColumnTypes(preparedStatement, ps);
+            }
+        }
+    }
+    
+    private void populateParameterTypes(final PostgreSQLPreparedStatement preparedStatement, final PreparedStatement ps) throws SQLException {
+        if (preparedStatement.getSqlStatement().getParameterCount() == 0
+                || preparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
+            return;
+        }
+        ParameterMetaData parameterMetaData = ps.getParameterMetaData();
+        for (int i = 0; i < preparedStatement.getSqlStatement().getParameterCount(); i++) {
+            if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == preparedStatement.getParameterTypes().get(i)) {
+                preparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
+            }
+        }
+    }
+    
+    private void populateColumnTypes(final PostgreSQLPreparedStatement preparedStatement, final PreparedStatement ps) throws SQLException {
+        if (preparedStatement.describeRows().isPresent()) {
+            return;
+        }
+        ResultSetMetaData resultSetMetaData = ps.getMetaData();
+        if (null == resultSetMetaData) {
+            preparedStatement.setRowDescription(new PostgreSQLNoDataPacket());
+            return;
+        }
+        List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
+        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+            String columnName = resultSetMetaData.getColumnName(columnIndex);
+            int columnType = resultSetMetaData.getColumnType(columnIndex);
+            int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+            String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
+            columnDescriptions.add(new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
+        }
+        preparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
 }
