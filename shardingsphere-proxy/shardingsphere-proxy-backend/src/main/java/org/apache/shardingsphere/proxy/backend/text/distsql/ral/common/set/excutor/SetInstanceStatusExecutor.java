@@ -38,7 +38,7 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
     @Override
     public ResponseHeader execute() throws DistSQLException {
         // add more instance check here
-        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent("DISABLE".equals(sqlStatement.getStatus()) ? ComputeNodeStatus.CIRCUIT_BREAKER : ComputeNodeStatus.ONLINE, 
+        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent("DISABLE".equals(sqlStatement.getStatus()) ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE, 
                 sqlStatement.getIp(), sqlStatement.getPort()));
         return new UpdateResponseHeader(sqlStatement);
     }

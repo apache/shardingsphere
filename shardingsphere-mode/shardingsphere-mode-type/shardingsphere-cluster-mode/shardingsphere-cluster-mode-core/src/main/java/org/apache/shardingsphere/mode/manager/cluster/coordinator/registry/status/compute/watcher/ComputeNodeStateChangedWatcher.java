@@ -53,7 +53,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
         String instanceId = ComputeNode.getInstanceIdByStatus(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
             Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
-            return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, status.contains(ComputeNodeStatus.CIRCUIT_BREAKER.name())));
+            return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, status.contains(ComputeNodeStatus.CIRCUIT_BREAK.name())));
         }
         return Optional.empty();
     }

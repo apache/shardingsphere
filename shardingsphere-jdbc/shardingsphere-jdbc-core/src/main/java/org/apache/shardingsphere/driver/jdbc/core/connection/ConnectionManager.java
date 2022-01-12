@@ -137,11 +137,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
             return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
                     .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
         }
-        ConnectionTransaction result = new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
-        if (null == result) {
-            throw new RuntimeException(String.format("Get connectionTransaction error for transaction type %s", type.name()));
-        }
-        return result;
+        return new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
     }
     
     /**
