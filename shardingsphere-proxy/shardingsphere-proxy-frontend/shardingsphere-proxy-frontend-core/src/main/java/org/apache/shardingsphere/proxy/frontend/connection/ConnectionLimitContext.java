@@ -56,7 +56,7 @@ public final class ConnectionLimitContext {
      * Channel inactive state.
      */
     public void connectionInactive() {
-       activeConnections.decrementAndGet();
+        activeConnections.decrementAndGet();
     }
     
     /**
