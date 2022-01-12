@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import Symbol, RALStatement, RDLStatement;
-
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
-    | enableShardingScaling
-    | disableShardingScaling
-    ) SEMI?
-    ;
+/**
+ * Rule disabled exception.
+ */
+public final class RuleDisabledException extends RuleDefinitionViolationException {
+    
+    private static final long serialVersionUID = -4024905659258386784L;
+    
+    public RuleDisabledException(final String ruleType, final String schemaName, final String ruleName) {
+        super(1119, String.format("%s rule `%s` has been disabled in schema `%s`.", ruleType, ruleName, schemaName));
+    }
+}

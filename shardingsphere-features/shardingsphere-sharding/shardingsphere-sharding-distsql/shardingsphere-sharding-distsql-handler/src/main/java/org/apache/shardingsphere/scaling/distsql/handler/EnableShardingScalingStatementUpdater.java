@@ -19,22 +19,24 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleEnabledException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 /**
- * Drop sharding scaling statement updater.
+ * Enable sharding scaling statement updater.
  */
-public final class DropShardingScalingStatementUpdater implements RuleDefinitionDropUpdater<DropShardingScalingStatement, ShardingRuleConfiguration> {
+public final class EnableShardingScalingStatementUpdater implements RuleDefinitionAlterUpdater<EnableShardingScalingStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingScalingStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final EnableShardingScalingStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkStatement(schemaName, sqlStatement, currentRuleConfig);
+        checkExist(schemaName, sqlStatement, currentRuleConfig);
+        checkEnabled(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -43,24 +45,28 @@ public final class DropShardingScalingStatementUpdater implements RuleDefinition
         }
     }
     
-    private void checkStatement(final String schemaName, final DropShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkExist(schemaName, sqlStatement, currentRuleConfig);
-        // TODO checkNotInUse
-    }
-    
-    private void checkExist(final String schemaName, final DropShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkExist(final String schemaName, final EnableShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
             throw new RequiredRuleMissedException("Scaling", schemaName, sqlStatement.getScalingName());
         }
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getScaling().remove(sqlStatement.getScalingName());
-        if (null != currentRuleConfig.getScalingName() && currentRuleConfig.getScalingName().equalsIgnoreCase(sqlStatement.getScalingName())) {
-            currentRuleConfig.setScalingName(null);
+    private void checkEnabled(final String schemaName, final EnableShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null != currentRuleConfig.getScalingName() && currentRuleConfig.getScalingName().equals(sqlStatement.getScalingName())) {
+            throw new RuleEnabledException("Scaling", schemaName, sqlStatement.getScalingName());
         }
-        return false;
+    }
+    
+    @Override
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final EnableShardingScalingStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setScalingName(sqlStatement.getScalingName());
+        return result;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.setScalingName(toBeAlteredRuleConfig.getScalingName());
     }
     
     @Override
@@ -70,6 +76,6 @@ public final class DropShardingScalingStatementUpdater implements RuleDefinition
     
     @Override
     public String getType() {
-        return DropShardingScalingStatement.class.getCanonicalName();
+        return EnableShardingScalingStatement.class.getCanonicalName();
     }
 }

@@ -26,8 +26,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DataConsistencyCheckerContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DisableShardingScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.InputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ManualDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.MinimumAutoDefinitionContext;
@@ -46,8 +48,10 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DisableShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
@@ -192,25 +196,35 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     public ASTNode visitRateLimiter(final RateLimiterContext ctx) {
         return visit(ctx.algorithmDefinition());
     }
-
+    
     @Override
     public ASTNode visitStreamChannel(final StreamChannelContext ctx) {
         return visit(ctx.algorithmDefinition());
     }
-
+    
     @Override
     public ASTNode visitCompletionDetector(final CompletionDetectorContext ctx) {
         return visit(ctx.algorithmDefinition());
     }
-
+    
     @Override
     public ASTNode visitDataConsistencyChecker(final DataConsistencyCheckerContext ctx) {
         return visit(ctx.algorithmDefinition());
     }
-
+    
     @Override
     public ASTNode visitDropShardingScaling(final DropShardingScalingContext ctx) {
         return new DropShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    }
+    
+    @Override
+    public ASTNode visitEnableShardingScaling(final EnableShardingScalingContext ctx) {
+        return new EnableShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    }
+    
+    @Override
+    public ASTNode visitDisableShardingScaling(final DisableShardingScalingContext ctx) {
+        return new DisableShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
     }
     
     @Override
