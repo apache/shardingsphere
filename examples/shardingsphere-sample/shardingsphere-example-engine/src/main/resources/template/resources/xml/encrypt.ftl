@@ -30,4 +30,3 @@
             <encrypt:column logic-column="phone" cipher-column="phone" plain-column="phone_plain" encrypt-algorithm-ref="phone_encryptor" />
         </encrypt:table>
     </encrypt:rule>
-
