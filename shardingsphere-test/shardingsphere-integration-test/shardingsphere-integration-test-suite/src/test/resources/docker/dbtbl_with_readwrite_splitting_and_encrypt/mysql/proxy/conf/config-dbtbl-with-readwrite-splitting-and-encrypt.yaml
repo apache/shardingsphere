@@ -210,16 +210,16 @@ rules:
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
-          shardingColumn: item_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
       keyGenerateStrategy:
-        column: item_id
+        column: user_id
         keyGeneratorName: constant
     t_user:
       actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: address_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
@@ -232,7 +232,7 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: address_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:

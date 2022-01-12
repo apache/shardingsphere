@@ -67,11 +67,11 @@ rules:
       actualDataNodes: pr_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
-          shardingColumn: order_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
       tableStrategy: 
         standard:
-          shardingColumn: id
+          shardingColumn: order_id
           shardingAlgorithmName: t_order_item_inline
   bindingTables:
     - t_order,t_order_item
