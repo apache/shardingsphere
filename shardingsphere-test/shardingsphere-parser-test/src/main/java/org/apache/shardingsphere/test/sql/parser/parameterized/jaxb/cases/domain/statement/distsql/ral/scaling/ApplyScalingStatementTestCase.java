@@ -26,11 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Checkout scaling statement test case.
+ * Apply scaling statement test case.
  */
 @Getter
 @Setter
-public final class CheckoutScalingStatementTestCase extends SQLParserTestCase {
+public final class ApplyScalingStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
     private final List<String> jobIds = new LinkedList<>();

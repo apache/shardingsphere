@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisi
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckoutScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompleteAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingContext;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DisableShardingScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
@@ -122,8 +122,8 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     }
     
     @Override
-    public ASTNode visitCheckoutScaling(final CheckoutScalingContext ctx) {
-        return new CheckoutScalingStatement(ctx.jobId().getText());
+    public ASTNode visitApplyScaling(final ApplyScalingContext ctx) {
+        return new ApplyScalingStatement(ctx.jobId().getText());
     }
     
     @Override

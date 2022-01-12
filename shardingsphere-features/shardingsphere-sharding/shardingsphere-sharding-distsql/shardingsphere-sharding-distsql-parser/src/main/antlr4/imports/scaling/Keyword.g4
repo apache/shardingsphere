@@ -59,8 +59,8 @@ CHECK
     : C H E C K
     ;
 
-CHECKOUT
-    : C H E C K O U T
+APPLY
+    : A P P L Y
     ;
 
 SCALING
