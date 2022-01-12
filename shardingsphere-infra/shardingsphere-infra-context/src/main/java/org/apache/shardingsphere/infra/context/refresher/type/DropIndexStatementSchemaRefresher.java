@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
-    private static final String TYPE = DropIndexStatement.class.getCanonicalName();
+    private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
