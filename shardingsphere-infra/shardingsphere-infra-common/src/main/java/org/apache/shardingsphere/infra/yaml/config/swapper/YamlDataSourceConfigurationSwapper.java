@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import javax.sql.DataSource;

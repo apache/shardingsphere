@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
-import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;

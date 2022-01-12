@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreationMetaData;
 
 import java.util.HashMap;
 import java.util.Map;
