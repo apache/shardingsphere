@@ -42,12 +42,11 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param payload packet payload for PostgreSQL
-     * @param connectionId connection ID
      * @return command packet for PostgreSQL
      */
-    public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
+    public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
-            return getPostgreSQLCommandPacket(commandPacketType, payload, connectionId);
+            return getPostgreSQLCommandPacket(commandPacketType, payload);
         }
         return new PostgreSQLAggregatedCommandPacket(payload);
     }
@@ -57,17 +56,16 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type
      * @param payload payload
-     * @param connectionId connection ID
      * @return PostgreSQL command packet
      */
-    public static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
+    public static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryPacket(payload);
             case PARSE_COMMAND:
                 return new PostgreSQLComParsePacket(payload);
             case BIND_COMMAND:
-                return new PostgreSQLComBindPacket(payload, connectionId);
+                return new PostgreSQLComBindPacket(payload);
             case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
             case EXECUTE_COMMAND:

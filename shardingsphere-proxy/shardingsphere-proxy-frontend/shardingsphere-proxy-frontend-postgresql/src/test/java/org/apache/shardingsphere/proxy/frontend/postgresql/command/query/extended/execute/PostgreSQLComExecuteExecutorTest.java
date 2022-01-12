@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -80,15 +79,13 @@ public final class PostgreSQLComExecuteExecutorTest {
     
     @Test
     public void assertExecuteQuery() throws SQLException {
-        when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(postgreSQLPacket));
         when(portal.getSqlStatement()).thenReturn(mock(PostgreSQLSelectStatement.class));
         when(portal.next()).thenReturn(true, false);
         when(portal.nextPacket()).thenReturn(dataRowPacket);
         PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext, packet);
         Collection<DatabasePacket<?>> actualPackets = actual.execute();
-        assertThat(actualPackets.size(), is(3));
+        assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        assertThat(actualPacketsIterator.next(), is(postgreSQLPacket));
         assertThat(actualPacketsIterator.next(), is(dataRowPacket));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }

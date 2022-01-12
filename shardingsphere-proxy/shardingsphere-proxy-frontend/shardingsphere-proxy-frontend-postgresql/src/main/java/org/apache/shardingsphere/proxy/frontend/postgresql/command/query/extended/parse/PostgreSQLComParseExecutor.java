@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
@@ -37,12 +38,18 @@ import java.util.Collections;
 /**
  * PostgreSQL command parse executor.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
-    public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final ConnectionSession connectionSession) {
-        String schemaName = connectionSession.getSchemaName();
-        SQLStatement sqlStatement = parseSql(packet.getSql(), schemaName);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.getColumnTypes());
+    private final PostgreSQLComParsePacket packet; 
+    
+    private final ConnectionSession connectionSession;
+    
+    @Override
+    public Collection<DatabasePacket<?>> execute() {
+        SQLStatement sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.readParameterTypes());
+        return Collections.singletonList(new PostgreSQLParseCompletePacket());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
@@ -54,10 +61,5 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
                 metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
         return sqlStatementParserEngine.parse(sql, true);
-    }
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new PostgreSQLParseCompletePacket());
     }
 }

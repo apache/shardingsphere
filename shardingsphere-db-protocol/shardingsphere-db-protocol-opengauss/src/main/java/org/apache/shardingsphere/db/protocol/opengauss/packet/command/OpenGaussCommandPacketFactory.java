@@ -42,6 +42,6 @@ public final class OpenGaussCommandPacketFactory {
      */
     public static CommandPacket newInstance(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
         return commandPacketType == OpenGaussCommandPacketType.BATCH_BIND_COMMAND ? new OpenGaussComBatchBindPacket(payload, connectionId)
-                : PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, payload, connectionId);
+                : PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) commandPacketType, payload);
     }
 }

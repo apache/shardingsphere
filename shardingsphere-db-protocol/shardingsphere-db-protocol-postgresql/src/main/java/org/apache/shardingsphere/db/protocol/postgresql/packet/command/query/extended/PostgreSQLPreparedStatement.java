@@ -34,5 +34,5 @@ public final class PostgreSQLPreparedStatement {
     
     private final SQLStatement sqlStatement;
     
-    private final List<PostgreSQLColumnType> columnTypes;
+    private final List<PostgreSQLColumnType> parameterTypes;
 }

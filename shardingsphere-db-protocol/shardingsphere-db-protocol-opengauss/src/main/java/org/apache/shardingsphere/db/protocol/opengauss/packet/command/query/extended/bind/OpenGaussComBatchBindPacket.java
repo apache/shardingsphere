@@ -96,7 +96,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     }
     
     private List<Object> readOneGroupOfParameters() {
-        List<PostgreSQLColumnType> columnTypes = preparedStatement.getColumnTypes();
+        List<PostgreSQLColumnType> columnTypes = preparedStatement.getParameterTypes();
         List<Object> result = new ArrayList<>(eachGroupParametersCount);
         for (int parameterIndex = 0; parameterIndex < eachGroupParametersCount; parameterIndex++) {
             int parameterValueLength = payload.readInt4();

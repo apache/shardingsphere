@@ -47,7 +47,7 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
         List<DatabasePacket<?>> result = new LinkedList<>();
         while (payload.hasCompletePacket()) {
             PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(payload.readInt1());
-            PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.getPostgreSQLCommandPacket(commandPacketType, payload, connectionSession.getConnectionId());
+            PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.getPostgreSQLCommandPacket(commandPacketType, payload);
             CommandExecutor commandExecutor = PostgreSQLCommandExecutorFactory.getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
             try {
                 result.addAll(commandExecutor.execute());

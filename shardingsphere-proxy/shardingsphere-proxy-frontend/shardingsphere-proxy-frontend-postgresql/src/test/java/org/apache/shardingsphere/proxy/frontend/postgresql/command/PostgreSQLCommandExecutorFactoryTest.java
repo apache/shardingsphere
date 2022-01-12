@@ -62,12 +62,10 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     public void setup() {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
-        when(connectionSession.getConnectionId()).thenReturn(1);
     }
     
     @Test
     public void assertNewInstance() throws SQLException {
-        when(connectionSession.getSchemaName()).thenReturn("schema");
         Collection<InputOutput> inputOutputs = Arrays.asList(
             new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
             new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
@@ -90,10 +88,6 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLCommandPacket result = mock(commandPacketClass);
         if (result instanceof PostgreSQLComQueryPacket) {
             when(((PostgreSQLComQueryPacket) result).getSql()).thenReturn("");
-        }
-        if (result instanceof PostgreSQLComParsePacket) {
-            when(((PostgreSQLComParsePacket) result).getStatementId()).thenReturn("S_0");
-            when(((PostgreSQLComParsePacket) result).getSql()).thenReturn("");
         }
         return result;
     }
