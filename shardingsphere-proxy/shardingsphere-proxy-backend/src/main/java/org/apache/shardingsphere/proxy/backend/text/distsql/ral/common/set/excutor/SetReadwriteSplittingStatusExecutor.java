@@ -109,11 +109,11 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
                     toBeDisabledResource, primaryResources.get(toBeDisabledResource)));
         }
         if (!replicaResources.containsKey(toBeDisabledResource)) {
-            throw new UnsupportedOperationException(String.format("`%s` is not used by any readwrite-splitting rules, cannot be disabled", toBeDisabledResource));
+            throw new UnsupportedOperationException(String.format("`%s` is not used by any readwrite-splitting rule, cannot be disabled", toBeDisabledResource));
         }
         Set<String> canBeDisabledResources = getCanBeDisabledResources(replicaResources, disabledResources);
         if (!canBeDisabledResources.contains(toBeDisabledResource)) {
-            throw new UnsupportedOperationException(String.format("`%s` is the last resource in `%s`, cannot be disabled", toBeDisabledResource, replicaResources.get(toBeDisabledResource)));
+            throw new UnsupportedOperationException(String.format("`%s` is the last resource or last read resource in `%s`, cannot be disabled", toBeDisabledResource, replicaResources.get(toBeDisabledResource)));
         }
     }
     
