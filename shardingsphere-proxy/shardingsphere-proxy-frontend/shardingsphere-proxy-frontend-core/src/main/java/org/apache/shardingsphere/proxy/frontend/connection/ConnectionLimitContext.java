@@ -53,21 +53,10 @@ public final class ConnectionLimitContext {
     }
     
     /**
-     * Is beyond max connections.
-     *
-     * @return Whether beyond max connection
-     */
-    public boolean beyondMaxConnections() {
-        return activeConnections.get() <= getMaxConnections() || !limitsMaxConnections();
-    }
-    
-    /**
      * Channel inactive state.
      */
     public void connectionInactive() {
-        if (activeConnections.get() > 0) {
-            activeConnections.decrementAndGet();
-        }
+       activeConnections.decrementAndGet();
     }
     
     /**

@@ -100,9 +100,6 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         closeAllResources();
-        if (authenticated) {
-            ConnectionLimitContext.getInstance().connectionInactive();
-        }
     }
     
     private void closeAllResources() {
