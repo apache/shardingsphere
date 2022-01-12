@@ -72,7 +72,7 @@ public final class TrafficEngine {
     private List<String> getInstanceIdsByLabels(final Collection<String> labels) {
         List<String> result = new ArrayList<>();
         if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().loadComputeNodeInstances(InstanceType.PROXY, labels);
+            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, labels);
             for (ComputeNodeInstance each : instances) {
                 result.add(each.getInstanceDefinition().getInstanceId().getId());
             }

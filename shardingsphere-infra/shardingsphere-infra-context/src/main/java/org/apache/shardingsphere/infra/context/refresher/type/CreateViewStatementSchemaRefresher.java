@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
     
-    private static final String TYPE = CreateViewStatement.class.getCanonicalName();
+    private static final String TYPE = CreateViewStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 

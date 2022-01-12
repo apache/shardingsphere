@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
+
 spring.shardingsphere.rules.encrypt.encryptors.phone-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.phone-encryptor.props.aes-key-value=123456
 

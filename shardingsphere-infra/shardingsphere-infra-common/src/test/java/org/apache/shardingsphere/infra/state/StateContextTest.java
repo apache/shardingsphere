@@ -28,23 +28,23 @@ public final class StateContextTest {
     
     @Test
     public void assertSwitchStateWithCircuitBreakOn() {
-        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
+        stateContext.switchState(StateType.CIRCUIT_BREAK, true);
         assertThat(stateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
-        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
+        stateContext.switchState(StateType.CIRCUIT_BREAK, false);
     }
     
     @Test
     public void assertSwitchStateWithCircuitBreakOff() {
-        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
+        stateContext.switchState(StateType.CIRCUIT_BREAK, false);
         assertThat(stateContext.getCurrentState(), is(StateType.OK));
     }
     
     @Test
     public void assertSwitchStateWithMultiState() {
-        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        stateContext.switchState(new StateEvent(StateType.LOCK, true));
+        stateContext.switchState(StateType.CIRCUIT_BREAK, true);
+        stateContext.switchState(StateType.LOCK, true);
         assertThat(stateContext.getCurrentState(), is(StateType.LOCK));
-        stateContext.switchState(new StateEvent(StateType.LOCK, false));
+        stateContext.switchState(StateType.LOCK, false);
         assertThat(stateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
 }

@@ -22,11 +22,11 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,15 +35,19 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
-
-    private final ConnectionSession connectionSession;
+    
+    private static final String USERS = "users";
+    
+    private static final String PROVIDER = "provider";
+    
+    private static final String PROPS = "props";
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
-                new QueryHeader("", "", "users", "users", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", "provider", "provider", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", "props", "props", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
+                new QueryHeader("", "", USERS, USERS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
+                new QueryHeader("", "", PROVIDER, PROVIDER, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
+                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
     }
     
     @Override
@@ -58,7 +62,7 @@ public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
         row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
         row.add(authorityRuleConfiguration.getProvider().getType());
         row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
-        LinkedList<List<Object>> rows = new LinkedList<>();
+        Collection<List<Object>> rows = new LinkedList<>();
         rows.add(row);
         return new MultipleLocalDataMergedResult(rows);
     }

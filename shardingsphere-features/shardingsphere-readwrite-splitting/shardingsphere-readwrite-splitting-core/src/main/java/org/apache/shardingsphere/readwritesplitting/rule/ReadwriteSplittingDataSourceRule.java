@@ -28,9 +28,9 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +117,7 @@ public final class ReadwriteSplittingDataSourceRule {
         result.put(name, actualDataSourceNames);
         return result;
     }
-
+    
     /**
      * Get auto aware data sources.
      *
@@ -125,12 +125,28 @@ public final class ReadwriteSplittingDataSourceRule {
      */
     public Map<String, String> getAutoAwareDataSources() {
         Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        Map<String, String> result = new HashMap<>(2, 1);
         if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
-            Map<String, String> result = new HashMap<>(2, 1);
             result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
             result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
             return result;
         }
-        return Collections.emptyMap();
+        return result;
     }
+    
+    /**
+     * Get data sources.
+     *
+     * @return data sources
+     */
+    public Map<String, String> getDataSources() {
+        Map<String, String> result = new HashMap<>(2, 1);
+        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
+            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
+            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",",
+                    readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new))));
+        }
+        return result;
+    }
+    
 }

@@ -45,7 +45,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandle
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckoutScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -249,7 +249,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     @Test(expected = RuntimeException.class)
     public void assertExecuteCheckoutScalingContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CheckoutScalingStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ApplyScalingStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -116,11 +117,11 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
         });
         shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
-        if (null != tableShardingStrategy && !tableShardingStrategy.getShardingAlgorithmName().isEmpty()) {
+        if (Objects.nonNull(tableShardingStrategy) && !Strings.isNullOrEmpty(tableShardingStrategy.getShardingAlgorithmName())) {
             result.add(tableShardingStrategy.getShardingAlgorithmName());
         }
         ShardingStrategyConfiguration databaseShardingStrategy = shardingRuleConfig.getDefaultDatabaseShardingStrategy();
-        if (null != databaseShardingStrategy && !databaseShardingStrategy.getShardingAlgorithmName().isEmpty()) {
+        if (Objects.nonNull(databaseShardingStrategy) && !Strings.isNullOrEmpty(databaseShardingStrategy.getShardingAlgorithmName())) {
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;

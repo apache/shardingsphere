@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.config.resource;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
         Map<String, ProxyResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
         resourceConfigMap.put("ds_0", createResourceConfiguration());
         resourceConfigMap.put("ds_1", createResourceConfiguration());
-        Map<String, DataSourceConfiguration> actual = ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
+        Map<String, DataSourceProperties> actual = ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
         assertThat(actual.size(), is(2));
         assertParameter(actual.get("ds_0"));
         assertParameter(actual.get("ds_1"));
@@ -48,7 +48,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
         return new ProxyResourceConfiguration(connectionConfig, poolConfig);
     }
     
-    private void assertParameter(final DataSourceConfiguration actual) {
+    private void assertParameter(final DataSourceProperties actual) {
         Map<String, Object> props = actual.getProps();
         assertThat(props.size(), is(9));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));

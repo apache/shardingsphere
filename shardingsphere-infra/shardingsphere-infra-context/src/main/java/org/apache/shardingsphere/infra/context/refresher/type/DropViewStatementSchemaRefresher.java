@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
-    private static final String TYPE = DropViewStatement.class.getCanonicalName();
+    private static final String TYPE = DropViewStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 

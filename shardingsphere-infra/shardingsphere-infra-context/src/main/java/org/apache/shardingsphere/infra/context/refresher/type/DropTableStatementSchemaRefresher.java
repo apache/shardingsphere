@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public final class DropTableStatementSchemaRefresher implements MetaDataRefresher<DropTableStatement> {
     
-    private static final String TYPE = DropTableStatement.class.getCanonicalName();
+    private static final String TYPE = DropTableStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 

@@ -905,6 +905,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
         }
+        if (null != ctx.BINARY()) {
+            return visit(ctx.simpleExpr(0));
+        }
         for (ExprContext each : ctx.expr()) {
             visit(each);
         }

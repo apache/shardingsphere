@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -53,10 +53,10 @@ public final class DataSourceMetaDataPersistServiceTest {
     @Test
     public void assertLoad() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
-        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
+        Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceConfiguration(actual.get("ds_0"), DataSourcePoolCreatorUtil.getDataSourceConfiguration(createDataSource("ds_0")));
-        assertDataSourceConfiguration(actual.get("ds_1"), DataSourcePoolCreatorUtil.getDataSourceConfiguration(createDataSource("ds_1")));
+        assertDataSourceProperties(actual.get("ds_0"), DataSourcePoolCreatorUtil.getDataSourceConfiguration(createDataSource("ds_0")));
+        assertDataSourceProperties(actual.get("ds_1"), DataSourcePoolCreatorUtil.getDataSourceConfiguration(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -65,7 +65,7 @@ public final class DataSourceMetaDataPersistServiceTest {
                 .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
-    private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
+    private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
         assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
         assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
@@ -76,7 +76,7 @@ public final class DataSourceMetaDataPersistServiceTest {
     @Test
     public void assertLoadWithoutPath() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
+        Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
