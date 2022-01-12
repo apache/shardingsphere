@@ -52,7 +52,7 @@ public final class EnableShardingScalingStatementUpdater implements RuleDefiniti
     }
     
     private void checkEnabled(final String schemaName, final EnableShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (currentRuleConfig.getScalingName().equals(sqlStatement.getScalingName())) {
+        if (null != currentRuleConfig.getScalingName() && currentRuleConfig.getScalingName().equals(sqlStatement.getScalingName())) {
             throw new RuleEnabledException("Scaling", schemaName, sqlStatement.getScalingName());
         }
     }
