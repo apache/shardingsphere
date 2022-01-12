@@ -3940,4 +3940,12 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_binary_keyword" >
+        <projections start-index="7" stop-index="70">
+            <!-- TODO parse position function in projection -->
+            <expression-projection text="position(binary 'll' in 'hello')" start-index="7" stop-index="38" />
+            <expression-projection text="position('a' in binary 'hello')" start-index="40" stop-index="70" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
