@@ -190,50 +190,68 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
                 .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         BindingTableRule result = new BindingTableRule();
-        checkBindingTableWithSameDatabaseShardingStrategy(tableRules, bindingTableGroup);
-        checkBindingTableWithSameTableShardingStrategy(tableRules, bindingTableGroup);
+        checkWithSameActualDataNSourceNames(tableRules, bindingTableGroup);
+        checkWithSameShardingAlgorithm(tableRules, bindingTableGroup);
+        checkWithSameShardingColumn(tableRules, bindingTableGroup);
         result.getTableRules().putAll(tableRules);
         return result;
     }
     
-    private void checkBindingTableWithSameDatabaseShardingStrategy(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
-        String shardingColumn = null, shardingAlgorithm = null;
+    private void checkWithSameActualDataNSourceNames(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
+        Collection<String> savedActualDataSourceNames = new HashSet<>();
+        int countSavedActualDataSourceNames = 0;
         for (TableRule tableRule : tableRules.values()) {
-            ShardingStrategyConfiguration shardingStrategyConfig = tableRule.getDatabaseShardingStrategyConfig();
-            String loopShardingColumn = getShardingColumn(shardingStrategyConfig);
-            String loopShardingAlgorithm = shardingStrategyConfig.getShardingAlgorithmName();
-            if (null == shardingColumn) {
-                shardingColumn = loopShardingColumn;
-            } else if (null != shardingColumn && !shardingColumn.equalsIgnoreCase(loopShardingColumn)) {
-                throw new ShardingSphereConfigurationException("The databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
-            }
-            if (null == shardingAlgorithm) {
-                shardingAlgorithm = loopShardingAlgorithm;
-            } else if (null != shardingAlgorithm && !shardingAlgorithm.equalsIgnoreCase(loopShardingAlgorithm)) {
-                throw new ShardingSphereConfigurationException("The databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+            if (savedActualDataSourceNames.isEmpty()) {
+                savedActualDataSourceNames.addAll(tableRule.getActualDatasourceNames());
+                countSavedActualDataSourceNames = savedActualDataSourceNames.size();
+            } else if (!savedActualDataSourceNames.isEmpty()) {
+                savedActualDataSourceNames.addAll(tableRule.getActualDatasourceNames());
+                if (countSavedActualDataSourceNames != savedActualDataSourceNames.size()) {
+                    throw new ShardingSphereConfigurationException("The actualDataSourceNames on bindTable `%s` are inconsistent", bindingTableGroup);
+                }
             }
         }
     }
     
-    private void checkBindingTableWithSameTableShardingStrategy(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
-        String shardingColumn = null;
+    private void checkWithSameShardingAlgorithm(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
+        String savedShardingColumn = null;
+        String savedShardingAlgorithm = null;
         for (TableRule tableRule : tableRules.values()) {
-            ShardingStrategyConfiguration shardingStrategyConfig = tableRule.getTableShardingStrategyConfig();
-            String loopShardingColumn = getShardingColumn(shardingStrategyConfig);
-            if (null == shardingColumn) {
-                shardingColumn = loopShardingColumn;
-            } else if (null != shardingColumn && !shardingColumn.equalsIgnoreCase(loopShardingColumn)) {
-                throw new ShardingSphereConfigurationException("The tableShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+            ShardingStrategyConfiguration shardingStrategyConfiguration = tableRule.getDatabaseShardingStrategyConfig();
+            String loopShardingColumn = getShardingColumn(shardingStrategyConfiguration);
+            String loopShardingAlgorithm = shardingStrategyConfiguration.getShardingAlgorithmName();
+            if (null == savedShardingColumn) {
+                savedShardingColumn = loopShardingColumn;
+            } else if (null != savedShardingColumn && !savedShardingColumn.equalsIgnoreCase(loopShardingColumn)) {
+                throw new ShardingSphereConfigurationException("The shardingColumn of databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+            }
+            if (null == savedShardingAlgorithm) {
+                savedShardingAlgorithm = loopShardingAlgorithm;
+            } else if (null != savedShardingAlgorithm && !savedShardingAlgorithm.equalsIgnoreCase(loopShardingAlgorithm)) {
+                throw new ShardingSphereConfigurationException("The shardingAlgorithm of databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
             }
         }
     }
     
-    private String getShardingColumn(final ShardingStrategyConfiguration tableShardingStrategyConfig) {
-        if (tableShardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) tableShardingStrategyConfig).getShardingColumns();
+    private void checkWithSameShardingColumn(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
+        String savedShardingColumn = null;
+        for (TableRule tableRule : tableRules.values()) {
+            ShardingStrategyConfiguration shardingStrategyConfiguration = tableRule.getTableShardingStrategyConfig();
+            String loopShardingColumn = getShardingColumn(shardingStrategyConfiguration);
+            if (null == savedShardingColumn) {
+                savedShardingColumn = loopShardingColumn;
+            } else if (null != savedShardingColumn && !savedShardingColumn.equalsIgnoreCase(loopShardingColumn)) {
+                throw new ShardingSphereConfigurationException("The shardingColumn of tableShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+            }
         }
-        if (tableShardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            return ((StandardShardingStrategyConfiguration) tableShardingStrategyConfig).getShardingColumn();
+    }
+    
+    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
+            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns();
+        }
+        if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
+            return ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
         }
         return null;
     }
