@@ -189,15 +189,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
                 .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        checkWithSameActualDataNSourceNames(tableRules, bindingTableGroup);
-        checkWithSameShardingAlgorithm(tableRules, bindingTableGroup);
+        checkWithSameActualDataSourceNames(tableRules, bindingTableGroup);
+        checkWithSameShardingColumnAndAlgorithm(tableRules, bindingTableGroup);
         checkWithSameShardingColumn(tableRules, bindingTableGroup);
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
     }
     
-    private void checkWithSameActualDataNSourceNames(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
+    private void checkWithSameActualDataSourceNames(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
         Collection<String> savedActualDataSourceNames = new HashSet<>();
         int countSavedActualDataSourceNames = 0;
         for (TableRule tableRule : tableRules.values()) {
@@ -207,13 +207,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             } else if (!savedActualDataSourceNames.isEmpty()) {
                 savedActualDataSourceNames.addAll(tableRule.getActualDatasourceNames());
                 if (countSavedActualDataSourceNames != savedActualDataSourceNames.size()) {
-                    throw new ShardingSphereConfigurationException("The actualDataSourceNames on bindTable `%s` are inconsistent", bindingTableGroup);
+                    throw new ShardingSphereConfigurationException("The actualDataSourceNames on bindingTableGroup `%s` are inconsistent", bindingTableGroup);
                 }
             }
         }
     }
     
-    private void checkWithSameShardingAlgorithm(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
+    private void checkWithSameShardingColumnAndAlgorithm(final Map<String, TableRule> tableRules, final String bindingTableGroup) {
         String savedShardingColumn = null;
         String savedShardingAlgorithm = null;
         for (TableRule tableRule : tableRules.values()) {
@@ -226,12 +226,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             if (null == savedShardingColumn) {
                 savedShardingColumn = loopShardingColumn;
             } else if (null != savedShardingColumn && !savedShardingColumn.equalsIgnoreCase(loopShardingColumn)) {
-                throw new ShardingSphereConfigurationException("The shardingColumn of databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+                throw new ShardingSphereConfigurationException("The shardingColumn of databaseShardingStrategyConfig on bindingTableGroup `%s` are inconsistent", bindingTableGroup);
             }
             if (null == savedShardingAlgorithm) {
                 savedShardingAlgorithm = loopShardingAlgorithm;
             } else if (null != savedShardingAlgorithm && !savedShardingAlgorithm.equalsIgnoreCase(loopShardingAlgorithm)) {
-                throw new ShardingSphereConfigurationException("The shardingAlgorithm of databaseShardingStrategyConfig on bindTable `%s` are inconsistent", bindingTableGroup);
+                throw new ShardingSphereConfigurationException("The shardingAlgorithm of databaseShardingStrategyConfig on bindingTableGroup `%s` are inconsistent", bindingTableGroup);
             }
         }
     }
