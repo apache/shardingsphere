@@ -189,10 +189,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
                 .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        BindingTableRule result = new BindingTableRule();
         checkWithSameActualDataNSourceNames(tableRules, bindingTableGroup);
         checkWithSameShardingAlgorithm(tableRules, bindingTableGroup);
         checkWithSameShardingColumn(tableRules, bindingTableGroup);
+        BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
     }
