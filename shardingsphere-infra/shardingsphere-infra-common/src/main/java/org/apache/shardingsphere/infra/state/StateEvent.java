@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.state;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * State event.
  */
@@ -27,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class StateEvent {
     
-    private final StateType type;
+    private final String instanceId;
     
-    private final boolean on;
+    private final Collection<String> status;
 }
