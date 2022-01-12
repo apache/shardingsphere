@@ -105,7 +105,7 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
         readwriteSplittingRules.entrySet().stream().filter(entry -> !entry.getValue().isEmpty())
                 .peek(entry -> addPrimaryResource(primaryResources, entry)).forEach(entry -> addReplicaResource(replicaResources, entry));
         if (primaryResources.containsKey(toBeDisabledResource)) {
-            throw new UnsupportedOperationException(String.format("`%s` is the primary data source in the `%s` rule, cannot be disabled", 
+            throw new UnsupportedOperationException(String.format("`%s` is the primary resource in the `%s` rule, cannot be disabled", 
                     toBeDisabledResource, primaryResources.get(toBeDisabledResource)));
         }
         if (!replicaResources.containsKey(toBeDisabledResource)) {
