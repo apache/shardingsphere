@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
@@ -92,14 +91,5 @@ public final class MetaDataPersistService {
      */
     public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
         computeNodePersistService.persistInstanceLabels(instanceId, labels);
-    }
-    
-    /**
-     * Load all compute node instances.
-     *
-     * @return collection of compute node instance
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances() {
-        return computeNodePersistService.loadAllComputeNodeInstances();
     }
 }

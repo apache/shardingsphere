@@ -83,7 +83,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {
-        Collection<ComputeNodeInstance> instances = persistService.loadComputeNodeInstances();
+        Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         if (!instances.isEmpty()) {
             return instances.stream().filter(Objects::nonNull).map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus())))
                     .collect(Collectors.toCollection(LinkedList::new));
