@@ -191,6 +191,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.DisableShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.EnableShardingScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
@@ -717,6 +719,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-sharding-scaling")
     private final List<DropShardingScalingStatementTestCase> dropShardingScalingStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "enable-sharding-scaling")
+    private final List<EnableShardingScalingStatementTestCase> enableShardingScalingStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "disable-sharding-scaling")
+    private final List<DisableShardingScalingStatementTestCase> disableShardingScalingStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
     
@@ -1141,6 +1149,8 @@ public final class SQLParserTestCases {
         putAll(checkoutScalingStatementTestCases, result);
         putAll(createShardingScalingStatementTestCases, result);
         putAll(dropShardingScalingStatementTestCases, result);
+        putAll(enableShardingScalingStatementTestCases, result);
+        putAll(disableShardingScalingStatementTestCases, result);
         putAll(showVariableStatementTestCase, result);
         putAll(showAllVariablesStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);

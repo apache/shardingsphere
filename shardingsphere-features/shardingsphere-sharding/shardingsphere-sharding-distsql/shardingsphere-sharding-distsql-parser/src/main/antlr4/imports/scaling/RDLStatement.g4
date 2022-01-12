@@ -27,6 +27,14 @@ dropShardingScaling
     : DROP SHARDING SCALING scalingName
     ;
 
+enableShardingScaling
+    : ENABLE SHARDING SCALING scalingName
+    ;
+
+disableShardingScaling
+    : DISABLE SHARDING SCALING scalingName
+    ;
+
 scalingName
     : IDENTIFIER
     ;
