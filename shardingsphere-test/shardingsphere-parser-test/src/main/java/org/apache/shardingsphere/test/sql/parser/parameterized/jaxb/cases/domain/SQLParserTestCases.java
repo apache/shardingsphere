@@ -171,7 +171,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckoutScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
@@ -708,8 +708,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "stop-scaling-source-writing")
     private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
     
-    @XmlElement(name = "checkout-scaling")
-    private final List<CheckoutScalingStatementTestCase> checkoutScalingStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "apply-scaling")
+    private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-scaling")
     private final List<CreateShardingScalingStatementTestCase> createShardingScalingStatementTestCases = new LinkedList<>();
@@ -1138,7 +1138,7 @@ public final class SQLParserTestCases {
         putAll(checkScalingStatementTestCase, result);
         putAll(showScalingCheckAlgorithmsStatementTestCase, result);
         putAll(stopScalingSourceWritingStatementTestCase, result);
-        putAll(checkoutScalingStatementTestCases, result);
+        putAll(applyScalingStatementTestCases, result);
         putAll(createShardingScalingStatementTestCases, result);
         putAll(dropShardingScalingStatementTestCases, result);
         putAll(showVariableStatementTestCase, result);
