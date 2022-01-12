@@ -27,7 +27,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ComputeNodeStateChangedWatcherTest {
@@ -37,13 +38,15 @@ public final class ComputeNodeStateChangedWatcherTest {
         Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", 
                 YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+        assertThat(actual.get().getStatus(), is(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())));
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
     }
     
     @Test
     public void assertCreateEventWhenDisabled() {
         Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", "", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
+        assertTrue(actual.get().getStatus().isEmpty());
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
     }
 }

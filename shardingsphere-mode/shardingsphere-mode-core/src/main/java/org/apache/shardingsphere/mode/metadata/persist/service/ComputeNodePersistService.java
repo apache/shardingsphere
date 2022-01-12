@@ -103,14 +103,22 @@ public final class ComputeNodePersistService {
         Collection<ComputeNodeInstance> result = new ArrayList<>();
         Arrays.stream(InstanceType.values()).forEach(instanceType -> {
             Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-            onlineComputeNodes.forEach(each -> {
-                ComputeNodeInstance instance = new ComputeNodeInstance();
-                instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
-                instance.setLabels(loadInstanceLabels(each));
-                instance.setStatus(loadInstanceStatus(each));
-                result.add(instance);
-            });
+            onlineComputeNodes.forEach(each -> result.add(loadComputeNodeInstance(new InstanceDefinition(instanceType, each))));
         });
+        return result;
+    }
+    
+    /**
+     * Load compute node instance by instance definition.
+     * 
+     * @param instanceDefinition instance definition
+     * @return compute node instance
+     */
+    public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
+        ComputeNodeInstance result = new ComputeNodeInstance();
+        result.setInstanceDefinition(instanceDefinition);
+        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
+        result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
         return result;
     }
 }

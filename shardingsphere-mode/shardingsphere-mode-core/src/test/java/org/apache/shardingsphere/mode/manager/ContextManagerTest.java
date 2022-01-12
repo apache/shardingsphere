@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.parser.Optim
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
@@ -87,12 +88,15 @@ public final class ContextManagerTest {
     @Mock
     private TransactionContexts transactionContexts;
     
+    @Mock
+    private InstanceContext instanceContext;
+    
     private ContextManager contextManager;
     
     @Before
     public void setUp() throws SQLException {
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        contextManager.init(metaDataContexts, transactionContexts, instanceContext);
         dataSourceMap = new HashMap<>(2, 1);
         DataSource primaryDataSource = mock(DataSource.class);
         DataSource replicaDataSource = mock(DataSource.class);
