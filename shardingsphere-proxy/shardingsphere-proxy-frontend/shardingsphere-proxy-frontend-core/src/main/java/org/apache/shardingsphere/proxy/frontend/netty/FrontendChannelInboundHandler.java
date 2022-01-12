@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
@@ -99,6 +100,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         closeAllResources();
+        if (authenticated) {
+            ConnectionLimitContext.getInstance().connectionInactive();
+        }
     }
     
     private void closeAllResources() {

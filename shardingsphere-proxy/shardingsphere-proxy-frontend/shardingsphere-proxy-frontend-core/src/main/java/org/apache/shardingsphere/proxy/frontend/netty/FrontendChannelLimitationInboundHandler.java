@@ -36,7 +36,7 @@ public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandl
     
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
-        if (ConnectionLimitContext.getInstance().connectionAllowed()) {
+        if (ConnectionLimitContext.getInstance().beyondMaxConnections()) {
             ctx.fireChannelActive();
             return;
         }
@@ -49,6 +49,5 @@ public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandl
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
         ctx.fireChannelInactive();
-        ConnectionLimitContext.getInstance().connectionInactive();
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -80,7 +82,13 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
         Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
-        context.writeAndFlush(errorCode.isPresent() ? createErrorPacket(errorCode.get(), context) : new MySQLOKPacket(++sequenceId));
+        // FIXME lack Auth Switch Request
+        if (errorCode.isPresent()) {
+            context.writeAndFlush(createErrorPacket(errorCode.get(), context));
+        } else {
+            context.writeAndFlush(ConnectionLimitContext.getInstance().connectionAllowed() ? new MySQLOKPacket(++sequenceId)
+                    : new MySQLErrPacket(++sequenceId, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage()));
+        }
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
