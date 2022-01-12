@@ -52,10 +52,10 @@ public final class ComputeNodeStatusSubscriber {
         String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(new InstanceId(event.getIp(), Integer.valueOf(event.getPort())).getId());
         String yamlContext = repository.get(computeStatusNodePath);
         Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
-        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAKER) {
-            status.add(ComputeNodeStatus.CIRCUIT_BREAKER.name());
+        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
+            status.add(ComputeNodeStatus.CIRCUIT_BREAK.name());
         } else {
-            status.remove(ComputeNodeStatus.CIRCUIT_BREAKER.name());
+            status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
         repository.persist(computeStatusNodePath, YamlEngine.marshal(status));
     }

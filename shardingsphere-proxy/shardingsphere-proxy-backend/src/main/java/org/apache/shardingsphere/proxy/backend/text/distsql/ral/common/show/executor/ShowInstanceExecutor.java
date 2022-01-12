@@ -99,6 +99,6 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAKER.name()) ? ENABLE : DISABLE;
+        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLE : DISABLE;
     }
 }
